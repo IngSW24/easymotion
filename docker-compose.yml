@@ -1,0 +1,91 @@
+services:
+  webapp:
+    build:
+      context: webapp
+      target: dev
+    restart: unless-stopped
+    ports:
+      # add variable in .env to change port
+      - "${WEB_DEV_PORT:-8082}:5173"
+    volumes:
+      - ./webapp:/app
+      - /app/node_modules
+    depends_on:
+      api:
+        condition: service_started
+      db:
+        condition: service_started
+    command: npm run dev
+
+  api:
+    build:
+      context: api
+      target: dev
+    restart: unless-stopped
+    ports:
+      # add variable in .env to change port
+      - "${API_DEV_PORT:-8081}:3000"
+    volumes:
+      - ./api:/app
+      - /app/node_modules
+    depends_on:
+      db:
+        condition: service_started
+    env_file:
+      - ./api/.env
+    command: npm run start:dev
+
+  db:
+    image: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      # add variable in .env to change port
+      - "${PG_DEV_PORT:-5432}:5432"
+    restart: always
+    env_file:
+      - ./api/.env
+
+  nginx:
+    image: nginx:mainline-alpine
+    depends_on:
+      api:
+        condition: service_started
+      webapp:
+        condition: service_started
+      cert-gen:
+        condition: service_completed_successfully
+    volumes:
+      - "./nginx/dev.conf:/etc/nginx/conf.d/default.conf"
+      - "./nginx/.ssl:/certs" # gitignored folder, contains dev ssl certificates
+    ports:
+      - 80:80
+      - 443:443
+
+  # Generate SSL certificates for development if not available, then exits
+  cert-gen:
+    image: alpine
+    volumes:
+      - ./nginx:/nginx
+    entrypoint: >
+      sh -c "
+      chmod +x /nginx/certgen.sh;
+      /nginx/certgen.sh";
+    restart: "no"
+
+  # Web-based PostgreSQL admin tool
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      # add variable in .env to change port
+      - "${PG_ADMIN_PORT:-8083}:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: db@easymotion.dev
+      PGADMIN_DEFAULT_PASSWORD: 1234
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+volumes:
+  pgdata:
+  pgadmin_data:

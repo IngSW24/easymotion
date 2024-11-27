@@ -1,0 +1,27 @@
+name: Release API
+
+# Initial template for the release of the API
+# This workflow will build a docker image and push it to the GitHub Container Registry
+# This is not used for now, but it will be useful as a started in the future
+
+on:
+  push:
+    tags:
+      - "api-v*"
+jobs:
+  publish-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build the Docker image
+        run: |
+          version=$(echo $GITHUB_REF_NAME | grep -o [0-9]\.*)
+          cd api/
+          docker build . --tag ghcr.io/ingsw24/easymotion-api:$version
+          docker push ghcr.io/ingsw24/easymotion-api:$version

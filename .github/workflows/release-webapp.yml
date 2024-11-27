@@ -1,0 +1,29 @@
+name: Release Webapp
+
+# Initial template for the release of the webapp
+# This workflow will build a docker image and push it to the GitHub Container Registry
+# This is not used for now, but it will be useful as a started in the future
+
+on:
+  push:
+    tags:
+      - "web-v*"
+env:
+  VITE_API_BASE: "${{ vars.VITE_API_BASE }}"
+jobs:
+  publish-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build the Docker image
+        run: |
+          version=$(echo $GITHUB_REF_NAME | grep -o [0-9]\.*)
+          cd webapp/
+          docker build --build-arg VITE_API_BASE=$VITE_API_BASE . --tag ghcr.io/ingsw24/easymotion-web:$version
+          docker push ghcr.io/ingsw24/easymotion-web:$version
