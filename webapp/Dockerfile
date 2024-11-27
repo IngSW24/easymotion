@@ -11,9 +11,6 @@ RUN adduser --system --uid 1001 node || true
 
 COPY --chown=node:node . .
 
-RUN npm install
-RUN chown -R node:node node_modules
-
 USER node
 
 # Build the app
@@ -29,8 +26,6 @@ ENV NODE_ENV production
 
 RUN addgroup --system --gid 1001 node || true
 RUN adduser --system --uid 1001 node || true
-
-COPY --chown=node:node --from=dev /app/node_modules ./node_modules
 
 COPY --chown=node:node . .
 

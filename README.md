@@ -52,6 +52,24 @@ This will provide default environment variables. If new variables need to be add
 
 ⚠️ **Note**: when you visit the https URIs, your browser will probably complain about connection being not private despite the certificate. This is ok since the development certificates are not signed by a real certification authority. Since it's a local connection, you should be able to proceed by clicking `Advanced > Proceed to website`.
 
+### Install packages locally
+
+If you need to develop on one or more projects, you'll need to install dependencies locally. This is needed to get code completion and typescript type checks.
+
+To do so, you can cd into the folder you need to develop on install the packages
+
+```bash
+# for webapp
+cd webapp
+npm i
+
+# for api
+cd api
+npm i
+```
+
+These dependencies will only be used for local development.
+
 ### Shutdown the dev environment
 
 - Run `docker compose down`
@@ -66,7 +84,7 @@ If you want to erase the PgAdmin data:
 
 ## Usage
 
-### Interacting with services
+### Installing packages
 
 Do **NOT** run npm commands directly in projects subfolders, instead do:
 
@@ -85,6 +103,15 @@ If you need to run specific commands in the services without starting them up (f
 ```bash
 docker compose run [service] [command]
 ```
+
+### What to do if you start getting errors with modules
+
+Delete
+
+- `api/node_modules`
+- `webapp/node_modules`
+
+Then, rebuild the docker images by running `docker compose build`.
 
 ### View logs
 
@@ -106,7 +133,7 @@ docker compose logs nginx
 docker compose logs db
 ```
 
-You can also use the `-t` flag to attach to the log file and follow new content.
+You can also use the `-f` flag to attach to the log file and follow new content.
 
 For more information about the usage of docker compose, check the [official docs](https://docs.docker.com/reference/cli/docker/compose/).
 

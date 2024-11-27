@@ -9,13 +9,19 @@ services:
       - "${WEB_DEV_PORT:-8082}:5173"
     volumes:
       - ./webapp:/app
-      - /app/node_modules
     depends_on:
       api:
         condition: service_started
       db:
         condition: service_started
-    command: npm run dev
+    command: >
+      sh -c "
+      if [ -d "/app/node_modules" ]; then
+        npm run dev;
+      else
+        echo 'Installing Webapp dependencies...';
+        npm ci && npm run dev;
+      fi"
 
   api:
     build:
@@ -27,13 +33,19 @@ services:
       - "${API_DEV_PORT:-8081}:3000"
     volumes:
       - ./api:/app
-      - /app/node_modules
     depends_on:
       db:
         condition: service_started
     env_file:
       - ./api/.env
-    command: npm run start:dev
+    command: >
+      sh -c "
+      if [ -d "/app/node_modules" ]; then
+        npm run start:dev;
+      else
+        echo 'Installing API dependencies...';
+        npm ci && npm run start:dev;
+      fi"
 
   db:
     image: postgres

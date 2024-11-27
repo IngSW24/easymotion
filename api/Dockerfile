@@ -13,10 +13,6 @@ RUN adduser --system --uid 1001 node || true
 
 COPY --chown=node:node . .
 
-RUN npm install --frozen-lockfile
-
-RUN chown -R node:node node_modules
-
 USER node
 
 # Build the app
