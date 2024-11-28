@@ -76,13 +76,13 @@ services:
 
   # Generate SSL certificates for development if not available, then exits
   cert-gen:
-    image: alpine
+    build:
+      context: nginx 
     volumes:
       - ./nginx:/nginx
-    entrypoint: >
-      sh -c "
-      chmod +x /nginx/certgen.sh;
-      /nginx/certgen.sh";
+    environment:
+      CERT_PATH: "/nginx/.ssl"
+      DOMAIN: "*.easymotion.dev"
     restart: "no"
 
   # Web-based PostgreSQL admin tool

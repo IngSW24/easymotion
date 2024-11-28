@@ -3,9 +3,6 @@
 # Generates self signed SSL certificates for development
 # An entry for DOMAIN should be added to /etc/hosts
 
-CERT_PATH="/nginx/.ssl"
-DOMAIN="*.easymotion.devlocal"
-
 mkdir -p $CERT_PATH
 
 if [ ! -f $CERT_PATH/dev.key ] || [ ! -f $CERT_PATH/dev.crt ]; then

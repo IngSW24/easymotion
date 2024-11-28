@@ -2,6 +2,10 @@
 
 This repository contains both the **API** and **WebApp** projects for EasyMotion.
 
+## Do you like videos more?
+
+You can follow a quick explanation of the repository and its initial configuration in a quick video [here](https://www.loom.com/share/57bff56af68040f3b9099a492d284153?sid=07ebf338-da86-4538-a9c9-9fe3d601a8dd)!
+
 ## Configure the dev environment
 
 The whole dev environment can be spun up using only docker compose. However, there are some requirements that need to be fulfilled so that everything can run properly.
@@ -44,31 +48,13 @@ This will provide default environment variables. If new variables need to be add
 
 ### Spin up the dev environment
 
-- Run `docker compose up` (the first time it will take a while because images must be built)
+- Run `docker compose up` (the first time it will take a while because it will install dependencies)
 - Visit
   - API at [https://api.easymotion.devlocal](https://api.easymotion.devlocal)
   - WebApp at [https://easymotion.dev](https://easymotion.dev)
   - PgAdmin at [http://localhost:8083](http://localhost:8083) (this is supposed to be used for administration purposes, but not to model the DB since this is done through migrations)
 
 ⚠️ **Note**: when you visit the https URIs, your browser will probably complain about connection being not private despite the certificate. This is ok since the development certificates are not signed by a real certification authority. Since it's a local connection, you should be able to proceed by clicking `Advanced > Proceed to website`.
-
-### Install packages locally
-
-If you need to develop on one or more projects, you'll need to install dependencies locally. This is needed to get code completion and typescript type checks.
-
-To do so, you can cd into the folder you need to develop on install the packages
-
-```bash
-# for webapp
-cd webapp
-npm i
-
-# for api
-cd api
-npm i
-```
-
-These dependencies will only be used for local development.
 
 ### Shutdown the dev environment
 
@@ -96,7 +82,7 @@ docker compose exec api npm install package-name
 docker compose exec webapp npm install package-name
 ```
 
-You can also use `docker compose attach [container-name]` to attach you shell to a specific container. This avoids having to rebuild a docker image everytime a dependency was installed.
+You can also use `docker compose attach [container-name]` to attach you shell to a specific container.
 
 If you need to run specific commands in the services without starting them up (for example, to install new dependencies), you can do:
 
