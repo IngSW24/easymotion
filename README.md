@@ -23,8 +23,17 @@ You must edit your /etc/hosts file adding an entry that binds the domain `easymo
 
 You need to add the following line to the bottom of the file.
 
+On Mac/Linux:
+
 ```
 127.0.0.1 easymotion.devlocal
+```
+
+On Windows:
+
+```
+127.0.0.1 easymotion.devlocal
+127.0.0.1 api.easymotion.devlocal
 ```
 
 Then you can save and quit. Note that this application requires sudo/administration priviledges.
@@ -45,6 +54,12 @@ cp api/.env.example .env
 ```
 
 This will provide default environment variables. If new variables need to be added, you will have to include them in your .env file. If you are adding new variables, you should also provide a default one in the .env.example file.
+
+If you are using **Windows**, you also need to create a `.env` in the root directory of the project and add the following variable
+
+```
+POLLING=true
+```
 
 ### Spin up the dev environment
 

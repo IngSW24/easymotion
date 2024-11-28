@@ -4,6 +4,10 @@ services:
       context: webapp
       target: dev
     restart: unless-stopped
+    env_file:
+      - ./webapp/.env
+    environment:
+      POLLING: ${POLLING}
     ports:
       # add variable in .env to change port
       - "${WEB_DEV_PORT:-8082}:5173"
