@@ -66,7 +66,7 @@ POLLING=true
 - Run `docker compose up` (the first time it will take a while because it will install dependencies)
 - Visit
   - API at [https://api.easymotion.devlocal](https://api.easymotion.devlocal)
-  - WebApp at [https://easymotion.dev](https://easymotion.dev)
+  - WebApp at [https://easymotion.devlocal](https://easymotion.devlocal)
   - PgAdmin at [http://localhost:8083](http://localhost:8083) (this is supposed to be used for administration purposes, but not to model the DB since this is done through migrations)
 
 ⚠️ **Note**: when you visit the https URIs, your browser will probably complain about connection being not private despite the certificate. This is ok since the development certificates are not signed by a real certification authority. Since it's a local connection, you should be able to proceed by clicking `Advanced > Proceed to website`.
