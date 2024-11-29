@@ -23,14 +23,6 @@ You must edit your /etc/hosts file adding an entry that binds the domain `easymo
 
 You need to add the following line to the bottom of the file.
 
-On Mac/Linux:
-
-```
-127.0.0.1 easymotion.devlocal
-```
-
-On Windows:
-
 ```
 127.0.0.1 easymotion.devlocal
 127.0.0.1 api.easymotion.devlocal
@@ -40,11 +32,19 @@ Then you can save and quit. Note that this application requires sudo/administrat
 
 ### Clone the repository
 
+https:
+
 ```bash
 git clone https://github.com/ingsw24/easymotion
 ```
 
-#### Create environment variables
+ssh:
+
+```bash
+git clone git@github.com:IngSW24/easymotion.git
+```
+
+### Create environment variables
 
 In both the API and WebApp repository you must create the environment files. In the root directory of the repository you can run
 
@@ -65,9 +65,22 @@ POLLING=true
 
 - Run `docker compose up` (the first time it will take a while because it will install dependencies)
 - Visit
-  - API at [https://api.easymotion.devlocal](https://api.easymotion.devlocal)
-  - WebApp at [https://easymotion.dev](https://easymotion.dev)
+  - API at [https://api.easymotion.devlocal/swagger](https://api.easymotion.devlocal/swagger)
+  - WebApp at [https://easymotion.devlocal](https://easymotion.devlocal)
   - PgAdmin at [http://localhost:8083](http://localhost:8083) (this is supposed to be used for administration purposes, but not to model the DB since this is done through migrations)
+
+#### Dev tools
+
+pgAdmin login:
+
+- username: db@easymotion.devlocal
+- password: 1234
+
+psql shell:
+
+```bash
+docker-compose exec db psql -U easymotion
+```
 
 ⚠️ **Note**: when you visit the https URIs, your browser will probably complain about connection being not private despite the certificate. This is ok since the development certificates are not signed by a real certification authority. Since it's a local connection, you should be able to proceed by clicking `Advanced > Proceed to website`.
 
@@ -140,10 +153,14 @@ For more information about the usage of docker compose, check the [official docs
 
 ---
 
-# How to develop
+## How to develop
 
+- Create a new branch from the `develop` branch
 - Checkout your own branch ensuring that its name follows the standard JIRA naming conventions for GitHub integrations
 - Develop your feature on your branch, eventually rebasing or merging from other branches if you need to do so
 - Open a Pull Request on the `develop` branch and wait for code review and approval
+
+### Notes
+
 - Branch `develop` will be aligned with the current sprint progress
 - The production version will be aligned with the status of the `main` branch

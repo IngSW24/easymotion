@@ -6,7 +6,7 @@ services:
     restart: "no"
     environment:
       POLLING: ${POLLING:-false}
-      VITE_API_URL: ${VITE_API_URL:-https://api.easymotion.dev}
+      VITE_API_URL: ${VITE_API_URL:-https://api.easymotion.devlocal}
     ports:
       # add variable in .env to change port
       - "${WEB_DEV_PORT:-8082}:5173"
@@ -87,7 +87,7 @@ services:
       - ./nginx:/nginx
     environment:
       CERT_PATH: "/nginx/.ssl"
-      DOMAIN: "*.easymotion.dev"
+      DOMAIN: "*.easymotion.devlocal"
     restart: "no"
 
   # Web-based PostgreSQL admin tool
@@ -98,7 +98,7 @@ services:
       # add variable in .env to change port
       - "${PG_ADMIN_PORT:-8083}:80"
     environment:
-      PGADMIN_DEFAULT_EMAIL: db@easymotion.dev
+      PGADMIN_DEFAULT_EMAIL: db@easymotion.devlocal
       PGADMIN_DEFAULT_PASSWORD: 1234
     volumes:
       - pgadmin_data:/var/lib/pgadmin
