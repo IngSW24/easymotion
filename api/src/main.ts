@@ -1,4 +1,4 @@
-import { NestFactory, Reflector } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
@@ -6,18 +6,22 @@ import {
   API_DESCRIPTION,
   API_TITLE,
   API_VERSION,
-} from './constants/app.constants';
+} from './common/constants/swagger.constants';
+import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  const { httpAdapter } = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
 
   app.enableCors();
 
   app.useGlobalPipes(
     new ValidationPipe({
-      disableErrorMessages: false,
       transform: true,
       whitelist: true,
+      forbidNonWhitelisted: true,
     }),
   );
 
@@ -27,7 +31,6 @@ async function bootstrap() {
     .setTitle(API_TITLE)
     .setDescription(API_DESCRIPTION)
     .setVersion(API_VERSION)
-    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
