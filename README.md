@@ -58,7 +58,7 @@ If you are using **Windows**, you need to also add the following variable in you
 POLLING=true
 ```
 
-If you have services such PostgreSQL installed also on your machine, you may run into port conflicts (socket already in use). Check how to solve it [here](#).
+If you have services such PostgreSQL installed also on your machine, you may run into port conflicts (socket already in use). Check how to solve it [here](#if-you-have-issues-with-port-bindings).
 
 ### Spin up the dev environment
 
