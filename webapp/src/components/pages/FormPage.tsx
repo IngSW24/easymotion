@@ -1,48 +1,57 @@
-import { useState } from 'react';
-import { Typography, Container, Card, CardContent, Box } from '@mui/material';
-import CardForm from './CardForm.tsx';
-import { useQuery } from '@tanstack/react-query';
+import { Typography, Container, Card, CardContent, Box } from "@mui/material";
+import CardForm from "./CardForm.tsx";
+import { useQuery } from "@tanstack/react-query";
 
 /**
  * Event interface representing the structure of an event
  */
-interface Event {
+export interface ApplicationEvent {
   organizer: string;
   instructor: string;
   type: string;
   description: string;
   location: string;
-  times: { day: string; duration: string }[];
-  cost: string;
+  times: string;
+  cost: number;
 }
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const getEvents = async (): Promise<ApplicationEvent[]> => {
+  const response = await fetch("/api/events");
+  return response.json();
+};
+
+const getEventsMockup = async (): Promise<ApplicationEvent[]> => {
+  return new Promise((res) =>
+    res([
+      {
+        // create mockup event
+        organizer: "John Doe",
+        instructor: "Jane Doe",
+        type: "Yoga",
+        description: "Yoga for beginners",
+        location: "1234 Elm St",
+        times: "Monday: 9:00am - 10:00am",
+        cost: 10.0,
+      },
+    ])
+  );
+};
 
 /**
  * Define the form page for the physiotherapists to create an event
  * @returns the form page
  */
 function FormPage() {
-  const [events, setEvents] = useState<Event[]>([]);
-
-  /**
-   * It's used to add a new event into the state
-   */
-  const addEvent = (newEvent: Event) => {
-    setEvents((prevEvents) => [...prevEvents, newEvent]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const addEvent = (_newEvent: ApplicationEvent) => {
+    // this will need to call a mutation from react query
+    // setEvents((prevEvents) => [...prevEvents, newEvent]);
   };
 
-  const {
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: ['events'],
-    queryFn: () =>
-      fetch('/api/events').then((res) => {
-        if (!res.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return res.json();
-      }),
+  const { isLoading, isError, error, data } = useQuery({
+    queryKey: ["events"],
+    queryFn: getEventsMockup,
   });
 
   if (isLoading) {
@@ -53,6 +62,10 @@ function FormPage() {
     return <div>Error: {error.message}</div>;
   }
 
+  if (!data) {
+    return <div>No data available</div>;
+  }
+
   return (
     <Container>
       <Typography variant="h3" component="h1" align="center" gutterBottom>
@@ -61,13 +74,17 @@ function FormPage() {
       <CardForm addEvent={addEvent} />
       <Box
         sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(3, 1fr)' },
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "1fr",
+            sm: "1fr 1fr",
+            md: "repeat(3, 1fr)",
+          },
           gap: 3,
           marginTop: 4,
         }}
       >
-        {events.map((event, index) => (
+        {data.map((event, index) => (
           <Card key={index} sx={{ padding: 2 }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
@@ -91,13 +108,7 @@ function FormPage() {
               <Typography variant="body2" sx={{ marginTop: 1 }}>
                 Schedule:
               </Typography>
-              <ul>
-                {event.times.map((time, i) => (
-                  <li key={i}>
-                    {time.day}: {time.duration}
-                  </li>
-                ))}
-              </ul>
+              {event.times}
             </CardContent>
           </Card>
         ))}

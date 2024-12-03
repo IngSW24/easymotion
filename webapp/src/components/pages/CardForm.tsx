@@ -1,19 +1,12 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { Box, TextField, Button, Paper } from "@mui/material";
+import { ApplicationEvent } from "./FormPage";
 
 /**
  * Define the interface to manage the event creation
  */
 interface CardFormProps {
-  addEvent: (event: {
-    organizer: string;
-    instructor: string;
-    type: string;
-    description: string;
-    location: string;
-    times: { day: string; duration: string }[];
-    cost: string;
-  }) => void;
+  addEvent: (event: ApplicationEvent) => void;
 }
 
 /**
@@ -21,16 +14,15 @@ interface CardFormProps {
  * @returns the component CardForm
  */
 const CardForm: React.FC<CardFormProps> = ({ addEvent }) => {
-  
-  // This is used to set form fields 
-  const [formData, setFormData] = useState({
+  // This is used to set form fields
+  const [formData, setFormData] = useState<ApplicationEvent>({
     organizer: "",
     instructor: "",
     type: "",
     description: "",
     location: "",
-    times: [{ day: "", duration: "" }], // Array di oggetti per giorno e ora
-    cost: "",
+    times: "",
+    cost: 0.0,
   });
 
   // This is used to contain fields errors
@@ -40,9 +32,20 @@ const CardForm: React.FC<CardFormProps> = ({ addEvent }) => {
     type: "",
     description: "",
     location: "",
-    times: [{ day: "", duration: "" }],
+    times: "",
     cost: "",
   });
+
+  const validateNumericField = (name: string, value: number) => {
+    switch (name) {
+      case "cost":
+        if (typeof value !== "number") return "Cost must be a number.";
+        break;
+      default:
+        return "";
+    }
+    return "";
+  };
 
   // This is used to check if in the field indicated, there is an error
   const validateField = (name: string, value: string) => {
@@ -65,11 +68,6 @@ const CardForm: React.FC<CardFormProps> = ({ addEvent }) => {
       case "location":
         if (!value) return "Location is required.";
         break;
-      case "cost":
-        if (!value) return "Cost is required.";
-        if (!/^\d+(\.\d{1,2})?$/.test(value))
-          return "Cost must be a valid number (e.g., 20 or 20.50).";
-        break;
       case "day":
         if (!value) return "Day is required.";
         break;
@@ -84,7 +82,7 @@ const CardForm: React.FC<CardFormProps> = ({ addEvent }) => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-  
+
     // Create the structure to contain the errors present in the fields
     const newErrors: typeof errors = {
       organizer: validateField("organizer", formData.organizer),
@@ -92,30 +90,25 @@ const CardForm: React.FC<CardFormProps> = ({ addEvent }) => {
       type: validateField("type", formData.type),
       description: validateField("description", formData.description),
       location: validateField("location", formData.location),
-      cost: validateField("cost", formData.cost),
-      times: formData.times.map((time) => ({
-        day: validateField("day", time.day),
-        duration: validateField("duration", time.duration),
-      })),
+      cost: validateNumericField("cost", formData.cost),
+      times: validateField("times", formData.times),
     };
-  
+
     setErrors(newErrors);
-  
+
     // Check if in the structure created, there are fields which have errors
     const hasErrors = Object.values(newErrors).some((error) => {
       if (Array.isArray(error)) {
-        return error.some(
-          (timeError) => timeError.day || timeError.duration
-        );
+        return error.some((timeError) => timeError.day || timeError.duration);
       }
       return !!error;
     });
-  
+
     if (hasErrors) return;
-  
+
     // If there are not errors, it sends the form
     addEvent({ ...formData });
-  
+
     // Reset the form
     setFormData({
       organizer: "",
@@ -123,20 +116,21 @@ const CardForm: React.FC<CardFormProps> = ({ addEvent }) => {
       type: "",
       description: "",
       location: "",
-      times: [{ day: "", duration: "" }],
-      cost: "",
+      times: "",
+      cost: 0,
     });
   };
-  
+
   // Manages the data entry in the form
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index?: number, field?: string) => {
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    index?: number,
+    field?: string
+  ) => {
     const { name, value } = e.target;
 
     if (field && typeof index === "number") {
-      const updatedTimes = formData.times.map((item, i) =>
-        i === index ? { ...item, [field]: value } : item
-      );
-      setFormData({ ...formData, times: updatedTimes });
+      setFormData({ ...formData });
     } else {
       const error = validateField(name, value);
       setErrors({ ...errors, [name]: error });
@@ -148,7 +142,7 @@ const CardForm: React.FC<CardFormProps> = ({ addEvent }) => {
   const addDayAndHour = () => {
     setFormData({
       ...formData,
-      times: [...formData.times, { day: "", duration: "" }],
+      times: "",
     });
   };
 
@@ -218,31 +212,15 @@ const CardForm: React.FC<CardFormProps> = ({ addEvent }) => {
             fullWidth
             required
           />
-          {formData.times.map((time, index) => (
-            <Box key={index} display="flex" gap={2}>
-              <TextField
-                label="Day"
-                name={`day-${index}`}
-                value={time.day}
-                onChange={(e) => handleInputChange(e, index, "day")}
-                fullWidth
-                required
-              />
-              <TextField
-                label="Duration"
-                name={`duration-${index}`}
-                value={time.duration}
-                onChange={(e) => handleInputChange(e, index, "duration")}
-                fullWidth
-                required
-              />
-            </Box>
-          ))}
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={addDayAndHour}
-          >
+          <TextField
+            label="Times"
+            name={`day`}
+            value={formData.times}
+            onChange={handleInputChange}
+            fullWidth
+            required
+          />
+          <Button variant="contained" color="primary" onClick={addDayAndHour}>
             Add Day and Hour
           </Button>
           <Button variant="contained" color="primary" type="submit">
