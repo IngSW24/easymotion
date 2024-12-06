@@ -1,10 +1,11 @@
 import { Card, CardActions, CardContent, Button } from "@mui/material";
 import { EventEntity } from "../data/event"
+import { Link } from "react-router";
 
 /**
  * This is an event card
  */
-export default function EventCard({event, onClick}: { event: EventEntity, onClick: () => void }) {
+export default function EventCard({event, onDeleteClick}: { event: EventEntity, onDeleteClick: () => void }) {
   return (
     <Card>
       <CardContent>
@@ -20,7 +21,8 @@ export default function EventCard({event, onClick}: { event: EventEntity, onClic
         </div>
       </CardContent>
       <CardActions>
-        <Button size="small" onClick={onClick}>Learn more</Button>
+        <Button size="small"><Link to={"/details/" + event.id}>Learn more</Link></Button>
+        <Button size="small" onClick={onDeleteClick}>Delete</Button>
       </CardActions>
     </Card>
   )

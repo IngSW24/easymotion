@@ -1,32 +1,51 @@
+import { useEffect, useState } from "react";
 import EventCard from "../components/EventCard";
-import { EventEntity } from "../data/event"
-import { Grid2 } from "@mui/material";
+import { EventsEntity } from "../data/events"
+import { Grid2, Typography } from "@mui/material";
+
+const API_URL = "https://api.easymotion.devlocal"
+
+const defaultEvents: EventsEntity | null = null
 
 /**
  * Events page, which shows the events
  * @returns a react component
  */
 export default function EventsPage() {
-  function onEventCardClick(id: string) {
-    console.log(id)
-  }
+  const [events, setEvents] = useState(defaultEvents)
+  useEffect(() => {
+    let accept = true
 
-  const events: EventEntity[] = [
-    {id: "ID1", organizer: "ORG", instructor: "INS", type: "TYPE",
-      times: "TIMES", frequency: "FREQ", description: "DESC", location: "LOC", cost: 12},
-    {id: "ID2", organizer: "ORG", instructor: "INS", type: "TYPE",
-      times: "TIMES", frequency: "FREQ", description: "DESC", location: "LOC", cost: 12},
-    {id: "ID3", organizer: "ORG", instructor: "INS", type: "TYPE",
-      times: "TIMES", frequency: "FREQ", description: "DESC", location: "LOC", cost: 12},
-  ]
+    function fetchEvents() {
+      fetch(API_URL + "/events").then(response => {
+        response.json().then(json => {
+          if (accept)
+            setEvents(json)
+        })
+      }).catch(console.error)
+    }
+
+    fetchEvents()
+
+    return () => {
+      accept = false
+    }
+  }, [events ? events.data.length > 0 : ""]) // TODO: 3 chiamate API
+
+  function onEventCardClick(id: string) {
+    console.log("Hai premuto tasto Delete sull'evento: " + id)
+  }
 
   return (
     <Grid2 container spacing={6}>
-      {events.map((e) =>
+      {events ? events.data.map((e) =>
         <Grid2 key={e.id}>
-          <EventCard event={e} onClick={() => onEventCardClick(e.id)} />
+          <EventCard event={e} onDeleteClick={() => onEventCardClick(e.id)} />
         </Grid2>
-      )}
+      ): (
+        <Typography variant="h1" display="block">Loading...</Typography>
+      )
+      }
     </Grid2>
   );
 };

@@ -8,7 +8,9 @@ import EventsPage from "../pages/EventsPage";
 const Router: React.FC = () => (
   <BrowserRouter>
     <Routes>
-      <Route index element={<EventsPage />} />
+      <Route path="/" element={<EventsPage />}>
+        <Route path="details/:id" />
+      </Route>
     </Routes>
   </BrowserRouter>
 );
