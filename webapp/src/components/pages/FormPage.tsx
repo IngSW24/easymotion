@@ -1,4 +1,4 @@
-import { Typography, Container, Card, CardContent, Box } from "@mui/material";
+import { Typography, Container } from "@mui/material"; // Card, CardContent, Box
 import CardForm from "./CardForm.tsx";
 import { useQuery } from "@tanstack/react-query";
 
@@ -17,7 +17,7 @@ export interface ApplicationEvent {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getEvents = async (): Promise<ApplicationEvent[]> => {
-  const response = await fetch("/api/events");
+  const response = await fetch("/api.easymotion.devlocal/events");
   return response.json();
 };
 
@@ -72,7 +72,14 @@ function FormPage() {
         EasyMotion: Physiotherapist Profile
       </Typography>
       <CardForm addEvent={addEvent} />
-      <Box
+    </Container>
+  );
+}
+
+export default FormPage;
+
+/**
+ * <Box
         sx={{
           display: "grid",
           gridTemplateColumns: {
@@ -113,8 +120,4 @@ function FormPage() {
           </Card>
         ))}
       </Box>
-    </Container>
-  );
-}
-
-export default FormPage;
+      */
