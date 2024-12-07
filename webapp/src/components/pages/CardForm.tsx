@@ -10,44 +10,30 @@ interface CardFormProps {
 }
 
 /**
- * Define the form module with all of the data validators
+ * Define the form module with all the data validators
  * @returns the component CardForm
  */
 const CardForm: React.FC<CardFormProps> = ({ addEvent }) => {
-  // This is used to set form fields
   const [formData, setFormData] = useState<ApplicationEvent>({
     organizer: "",
     instructor: "",
     type: "",
     description: "",
     location: "",
-    times: "",
+    frequency: [""], // Start with one empty frequency input
     cost: 0.0,
   });
 
-  // This is used to contain fields errors
   const [errors, setErrors] = useState({
     organizer: "",
     instructor: "",
     type: "",
     description: "",
     location: "",
-    times: "",
+    frequency: [] as string[], // Array to track frequency errors
     cost: "",
   });
 
-  const validateNumericField = (name: string, value: number) => {
-    switch (name) {
-      case "cost":
-        if (typeof value !== "number") return "Cost must be a number.";
-        break;
-      default:
-        return "";
-    }
-    return "";
-  };
-
-  // This is used to check if in the field indicated, there is an error
   const validateField = (name: string, value: string) => {
     switch (name) {
       case "organizer":
@@ -68,11 +54,8 @@ const CardForm: React.FC<CardFormProps> = ({ addEvent }) => {
       case "location":
         if (!value) return "Location is required.";
         break;
-      case "day":
-        if (!value) return "Day is required.";
-        break;
-      case "duration":
-        if (!value) return "Duration is required.";
+      case "frequency":
+        if (!value) return "Frequency is required.";
         break;
       default:
         return "";
@@ -80,34 +63,32 @@ const CardForm: React.FC<CardFormProps> = ({ addEvent }) => {
     return "";
   };
 
+  const validateNumericField = (value: number) => {
+    if (isNaN(value)) return "Cost must be a valid number.";
+    if (value < 0) return "Cost must be non-negative.";
+    return "";
+  };
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Create the structure to contain the errors present in the fields
-    const newErrors: typeof errors = {
+    // Validate all fields
+    const newErrors = {
       organizer: validateField("organizer", formData.organizer),
       instructor: validateField("instructor", formData.instructor),
       type: validateField("type", formData.type),
       description: validateField("description", formData.description),
       location: validateField("location", formData.location),
-      cost: validateNumericField("cost", formData.cost),
-      times: validateField("times", formData.times),
+      cost: validateNumericField(formData.cost),
+      frequency: formData.frequency.map((freq) =>
+        validateField("frequency", freq)
+      ),
     };
 
     setErrors(newErrors);
 
-    // Check if in the structure created, there are fields which have errors
-    const hasErrors = Object.values(newErrors).some((error) => {
-      if (Array.isArray(error)) {
-        return error.some((timeError) => timeError.day || timeError.duration);
-      }
-      return !!error;
-    });
-
-    if (hasErrors) return;
-
-    // If there are not errors, it sends the form
-    addEvent({ ...formData });
+    // Submit the form if valid
+    addEvent(formData);
 
     // Reset the form
     setFormData({
@@ -116,33 +97,39 @@ const CardForm: React.FC<CardFormProps> = ({ addEvent }) => {
       type: "",
       description: "",
       location: "",
-      times: "",
-      cost: 0,
+      frequency: [""],
+      cost: 0.0,
     });
   };
 
-  // Manages the data entry in the form
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    index?: number,
-    field?: string
+    index?: number
   ) => {
     const { name, value } = e.target;
 
-    if (field && typeof index === "number") {
-      setFormData({ ...formData });
+    if (name === "frequency" && typeof index === "number") {
+      const updatedFrequency = [...formData.frequency];
+      updatedFrequency[index] = value;
+      setFormData({ ...formData, frequency: updatedFrequency });
+
+      const updatedErrors = [...errors.frequency];
+      updatedErrors[index] = validateField(name, value);
+      setErrors({ ...errors, frequency: updatedErrors });
     } else {
-      const error = validateField(name, value);
-      setErrors({ ...errors, [name]: error });
       setFormData({ ...formData, [name]: value });
+      setErrors({ ...errors, [name]: validateField(name, value) });
     }
   };
 
-  // Manages the appointment entry in the form
-  const addDayAndHour = () => {
+  const addFrequency = () => {
     setFormData({
       ...formData,
-      times: "",
+      frequency: [...formData.frequency, ""],
+    });
+    setErrors({
+      ...errors,
+      frequency: [...errors.frequency, ""],
     });
   };
 
@@ -205,23 +192,34 @@ const CardForm: React.FC<CardFormProps> = ({ addEvent }) => {
           <TextField
             label="Cost"
             name="cost"
+            type="number"
             value={formData.cost}
-            onChange={handleInputChange}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                cost: parseFloat(e.target.value),
+              })
+            }
             error={!!errors.cost}
             helperText={errors.cost}
             fullWidth
             required
           />
-          <TextField
-            label="Times"
-            name={`day`}
-            value={formData.times}
-            onChange={handleInputChange}
-            fullWidth
-            required
-          />
-          <Button variant="contained" color="primary" onClick={addDayAndHour}>
-            Add Day and Hour
+          {formData.frequency.map((freq, index) => (
+            <TextField
+              key={index}
+              label={`Frequency`}
+              name="frequency"
+              value={freq}
+              onChange={(e) => handleInputChange(e, index)}
+              error={!!errors.frequency[index]}
+              helperText={errors.frequency[index]}
+              fullWidth
+              required
+            />
+          ))}
+          <Button variant="contained" color="primary" onClick={addFrequency}>
+            Add Frequency
           </Button>
           <Button variant="contained" color="primary" type="submit">
             Add Event

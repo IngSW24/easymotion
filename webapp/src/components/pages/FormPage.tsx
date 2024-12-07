@@ -11,7 +11,7 @@ export interface ApplicationEvent {
   type: string;
   description: string;
   location: string;
-  times: string;
+  frequency: string[];
   cost: number;
 }
 
@@ -31,7 +31,9 @@ const getEventsMockup = async (): Promise<ApplicationEvent[]> => {
         type: "Yoga",
         description: "Yoga for beginners",
         location: "1234 Elm St",
-        times: "Monday: 9:00am - 10:00am",
+        frequency: [
+          "Monday: 9:00am - 10:00am",
+        ],
         cost: 10.0,
       },
     ])
