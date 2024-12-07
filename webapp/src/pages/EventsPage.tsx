@@ -30,7 +30,7 @@ export default function EventsPage() {
     return () => {
       accept = false
     }
-  }, [events ? events.data.length > 0 : ""]) // TODO: 3 chiamate API
+  }, [])
 
   function onEventCardClick(id: string) {
     console.log("Hai premuto tasto Delete sull'evento: " + id)
@@ -42,9 +42,9 @@ export default function EventsPage() {
         <Grid2 key={e.id}>
           <EventCard event={e} onDeleteClick={() => onEventCardClick(e.id)} />
         </Grid2>
-      ): (
-        <Typography variant="h1" display="block">Loading...</Typography>
-      )
+        ): (
+          <Typography variant="h1" display="block">Loading...</Typography>
+        )
       }
     </Grid2>
   );
