@@ -12,3 +12,21 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum EventType {
+  AUTONOMOUS
+  INDIVIDUAL
+  GROUP
+}
+
+model Event {
+  id          String    @id @default(uuid())
+  organizer   String // will be a user id
+  instructor  String // will be a user id
+  type        EventType
+  description String?
+  location    String?
+  frequency   String?
+  times       String?
+  cost        Decimal   @default(0)
+}
