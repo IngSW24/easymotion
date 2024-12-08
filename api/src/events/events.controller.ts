@@ -38,7 +38,6 @@ export class EventsController {
   @Get()
   @ApiPaginatedResponse(EventEntity)
   findAll(@Query() pagination: PaginationFilter) {
-    console.log(pagination);
     return this.eventsService.findAll(pagination);
   }
 
