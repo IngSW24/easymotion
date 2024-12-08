@@ -1,24 +1,23 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
+import { Button } from "@mui/material";
 import React from "react";
+import DeleteDialog from "./DeleteDialog";
 
+const API_URL = "https://api.easymotion.devlocal"
 
 interface DeleteButtonProps {
     id: string;
 }
 
-export const cancellaEvento = (id:string) => {
-        
-    /**
+/**
+ * Cancella l'evento id chiamando la funzione apposita dalla API
+ */
+export async function cancellaEvento(id: string | null) {
+    if (!id) return
     
-    Qui verrà usata la funzione "async remove(id: string)"
-    che si trova nel file di back-end "api/src/events/events.service.ts"
-
-     */
-    fetch(`https://api.easymotion.devlocal/events/${id}`, {method: "DELETE"});
-
-
-};
-
+    fetch(`${API_URL}/events/${id}`, {method: "DELETE"}).then(() => {
+        window.location.reload()
+    });
+}
 
 export default function DeleteButton (props: DeleteButtonProps) {
 
@@ -37,15 +36,11 @@ export default function DeleteButton (props: DeleteButtonProps) {
 
     };
 
-
     const handleCloseCancella = () => {
         setOpen(false);     //CHIUDE la finestra di Dialog
 
         cancellaEvento(id);   //Funzione che cancella dal Database l'evento in questione (il cui ID è stato passato come argomento)
     }
-
-    
-    
 
     return(
        <React.Fragment>
@@ -53,26 +48,7 @@ export default function DeleteButton (props: DeleteButtonProps) {
                 Cancella evento "{id}"
             </Button>
 
-            <Dialog
-                open={open}
-                keepMounted
-                onClose={handleCloseAnnulla}        //Se cliccki fuori dalla finestra <Dialog> allora verrà eseguita la funzione "handleCloseAnnulla"
-                aria-describedby="alert-dialog-slide-description"
-            >
-                <DialogTitle>{"Vuoi cancellare questo evento?"}</DialogTitle>
-
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-slide-description">
-                        Se premi su "Cancella" il seguente evento "{id}" e tutti i dati relativi ad esso verranno cancellati.
-                    </DialogContentText>
-                </DialogContent>
-
-                <DialogActions>
-                    <Button variant="contained" onClick={handleCloseCancella}>Cancella</Button>
-                    <Button onClick={handleCloseAnnulla}>Annulla</Button>
-                </DialogActions>
-
-            </Dialog>
+            <DeleteDialog id={open ? id : null} handleCloseAnnulla={handleCloseAnnulla} handleCloseCancella={handleCloseCancella} />
 
        </React.Fragment> 
     );

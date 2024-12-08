@@ -1,15 +1,17 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
-import React from "react";
 
+interface DeleteButtonProps {
+    id: string | null,
+    handleCloseAnnulla: () => void,
+    handleCloseCancella: () => void
+}
 
+export default function DeleteDialog( props: DeleteButtonProps) {
+    const {id, handleCloseAnnulla, handleCloseCancella} = props
 
-export default function DeleteDialog( {id, handleCloseAnnulla, handleCloseCancella}: {id: string | null, handleCloseAnnulla: () => void, handleCloseCancella: () => void} ) {
-
-
-
-    return( id?
+    return(
             <Dialog
-                open={true}
+                open={!!id}
                 keepMounted
                 onClose={handleCloseAnnulla}        //Se cliccki fuori dalla finestra <Dialog> allora verrà eseguita la funzione "handleCloseAnnulla"
                 aria-describedby="alert-dialog-slide-description"
@@ -28,7 +30,5 @@ export default function DeleteDialog( {id, handleCloseAnnulla, handleCloseCancel
                 </DialogActions>
 
             </Dialog>
-            : 
-            <div></div>
     );
 }

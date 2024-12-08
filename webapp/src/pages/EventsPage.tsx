@@ -7,21 +7,20 @@ import DeleteDialog from "../components/DeleteDialog";
 
 const API_URL = "https://api.easymotion.devlocal"
 
-const defaultEvents: EventsEntity | null = null
-
 /**
  * Events page, which shows the events
  * @returns a react component
  */
 export default function EventsPage() {
-  const [events, setEvents] = useState(defaultEvents)
+  const [events, setEvents] = useState<EventsEntity | null>(null)
 
-  const [id, setId] = useState(null);
+  const [id, setId] = useState<string | null>(null);
 
   useEffect(() => {
     let accept = true
 
     function fetchEvents() {
+      console.log("Ciao")
       fetch(API_URL + "/events").then(response => {
         response.json().then(json => {
           if (accept)
@@ -35,10 +34,10 @@ export default function EventsPage() {
     return () => {
       accept = false
     }
-  }, [events ? events.data.length > 0 : ""]) // TODO: 3 chiamate API
+  }, []) // TODO: 3 chiamate API
 
-  function onEventCardClick(id: string) {
-    console.log("Hai premuto tasto Delete sull'evento: " + id)
+  function onCardDeleteClick(id: string) {
+    setId(id)
   }
 
   return (
@@ -46,7 +45,7 @@ export default function EventsPage() {
       <Grid2 container spacing={6}>
         {events ? events.data.map((e) =>
           <Grid2 key={e.id}>
-            <EventCard event={e} onDeleteClick={() => onEventCardClick(e.id)} />
+            <EventCard event={e} onDeleteClick={() => onCardDeleteClick(e.id)} />
           </Grid2>
         ): (
           <Typography variant="h1" display="block">Loading...</Typography>
