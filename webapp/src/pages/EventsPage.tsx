@@ -34,7 +34,7 @@ export default function EventsPage() {
     return () => {
       accept = false
     }
-  }, []) // TODO: 3 chiamate API
+  }, [])
 
   function onCardDeleteClick(id: string) {
     setId(id)
