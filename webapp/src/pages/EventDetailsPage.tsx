@@ -7,6 +7,10 @@ const API_URL = "https://api.easymotion.devlocal"
 
 const defaultEvent: EventEntity | null = null
 
+/**
+ * EventDetailsPage shows information about an event
+ * This is supposed to fit the entire screen
+ */
 export default function EventDetailsPage() {
   const {id} = useParams()
   const [eventDetails, setEventDetails] = useState(defaultEvent)

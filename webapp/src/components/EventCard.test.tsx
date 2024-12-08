@@ -14,11 +14,11 @@ describe("EventCard GUI test", () => {
     frequency: "sample_frequency",
     instructor: "sample_instructor",
     location: "sample_location",
-    cost: 235478236562,
+    cost: 235478236,
   };
 
-  it('Check if EventCard shows the correct information"', () => {
-    // Render del componente
+  it("Check if EventCard shows the correct information", () => {
+    // Render EventCard
     render(
       <MemoryRouter>
         <EventCard event={testEvent} onDeleteClick={() => {}} />

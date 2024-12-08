@@ -3,7 +3,8 @@ import { EventEntity } from "../data/event"
 import { Link } from "react-router";
 
 /**
- * This is an event card
+ * This is an event card, which shows information about an event.
+ * This is supposed to be shown in a grid
  */
 export default function EventCard({event, onDeleteClick}: { event: EventEntity, onDeleteClick: () => void }) {
   return (

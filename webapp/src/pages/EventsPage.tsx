@@ -8,7 +8,7 @@ const API_URL = "https://api.easymotion.devlocal"
 const defaultEvents: EventsEntity | null = null
 
 /**
- * Events page, which shows the events
+ * Events page, which shows a grid of events
  * @returns a react component
  */
 export default function EventsPage() {
