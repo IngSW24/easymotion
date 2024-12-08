@@ -1,10 +1,10 @@
-import React from 'react';
-import EventCard from './EventCard';
-import { EventEntity } from '../data/event';
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import EventCard from "./EventCard";
+import { EventEntity } from "../data/event";
+import { describe, it, expect } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router";
 
-describe('Label Component', () => {
+describe("Label Component", () => {
   const testEvent: EventEntity = {
     id: "ORG",
     organizer: "ORG",
@@ -14,15 +14,21 @@ describe('Label Component', () => {
     frequency: "ORG",
     instructor: "INST",
     location: "LOC",
-    cost: 12
-  }
-  
+    cost: 12,
+  };
+
   it('renders a label with text "X"', () => {
     // Render del componente
-    render(<EventCard event={testEvent} onDeleteClick={() => {}}/>);
+    render(
+      <MemoryRouter>
+        <EventCard event={testEvent} onDeleteClick={() => {}} />
+      </MemoryRouter>
+    );
 
-    // Verifica che l'etichetta con il testo "X" sia presente
-    const labelElement: HTMLElement = screen.getByText(testEvent.organizer);
+    // Verifica che l'etichetta con il testo "Organizer: [nome]" sia presente
+    const labelElement: HTMLElement = screen.getByText(
+      `Organizer: ${testEvent.organizer}`
+    );
     expect(labelElement).toBeDefined();
   });
 });
