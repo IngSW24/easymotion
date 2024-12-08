@@ -2,42 +2,49 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 import React from "react";
 
 
-export default function DeleteButton (props) {
+interface DeleteButtonProps {
+    id: string;
+}
+
+export const cancellaEvento = (id:string) => {
+        
+    /**
+    
+    Qui verrà usata la funzione "async remove(id: string)"
+    che si trova nel file di back-end "api/src/events/events.service.ts"
+
+     */
+    fetch(`https://api.easymotion.devlocal/events/${id}`, {method: "DELETE"});
+
+
+};
+
+
+export default function DeleteButton (props: DeleteButtonProps) {
 
     const {id} = props;   //ID dell'evento a cui è associato il pulsante, passato come argomento per cancellare l'evento in questione 
 
     const [open, setOpen] = React.useState(false);
 
+
     const handleClickOpen = () => {
         setOpen(true);     //APRE la finestra di Dialog
     };
     
+
     const handleCloseAnnulla = () => {
-        setOpen(false);     //CHIUD la finestra di Dialog
+        setOpen(false);     //CHIUDE la finestra di Dialog
 
     };
 
-    const handleCloseCancella = () => {
-        setOpen(false);     //CHIUD la finestra di Dialog
 
-        cancellaEvento();   //Funzione che cancella dal Database l'evento in questione (il cui ID è stato passato come argomento)
+    const handleCloseCancella = () => {
+        setOpen(false);     //CHIUDE la finestra di Dialog
+
+        cancellaEvento(id);   //Funzione che cancella dal Database l'evento in questione (il cui ID è stato passato come argomento)
     }
 
     
-    const cancellaEvento = () => {
-        
-        /**
-        
-        Qui verrà usata la funzione "async remove(id: string)"
-        che si trova nel file di back-end "api/src/events/events.service.ts"
-
-         */
-
-
-
-        window.location.reload(); //Funzione che fa ricaricare la pagina così che la lista degli eventi venga aggiornata
-
-    };
     
 
     return(
