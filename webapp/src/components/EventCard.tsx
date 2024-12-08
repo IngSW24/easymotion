@@ -16,6 +16,8 @@ export default function EventCard({event, onDeleteClick}: { event: EventEntity, 
             <li>Type: {event.type}</li>
             <li>Description: {event.description}</li>
             <li>Location: {event.location}</li>
+            <li>Frequency: {event.frequency}</li>
+            <li>Times: {event.times}</li>
             <li>Cost: {event.cost}</li>
           </ul>
         </div>

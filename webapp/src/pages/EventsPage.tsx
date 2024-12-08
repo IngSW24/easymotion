@@ -36,16 +36,21 @@ export default function EventsPage() {
     console.log("Hai premuto tasto Delete sull'evento: " + id)
   }
 
-  return (
-    <Grid2 container spacing={6}>
-      {events ? events.data.map((e) =>
-        <Grid2 key={e.id}>
-          <EventCard event={e} onDeleteClick={() => onEventCardClick(e.id)} />
-        </Grid2>
-        ): (
-          <Typography variant="h1" display="block">Loading...</Typography>
-        )
-      }
-    </Grid2>
-  );
+  if (events) {
+    return (
+      <Grid2 container spacing={6}>
+        {events.data.map((e) =>
+          <Grid2 key={e.id}>
+            <EventCard event={e} onDeleteClick={() => onEventCardClick(e.id)} />
+          </Grid2>
+          )
+        }
+      </Grid2>
+    )
+  } else {
+    return (
+      <Typography align="center" variant="h1" display="block">Loading...</Typography>
+    )
+  }
+  
 };

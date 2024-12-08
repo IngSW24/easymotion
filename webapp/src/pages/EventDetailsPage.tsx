@@ -40,11 +40,13 @@ export default function EventDetailsPage() {
             <li>Type: {eventDetails.type}</li>
             <li>Description: {eventDetails.description}</li>
             <li>Location: {eventDetails.location}</li>
+            <li>Frequency: {eventDetails.frequency}</li>
+            <li>Times: {eventDetails.times}</li>
             <li>Cost: {eventDetails.cost}</li>
           </ul>
         </Typography>
       ) : (
-        <Typography variant="h1" display="block">Loading...</Typography>
+        <Typography align="center" variant="h1" display="block">Loading...</Typography>
       )
     }
     </Box>)

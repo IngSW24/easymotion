@@ -4,20 +4,20 @@ import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 
-describe("Label Component", () => {
+describe("EventCard GUI test", () => {
   const testEvent: EventEntity = {
-    id: "ORG",
-    organizer: "ORG",
-    description: "ORG",
-    type: "ORG",
-    times: "ORG",
-    frequency: "ORG",
-    instructor: "INST",
-    location: "LOC",
-    cost: 12,
+    id: "sample_identifier",
+    organizer: "sample_organizer",
+    description: "sample_description",
+    type: "sample_type",
+    times: "sample_times",
+    frequency: "sample_frequency",
+    instructor: "sample_instructor",
+    location: "sample_location",
+    cost: 235478236562,
   };
 
-  it('renders a label with text "X"', () => {
+  it('Check if EventCard shows the correct information"', () => {
     // Render del componente
     render(
       <MemoryRouter>
@@ -25,10 +25,13 @@ describe("Label Component", () => {
       </MemoryRouter>
     );
 
-    // Verifica che l'etichetta con il testo "Organizer: [nome]" sia presente
-    const labelElement: HTMLElement = screen.getByText(
-      `Organizer: ${testEvent.organizer}`
-    );
-    expect(labelElement).toBeDefined();
+    expect(screen.getByText(`Organizer: ${testEvent.organizer}`)).toBeDefined();
+    expect(screen.getByText(`Description: ${testEvent.description}`)).toBeDefined();
+    expect(screen.getByText(`Type: ${testEvent.type}`)).toBeDefined();
+    expect(screen.getByText(`Frequency: ${testEvent.frequency}`)).toBeDefined();
+    expect(screen.getByText(`Instructor: ${testEvent.instructor}`)).toBeDefined();
+    expect(screen.getByText(`Location: ${testEvent.location}`)).toBeDefined();
+    expect(screen.getByText(`Times: ${testEvent.times}`)).toBeDefined();
+    expect(screen.getByText(`Cost: ${testEvent.cost}`)).toBeDefined();
   });
 });
