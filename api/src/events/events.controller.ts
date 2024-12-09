@@ -28,6 +28,7 @@ export class EventsController {
   @Post()
   @ApiCreatedResponse({ type: EventEntity })
   create(@Body() createEventDto: CreateEventDto) {
+    console.log('creating event', createEventDto);
     return this.eventsService.create(createEventDto);
   }
 
