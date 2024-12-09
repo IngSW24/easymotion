@@ -8,7 +8,7 @@ import DeleteDialog from "../components/DeleteDialog";
 const API_URL = "https://api.easymotion.devlocal"
 
 /**
- * Events page, which shows the events
+ * Events page, which shows a grid of events
  * @returns a react component
  */
 export default function EventsPage() {
@@ -20,7 +20,6 @@ export default function EventsPage() {
     let accept = true
 
     function fetchEvents() {
-      console.log("Ciao")
       fetch(API_URL + "/events").then(response => {
         response.json().then(json => {
           if (accept)
@@ -40,21 +39,29 @@ export default function EventsPage() {
     setId(id)
   }
 
-  return (
-    <Fragment>
-      <Grid2 container spacing={6}>
-        {events ? events.data.map((e) =>
-          <Grid2 key={e.id}>
-            <EventCard event={e} onDeleteClick={() => onCardDeleteClick(e.id)} />
+  if (events) {
+    if (events.data.length > 0) {
+      return (
+        <Fragment>
+          <Grid2 container spacing={6}>
+            {events.data.map((e) =>
+              <Grid2 key={e.id}>
+                <EventCard event={e} onDeleteClick={() => onCardDeleteClick(e.id)} />
+              </Grid2>
+              )
+            }
           </Grid2>
-        ): (
-          <Typography variant="h1" display="block">Loading...</Typography>
-        )
-        }
-      </Grid2>
-    
-      <DeleteDialog id={id} handleCloseAnnulla={() => setId(null)} handleCloseCancella={() => cancellaEvento(id)} />
-      
-    </Fragment>
-  );
-};
+          <DeleteDialog id={id} handleCloseAnnulla={() => setId(null)} handleCloseCancella={() => cancellaEvento(id)} />
+        </Fragment>
+      )
+    } else {
+      return (
+        <Typography align="center" variant="h2" display="block">No elements found</Typography>
+      )
+    }
+  } else {
+    return (
+      <Typography align="center" variant="h2" display="block">Loading...</Typography>
+    )
+  }
+}
