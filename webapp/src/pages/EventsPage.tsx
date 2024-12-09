@@ -1,42 +1,47 @@
 import { Fragment, useEffect, useState } from "react";
 import EventCard from "../components/EventCard";
-import { EventsEntity } from "../data/events"
+import { EventsEntity } from "../data/events";
 import { Grid2, Typography } from "@mui/material";
 import { cancellaEvento } from "../components/DeleteButton";
 import DeleteDialog from "../components/DeleteDialog";
-
-const API_URL = "https://api.easymotion.devlocal"
 
 /**
  * Events page, which shows a grid of events
  * @returns a react component
  */
 export default function EventsPage() {
-  const [events, setEvents] = useState<EventsEntity | null>(null)
+  const [events, setEvents] = useState<EventsEntity | null>(null);
 
   const [id, setId] = useState<string | null>(null);
 
   useEffect(() => {
-    let accept = true
+    let accept = true;
 
-    function fetchEvents() {
-      fetch(API_URL + "/events").then(response => {
-        response.json().then(json => {
-          if (accept)
-            setEvents(json)
+    const fetchEvents = () => {
+      fetch(`${process.env.VITE_API_URL}/events`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      })
+        .then((response) => {
+          response.json().then((json) => {
+            if (accept) setEvents(json);
+          });
         })
-      }).catch(console.error)
-    }
+        .catch(console.error);
+    };
 
-    fetchEvents()
+    fetchEvents();
 
     return () => {
-      accept = false
-    }
-  }, [])
+      accept = false;
+    };
+  }, []);
 
   function onCardDeleteClick(id: string) {
-    setId(id)
+    setId(id);
   }
 
   if (events) {
@@ -44,24 +49,34 @@ export default function EventsPage() {
       return (
         <Fragment>
           <Grid2 container spacing={6}>
-            {events.data.map((e) =>
+            {events.data.map((e) => (
               <Grid2 key={e.id}>
-                <EventCard event={e} onDeleteClick={() => onCardDeleteClick(e.id)} />
+                <EventCard
+                  event={e}
+                  onDeleteClick={() => onCardDeleteClick(e.id)}
+                />
               </Grid2>
-              )
-            }
+            ))}
           </Grid2>
-          <DeleteDialog id={id} handleCloseAnnulla={() => setId(null)} handleCloseCancella={() => cancellaEvento(id)} />
+          <DeleteDialog
+            id={id}
+            handleCloseAnnulla={() => setId(null)}
+            handleCloseCancella={() => cancellaEvento(id)}
+          />
         </Fragment>
-      )
+      );
     } else {
       return (
-        <Typography align="center" variant="h2" display="block">No elements found</Typography>
-      )
+        <Typography align="center" variant="h2" display="block">
+          No elements found
+        </Typography>
+      );
     }
   } else {
     return (
-      <Typography align="center" variant="h2" display="block">Loading...</Typography>
-    )
+      <Typography align="center" variant="h2" display="block">
+        Loading...
+      </Typography>
+    );
   }
 }

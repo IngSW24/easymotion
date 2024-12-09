@@ -2,13 +2,13 @@ import { Card, CardContent, Button } from "@mui/material";
 import { useState } from "react";
 
 export interface ApplicationEvent {
-    organizer: string;
-    instructor: string;
-    type: string;
-    description: string;
-    location: string;
-    times: string;
-    cost: number;
+  organizer: string;
+  instructor: string;
+  type: string;
+  description: string;
+  location: string;
+  times: string;
+  cost: number;
 }
 
 interface EventCardProps {
