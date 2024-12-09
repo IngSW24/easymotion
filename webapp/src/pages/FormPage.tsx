@@ -4,9 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { EventEntity } from "../data/event.tsx";
 
 const addEvent = async (newEvent: Omit<EventEntity, "id">) => {
-  console.log("sending event", newEvent);
-
-  const response = await fetch(`${process.env.VITE_API_URL}/events`, {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/events`, {
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
@@ -14,8 +12,6 @@ const addEvent = async (newEvent: Omit<EventEntity, "id">) => {
     method: "POST",
     body: JSON.stringify(newEvent),
   });
-
-  console.log("recieved response with status", response.status);
 
   return response;
 };

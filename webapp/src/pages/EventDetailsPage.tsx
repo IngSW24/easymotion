@@ -1,42 +1,46 @@
 import { Link, useParams } from "react-router";
 import { useEffect, useState } from "react";
 import { Box, Button, Typography, TextField } from "@mui/material";
+import { EventEntity } from "../data/event";
 
 const defaultEvent = {
   organizer: "",
   instructor: "",
-  type: "",
+  type: "AUTONOMOUS",
+  frequency: "",
+  times: "",
   description: "",
   location: "",
-  cost: 0,
+  cost: 0.0,
 };
 
 export default function EventDetailsPage() {
   const { id } = useParams();
   const [eventDetails, setEventDetails] = useState(defaultEvent);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState(defaultEvent);
+  const [formData, setFormData] =
+    useState<Omit<EventEntity, "id">>(defaultEvent);
 
   useEffect(() => {
-    let accept = true;
+    const fetchEventDetails = async () => {
+      const response = await fetch(
+        import.meta.env.VITE_API_URL + "/events/" + id,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
 
-    function fetchEventDetails() {
-      fetch(process.env.VITE_API_URL + "/events/" + id)
-        .then((response) => response.json())
-        .then((json) => {
-          if (accept) {
-            setEventDetails(json);
-            setFormData(json); // Imposta il formData con i dati ricevuti
-          }
-        })
-        .catch(console.error);
-    }
+      const data = await response.json();
+
+      setEventDetails(data);
+      setFormData(data); // Imposta il formData con i dati ricevuti
+    };
 
     fetchEventDetails();
-
-    return () => {
-      accept = false;
-    };
   }, [id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,14 +49,17 @@ export default function EventDetailsPage() {
   };
 
   const handleSave = () => {
-    // Simula l'aggiornamento sul server
-    fetch(process.env.VITE_API_URL + "/events/" + id, {
+    const body = JSON.stringify({ ...formData, cost: Number(formData.cost) });
+
+    console.log("sending body", body);
+
+    fetch(import.meta.env.VITE_API_URL + "/events/" + id, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
       },
-      body: JSON.stringify(formData),
+      body,
     })
       .then((response) => response.json())
       .then((updatedEvent) => {

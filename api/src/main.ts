@@ -17,7 +17,11 @@ async function bootstrap() {
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
 
-  app.enableCors();
+  app.enableCors({
+    origin: 'https://easymotion.devlocal',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true, // Allows cookies or auth headers
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({

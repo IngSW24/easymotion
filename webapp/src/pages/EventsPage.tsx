@@ -18,7 +18,7 @@ export default function EventsPage() {
     let accept = true;
 
     const fetchEvents = () => {
-      fetch(`${process.env.VITE_API_URL}/events`, {
+      fetch(`${import.meta.env.VITE_API_URL}/events`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
