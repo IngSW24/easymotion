@@ -70,7 +70,8 @@
             "json",
             "ts"
         ],
-        "rootDir": "src",
+        "rootDir": "./",
+        "modulePaths": ["<rootDir>"],
         "testRegex": ".*\\.spec\\.ts$",
         "transform": {
             "^.+\\.(t|j)s$": "ts-jest"
@@ -78,7 +79,15 @@
         "collectCoverageFrom": [
             "**/*.(t|j)s"
         ],
-        "coverageDirectory": "../coverage",
+        "coverageDirectory": "<rootDir>/coverage",
+        "coveragePathIgnorePatterns": [
+            "<rootDir>/node_modules/",
+            "<rootDir>/test/",
+            "<rootDir>/dist/",
+            "<rootDir>/coverage/",
+            "<rootDir>/prisma/",
+            "<rootDir>/.eslintrc.js"
+        ],
         "testEnvironment": "node"
     }
 }
