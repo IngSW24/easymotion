@@ -1,12 +1,12 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { Box, TextField, Button, Paper } from "@mui/material";
-import { ApplicationEvent } from "./FormPage";
+import { EventEntity } from "../data/event";
 
 /**
  * Define the interface to manage the event creation
  */
 interface CardFormProps {
-  addEvent: (event: ApplicationEvent) => void;
+  addEvent: (event: Omit<EventEntity, "id">) => Promise<void>;
 }
 
 /**
@@ -14,14 +14,15 @@ interface CardFormProps {
  * @returns the component CardForm
  */
 const CardForm: React.FC<CardFormProps> = ({ addEvent }) => {
-  const [formData, setFormData] = useState<ApplicationEvent>({
+  const [formData, setFormData] = useState<Omit<EventEntity, "id">>({
     organizer: "",
     instructor: "",
     type: "",
     description: "",
     location: "",
-    frequency: [""], // Start with one empty frequency input
+    frequency: "", // Start with one empty frequency input
     cost: 0.0,
+    times: "",
   });
 
   const [errors, setErrors] = useState({
@@ -30,8 +31,9 @@ const CardForm: React.FC<CardFormProps> = ({ addEvent }) => {
     type: "",
     description: "",
     location: "",
-    frequency: [] as string[], // Array to track frequency errors
+    frequency: "", // Array to track frequency errors
     cost: "",
+    times: "",
   });
 
   const validateField = (name: string, value: string) => {
@@ -57,6 +59,9 @@ const CardForm: React.FC<CardFormProps> = ({ addEvent }) => {
       case "frequency":
         if (!value) return "Frequency is required.";
         break;
+      case "times":
+        if (!value) return "Times is required.";
+        break;
       default:
         return "";
     }
@@ -80,15 +85,16 @@ const CardForm: React.FC<CardFormProps> = ({ addEvent }) => {
       description: validateField("description", formData.description),
       location: validateField("location", formData.location),
       cost: validateNumericField(formData.cost),
-      frequency: formData.frequency.map((freq) =>
-        validateField("frequency", freq)
-      ),
+      frequency: validateField("frequency", formData.frequency),
+      times: validateField("times", formData.times),
     };
 
     setErrors(newErrors);
 
     // Submit the form if valid
-    addEvent(formData);
+    addEvent(formData)
+      .then(() => alert("Added event"))
+      .catch(() => alert("Failed to add event"));
 
     // Reset the form
     setFormData({
@@ -97,40 +103,19 @@ const CardForm: React.FC<CardFormProps> = ({ addEvent }) => {
       type: "",
       description: "",
       location: "",
-      frequency: [""],
+      frequency: "",
+      times: "",
       cost: 0.0,
     });
   };
 
   const handleInputChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    index?: number
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
 
-    if (name === "frequency" && typeof index === "number") {
-      const updatedFrequency = [...formData.frequency];
-      updatedFrequency[index] = value;
-      setFormData({ ...formData, frequency: updatedFrequency });
-
-      const updatedErrors = [...errors.frequency];
-      updatedErrors[index] = validateField(name, value);
-      setErrors({ ...errors, frequency: updatedErrors });
-    } else {
-      setFormData({ ...formData, [name]: value });
-      setErrors({ ...errors, [name]: validateField(name, value) });
-    }
-  };
-
-  const addFrequency = () => {
-    setFormData({
-      ...formData,
-      frequency: [...formData.frequency, ""],
-    });
-    setErrors({
-      ...errors,
-      frequency: [...errors.frequency, ""],
-    });
+    setFormData({ ...formData, [name]: value });
+    setErrors({ ...errors, [name]: validateField(name, value) });
   };
 
   return (
@@ -205,22 +190,16 @@ const CardForm: React.FC<CardFormProps> = ({ addEvent }) => {
             fullWidth
             required
           />
-          {formData.frequency.map((freq, index) => (
-            <TextField
-              key={index}
-              label={`Frequency`}
-              name="frequency"
-              value={freq}
-              onChange={(e) => handleInputChange(e, index)}
-              error={!!errors.frequency[index]}
-              helperText={errors.frequency[index]}
-              fullWidth
-              required
-            />
-          ))}
-          <Button variant="contained" color="primary" onClick={addFrequency}>
-            Add Frequency
-          </Button>
+          <TextField
+            label={`Frequency`}
+            name="frequency"
+            value={formData.frequency}
+            onChange={(e) => handleInputChange(e)}
+            error={!!errors.frequency}
+            helperText={errors.frequency}
+            fullWidth
+            required
+          />
           <Button variant="contained" color="primary" type="submit">
             Add Event
           </Button>

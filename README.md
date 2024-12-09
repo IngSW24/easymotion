@@ -104,6 +104,11 @@ docker compose exec webapp npm i [package-name]
 docker compose exec api npm run prisma:migrate-dev
 ```
 
+#### Seeding DB with fake data
+```bash
+docker compose exec api npm run seed
+```
+
 #### Restart a service
 
 ```bash
