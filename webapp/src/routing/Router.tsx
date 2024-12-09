@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router";
 import EventsPage from "../pages/EventsPage";
 import EventDetailsPage from "../pages/EventDetailsPage";
+import FormPage from "../pages/FormPage";
 
 /**
  * Defines the router for the application.
@@ -11,6 +12,7 @@ const Router: React.FC = () => (
     <Routes>
       <Route index element={<EventsPage />} />
       <Route path="details/:id" element={<EventDetailsPage />} />
+      <Route path="new" element={<FormPage />} />
     </Routes>
   </BrowserRouter>
 );

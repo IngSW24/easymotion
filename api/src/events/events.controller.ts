@@ -28,6 +28,7 @@ export class EventsController {
   @Post()
   @ApiCreatedResponse({ type: EventEntity })
   create(@Body() createEventDto: CreateEventDto) {
+    console.log('creating event', createEventDto);
     return this.eventsService.create(createEventDto);
   }
 
@@ -38,7 +39,6 @@ export class EventsController {
   @Get()
   @ApiPaginatedResponse(EventEntity)
   findAll(@Query() pagination: PaginationFilter) {
-    console.log(pagination);
     return this.eventsService.findAll(pagination);
   }
 
