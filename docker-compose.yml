@@ -50,6 +50,18 @@ services:
         npm ci && npm run start:dev;
       fi"
 
+  generate-client:
+    image: node:20-alpine
+    profiles:
+      - generate-client
+    working_dir: /app
+    volumes:
+      - ./webapp/client:/app/client
+    command: >
+      npx swagger-typescript-api -p http://api:3000/swagger/json -o /app/client --modular
+    depends_on:
+      - api
+
   db:
     image: postgres
     volumes:

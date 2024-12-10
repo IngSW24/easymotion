@@ -1,12 +1,12 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { Box, TextField, Button, Paper } from "@mui/material";
-import { EventEntity } from "../data/event";
+import { CreateEventDto, EventType } from "../../client/data-contracts";
 
 /**
  * Define the interface to manage the event creation
  */
 interface CardFormProps {
-  addEvent: (event: Omit<EventEntity, "id">) => Promise<void>;
+  addEvent: (event: CreateEventDto) => Promise<void>;
 }
 
 /**
@@ -14,10 +14,10 @@ interface CardFormProps {
  * @returns the component CardForm
  */
 const CardForm: React.FC<CardFormProps> = ({ addEvent }) => {
-  const [formData, setFormData] = useState<Omit<EventEntity, "id">>({
+  const [formData, setFormData] = useState<CreateEventDto>({
     organizer: "",
     instructor: "",
-    type: "",
+    type: EventType.AUTONOMOUS,
     description: "",
     location: "",
     frequency: "", // Start with one empty frequency input
@@ -82,11 +82,11 @@ const CardForm: React.FC<CardFormProps> = ({ addEvent }) => {
       organizer: validateField("organizer", formData.organizer),
       instructor: validateField("instructor", formData.instructor),
       type: validateField("type", formData.type),
-      description: validateField("description", formData.description),
-      location: validateField("location", formData.location),
-      cost: validateNumericField(formData.cost),
-      frequency: validateField("frequency", formData.frequency),
-      times: validateField("times", formData.times),
+      description: validateField("description", formData.description ?? ""),
+      location: validateField("location", formData.location ?? ""),
+      cost: validateNumericField(formData.cost ?? 0),
+      frequency: validateField("frequency", formData.frequency ?? ""),
+      times: validateField("times", formData.times ?? ""),
     };
 
     setErrors(newErrors);
@@ -100,7 +100,7 @@ const CardForm: React.FC<CardFormProps> = ({ addEvent }) => {
     setFormData({
       organizer: "",
       instructor: "",
-      type: "",
+      type: EventType.AUTONOMOUS,
       description: "",
       location: "",
       frequency: "",
