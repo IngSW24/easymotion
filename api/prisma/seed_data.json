@@ -1,48 +1,48 @@
 {
-    "course": [
-        {
-            "id": "8aa31554-3581-44c5-9a96-c53c4d2b6fb5",
-            "organizer": "Schultz, Carroll and McCullough",
-            "instructor": "Marlon",
-            "type": "GROUP",
-            "description": "Autem atque commodi molestiae odit consequatur pariatur ad autem.",
-            "location": "8295 Hickle Square",
-            "frequency": "Weekly",
-            "times": "14:20:55",
-            "cost": 125
-        },
-        {
-            "id": "b765c665-288f-43ca-8678-17b241a0a343",
-            "organizer": "Schultz, Carroll and McCullough",
-            "instructor": "Efrain",
-            "type": "INDIVIDUAL",
-            "description": "Autem atque commodi molestiae odit consequatur pariatur ad autem.",
-            "location": "8295 Hickle Square",
-            "frequency": "Weekly",
-            "times": "14:20:55",
-            "cost": 125
-        },
-        {
-            "id": "c1b92fd6-30e8-417b-b2a9-64144c9752c4",
-            "organizer": "Mayert LLC",
-            "instructor": "Antonetta",
-            "type": "INDIVIDUAL",
-            "description": "Autem atque commodi molestiae odit consequatur pariatur ad autem.",
-            "location": "8378 Noelia Loaf",
-            "frequency": "Weekly",
-            "times": "14:20:55",
-            "cost": 0
-        },
-        {
-            "id": "6f928c72-4bf7-45c6-850f-b45834e4b096",
-            "organizer": "Sawayn LLC",
-            "instructor": "Sunny",
-            "type": "GROUP",
-            "description": "Autem atque commodi molestiae odit consequatur pariatur ad autem.",
-            "location": "2860 Kshlerin Haven",
-            "frequency": "Weekly",
-            "times": "14:20:55",
-            "cost": 80
-        }
-    ]
+  "event": [
+    {
+      "id": "8aa31554-3581-44c5-9a96-c53c4d2b6fb5",
+      "organizer": "Schultz, Carroll and McCullough",
+      "instructor": "Marlon",
+      "type": "GROUP",
+      "description": "Autem atque commodi molestiae odit consequatur pariatur ad autem.",
+      "location": "8295 Hickle Square",
+      "frequency": "Weekly",
+      "times": "14:20:55",
+      "cost": 125
+    },
+    {
+      "id": "b765c665-288f-43ca-8678-17b241a0a343",
+      "organizer": "Schultz, Carroll and McCullough",
+      "instructor": "Efrain",
+      "type": "INDIVIDUAL",
+      "description": "Autem atque commodi molestiae odit consequatur pariatur ad autem.",
+      "location": "8295 Hickle Square",
+      "frequency": "Weekly",
+      "times": "14:20:55",
+      "cost": 125
+    },
+    {
+      "id": "c1b92fd6-30e8-417b-b2a9-64144c9752c4",
+      "organizer": "Mayert LLC",
+      "instructor": "Antonetta",
+      "type": "INDIVIDUAL",
+      "description": "Autem atque commodi molestiae odit consequatur pariatur ad autem.",
+      "location": "8378 Noelia Loaf",
+      "frequency": "Weekly",
+      "times": "14:20:55",
+      "cost": 0
+    },
+    {
+      "id": "6f928c72-4bf7-45c6-850f-b45834e4b096",
+      "organizer": "Sawayn LLC",
+      "instructor": "Sunny",
+      "type": "GROUP",
+      "description": "Autem atque commodi molestiae odit consequatur pariatur ad autem.",
+      "location": "2860 Kshlerin Haven",
+      "frequency": "Weekly",
+      "times": "14:20:55",
+      "cost": 80
+    }
+  ]
 }

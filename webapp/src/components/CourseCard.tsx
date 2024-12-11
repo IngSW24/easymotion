@@ -6,7 +6,13 @@ import { CourseEntity } from "../../client/data-contracts";
  * This is an course card, which shows information about an course.
  * This is supposed to be shown in a grid
  */
-export default function CourseCard({course, onDeleteClick}: { course: CourseEntity, onDeleteClick: () => void }) {
+export default function CourseCard({
+  course,
+  onDeleteClick,
+}: {
+  course: CourseEntity;
+  onDeleteClick: () => void;
+}) {
   return (
     <Card>
       <CardContent>
@@ -24,9 +30,13 @@ export default function CourseCard({course, onDeleteClick}: { course: CourseEnti
         </div>
       </CardContent>
       <CardActions>
-        <Button size="small"><Link to={"/details/" + course.id}>Learn more</Link></Button>
-        <Button size="small" onClick={onDeleteClick}>Delete</Button>
+        <Button size="small">
+          <Link to={"/details/" + course.id}>Learn more</Link>
+        </Button>
+        <Button size="small" onClick={onDeleteClick}>
+          Delete
+        </Button>
       </CardActions>
     </Card>
-  )
+  );
 }

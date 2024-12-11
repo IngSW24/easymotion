@@ -25,11 +25,19 @@ describe("CourseCard GUI test", () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText(`Organizer: ${testCourse.organizer}`)).toBeDefined();
-    expect(screen.getByText(`Description: ${testCourse.description}`)).toBeDefined();
+    expect(
+      screen.getByText(`Organizer: ${testCourse.organizer}`)
+    ).toBeDefined();
+    expect(
+      screen.getByText(`Description: ${testCourse.description}`)
+    ).toBeDefined();
     expect(screen.getByText(`Type: ${testCourse.type}`)).toBeDefined();
-    expect(screen.getByText(`Frequency: ${testCourse.frequency}`)).toBeDefined();
-    expect(screen.getByText(`Instructor: ${testCourse.instructor}`)).toBeDefined();
+    expect(
+      screen.getByText(`Frequency: ${testCourse.frequency}`)
+    ).toBeDefined();
+    expect(
+      screen.getByText(`Instructor: ${testCourse.instructor}`)
+    ).toBeDefined();
     expect(screen.getByText(`Location: ${testCourse.location}`)).toBeDefined();
     expect(screen.getByText(`Times: ${testCourse.times}`)).toBeDefined();
     expect(screen.getByText(`Cost: ${testCourse.cost}`)).toBeDefined();

@@ -105,7 +105,8 @@ describe('CoursesService', () => {
 
     expect(result).toEqual({
       data: mockCourses.map(
-        (course) => new CourseEntity({ ...course, cost: course.cost.toNumber() }),
+        (course) =>
+          new CourseEntity({ ...course, cost: course.cost.toNumber() }),
       ),
       meta: {
         currentPage: pagination.page,
