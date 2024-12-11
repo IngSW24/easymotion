@@ -6,8 +6,8 @@ async function main() {
     const dt = require("./seed_data.json");
     console.log(dt);
 
-    await dt.event.forEach(async (e) => {
-        await prisma.event.upsert({
+    await dt.course.forEach(async (e) => {
+        await prisma.course.upsert({
             where: { id: e.id },
             update: {},
             create: {

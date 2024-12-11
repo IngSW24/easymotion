@@ -1,28 +1,25 @@
 import { Typography, Container } from "@mui/material"; // Card, CardContent, Box
 import CardForm from "./CardForm.tsx";
 import { useMutation } from "@tanstack/react-query";
-import { EventEntity } from "../data/event.tsx";
+import { CreateCourseDto } from "../../client/data-contracts.ts";
+import { Courses } from "../../client/Courses";
 
-const addEvent = async (newEvent: Omit<EventEntity, "id">) => {
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/events`, {
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    method: "POST",
-    body: JSON.stringify(newEvent),
-  });
+const api = new Courses({
+  baseUrl: import.meta.env.VITE_API_URL,
+});
 
-  return response;
+const addCourse = async (newCourse: CreateCourseDto) => {
+  await api.coursesControllerCreate(newCourse);
+  return;
 };
 
 /**
- * Define the form page for the physiotherapists to create an event
+ * Define the form page for the physiotherapists to create an course
  * @returns the form page
  */
 function FormPage() {
-  const updateEvent = useMutation({
-    mutationFn: addEvent,
+  const updateCourse = useMutation({
+    mutationFn: addCourse,
     onSuccess: () => {},
     onError: () => {},
   });
@@ -33,8 +30,8 @@ function FormPage() {
         EasyMotion: Physiotherapist Profile
       </Typography>
       <CardForm
-        addEvent={async (e: Omit<EventEntity, "id">) => {
-          await updateEvent.mutate(e);
+        addCourse={async (e: CreateCourseDto) => {
+          await updateCourse.mutate(e);
         }}
       />
     </Container>

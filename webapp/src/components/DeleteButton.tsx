@@ -9,19 +9,19 @@ interface DeleteButtonProps {
 }
 
 /**
- * Cancella l'evento id chiamando la funzione apposita dalla API
+ * Cancella il corso id chiamando la funzione apposita dalla API
  */
-export async function cancellaEvento(id: string | null) {
+export async function deleteCourse(id: string | null) {
     if (!id) return
     
-    fetch(`${API_URL}/events/${id}`, {method: "DELETE"}).then(() => {
+    fetch(`${API_URL}/courses/${id}`, {method: "DELETE"}).then(() => {
         window.location.reload()
     });
 }
 
-export default function DeleteButton (props: DeleteButtonProps) {
+function deleteButton (props: DeleteButtonProps) {
 
-    const {id} = props;   //ID dell'evento a cui è associato il pulsante, passato come argomento per cancellare l'evento in questione 
+    const {id} = props;   //ID del corso a cui è associato il pulsante, passato come argomento per cancellare il corso in questione 
 
     const [open, setOpen] = React.useState(false);
 
@@ -31,29 +31,28 @@ export default function DeleteButton (props: DeleteButtonProps) {
     };
     
 
-    const handleCloseAnnulla = () => {
+    const handleCloseClose = () => {
         setOpen(false);     //CHIUDE la finestra di Dialog
 
     };
 
-    const handleCloseCancella = () => {
+    const handleCloseCancel = () => {
         setOpen(false);     //CHIUDE la finestra di Dialog
 
-        cancellaEvento(id);   //Funzione che cancella dal Database l'evento in questione (il cui ID è stato passato come argomento)
+        deleteCourse(id);   //Funzione che cancella dal Database il corso in questione (il cui ID è stato passato come argomento)
     }
 
     return(
        <React.Fragment>
             <Button variant="contained" onClick={handleClickOpen}>
-                Cancella evento "{id}"
+                Cancella corso "{id}"
             </Button>
 
-            <DeleteDialog id={open ? id : null} handleCloseAnnulla={handleCloseAnnulla} handleCloseCancella={handleCloseCancella} />
+            <DeleteDialog id={open ? id : null} handleCloseAnnulla={handleCloseClose} handleCloseCancella={handleCloseCancel} />
 
        </React.Fragment> 
     );
     
 };
 
-
-//Esempio di bottone funzionante (con passaggio di valori): https://stackblitz.com/edit/react-starter-typescript?file=components%2FButtonCounter.tsx
+export default deleteButton;

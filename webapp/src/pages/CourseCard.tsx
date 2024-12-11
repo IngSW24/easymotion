@@ -1,24 +1,15 @@
 import { Card, CardContent, Button } from "@mui/material";
 import { useState } from "react";
+import { CourseEntity, UpdateCoursesDto } from "../../client/data-contracts";
 
-export interface ApplicationEvent {
-  organizer: string;
-  instructor: string;
-  type: string;
-  description: string;
-  location: string;
-  times: string;
-  cost: number;
+interface CourseCardProps {
+  course: CourseEntity;
+  onEdit: (updatedCourse: UpdateCoursesDto) => void;
 }
 
-interface EventCardProps {
-  event: ApplicationEvent;
-  onEdit: (updatedEvent: ApplicationEvent) => void;
-}
-
-function EventCard({ event, onEdit }: EventCardProps) {
+function CourseCard({ course, onEdit }: CourseCardProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState(event);
+  const [formData, setFormData] = useState(course);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -62,4 +53,4 @@ function EventCard({ event, onEdit }: EventCardProps) {
   );
 }
 
-export default EventCard;
+export default CourseCard;
