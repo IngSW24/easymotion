@@ -41,6 +41,12 @@ services:
         condition: service_started
     environment:
       DATABASE_URL: ${DATABASE_URL}
+    # healthcheck:
+    #   test: [ "CMD", "curl", "http://127.0.0.1:3000" ]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 3
+    #   start_period: 10s
     command: >
       sh -c "
       if [ -d "/app/node_modules" ]; then
@@ -50,17 +56,16 @@ services:
         npm ci && npm run start:dev;
       fi"
 
-  generate-client:
-    image: node:20-alpine
-    profiles:
-      - generate-client
-    working_dir: /app
-    volumes:
-      - ./webapp/client:/app/client
-    command: >
-      npx swagger-typescript-api -p http://api:3000/swagger/json -o /app/client --modular
-    depends_on:
-      - api
+  # generate-client:
+  #   image: node:20-alpine
+  #   working_dir: /app
+  #   volumes:
+  #     - ./webapp/client:/app/client
+  #   depends_on:
+  #     api:
+  #       condition: service_healthy
+  #   command: >
+  #     npx swagger-typescript-api -p http://api:3000/swagger/json -o /app/client --modular
 
   db:
     image: postgres
