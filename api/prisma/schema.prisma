@@ -13,17 +13,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum EventType {
+enum CourseType {
   AUTONOMOUS
   INDIVIDUAL
   GROUP
 }
 
-model Event {
+model Course {
   id          String    @id @default(uuid())
-  organizer   String // will be a user id
-  instructor  String // will be a user id
-  type        EventType
+  organizer   String    // will be a user id
+  instructor  String    // will be a user id
+  type        CourseType
   description String?
   location    String?
   frequency   String?
