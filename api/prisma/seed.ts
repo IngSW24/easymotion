@@ -3,10 +3,10 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  const dt = require('./seed_data.json');
-  console.log(dt);
+  const data = require('./seed_data.json');
+  console.log(data);
 
-  await dt.course.forEach(async (e) => {
+  await data.courses.forEach(async (e) => {
     await prisma.course.upsert({
       where: { id: e.id },
       update: {},
