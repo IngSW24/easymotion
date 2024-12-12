@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 # Generates self signed SSL certificates for development
 # An entry for DOMAIN should be added to /etc/hosts
@@ -12,3 +13,5 @@ if [ ! -f $CERT_PATH/dev.key ] || [ ! -f $CERT_PATH/dev.crt ]; then
 else
   echo 'Certificates already exist, skipping generation.';
 fi
+
+exec "$@"
