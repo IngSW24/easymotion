@@ -11,7 +11,7 @@ import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: ['error', 'warn'],
+    logger: ['error', 'warn', 'log', 'debug', 'verbose'],
   });
 
   const { httpAdapter } = app.get(HttpAdapterHost);
@@ -41,7 +41,9 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
 
-  SwaggerModule.setup('swagger', app, document);
+  SwaggerModule.setup('swagger', app, document, {
+    jsonDocumentUrl: 'swagger/json',
+  });
 
   await app.listen(process.env.PORT ?? 3000);
 }

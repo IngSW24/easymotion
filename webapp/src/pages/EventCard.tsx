@@ -1,19 +1,10 @@
 import { Card, CardContent, Button } from "@mui/material";
 import { useState } from "react";
-
-export interface ApplicationEvent {
-  organizer: string;
-  instructor: string;
-  type: string;
-  description: string;
-  location: string;
-  times: string;
-  cost: number;
-}
+import { EventEntity, UpdateEventDto } from "../../client/data-contracts";
 
 interface EventCardProps {
-  event: ApplicationEvent;
-  onEdit: (updatedEvent: ApplicationEvent) => void;
+  event: EventEntity;
+  onEdit: (updatedEvent: UpdateEventDto) => void;
 }
 
 function EventCard({ event, onEdit }: EventCardProps) {

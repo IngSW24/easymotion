@@ -1,18 +1,23 @@
 import { Link, useParams } from "react-router";
 import { useEffect, useState } from "react";
 import { Box, Button, Typography, TextField } from "@mui/material";
-import { EventEntity } from "../data/event";
+import { Events } from "../../client/Events";
+import { EventEntity, EventType } from "../../client/data-contracts";
 
 const defaultEvent = {
   organizer: "",
   instructor: "",
-  type: "AUTONOMOUS",
+  type: EventType.AUTONOMOUS,
   frequency: "",
   times: "",
   description: "",
   location: "",
   cost: 0.0,
 };
+
+const api = new Events({
+  baseUrl: import.meta.env.VITE_API_URL,
+});
 
 export default function EventDetailsPage() {
   const { id } = useParams();
@@ -23,17 +28,7 @@ export default function EventDetailsPage() {
 
   useEffect(() => {
     const fetchEventDetails = async () => {
-      const response = await fetch(
-        import.meta.env.VITE_API_URL + "/events/" + id,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
-      );
-
+      const response = await api.eventsControllerFindOne(id ?? "");
       const data = await response.json();
 
       setEventDetails(data);

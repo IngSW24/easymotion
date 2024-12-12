@@ -1,9 +1,11 @@
-FROM alpine
+FROM nginx:mainline-alpine
 
 RUN apk add --no-cache openssl
 
-COPY ./certgen.sh /entrypoint.sh
+COPY ./entrypoint.sh /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh
+RUN sed -i 's/\r//g' /entrypoint.sh
 
-ENTRYPOINT [ "sh", "-c", "sed -i 's/\r//g' /entrypoint.sh && /entrypoint.sh" ]
+ENTRYPOINT [ "/entrypoint.sh" ]
+CMD ["nginx", "-g", "daemon off;"]

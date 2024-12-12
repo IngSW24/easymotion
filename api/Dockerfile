@@ -4,6 +4,7 @@ FROM node:20-alpine as dev
 
 RUN apk add --no-cache libc6-compat
 RUN apk add --no-cache openssl
+RUN apk add --no-cache curl
 
 WORKDIR /app
 
