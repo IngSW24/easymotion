@@ -1,4 +1,4 @@
-const config = {
+module.exports = {
   semi: true, // Add semicolons at the end of statements
   singleQuote: false, // Use single quotes instead of double quotes
   jsxSingleQuote: false, // Use double quotes in JSX
@@ -17,5 +17,3 @@ const config = {
     },
   ],
 };
-
-export default config;
