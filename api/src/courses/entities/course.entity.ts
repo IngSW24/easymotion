@@ -1,66 +1,66 @@
 import { Exclude, Expose } from 'class-transformer';
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { EventType } from '@prisma/client';
+import { CourseType } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime/library';
 
-export enum EventTypeEnum {
+export enum CourseTypeEnum {
   AUTONOMOUS = 'autonomous',
   INDIVIDUAL = 'individual',
   GROUP = 'group',
 }
 
-export class EventEntity {
-  @ApiProperty({ description: 'Unique identifier for the event' })
+export class CourseEntity {
+  @ApiProperty({ description: 'Unique identifier for the course' })
   @IsString()
   id: string;
 
-  @ApiProperty({ description: 'Organizer of the event' })
+  @ApiProperty({ description: 'Organizer of the course' })
   @IsString()
   organizer: string;
 
-  @ApiProperty({ description: 'Instructor leading the event' })
+  @ApiProperty({ description: 'Instructor leading the course' })
   @IsString()
   instructor: string;
 
   @ApiProperty({
-    description: 'Type of the event',
-    enum: EventType,
-    enumName: 'EventType',
-    example: EventTypeEnum.AUTONOMOUS,
+    description: 'Type of the course',
+    enum: CourseType,
+    enumName: 'CourseType',
+    example: CourseTypeEnum.AUTONOMOUS,
   })
-  @IsEnum(EventType, {
+  @IsEnum(CourseType, {
     message:
       'type must have one of these values: ' +
-      Object.values(EventType).join(', '),
+      Object.values(CourseType).join(', '),
   })
   @IsString()
-  type: EventType;
+  type: CourseType;
 
-  @ApiPropertyOptional({ description: 'Scheduled times for the event' })
+  @ApiPropertyOptional({ description: 'Scheduled times for the course' })
   @IsOptional()
   @IsString()
   times?: string;
 
-  @ApiPropertyOptional({ description: 'Detailed description of the event' })
+  @ApiPropertyOptional({ description: 'Detailed description of the course' })
   @IsOptional()
   @IsString()
   description?: string;
 
   @ApiPropertyOptional({
-    description: 'Location where the event will take place',
+    description: 'Location where the course will take place',
   })
   @IsOptional()
   @IsString()
   location?: string;
 
-  @ApiPropertyOptional({ description: 'Frequency of the event (e.g., weekly)' })
+  @ApiPropertyOptional({ description: 'Frequency of the course (e.g., weekly)' })
   @IsOptional()
   @IsString()
   frequency?: string;
 
   @ApiPropertyOptional({
-    description: 'Cost of the event',
+    description: 'Cost of the course',
     example: 50.0,
     type: 'number',
   })
@@ -68,7 +68,7 @@ export class EventEntity {
   @IsNumber()
   cost: number;
 
-  constructor(partial: Partial<EventEntity>) {
+  constructor(partial: Partial<CourseEntity>) {
     Object.assign(this, partial);
 
     if (Decimal.isDecimal(this.cost)) {

@@ -1,22 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { EventsController } from './events.controller';
-import { EventsService } from './events.service';
+import { CoursesController } from './courses.controller';
+import { CoursesService } from './courses.service';
 import { PrismaService } from 'nestjs-prisma';
-import { CreateEventDto } from './dto/create-event.dto';
-import { UpdateEventDto } from './dto/update-event.dto';
-import { EventEntity } from './entities/event.entity';
+import { CreateCourseDto } from './dto/create-course.dto';
+import { UpdateCoursesDto } from './dto/update-course.dto';
+import { CourseEntity } from './entities/course.entity';
 import { Decimal } from '@prisma/client/runtime/library';
 import { PaginationFilter } from 'src/common/dto/pagination-filter.dto';
-import { EventType } from '@prisma/client';
+import { CourseType } from '@prisma/client';
 
-describe('EventsController', () => {
-  let controller: EventsController;
+describe('CoursesController', () => {
+  let controller: CoursesController;
   let prismaMock: any;
 
   beforeEach(async () => {
     // Mock PrismaService
     prismaMock = {
-      event: {
+      course: {
         create: jest.fn(),
         findMany: jest.fn(),
         count: jest.fn(),
@@ -27,9 +27,9 @@ describe('EventsController', () => {
     };
 
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [EventsController],
+      controllers: [CoursesController],
       providers: [
-        EventsService, // Use the real service
+        CoursesService, // Use the real service
         {
           provide: PrismaService,
           useValue: prismaMock, // Mock PrismaService
@@ -37,72 +37,72 @@ describe('EventsController', () => {
       ],
     }).compile();
 
-    controller = module.get<EventsController>(EventsController);
+    controller = module.get<CoursesController>(CoursesController);
   });
 
   // Test Create
-  it('should create a new event', async () => {
-    const dto: CreateEventDto = {
+  it('should create a new course', async () => {
+    const dto: CreateCourseDto = {
       organizer: 'John Doe',
       instructor: 'Jane Doe',
-      type: EventType.INDIVIDUAL,
+      type: CourseType.INDIVIDUAL,
       cost: 100,
     };
 
-    const createdEvent = {
+    const createdCourse = {
       id: '1',
       ...dto,
       cost: new Decimal(100),
     };
 
-    prismaMock.event.create.mockResolvedValue(createdEvent);
+    prismaMock.course.create.mockResolvedValue(createdCourse);
 
     const result = await controller.create(dto);
 
-    expect(prismaMock.event.create).toHaveBeenCalledWith({
+    expect(prismaMock.course.create).toHaveBeenCalledWith({
       data: { ...dto },
     });
     expect(result).toEqual(
-      new EventEntity({
-        ...createdEvent,
-        cost: createdEvent.cost.toNumber(),
+      new CourseEntity({
+        ...createdCourse,
+        cost: createdCourse.cost.toNumber(),
       }),
     );
   });
 
   // Test FindAll
-  it('should return paginated events', async () => {
+  it('should return paginated courses', async () => {
     const pagination: PaginationFilter = { page: 0, perPage: 10 };
 
-    const mockEvents = [
+    const mockCourses = [
       {
         id: '1',
         organizer: 'John Doe',
         instructor: 'Jane Doe',
-        type: EventType.GROUP,
+        type: CourseType.GROUP,
         cost: new Decimal(200),
       },
     ];
     const totalItems = 1;
 
-    prismaMock.event.findMany.mockResolvedValue(mockEvents);
-    prismaMock.event.count.mockResolvedValue(totalItems);
+    prismaMock.course.findMany.mockResolvedValue(mockCourses);
+    prismaMock.course.count.mockResolvedValue(totalItems);
 
     const result = await controller.findAll(pagination);
 
-    expect(prismaMock.event.findMany).toHaveBeenCalledWith({
+    expect(prismaMock.course.findMany).toHaveBeenCalledWith({
       skip: pagination.page * pagination.perPage,
       take: pagination.perPage,
     });
-    expect(prismaMock.event.count).toHaveBeenCalled();
+    expect(prismaMock.course.count).toHaveBeenCalled();
 
     expect(result).toEqual({
       data: [
-        new EventEntity({
+        new CourseEntity({
           id: '1',
           organizer: 'John Doe',
           instructor: 'Jane Doe',
-          type: EventType.GROUP,
+          type: CourseType.GROUP,
           cost: 200,
         }),
       ],
@@ -117,70 +117,70 @@ describe('EventsController', () => {
   });
 
   // Test FindOne
-  it('should return a single event', async () => {
+  it('should return a single course', async () => {
     const id = '1';
-    const mockEvent = {
+    const mockCourse = {
       id,
       organizer: 'John Doe',
       instructor: 'Jane Doe',
-      type: EventType.INDIVIDUAL,
+      type: CourseType.INDIVIDUAL,
       cost: new Decimal(150),
     };
 
-    prismaMock.event.findUniqueOrThrow.mockResolvedValue(mockEvent);
+    prismaMock.course.findUniqueOrThrow.mockResolvedValue(mockCourse);
 
     const result = await controller.findOne(id);
 
-    expect(prismaMock.event.findUniqueOrThrow).toHaveBeenCalledWith({
+    expect(prismaMock.course.findUniqueOrThrow).toHaveBeenCalledWith({
       where: { id },
     });
     expect(result).toEqual(
-      new EventEntity({
-        ...mockEvent,
-        cost: mockEvent.cost.toNumber(),
+      new CourseEntity({
+        ...mockCourse,
+        cost: mockCourse.cost.toNumber(),
       }),
     );
   });
 
   // Test Update
-  it('should update an event', async () => {
+  it('should update an course', async () => {
     const id = '1';
-    const dto: UpdateEventDto = {
+    const dto: UpdateCoursesDto = {
       organizer: 'Updated Organizer',
       cost: 250,
     };
 
-    const updatedEvent = {
+    const updatedCourse = {
       id,
       ...dto,
       cost: new Decimal(250),
     };
 
-    prismaMock.event.update.mockResolvedValue(updatedEvent);
+    prismaMock.course.update.mockResolvedValue(updatedCourse);
 
     const result = await controller.update(id, dto);
 
-    expect(prismaMock.event.update).toHaveBeenCalledWith({
+    expect(prismaMock.course.update).toHaveBeenCalledWith({
       where: { id },
       data: { ...dto },
     });
     expect(result).toEqual(
-      new EventEntity({
-        ...updatedEvent,
-        cost: updatedEvent.cost.toNumber(),
+      new CourseEntity({
+        ...updatedCourse,
+        cost: updatedCourse.cost.toNumber(),
       }),
     );
   });
 
   // Test Remove
-  it('should remove an event', async () => {
+  it('should remove an course', async () => {
     const id = '1';
 
-    prismaMock.event.delete.mockResolvedValue(undefined);
+    prismaMock.course.delete.mockResolvedValue(undefined);
 
     const result = await controller.remove(id);
 
-    expect(prismaMock.event.delete).toHaveBeenCalledWith({
+    expect(prismaMock.course.delete).toHaveBeenCalledWith({
       where: { id },
     });
     expect(result).toBeUndefined();

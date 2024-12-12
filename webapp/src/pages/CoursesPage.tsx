@@ -1,36 +1,36 @@
 import { Fragment, useEffect, useState } from "react";
-import EventCard from "../components/EventCard";
+import CourseCard from "../components/CourseCard";
 import { Grid2, Typography } from "@mui/material";
-import { cancellaEvento } from "../components/DeleteButton";
+import { deleteCourse } from "../components/DeleteButton";
 import DeleteDialog from "../components/DeleteDialog";
-import { Events } from "../../client/Events";
+import { Courses } from "../../client/Courses";
 
-const api = new Events({
+const api = new Courses({
   baseUrl: import.meta.env.VITE_API_URL,
 });
 
-type PaginatedEvent = Awaited<ReturnType<typeof api.eventsControllerFindAll>>;
+type PaginatedCourse = Awaited<ReturnType<typeof api.coursesControllerFindAll>>;
 
 /**
- * Events page, which shows a grid of events
+ * Course page, which shows a grid of courses
  * @returns a react component
  */
-export default function EventsPage() {
-  const [events, setEvents] = useState<PaginatedEvent | null>(null);
+export default function CoursesPage() {
+  const [courses, setCourses] = useState<PaginatedCourse | null>(null);
 
   const [id, setId] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchEvents = () => {
-      return api.eventsControllerFindAll();
+    const fetchCourses = () => {
+      return api.coursesControllerFindAll();
     };
 
-    fetchEvents().then((d) => setEvents(d));
+    fetchCourses().then((d) => setCourses(d));
   }, []);
 
   const onCardDeleteClick = (id: string) => setId(id);
 
-  if (!events) {
+  if (!courses) {
     return (
       <Typography align="center" variant="h2" display="block">
         Loading...
@@ -38,7 +38,7 @@ export default function EventsPage() {
     );
   }
 
-  if (events.data.data.length === 0) {
+  if (courses.data.data.length === 0) {
     return (
       <Typography align="center" variant="h2" display="block">
         No elements found
@@ -49,10 +49,10 @@ export default function EventsPage() {
   return (
     <Fragment>
       <Grid2 container spacing={6}>
-        {events.data.data.map((e) => (
+        {courses.data.data.map((e) => (
           <Grid2 key={e.id}>
-            <EventCard
-              event={e}
+            <CourseCard
+              course={e}
               onDeleteClick={() => onCardDeleteClick(e.id)}
             />
           </Grid2>
@@ -61,7 +61,7 @@ export default function EventsPage() {
       <DeleteDialog
         id={id}
         handleCloseAnnulla={() => setId(null)}
-        handleCloseCancella={() => cancellaEvento(id)}
+        handleCloseCancella={() => deleteCourse(id)}
       />
     </Fragment>
   );

@@ -16,11 +16,11 @@ export default function DeleteDialog( props: DeleteButtonProps) {
                 onClose={handleCloseAnnulla}        //Se cliccki fuori dalla finestra <Dialog> allora verrà eseguita la funzione "handleCloseAnnulla"
                 aria-describedby="alert-dialog-slide-description"
             >
-                <DialogTitle>{"Vuoi cancellare questo evento?"}</DialogTitle>
+                <DialogTitle>{"Vuoi cancellare questo corso?"}</DialogTitle>
 
                 <DialogContent>
                     <DialogContentText id="alert-dialog-slide-description">
-                        Se premi su "Cancella" il seguente evento "{id}" e tutti i dati relativi ad esso verranno cancellati.
+                        Se premi su "Cancella" il seguente corso "{id}" e tutti i dati relativi ad esso verranno cancellati.
                     </DialogContentText>
                 </DialogContent>
 

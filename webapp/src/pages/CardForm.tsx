@@ -1,23 +1,23 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { Box, TextField, Button, Paper } from "@mui/material";
-import { CreateEventDto, EventType } from "../../client/data-contracts";
+import { CreateCourseDto, CourseType } from "../../client/data-contracts";
 
 /**
- * Define the interface to manage the event creation
+ * Define the interface to manage the course creation
  */
 interface CardFormProps {
-  addEvent: (event: CreateEventDto) => Promise<void>;
+  addCourse: (course: CreateCourseDto) => Promise<void>;
 }
 
 /**
  * Define the form module with all the data validators
  * @returns the component CardForm
  */
-const CardForm: React.FC<CardFormProps> = ({ addEvent }) => {
-  const [formData, setFormData] = useState<CreateEventDto>({
+const CardForm: React.FC<CardFormProps> = ({ addCourse }) => {
+  const [formData, setFormData] = useState<CreateCourseDto>({
     organizer: "",
     instructor: "",
-    type: EventType.AUTONOMOUS,
+    type: CourseType.AUTONOMOUS,
     description: "",
     location: "",
     frequency: "", // Start with one empty frequency input
@@ -92,15 +92,15 @@ const CardForm: React.FC<CardFormProps> = ({ addEvent }) => {
     setErrors(newErrors);
 
     // Submit the form if valid
-    addEvent(formData)
-      .then(() => alert("Added event"))
-      .catch(() => alert("Failed to add event"));
+    addCourse(formData)
+      .then(() => alert("Added course"))
+      .catch(() => alert("Failed to add course"));
 
     // Reset the form
     setFormData({
       organizer: "",
       instructor: "",
-      type: EventType.AUTONOMOUS,
+      type: CourseType.AUTONOMOUS,
       description: "",
       location: "",
       frequency: "",
@@ -201,7 +201,7 @@ const CardForm: React.FC<CardFormProps> = ({ addEvent }) => {
             required
           />
           <Button variant="contained" color="primary" type="submit">
-            Add Event
+            Add Course
           </Button>
         </Box>
       </form>

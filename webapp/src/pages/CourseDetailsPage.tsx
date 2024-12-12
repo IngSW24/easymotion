@@ -1,13 +1,13 @@
 import { Link, useParams } from "react-router";
 import { useEffect, useState } from "react";
 import { Box, Button, Typography, TextField } from "@mui/material";
-import { Events } from "../../client/Events";
-import { EventEntity, EventType } from "../../client/data-contracts";
+import { Courses } from "../../client/Courses";
+import { CourseEntity, CourseType } from "../../client/data-contracts";
 
-const defaultEvent = {
+const defaultCourse = {
   organizer: "",
   instructor: "",
-  type: EventType.AUTONOMOUS,
+  type: CourseType.AUTONOMOUS,
   frequency: "",
   times: "",
   description: "",
@@ -15,27 +15,27 @@ const defaultEvent = {
   cost: 0.0,
 };
 
-const api = new Events({
+const api = new Courses({
   baseUrl: import.meta.env.VITE_API_URL,
 });
 
-export default function EventDetailsPage() {
+export default function CourseDetailsPage() {
   const { id } = useParams();
-  const [eventDetails, setEventDetails] = useState(defaultEvent);
+  const [corseDetails, setCourseDetails] = useState(defaultCourse);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] =
-    useState<Omit<EventEntity, "id">>(defaultEvent);
+    useState<Omit<CourseEntity, "id">>(defaultCourse);
 
   useEffect(() => {
-    const fetchEventDetails = async () => {
-      const response = await api.eventsControllerFindOne(id ?? "");
+    const fetchCourseDetails = async () => {
+      const response = await api.coursesControllerFindOne(id ?? "");
       const data = await response.json();
 
-      setEventDetails(data);
+      setCourseDetails(data);
       setFormData(data); // Imposta il formData con i dati ricevuti
     };
 
-    fetchEventDetails();
+    fetchCourseDetails();
   }, [id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,7 +48,7 @@ export default function EventDetailsPage() {
 
     console.log("sending body", body);
 
-    fetch(import.meta.env.VITE_API_URL + "/events/" + id, {
+    fetch(import.meta.env.VITE_API_URL + "/courses/" + id, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -57,8 +57,8 @@ export default function EventDetailsPage() {
       body,
     })
       .then((response) => response.json())
-      .then((updatedEvent) => {
-        setEventDetails(updatedEvent);
+      .then((updatedCourse) => {
+        setCourseDetails(updatedCourse);
         setIsEditing(false); // Esce dalla modalità di modifica
       })
       .catch(console.error);
@@ -128,12 +128,12 @@ export default function EventDetailsPage() {
           <Button onClick={() => setIsEditing(true)}>EDIT</Button>
           <Typography variant="h4" display="block">
             <ul>
-              <li>Organizer: {eventDetails.organizer}</li>
-              <li>Instructor: {eventDetails.instructor}</li>
-              <li>Type: {eventDetails.type}</li>
-              <li>Description: {eventDetails.description}</li>
-              <li>Location: {eventDetails.location}</li>
-              <li>Cost: {eventDetails.cost}</li>
+              <li>Organizer: {corseDetails.organizer}</li>
+              <li>Instructor: {corseDetails.instructor}</li>
+              <li>Type: {corseDetails.type}</li>
+              <li>Description: {corseDetails.description}</li>
+              <li>Location: {corseDetails.location}</li>
+              <li>Cost: {corseDetails.cost}</li>
             </ul>
           </Typography>
         </Box>
