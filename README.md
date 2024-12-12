@@ -62,32 +62,36 @@ POLLING=true
 
 - Run `docker compose up` (the first time it will take a while because it will install dependencies)
 - Visit
-  - **api** [https://api.easymotion.devlocal/swagger](https://api.easymotion.devlocal/swagger)
+  - **api** at [https://api.easymotion.devlocal/swagger](https://api.easymotion.devlocal/swagger)
   - **webapp** at [https://easymotion.devlocal](https://easymotion.devlocal)
-  - **pgAdmin** at [http://localhost:8083](http://localhost:8083) (this is supposed to be used for administration purposes, but not to model the DB since this is done through migrations)
+  - **pgAdmin** at [http://localhost:8083](http://localhost:8083):
+    - username: `db@easymotion.devlocal`
+    - password: `1234`
+    - The server configuration must use the connection parameters declared in the `.env` file
 
-> ⚠️ **HTTPs!** When you visit the https URIs, your browser will probably complain about connection being not private despite the certificate. This is ok since the development certificates are not signed by a real certification authority. Since it's a local connection, you should be able to proceed by clicking `Advanced > Proceed to website`.
+> ⚠️ **HTTPs!** When you visit the https URIs, your browser will probably complain about connection being not private despite the certificate. This is ok since the development certificates are not signed by a real certification authority. Since it's a local connection, you should be able to proceed by clicking `Advanced > Proceed to website`. **You need to accept risks for both API and webapp to ensure communication between the two works**.
 
-### DB debugging tools
+### Run DB migrations and seed
 
-#### pgAdmin
-
-Login with:
-
-- username: `db@easymotion.devlocal`
-- password: `1234`
-
-Then you need to add a new server with the same fields specified in your .env to connect to the postgres instance.
-
-#### psql shell
+Finally, you will need to apply database migrations by running:
 
 ```bash
-docker-compose exec db psql -U easymotion
+docker compose exec api npm run prisma:migrate-dev
 ```
 
-### Interacting with the dev environment
+You can then seed the database by running:
 
-You **are NOT** supposed to run commands using npm in projects subfolders. Everything should be done throught docker compose specifying the service you want to execute the command in.
+```bash
+docker compose exec api npm run seed
+```
+
+---
+
+## Interacting with the dev environment
+
+The dev environment is completely handled by docker-compose, which spawns all the services and handles the dependencies between them.
+
+You are **NOT** supposed to run commands using npm in projects subfolders. Everything should be done throught docker-compose by specifying the service you want to execute the command in.
 
 #### Install packages
 
@@ -98,6 +102,8 @@ docker compose exec api npm i [package-name]
 docker compose exec webapp npm i [package-name]
 ```
 
+If you need to re-install all the packages you can simply erase the `node_modules` folder. This way, the service will run `npm ci` automatically on start.
+
 #### Run migrations on DB
 
 ```bash
@@ -105,8 +111,27 @@ docker compose exec api npm run prisma:migrate-dev
 ```
 
 #### Seeding DB with fake data
+
 ```bash
 docker compose exec api npm run seed
+```
+
+#### Regenerate prisma client
+
+```bash
+docker compose exec api npm run prisma:generate-client
+```
+
+#### Regenerate webapp client
+
+```bash
+docker compose exec webapp npm run generate-client
+```
+
+#### Access psql shell
+
+```bash
+docker-compose exec db psql -U easymotion
 ```
 
 #### Restart a service
@@ -144,9 +169,8 @@ docker compose build
 
 #### Shutdown the dev environment
 
-When you are done, you can turn everything down by running
-
 ```bash
+# add --remove-orphans if you get warnings about orphans containers
 docker compose down
 ```
 
@@ -156,7 +180,11 @@ For more information about the usage of docker compose, check the [official docs
 
 If you use Visual Studio Code, the [Official Docker Extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker) could be helpful to keep tracks of the running containers.
 
-### ⚠ ️If you start getting errors with modules
+---
+
+# Troubleshooting
+
+### ️If you start getting errors with modules
 
 At some point you might see errors suggesting that some node module is not installed. The possible reasons are two:
 
