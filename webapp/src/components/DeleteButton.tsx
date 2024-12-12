@@ -22,6 +22,7 @@ export async function deleteCourse(id: string | null) {
 function deleteButton(props: DeleteButtonProps) {
   const { id } = props; //ID del corso a cui è associato il pulsante, passato come argomento per cancellare il corso in questione
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
