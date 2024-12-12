@@ -54,7 +54,9 @@ export class CourseEntity {
   @IsString()
   location?: string;
 
-  @ApiPropertyOptional({ description: 'Frequency of the course (e.g., weekly)' })
+  @ApiPropertyOptional({
+    description: 'Frequency of the course (e.g., weekly)',
+  })
   @IsOptional()
   @IsString()
   frequency?: string;
