@@ -236,6 +236,16 @@ If you want to change the external binding port, you can simply add one or more 
 - Develop your feature on your branch, eventually rebasing or merging from other branches if you need to do so
 - Open a Pull Request on the `develop` branch and wait for code review and approval
 
+### Code review
+
+| Programmer         | Reviewer           |
+| ------------------ | ------------------ |
+| @Nicola Revelant   | @pittis.matteo     |
+| @pittis.matteo     | @Andrea Cantarutti |
+| @Andrea Cantarutti | @Arghittu Thomas   |
+| @Arghittu Thomas   | @Barbetti Giovanni |
+| @Barbetti Giovanni | @Nicola Revelant   |
+
 ### Notes
 
 - Branch `develop` will be aligned with the current sprint progress
