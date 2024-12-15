@@ -2,7 +2,7 @@ import CourseCard from "./CourseCard";
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-import { CourseEntity, CourseType } from "../../client/data-contracts";
+import { CourseEntity, CourseType } from "../../../../client/data-contracts";
 
 describe("CourseCard GUI test", () => {
   const testCourse: CourseEntity = {
@@ -21,7 +21,7 @@ describe("CourseCard GUI test", () => {
     // Render CourseCard
     render(
       <MemoryRouter>
-        <CourseCard course={testCourse} onDeleteClick={() => {}} />
+        <CourseCard course={testCourse} onDelete={() => {}} />
       </MemoryRouter>
     );
 

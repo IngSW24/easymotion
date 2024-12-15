@@ -1,8 +1,19 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Router from "./routing/Router";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { SnackbarProvider } from "notistack";
+import SnackbarCloseButton from "./components/ui/snackbar/SnackbarCloseButton";
+import DialogContextProvider from "./context/DialogContext/DialogContextProvider";
 
-// React query client. must be created outside of the App component to avoid re-creating it on every render.
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: undefined,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 /**
  * The main application component, which defines global context providers and the router.
@@ -11,7 +22,16 @@ const queryClient = new QueryClient();
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Router />
+      <DialogContextProvider>
+        <SnackbarProvider
+          action={(snackbarKey) => (
+            <SnackbarCloseButton snackbarKey={snackbarKey} />
+          )}
+        >
+          <Router />
+        </SnackbarProvider>
+      </DialogContextProvider>
+      <ReactQueryDevtools buttonPosition="bottom-right" />
     </QueryClientProvider>
   );
 }

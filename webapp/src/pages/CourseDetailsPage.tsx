@@ -1,143 +1,21 @@
 import { Link, useParams } from "react-router";
-import { useEffect, useState } from "react";
-import { Box, Button, Typography, TextField } from "@mui/material";
-import { Courses } from "../../client/Courses";
-import { CourseEntity, CourseType } from "../../client/data-contracts";
+import { Box, Button } from "@mui/material";
+import CourseDetail from "../components/course/CourseDetail/CourseDetail";
 
-const defaultCourse = {
-  organizer: "",
-  instructor: "",
-  type: CourseType.AUTONOMOUS,
-  frequency: "",
-  times: "",
-  description: "",
-  location: "",
-  cost: 0.0,
-};
-
-const api = new Courses({
-  baseUrl: import.meta.env.VITE_API_URL,
-});
-
+/**
+ * Defines the page to view and edit details of a course
+ * @returns a react component
+ */
 export default function CourseDetailsPage() {
   const { id } = useParams();
-  const [corseDetails, setCourseDetails] = useState(defaultCourse);
-  const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] =
-    useState<Omit<CourseEntity, "id">>(defaultCourse);
-
-  useEffect(() => {
-    const fetchCourseDetails = async () => {
-      const response = await api.coursesControllerFindOne(id ?? "");
-      const data = await response.json();
-
-      setCourseDetails(data);
-      setFormData(data); // Imposta il formData con i dati ricevuti
-    };
-
-    fetchCourseDetails();
-  }, [id]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSave = () => {
-    const body = JSON.stringify({ ...formData, cost: Number(formData.cost) });
-
-    console.log("sending body", body);
-
-    fetch(import.meta.env.VITE_API_URL + "/courses/" + id, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body,
-    })
-      .then((response) => response.json())
-      .then((updatedCourse) => {
-        setCourseDetails(updatedCourse);
-        setIsEditing(false); // Esce dalla modalità di modifica
-      })
-      .catch(console.error);
-  };
 
   return (
     <Box>
       <Button>
         <Link to={"/"}>HOME</Link>
       </Button>
-      {isEditing ? (
-        <Box>
-          <TextField
-            label="Organizer"
-            name="organizer"
-            value={formData.organizer}
-            onChange={handleChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Instructor"
-            name="instructor"
-            value={formData.instructor}
-            onChange={handleChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Type"
-            name="type"
-            value={formData.type}
-            onChange={handleChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Location"
-            name="location"
-            value={formData.location}
-            onChange={handleChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Cost"
-            name="cost"
-            type="number"
-            value={formData.cost}
-            onChange={handleChange}
-            fullWidth
-            margin="normal"
-          />
-          <Button onClick={handleSave}>Save</Button>
-          <Button onClick={() => setIsEditing(false)}>Cancel</Button>
-        </Box>
-      ) : (
-        <Box>
-          <Button onClick={() => setIsEditing(true)}>EDIT</Button>
-          <Typography variant="h4" display="block">
-            <ul>
-              <li>Organizer: {corseDetails.organizer}</li>
-              <li>Instructor: {corseDetails.instructor}</li>
-              <li>Type: {corseDetails.type}</li>
-              <li>Description: {corseDetails.description}</li>
-              <li>Location: {corseDetails.location}</li>
-              <li>Cost: {corseDetails.cost}</li>
-            </ul>
-          </Typography>
-        </Box>
-      )}
+
+      <CourseDetail id={id ?? ""} />
     </Box>
   );
 }
