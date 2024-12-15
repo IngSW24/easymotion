@@ -63,7 +63,9 @@ export const useCourses = (props: UseCoursesProps = {}) => {
       queryClient.setQueryData(
         ["courses", { page, perPage }],
         (old: CourseEntity[]) =>
-          old.map((course) => (course.id === id ? updatedCourse : course))
+          !old
+            ? old
+            : old.map((course) => (course.id === id ? updatedCourse : course))
       );
     },
   });
@@ -88,7 +90,8 @@ export const useCourses = (props: UseCoursesProps = {}) => {
     onSuccess: (id: string) => {
       queryClient.setQueryData(
         ["courses", { page, perPage }],
-        (old: CourseEntity[]) => old.filter((course) => course.id !== id)
+        (old: CourseEntity[]) =>
+          !old ? old : old.filter((course) => course.id !== id)
       );
 
       queryClient.invalidateQueries({

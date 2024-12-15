@@ -23,22 +23,20 @@ export default function DialogContextProvider(
     ((value: boolean) => void) | null
   >(null);
 
-  // Function to show the confirmation dialog
   const showConfirmationDialog = (
     options: DialogContextProps
   ): Promise<boolean> => {
-    setDialogOptions(options); // Set dialog options
+    setDialogOptions(options);
     return new Promise((resolve) => {
-      setResolvePromise(() => resolve); // Store the resolve function
+      setResolvePromise(() => resolve);
     });
   };
 
-  // Close the dialog and resolve the promise
   const handleClose = (result: boolean) => {
     setDialogOptions(null);
     if (resolvePromise) {
       resolvePromise(result);
-      setResolvePromise(null); // Reset promise
+      setResolvePromise(null);
     }
   };
 
@@ -46,7 +44,6 @@ export default function DialogContextProvider(
     <DialogContext.Provider value={{ showConfirmationDialog }}>
       {props.children}
 
-      {/* The dynamically rendered Dialog */}
       {dialogOptions && (
         <Dialog open={!!dialogOptions} onClose={() => handleClose(false)}>
           <DialogTitle>{dialogOptions.title}</DialogTitle>
