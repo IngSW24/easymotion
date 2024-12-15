@@ -1,10 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Courses } from "../../client/Courses";
-import {
-  CourseEntity,
-  CreateCourseDto,
-  UpdateCoursesDto,
-} from "../../client/data-contracts";
+import { CreateCourseDto, UpdateCoursesDto } from "../../client/data-contracts";
 
 const api = new Courses({
   baseUrl: import.meta.env.VITE_API_URL,
