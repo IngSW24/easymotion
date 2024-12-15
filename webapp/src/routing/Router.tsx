@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router";
-import CoursesPage from "../pages/CoursesPage";
+import CourseListPage from "../pages/CourseListPage";
 import CourseDetailsPage from "../pages/CourseDetailsPage";
-import FormPage from "../pages/FormPage";
+import CourseCreatePage from "../pages/CourseCreatePage";
 
 /**
  * Defines the router for the application.
@@ -10,9 +10,9 @@ import FormPage from "../pages/FormPage";
 const Router: React.FC = () => (
   <BrowserRouter>
     <Routes>
-      <Route index element={<CoursesPage />} />
+      <Route index element={<CourseListPage />} />
       <Route path="details/:id" element={<CourseDetailsPage />} />
-      <Route path="new" element={<FormPage />} />
+      <Route path="new" element={<CourseCreatePage />} />
     </Routes>
   </BrowserRouter>
 );

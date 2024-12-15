@@ -1,18 +1,19 @@
 import { Card, CardActions, CardContent, Button } from "@mui/material";
 import { Link } from "react-router";
-import { CourseEntity } from "../../client/data-contracts";
+import { CourseEntity } from "../../../../client/data-contracts";
+
+export interface CourseCardProps {
+  course: CourseEntity;
+  onDelete: (id: string) => void;
+}
 
 /**
- * This is an course card, which shows information about an course.
- * This is supposed to be shown in a grid
+ * Card displaying information about a course
+ * @param props properties for the card
+ * @returns a react component
  */
-export default function CourseCard({
-  course,
-  onDeleteClick,
-}: {
-  course: CourseEntity;
-  onDeleteClick: () => void;
-}) {
+export default function CourseCard(props: CourseCardProps) {
+  const { course, onDelete } = props;
   return (
     <Card>
       <CardContent>
@@ -33,7 +34,7 @@ export default function CourseCard({
         <Button size="small">
           <Link to={"/details/" + course.id}>Learn more</Link>
         </Button>
-        <Button size="small" onClick={onDeleteClick}>
+        <Button size="small" onClick={() => onDelete(course.id)}>
           Delete
         </Button>
       </CardActions>
