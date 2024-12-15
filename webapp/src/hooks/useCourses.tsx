@@ -41,7 +41,7 @@ export const useCourses = (props: UseCoursesProps = {}) => {
   });
 
   const getSingle = useQuery({
-    queryKey: ["courses", { page, perPage }, id],
+    queryKey: ["courses", { id }],
     queryFn: async () => {
       const response = await api.coursesControllerFindOne(id);
       return response.data;
@@ -54,19 +54,10 @@ export const useCourses = (props: UseCoursesProps = {}) => {
       const response = await api.coursesControllerUpdate(courseId, courseData);
       return response.data;
     },
-    onSuccess: (updatedCourse: CourseEntity) => {
-      queryClient.setQueryData(
-        ["courses", { page, perPage }, id],
-        updatedCourse
-      );
-
-      queryClient.setQueryData(
-        ["courses", { page, perPage }],
-        (old: CourseEntity[]) =>
-          !old
-            ? old
-            : old.map((course) => (course.id === id ? updatedCourse : course))
-      );
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["courses"],
+      });
     },
   });
 
@@ -77,7 +68,7 @@ export const useCourses = (props: UseCoursesProps = {}) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["courses", { page, perPage }],
+        queryKey: ["courses"],
       });
     },
   });
@@ -87,15 +78,9 @@ export const useCourses = (props: UseCoursesProps = {}) => {
       await api.coursesControllerRemove(id);
       return id;
     },
-    onSuccess: (id: string) => {
-      queryClient.setQueryData(
-        ["courses", { page, perPage }],
-        (old: CourseEntity[]) =>
-          !old ? old : old.filter((course) => course.id !== id)
-      );
-
+    onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["courses", { page, perPage }, id],
+        queryKey: ["courses"],
       });
     },
   });
