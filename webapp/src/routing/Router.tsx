@@ -2,6 +2,25 @@ import { BrowserRouter, Route, Routes } from "react-router";
 import CourseListPage from "../pages/CourseListPage";
 import CourseDetailsPage from "../pages/CourseDetailsPage";
 import CourseCreatePage from "../pages/CourseCreatePage";
+import Layout, { MenuEntry } from "../components/ui/layout/Layout";
+
+const userMenuEntries: Array<MenuEntry> = [
+  {
+    label: "Home",
+    link: "/",
+  },
+];
+
+const physiotherapistMenuEntries: Array<MenuEntry> = [
+  {
+    label: "Home",
+    link: "/",
+  },
+  {
+    label: "Modifica",
+    link: "/edit",
+  },
+];
 
 /**
  * Defines the router for the application.
@@ -10,9 +29,21 @@ import CourseCreatePage from "../pages/CourseCreatePage";
 const Router: React.FC = () => (
   <BrowserRouter>
     <Routes>
-      <Route index element={<CourseListPage />} />
-      <Route path="details/:id" element={<CourseDetailsPage />} />
-      <Route path="new" element={<CourseCreatePage />} />
+      <Route element={<Layout entries={userMenuEntries} />}>
+        <Route index element={<CourseListPage />} />
+        <Route path="details/:id" element={<CourseDetailsPage />} />
+        <Route path="new" element={<CourseCreatePage />} />
+      </Route>
+      <Route
+        path="physio"
+        element={
+          <Layout isPhysiotherapist entries={physiotherapistMenuEntries} />
+        }
+      >
+        <Route index element={<CourseListPage />} />
+        <Route path="details/:id" element={<CourseDetailsPage />} />
+        <Route path="new" element={<CourseCreatePage />} />
+      </Route>
     </Routes>
   </BrowserRouter>
 );

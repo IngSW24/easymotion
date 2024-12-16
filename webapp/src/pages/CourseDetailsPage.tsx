@@ -1,5 +1,5 @@
-import { Link, useParams } from "react-router";
-import { Box, Button } from "@mui/material";
+import { useParams } from "react-router";
+import { Box } from "@mui/material";
 import CourseDetail from "../components/course/CourseDetail/CourseDetail";
 
 /**
@@ -11,10 +11,6 @@ export default function CourseDetailsPage() {
 
   return (
     <Box>
-      <Button>
-        <Link to={"/"}>HOME</Link>
-      </Button>
-
       <CourseDetail id={id ?? ""} />
     </Box>
   );
