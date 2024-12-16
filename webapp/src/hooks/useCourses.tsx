@@ -7,10 +7,10 @@ const api = new Courses({
 });
 
 type UseCoursesProps = {
-  id?: string;
+  fetchId?: string;
   page?: number;
   perPage?: number;
-  initialFetch?: boolean;
+  fetchAll?: boolean;
 };
 
 type UpdateMutationParams = {
@@ -24,7 +24,12 @@ type UpdateMutationParams = {
  * @returns an object with the CRUD operations
  */
 export const useCourses = (props: UseCoursesProps = {}) => {
-  const { id = "", page = 0, perPage = 100, initialFetch = true } = props;
+  const {
+    fetchId = "",
+    page = 0,
+    perPage = 100,
+    fetchAll = fetchId === "",
+  } = props;
   const queryClient = useQueryClient();
 
   const get = useQuery({
@@ -33,16 +38,16 @@ export const useCourses = (props: UseCoursesProps = {}) => {
       const response = await api.coursesControllerFindAll({ page, perPage });
       return response.data.data;
     },
-    enabled: initialFetch,
+    enabled: fetchAll,
   });
 
   const getSingle = useQuery({
-    queryKey: ["courses", { id }],
+    queryKey: ["courses", { fetchId }],
     queryFn: async () => {
-      const response = await api.coursesControllerFindOne(id);
+      const response = await api.coursesControllerFindOne(fetchId);
       return response.data;
     },
-    enabled: initialFetch && id !== "",
+    enabled: fetchId !== "",
   });
 
   const update = useMutation({

@@ -1,5 +1,5 @@
 import { Box, Button, TextField, Typography } from "@mui/material";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { UpdateCoursesDto } from "../../../../client/data-contracts";
 import { defaultCourse } from "../../../data/defaults";
 import { useCourses } from "../../../hooks/useCourses";
@@ -16,13 +16,15 @@ export interface CourseDetailProps {
  */
 export default function CourseDetail(props: CourseDetailProps) {
   const { id } = props;
-  const courses = useCourses({ id });
+  const courses = useCourses({ fetchId: id });
   const singleCourse = courses.getSingle;
-  const [editCourse, setEditCourse] = useState<UpdateCoursesDto>(defaultCourse);
+  const [editCourse, setEditCourse] = useState<UpdateCoursesDto>(
+    courses.getSingle.data ?? defaultCourse
+  );
   const [hasChanged, setHasChanged] = useState(false);
   const snack = useSnack();
 
-  useEffect(() => {
+  useMemo(() => {
     if (courses.getSingle.data) {
       setEditCourse(courses.getSingle.data);
     }
@@ -54,7 +56,7 @@ export default function CourseDetail(props: CourseDetailProps) {
     return <Typography variant="h4">Loading...</Typography>;
 
   if (singleCourse.error || !singleCourse.data)
-    return <Typography variant="h4">An error occoured</Typography>;
+    return <Typography variant="h4">An error occurred</Typography>;
 
   return (
     <Box>
