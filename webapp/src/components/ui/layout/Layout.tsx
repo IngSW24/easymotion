@@ -14,7 +14,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { Outlet } from "react-router";
 import { Button } from "@mui/material";
-import { Link as RouterLink } from "react-router-dom";
+import { Link } from "react-router";
 
 export type MenuEntry = {
   label: string;
@@ -93,7 +93,7 @@ export default function Layout(props: LayoutProps) {
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
             {entries.map((item) => (
               <Button
-                component={RouterLink}
+                component={Link}
                 key={item.link}
                 sx={{ color: "#fff" }}
                 to={item.link}

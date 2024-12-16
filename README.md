@@ -118,14 +118,18 @@ docker compose exec api npm run seed
 
 #### Regenerate prisma client
 
+> Note: this command is always executed automatically after prisma:migrate-dev
+
 ```bash
 docker compose exec api npm run prisma:generate-client
 ```
 
 #### Regenerate webapp client
 
+> Note: this command is always executed automatically when `webapp/client` is not a directory
+
 ```bash
-docker compose exec webapp npm run generate-client
+docker compose exec webapp npm run gen-client
 ```
 
 #### Access psql shell
