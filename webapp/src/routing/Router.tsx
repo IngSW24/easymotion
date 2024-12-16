@@ -18,7 +18,7 @@ const physiotherapistMenuEntries: Array<MenuEntry> = [
   },
   {
     label: "Modifica",
-    link: "/edit",
+    link: "/physio",
   },
 ];
 
@@ -40,7 +40,7 @@ const Router: React.FC = () => (
           <Layout isPhysiotherapist entries={physiotherapistMenuEntries} />
         }
       >
-        <Route index element={<CourseListPage />} />
+        <Route index element={<CourseListPage canEdit />} />
         <Route path="details/:id" element={<CourseDetailsPage />} />
         <Route path="new" element={<CourseCreatePage />} />
       </Route>

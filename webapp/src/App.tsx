@@ -4,6 +4,8 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { SnackbarProvider } from "notistack";
 import SnackbarCloseButton from "./components/ui/snackbar/SnackbarCloseButton";
 import DialogContextProvider from "./context/DialogContext/DialogContextProvider";
+import { ThemeProvider } from "@mui/material";
+import { theme } from "./theme/theme";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,7 +30,9 @@ export default function App() {
             <SnackbarCloseButton snackbarKey={snackbarKey} />
           )}
         >
-          <Router />
+          <ThemeProvider theme={theme}>
+            <Router />
+          </ThemeProvider>
         </SnackbarProvider>
       </DialogContextProvider>
       <ReactQueryDevtools buttonPosition="bottom-right" />
