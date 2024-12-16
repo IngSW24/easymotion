@@ -51,7 +51,7 @@ services:
       DATABASE_URL: ${DATABASE_URL}
     healthcheck:
       # Check if the API is up and running every 5 seconds for ~8 minutes
-      test: [ "CMD", "curl", "-f", "http://localhost:3000/swagger/json" ]
+      test: ["CMD", "curl", "-f", "http://localhost:3000/swagger/json"]
       interval: 5s
       timeout: 5s
       retries: 100
@@ -64,20 +64,8 @@ services:
         echo 'Attempting to install dependencies... (this may take a while)';
         npm ci;
       fi
-      
-      npm run start:dev;"
 
-  generate-client:
-    image: node:20-alpine
-    profiles:
-      - generate-client
-    working_dir: /app
-    volumes:
-      - ./webapp/client:/app/client
-    command: >
-      npx swagger-typescript-api -p http://api:3000/swagger/json -o /app/client --modular
-    depends_on:
-      - api
+      npm run start:dev;"
 
   db:
     image: postgres
