@@ -4,6 +4,7 @@ import { UpdateCoursesDto } from "../../../../client/data-contracts";
 import { defaultCourse } from "../../../data/defaults";
 import { useCourses } from "../../../hooks/useCourses";
 import { useSnack } from "../../../hooks/useSnack";
+import ProductCard from "./CourseDetailCard";
 
 export interface CourseDetailProps {
   id: string;
@@ -110,6 +111,11 @@ export default function CourseDetail(props: CourseDetailProps) {
         margin="normal"
       />
       <Button onClick={handleSave}>Save</Button>
+      <ProductCard
+        typeInfo="Appuntamenti"
+        info="Pittis Matteo"
+        isEditing={false}
+      ></ProductCard>
     </Box>
   );
 }
