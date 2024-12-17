@@ -1,17 +1,14 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useState } from "react";
 import { Card, CardContent, Typography, Box, TextField } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import { useCourses } from "../../../hooks/useCourses";
-import { useSnack } from "../../../hooks/useSnack";
-import { UpdateCoursesDto } from "../../../../client/data-contracts";
-import { defaultCourse } from "../../../data/defaults";
 
 interface ProductCardProps {
   typeInfo: string; // Indicates the label of each information, e.g., organizer, time, ...
-  info: string; // Indicates the related information
-  id: string;
+  info?: string; // Indicates the related information
+  courseId: string; // ID of the course to update
   isEditing: boolean; // External control for edit mode
+  onSave: (field: string, value: string, courseId: string) => void; // Function to handle saving
 }
 
 /**
@@ -20,57 +17,17 @@ interface ProductCardProps {
  * @param {string} info - The actual information to display
  * @param {string} courseId - The ID of the course
  * @param {boolean} isEditing - Determines if the component is in edit mode
+ * @param {Function} onSave - Callback to handle saving the updated data
  * @returns A card showing the course information with an appropriate icon
  */
 const ProductCard: React.FC<ProductCardProps> = ({
   typeInfo,
   info,
-  id,
   isEditing,
+  onSave,
+  courseId,
 }) => {
-  const courses = useCourses({ fetchId: id });
-  const singleCourse = courses.getSingle;
-  const [editCourse, setEditCourse] = useState<UpdateCoursesDto>(
-    courses.getSingle.data ?? defaultCourse
-  );
-  const [hasChanged, setHasChanged] = useState(false);
-  const snack = useSnack();
-
-  useMemo(() => {
-    if (courses.getSingle.data) {
-      setEditCourse(courses.getSingle.data);
-    }
-  }, [courses.getSingle.data]);
-
-  const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const { name, value } = e.target;
-      setEditCourse((prev) => ({ ...prev, [name]: value }));
-      if (!hasChanged) setHasChanged(true);
-    },
-    [hasChanged]
-  );
-
-  const handleSave = useCallback(async () => {
-    try {
-      await courses.update.mutateAsync({
-        courseId: id,
-        courseData: { ...editCourse, cost: Number(editCourse.cost) },
-      });
-      setHasChanged(false);
-      snack.showSuccess("Course updated successfully");
-    } catch (e) {
-      if (e instanceof Error || typeof e === "string") snack.showError(e);
-    }
-  }, [courses.update, editCourse, id, snack]);
-
-  /**
-  if (singleCourse.isLoading)
-    return <Typography variant="h4">Loading...</Typography>;
-
-  if (singleCourse.error || !singleCourse.data)
-    return <Typography variant="h4">An error occurred</Typography>;
-  */
+  const [editedInfo, setEditedInfo] = useState(info);
 
   // This function returns the icon depending on the information type
   const getIcon = (type: string) => {
@@ -86,15 +43,27 @@ const ProductCard: React.FC<ProductCardProps> = ({
     }
   };
 
+  // Handle saving the edited information
+  const handleSave = () => {
+    if (editedInfo !== undefined && editedInfo !== info) {
+      onSave(typeInfo, editedInfo, courseId);
+    }
+  };
+
   return (
     <Card
       sx={{
+        position: "relative",
+        right: "-1350px",
+        top: "200px",
         display: "flex",
         alignItems: "center",
         padding: "8px",
         borderRadius: "8px",
         boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-        maxWidth: 500,
+        width: 500,
+        backgroundColor: "rgba(116, 116, 116, 0.24)",
+        mb: 1,
       }}
     >
       <Box sx={{ marginRight: 2 }}>{getIcon(typeInfo)}</Box>
@@ -106,10 +75,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {isEditing ? (
           <Box>
             <TextField
-              label="Information"
+              label={typeInfo}
               name="information"
-              value={editCourse.organizer}
-              onChange={handleChange}
+              value={editedInfo}
+              onChange={(e) => setEditedInfo(e.target.value)}
+              onBlur={handleSave}
               fullWidth
               margin="normal"
             />
@@ -129,7 +99,3 @@ const ProductCard: React.FC<ProductCardProps> = ({
 };
 
 export default ProductCard;
-
-{
-  /**<ProductCard typeInfo="Appuntamenti" info="Pittis Matteo"></ProductCard>*/
-}

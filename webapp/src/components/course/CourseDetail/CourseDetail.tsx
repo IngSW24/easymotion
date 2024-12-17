@@ -1,10 +1,10 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
-import { useCallback, useMemo, useState } from "react";
+import { Box, Button, Typography } from "@mui/material";
+import { useMemo, useState } from "react";
 import { UpdateCoursesDto } from "../../../../client/data-contracts";
 import { defaultCourse } from "../../../data/defaults";
 import { useCourses } from "../../../hooks/useCourses";
 import { useSnack } from "../../../hooks/useSnack";
-import ProductCard from "./CourseDetailCard";
+import ProductCard from "../CourseDetail/CourseDetailCard";
 
 export interface CourseDetailProps {
   id: string;
@@ -22,7 +22,7 @@ export default function CourseDetail(props: CourseDetailProps) {
   const [editCourse, setEditCourse] = useState<UpdateCoursesDto>(
     courses.getSingle.data ?? defaultCourse
   );
-  const [hasChanged, setHasChanged] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const snack = useSnack();
 
   useMemo(() => {
@@ -31,27 +31,18 @@ export default function CourseDetail(props: CourseDetailProps) {
     }
   }, [courses.getSingle.data]);
 
-  const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const { name, value } = e.target;
-      setEditCourse((prev) => ({ ...prev, [name]: value }));
-      if (!hasChanged) setHasChanged(true);
-    },
-    [hasChanged]
-  );
-
-  const handleSave = useCallback(async () => {
+  const handleSave = async () => {
     try {
       await courses.update.mutateAsync({
         courseId: id,
         courseData: { ...editCourse, cost: Number(editCourse.cost) },
       });
-      setHasChanged(false);
+      setIsEditing(false); // Exit edit mode
       snack.showSuccess("Course updated successfully");
     } catch (e) {
       if (e instanceof Error || typeof e === "string") snack.showError(e);
     }
-  }, [courses.update, editCourse, id, snack]);
+  };
 
   if (singleCourse.isLoading)
     return <Typography variant="h4">Loading...</Typography>;
@@ -61,61 +52,78 @@ export default function CourseDetail(props: CourseDetailProps) {
 
   return (
     <Box>
-      <TextField
-        label="Organizer"
-        name="organizer"
-        value={editCourse.organizer}
-        onChange={handleChange}
-        fullWidth
-        margin="normal"
-      />
-      <TextField
-        label="Instructor"
-        name="instructor"
-        value={editCourse.instructor}
-        onChange={handleChange}
-        fullWidth
-        margin="normal"
-      />
-      <TextField
-        label="Type"
-        name="type"
-        value={editCourse.type}
-        onChange={handleChange}
-        fullWidth
-        margin="normal"
-      />
-      <TextField
-        label="Description"
-        name="description"
-        value={editCourse.description}
-        onChange={handleChange}
-        fullWidth
-        margin="normal"
-      />
-      <TextField
-        label="Location"
-        name="location"
-        value={editCourse.location}
-        onChange={handleChange}
-        fullWidth
-        margin="normal"
-      />
-      <TextField
-        label="Cost"
-        name="cost"
-        type="number"
-        value={editCourse.cost}
-        onChange={handleChange}
-        fullWidth
-        margin="normal"
-      />
-      <Button onClick={handleSave}>Save</Button>
+      <Box sx={{ marginBottom: 2 }}>
+        {!isEditing ? (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => setIsEditing(true)}
+            sx={{ textTransform: "none" }}
+          >
+            Modifica
+          </Button>
+        ) : (
+          <Button
+            variant="contained"
+            color="success"
+            onClick={handleSave}
+            sx={{ textTransform: "none", marginRight: 2 }}
+          >
+            Salva
+          </Button>
+        )}
+      </Box>
+
       <ProductCard
-        typeInfo="Appuntamenti"
-        info="Pittis Matteo"
-        isEditing={false}
-      ></ProductCard>
+        typeInfo="Organizzatore"
+        info={editCourse.organizer}
+        isEditing={isEditing}
+        courseId={id}
+        onSave={(field, value) => {
+          setEditCourse((prev) => ({ ...prev, [field.toLowerCase()]: value }));
+        }}
+      />
+
+      <ProductCard
+        typeInfo="Istruttore"
+        info={editCourse.instructor}
+        isEditing={isEditing}
+        courseId={id}
+        onSave={(field, value) => {
+          setEditCourse((prev) => ({ ...prev, [field.toLowerCase()]: value }));
+        }}
+      />
+
+      <ProductCard
+        typeInfo="Type"
+        info={editCourse.type}
+        isEditing={isEditing}
+        courseId={id}
+        onSave={(field, value) => {
+          setEditCourse((prev) => ({ ...prev, [field.toLowerCase()]: value }));
+        }}
+      />
+
+      {/**
+      <ProductCard
+        typeInfo="Description"
+        info={editCourse.description}
+        isEditing={isEditing}
+        courseId={id}
+        onSave={(field, value) => {
+          setEditCourse((prev) => ({ ...prev, [field.toLowerCase()]: value }));
+        }}
+      />
+*/}
+      <ProductCard
+        typeInfo="Posizione"
+        info={editCourse.location}
+        isEditing={isEditing}
+        courseId={id}
+        onSave={(field, value) => {
+          setEditCourse((prev) => ({ ...prev, [field.toLowerCase()]: value }));
+        }}
+      />
     </Box>
   );
 }
