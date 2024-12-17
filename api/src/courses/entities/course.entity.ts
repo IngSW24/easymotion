@@ -1,74 +1,132 @@
-import { Exclude, Expose } from 'class-transformer';
-import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { CourseType } from '@prisma/client';
+import {
+  IsArray,
+  IsDecimal,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsPositive,
+  IsString,
+} from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import {
+  CourseCategory,
+  CourseAvailability,
+  CourseFrequency,
+  CourseLevel,
+} from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime/library';
-
-export enum CourseTypeEnum {
-  AUTONOMOUS = 'autonomous',
-  INDIVIDUAL = 'individual',
-  GROUP = 'group',
-}
 
 export class CourseEntity {
   @ApiProperty({ description: 'Unique identifier for the course' })
   @IsString()
   id: string;
 
-  @ApiProperty({ description: 'Organizer of the course' })
+  @ApiProperty({ description: 'Name of the course' })
   @IsString()
-  organizer: string;
+  name: string;
 
-  @ApiProperty({ description: 'Instructor leading the course' })
+  @ApiProperty({ description: 'Full description of the course' })
   @IsString()
-  instructor: string;
+  description: string;
 
-  @ApiProperty({
-    description: 'Type of the course',
-    enum: CourseType,
-    enumName: 'CourseType',
-    example: CourseTypeEnum.AUTONOMOUS,
-  })
-  @IsEnum(CourseType, {
-    message:
-      'type must have one of these values: ' +
-      Object.values(CourseType).join(', '),
-  })
+  @ApiProperty({ description: 'Short description of the course' })
   @IsString()
-  type: CourseType;
+  short_description: string;
 
-  @ApiPropertyOptional({ description: 'Scheduled times for the course' })
-  @IsOptional()
-  @IsString()
-  times?: string;
-
-  @ApiPropertyOptional({ description: 'Detailed description of the course' })
-  @IsOptional()
-  @IsString()
-  description?: string;
-
-  @ApiPropertyOptional({
-    description: 'Location where the course will take place',
-  })
+  @ApiProperty({ description: 'Location where the course is held (optional)' })
   @IsOptional()
   @IsString()
   location?: string;
 
-  @ApiPropertyOptional({
-    description: 'Frequency of the course (e.g., weekly)',
+  @ApiProperty({ description: 'Schedule of course session days' })
+  @IsArray()
+  @IsString({ each: true })
+  schedule: string[];
+
+  @ApiProperty({ description: 'Array of user IDs of instructors' })
+  @IsArray()
+  @IsString({ each: true })
+  instructor: string[];
+
+  @ApiProperty({ description: 'Category of the course', enum: CourseCategory })
+  @IsEnum(CourseCategory)
+  category: CourseCategory;
+
+  @ApiProperty({ description: 'Level of the course', enum: CourseLevel })
+  @IsEnum(CourseLevel)
+  level: CourseLevel;
+
+  @ApiProperty({
+    description: 'Frequency of the course',
+    enum: CourseFrequency,
+  })
+  @IsEnum(CourseFrequency)
+  frequency: CourseFrequency;
+
+  @ApiProperty({ description: 'Duration of each session in POSIX format' })
+  @IsString()
+  session_duration: string;
+
+  @ApiProperty({
+    description: 'Cost of the course (optional)',
+    required: false,
+  })
+  @IsOptional()
+  @IsDecimal()
+  @IsPositive()
+  cost?: number;
+
+  @ApiProperty({
+    description: 'Discount for the course (optional)',
+    required: false,
+  })
+  @IsOptional()
+  @IsInt()
+  @IsPositive()
+  discount?: number;
+
+  @ApiProperty({
+    description: 'Availability status of the course',
+    enum: CourseAvailability,
+  })
+  @IsEnum(CourseAvailability)
+  availability: CourseAvailability;
+
+  @ApiProperty({
+    description: 'Priority level for highlighting the course (optional)',
+    required: false,
+  })
+  @IsOptional()
+  @IsInt()
+  @IsPositive()
+  highlighted_priority?: number;
+
+  @ApiProperty({
+    description: 'Maximum capacity of course members (optional)',
+    required: false,
+  })
+  @IsOptional()
+  @IsInt()
+  @IsPositive()
+  members_capacity?: number;
+
+  @ApiProperty({ description: 'Number of registered members', default: 0 })
+  @IsInt()
+  @IsPositive()
+  num_registered_members: number;
+
+  @ApiProperty({ description: 'Tags associated with the course' })
+  @IsArray()
+  @IsString({ each: true })
+  tags: string[];
+
+  @ApiProperty({
+    description: 'Path to the thumbnail image for the course (optional)',
+    required: false,
   })
   @IsOptional()
   @IsString()
-  frequency?: string;
-
-  @ApiPropertyOptional({
-    description: 'Cost of the course',
-    example: 50.0,
-    type: 'number',
-  })
-  @IsOptional()
-  @IsNumber()
-  cost: number;
+  thumbnail_path?: string;
 
   constructor(partial: Partial<CourseEntity>) {
     Object.assign(this, partial);
