@@ -1,5 +1,6 @@
 import {
   IsArray,
+  IsDate,
   IsDecimal,
   IsEnum,
   IsInt,
@@ -128,6 +129,12 @@ export class CourseEntity {
   @IsOptional()
   @IsString()
   thumbnail_path?: string;
+
+  @IsDate()
+  created_at: Date;
+
+  @IsDate()
+  updated_at: Date;
 
   constructor(partial: Partial<CourseEntity>) {
     Object.assign(this, partial);

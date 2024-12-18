@@ -14,7 +14,6 @@ import {
 
 describe('CoursesService', () => {
   let service: CoursesService;
-  let prismaService: PrismaService;
 
   // Mock PrismaService
   const prismaMock = {
@@ -40,7 +39,6 @@ describe('CoursesService', () => {
     }).compile();
 
     service = module.get<CoursesService>(CoursesService);
-    prismaService = module.get<PrismaService>(PrismaService);
   });
 
   afterEach(() => {
@@ -96,6 +94,8 @@ describe('CoursesService', () => {
         availability: 'ACTIVE',
         num_registered_members: 0,
         tags: [],
+        created_at: new Date(),
+        updated_at: new Date(),
       },
       {
         id: '',
@@ -111,6 +111,8 @@ describe('CoursesService', () => {
         availability: 'ACTIVE',
         num_registered_members: 0,
         tags: [],
+        created_at: new Date(),
+        updated_at: new Date(),
       },
     ];
     const totalItems = 5;
@@ -157,6 +159,8 @@ describe('CoursesService', () => {
       availability: 'ACTIVE',
       num_registered_members: 0,
       tags: [],
+      created_at: new Date(),
+      updated_at: new Date(),
     };
 
     prismaMock.course.findUniqueOrThrow.mockResolvedValue(mockCourse);

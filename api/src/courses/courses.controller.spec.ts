@@ -96,6 +96,8 @@ describe('CoursesController', () => {
         availability: 'ACTIVE',
         num_registered_members: 0,
         tags: [],
+        created_at: new Date(),
+        updated_at: new Date(),
       },
     ];
     const totalItems = 1;
@@ -112,23 +114,7 @@ describe('CoursesController', () => {
     expect(prismaMock.course.count).toHaveBeenCalled();
 
     expect(result).toEqual({
-      data: [
-        new CourseEntity({
-          id: '',
-          name: '',
-          description: '',
-          short_description: '',
-          schedule: [],
-          instructor: [],
-          category: 'ACQUAGYM',
-          level: 'BASIC',
-          frequency: 'SINGLE_SESSION',
-          session_duration: '',
-          availability: 'ACTIVE',
-          num_registered_members: 0,
-          tags: [],
-        }),
-      ],
+      data: mockCourses,
       meta: {
         currentPage: pagination.page,
         items: 1,
@@ -156,6 +142,8 @@ describe('CoursesController', () => {
       num_registered_members: 0,
       tags: [],
       name: 'aaaaaaaaaa',
+      created_at: new Date(),
+      updated_at: new Date(),
     };
 
     prismaMock.course.findUniqueOrThrow.mockResolvedValue(mockCourse);
@@ -173,7 +161,7 @@ describe('CoursesController', () => {
   });
 
   // Test Update
-  it('should update an course', async () => {
+  it('should update a course', async () => {
     const id = '1';
     const dto: UpdateCoursesDto = {
       instructor: ['Updated Organizer'],
@@ -203,7 +191,7 @@ describe('CoursesController', () => {
   });
 
   // Test Remove
-  it('should remove an course', async () => {
+  it('should remove a course', async () => {
     const id = '1';
 
     prismaMock.course.delete.mockResolvedValue(undefined);
