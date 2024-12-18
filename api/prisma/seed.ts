@@ -15,7 +15,7 @@ async function main() {
         description: e.description,
         short_description: e.short_description,
         location: e.location || null,
-        instructor: e.instructor,
+        instructors: e.instructors,
         category: e.category,
         level: e.level,
         frequency: e.frequency,

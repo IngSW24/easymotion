@@ -5,11 +5,15 @@ import { CourseEntity } from './entities/course.entity';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCoursesDto } from './dto/update-course.dto';
 import { Decimal } from '@prisma/client/runtime/library';
-import { CourseType } from '@prisma/client';
+import {
+  CourseAvailability,
+  CourseCategory,
+  CourseFrequency,
+  CourseLevel,
+} from '@prisma/client';
 
 describe('CoursesService', () => {
   let service: CoursesService;
-  let prismaService: PrismaService;
 
   // Mock PrismaService
   const prismaMock = {
@@ -35,7 +39,6 @@ describe('CoursesService', () => {
     }).compile();
 
     service = module.get<CoursesService>(CoursesService);
-    prismaService = module.get<PrismaService>(PrismaService);
   });
 
   afterEach(() => {
@@ -45,18 +48,21 @@ describe('CoursesService', () => {
   // Create Method Test
   it('should create an course', async () => {
     const dto: CreateCourseDto = {
-      organizer: 'John Doe',
-      instructor: 'Jane Doe',
-      type: CourseType.INDIVIDUAL,
-      cost: 100,
-    };
-    const createdCourse = {
-      id: '1',
-      ...dto,
-      cost: new Decimal(100),
+      name: 'Test Course',
+      description: 'ddddddddddd',
+      short_description: 'dddddddddddd',
+      schedule: [],
+      instructor: [],
+      category: CourseCategory.ACQUAGYM,
+      level: CourseLevel.BASIC,
+      frequency: CourseFrequency.SINGLE_SESSION,
+      session_duration: '111',
+      availability: CourseAvailability.ACTIVE,
+      num_registered_members: 0,
+      tags: ['aa', 'bb'],
     };
 
-    prismaMock.course.create.mockResolvedValue(createdCourse);
+    prismaMock.course.create.mockResolvedValue(dto);
 
     const result = await service.create(dto);
 
@@ -65,8 +71,7 @@ describe('CoursesService', () => {
     });
     expect(result).toEqual(
       new CourseEntity({
-        ...createdCourse,
-        cost: createdCourse.cost.toNumber(),
+        ...dto,
       }),
     );
   });
@@ -74,20 +79,40 @@ describe('CoursesService', () => {
   // FindAll Method Test
   it('should return paginated courses', async () => {
     const pagination = { page: 0, perPage: 2 };
-    const mockCourses = [
+    const mockCourses: CourseEntity[] = [
       {
-        id: '1',
-        organizer: 'John Doe',
-        instructor: 'Jane Doe',
-        type: CourseType.GROUP,
-        cost: new Decimal(200),
+        id: '',
+        name: '',
+        description: '',
+        short_description: '',
+        schedule: [],
+        instructor: [],
+        category: 'ACQUAGYM',
+        level: 'BASIC',
+        frequency: 'SINGLE_SESSION',
+        session_duration: '',
+        availability: 'ACTIVE',
+        num_registered_members: 0,
+        tags: [],
+        created_at: new Date(),
+        updated_at: new Date(),
       },
       {
-        id: '2',
-        organizer: 'Alice',
-        instructor: 'Bob',
-        type: CourseType.INDIVIDUAL,
-        cost: new Decimal(300),
+        id: '',
+        name: '',
+        description: '',
+        short_description: '',
+        schedule: [],
+        instructor: [],
+        category: 'ACQUAGYM',
+        level: 'BASIC',
+        frequency: 'SINGLE_SESSION',
+        session_duration: '',
+        availability: 'ACTIVE',
+        num_registered_members: 0,
+        tags: [],
+        created_at: new Date(),
+        updated_at: new Date(),
       },
     ];
     const totalItems = 5;
@@ -105,8 +130,7 @@ describe('CoursesService', () => {
 
     expect(result).toEqual({
       data: mockCourses.map(
-        (course) =>
-          new CourseEntity({ ...course, cost: course.cost.toNumber() }),
+        (course) => new CourseEntity({ ...course, cost: course.cost }),
       ),
       meta: {
         currentPage: pagination.page,
@@ -121,12 +145,22 @@ describe('CoursesService', () => {
   // FindOne Method Test
   it('should return a single course', async () => {
     const id = '1';
-    const mockCourse = {
-      id,
-      organizer: 'John Doe',
-      instructor: 'Jane Doe',
-      type: CourseType.INDIVIDUAL,
-      cost: new Decimal(150),
+    const mockCourse: CourseEntity = {
+      id: '',
+      name: '',
+      description: '',
+      short_description: '',
+      schedule: [],
+      instructor: [],
+      category: 'ACQUAGYM',
+      level: 'BASIC',
+      frequency: 'SINGLE_SESSION',
+      session_duration: '',
+      availability: 'ACTIVE',
+      num_registered_members: 0,
+      tags: [],
+      created_at: new Date(),
+      updated_at: new Date(),
     };
 
     prismaMock.course.findUniqueOrThrow.mockResolvedValue(mockCourse);
@@ -139,7 +173,6 @@ describe('CoursesService', () => {
     expect(result).toEqual(
       new CourseEntity({
         ...mockCourse,
-        cost: mockCourse.cost.toNumber(),
       }),
     );
   });
@@ -147,7 +180,11 @@ describe('CoursesService', () => {
   // Update Method Test
   it('should update an course', async () => {
     const id = '1';
-    const dto: UpdateCoursesDto = { organizer: 'Updated Organizer', cost: 250 };
+    const dto: UpdateCoursesDto = {
+      instructor: ['Updated Organizer'],
+      cost: 250,
+    };
+
     const updatedCourse = {
       id,
       ...dto,
