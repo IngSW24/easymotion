@@ -24,7 +24,7 @@
     {
       "id": "2f60f825-fc2e-45bd-ab1b-5f26d8eef27f",
       "name": "CrossFit: Potenza e Resistenza",
-      "description": "Un programma intenso progettato per migliorare forza, resistenza e agilità. Questo corso combina esercizi ad alta intensità con movimenti funzionali, utilizzando attrezzature come kettlebell, bilancieri e box jump. È ideale per chi cerca una sfida e vuole superare i propri limiti. Ogni sessione è supervisionata da un istruttore esperto per garantire la corretta esecuzione dei movimenti e prevenire infortuni.",
+      "description": "Un programma intenso progettato per migliorare forza, resistenza e agilità.  e box jump.",
       "short_description": "Allenamento ad alta intensità per forza e resistenza.",
       "location": "Palestra EnergyFit, Via dello Sport 12, Udine",
       "instructors": ["Marco Conti"],
@@ -133,7 +133,7 @@
     {
       "id": "1334ea30-beeb-4545-93eb-bfc9b99dedd2",
       "name": "Yoga all'Aperto",
-      "description": "Un'esperienza unica di yoga immersi nella natura. Questo corso è progettato per aiutarti a migliorare la flessibilità, rilassare la mente e rinforzare il corpo. Le lezioni si tengono in parchi tranquilli vicino Udine, offrendo un'atmosfera serena e rigenerante. Adatto sia ai principianti che agli esperti, il corso mira a connetterti con la natura mentre ti prendi cura del tuo benessere.",
+      "description": "Un'esperienza unica di yoga immersi nella natura.",
       "short_description": "Yoga immersi nella natura per rilassare mente e corpo.",
       "location": "Parco del Cormor, Via Cormor Alto, Udine",
       "instructors": ["Chiara De Luca"],

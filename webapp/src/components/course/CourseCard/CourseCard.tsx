@@ -38,7 +38,7 @@ export default function CourseCard(props: CourseCardProps) {
         <Typography variant="h5" fontWeight="fontWeightBold">
           Nome (h5 bold)
         </Typography>
-        <Typography variant="body1">{course.description}</Typography>
+        <Typography variant="body1">{course.short_description}</Typography>
         <Stack direction="row" spacing={1} sx={{ marginTop: 2 }}>
           <Chip label="Tag1" variant="outlined" color="secondary" />
           <Chip label="Tag2" variant="outlined" color="secondary" />
