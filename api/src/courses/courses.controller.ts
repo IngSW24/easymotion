@@ -28,7 +28,6 @@ export class CoursesController {
   @Post()
   @ApiCreatedResponse({ type: CourseEntity })
   create(@Body() createCourseDto: CreateCourseDto) {
-    console.log('creating course', createCourseDto);
     return this.coursesService.create(createCourseDto);
   }
 
@@ -43,7 +42,7 @@ export class CoursesController {
   }
 
   /**
-   * Find an course by its id
+   * Find a course by its id
    * @param id the course uuid
    * @returns the course with the given id
    */
@@ -54,7 +53,7 @@ export class CoursesController {
   }
 
   /**
-   * Update an course by its id
+   * Update a course by its id
    * @param id the course uuid
    * @param updateCoursesDto fields to update
    * @returns the updated course
@@ -66,7 +65,7 @@ export class CoursesController {
   }
 
   /**
-   * Delete an course by its id
+   * Delete a course by its id
    * @param id the course uuid
    */
   @Delete(':id')

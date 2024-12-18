@@ -69,13 +69,13 @@ export class CoursesService {
   private mapToDto<T extends Course | Course[]>(course: T): MapOutput<T> {
     if (Array.isArray(course)) {
       return course.map(
-        (x) => new CourseEntity({ ...x, cost: x.cost.toNumber() }),
+        (x) => new CourseEntity({ ...x, cost: x.cost?.toNumber() }),
       ) as MapOutput<T>;
     }
 
     return new CourseEntity({
       ...course,
-      cost: course.cost.toNumber(),
+      cost: course.cost?.toNumber(),
     }) as MapOutput<T>;
   }
 }
