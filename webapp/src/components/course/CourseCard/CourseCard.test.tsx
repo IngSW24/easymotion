@@ -20,7 +20,7 @@ describe("CourseCard GUI test", () => {
     session_duration: "",
     availability: "ACTIVE",
     num_registered_members: 0,
-    tags: [],
+    tags: ["sample_tag1", "sample_tag2"],
     created_at: "",
     updated_at: "",
   };
@@ -33,9 +33,12 @@ describe("CourseCard GUI test", () => {
       </MemoryRouter>
     );
 
+    expect(screen.getByText(testCourse.category)).toBeDefined();
+    expect(screen.getByText(testCourse.level)).toBeDefined();
+    expect(screen.getByText(testCourse.name)).toBeDefined();
     expect(screen.getByText(testCourse.short_description)).toBeDefined();
-    expect(screen.getByText(testCourse.frequency)).toBeDefined();
-    expect(screen.getByText(testCourse.instructor[0])).toBeDefined();
-    expect(screen.getByText(testCourse.location ?? "")).toBeDefined();
+    testCourse.tags.map((tag) => {
+      expect(screen.getByText(tag)).toBeDefined();
+    });
   });
 });
