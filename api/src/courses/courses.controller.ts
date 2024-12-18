@@ -62,6 +62,7 @@ export class CoursesController {
   @Put(':id')
   @ApiOkResponse({ type: CourseEntity })
   update(@Param('id') id: string, @Body() updateCoursesDto: UpdateCoursesDto) {
+    console.log('received body', updateCoursesDto);
     return this.coursesService.update(id, updateCoursesDto);
   }
 

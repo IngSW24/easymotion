@@ -3,6 +3,7 @@ import {
   IsDecimal,
   IsEnum,
   IsInt,
+  IsNumber,
   IsOptional,
   IsPositive,
   IsString,
@@ -72,7 +73,7 @@ export class CourseEntity {
     required: false,
   })
   @IsOptional()
-  @IsDecimal()
+  @IsNumber()
   @IsPositive()
   cost?: number;
 

@@ -7,7 +7,6 @@ import { UpdateCoursesDto } from './dto/update-course.dto';
 import { CourseEntity } from './entities/course.entity';
 import { Decimal } from '@prisma/client/runtime/library';
 import { PaginationFilter } from 'src/common/dto/pagination-filter.dto';
-import { CourseType } from '@prisma/client';
 
 describe('CoursesController', () => {
   let controller: CoursesController;
@@ -43,10 +42,18 @@ describe('CoursesController', () => {
   // Test Create
   it('should create a new course', async () => {
     const dto: CreateCourseDto = {
-      organizer: 'John Doe',
-      instructor: 'Jane Doe',
-      type: CourseType.INDIVIDUAL,
-      cost: 100,
+      name: 'aa',
+      description: '',
+      short_description: '',
+      schedule: [],
+      instructor: [],
+      category: 'ACQUAGYM',
+      level: 'BASIC',
+      frequency: 'SINGLE_SESSION',
+      session_duration: '',
+      availability: 'ACTIVE',
+      num_registered_members: 0,
+      tags: [],
     };
 
     const createdCourse = {
@@ -74,13 +81,21 @@ describe('CoursesController', () => {
   it('should return paginated courses', async () => {
     const pagination: PaginationFilter = { page: 0, perPage: 10 };
 
-    const mockCourses = [
+    const mockCourses: CourseEntity[] = [
       {
-        id: '1',
-        organizer: 'John Doe',
-        instructor: 'Jane Doe',
-        type: CourseType.GROUP,
-        cost: new Decimal(200),
+        id: '',
+        name: '',
+        description: '',
+        short_description: '',
+        schedule: [],
+        instructor: [],
+        category: 'ACQUAGYM',
+        level: 'BASIC',
+        frequency: 'SINGLE_SESSION',
+        session_duration: '',
+        availability: 'ACTIVE',
+        num_registered_members: 0,
+        tags: [],
       },
     ];
     const totalItems = 1;
@@ -99,11 +114,19 @@ describe('CoursesController', () => {
     expect(result).toEqual({
       data: [
         new CourseEntity({
-          id: '1',
-          organizer: 'John Doe',
-          instructor: 'Jane Doe',
-          type: CourseType.GROUP,
-          cost: 200,
+          id: '',
+          name: '',
+          description: '',
+          short_description: '',
+          schedule: [],
+          instructor: [],
+          category: 'ACQUAGYM',
+          level: 'BASIC',
+          frequency: 'SINGLE_SESSION',
+          session_duration: '',
+          availability: 'ACTIVE',
+          num_registered_members: 0,
+          tags: [],
         }),
       ],
       meta: {
@@ -119,12 +142,20 @@ describe('CoursesController', () => {
   // Test FindOne
   it('should return a single course', async () => {
     const id = '1';
-    const mockCourse = {
+    const mockCourse: CourseEntity = {
       id,
-      organizer: 'John Doe',
-      instructor: 'Jane Doe',
-      type: CourseType.INDIVIDUAL,
-      cost: new Decimal(150),
+      description: 'aaaaa',
+      short_description: '',
+      schedule: [],
+      instructor: [],
+      category: 'ACQUAGYM',
+      level: 'BASIC',
+      frequency: 'SINGLE_SESSION',
+      session_duration: '',
+      availability: 'ACTIVE',
+      num_registered_members: 0,
+      tags: [],
+      name: 'aaaaaaaaaa',
     };
 
     prismaMock.course.findUniqueOrThrow.mockResolvedValue(mockCourse);
@@ -137,7 +168,6 @@ describe('CoursesController', () => {
     expect(result).toEqual(
       new CourseEntity({
         ...mockCourse,
-        cost: mockCourse.cost.toNumber(),
       }),
     );
   });
@@ -146,7 +176,7 @@ describe('CoursesController', () => {
   it('should update an course', async () => {
     const id = '1';
     const dto: UpdateCoursesDto = {
-      organizer: 'Updated Organizer',
+      instructor: ['Updated Organizer'],
       cost: 250,
     };
 

@@ -18,7 +18,7 @@ CREATE TABLE "Course" (
     "short_description" TEXT NOT NULL,
     "location" TEXT,
     "schedule" TEXT[],
-    "instructor" TEXT[],
+    "instructors" TEXT[],
     "category" "CourseCategory" NOT NULL,
     "level" "CourseLevel" NOT NULL,
     "frequency" "CourseFrequency" NOT NULL,

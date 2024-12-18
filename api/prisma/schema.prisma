@@ -47,7 +47,7 @@ model Course {
   short_description         String
   location                  String?
   schedule                  String[]
-  instructor                String[]            // will be a user id
+  instructors               String[]            // will be a user id
   category                  CourseCategory
   level                     CourseLevel
   frequency                 CourseFrequency
