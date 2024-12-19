@@ -4,6 +4,7 @@ import CourseDetail from "../components/course/CourseDetail/CourseDetail";
 import HeroImage from "../components/ui/HeroImage/HeroImage";
 import { useCourses } from "../hooks/useCourses";
 import LoadingSpinner from "../components/ui/LoadingSpinner/LoadingSpinner";
+import { CourseEntity, UpdateCoursesDto } from "../../client/data-contracts";
 
 export interface CourseDetailPageProps {
   canEdit?: boolean;
@@ -20,6 +21,12 @@ export default function CourseDetailsPage({
 
   const courseRepo = useCourses({ fetchId: id });
 
+  const handleSave = (course: CourseEntity) =>
+    courseRepo.update.mutateAsync({
+      courseData: course as UpdateCoursesDto,
+      courseId: id ?? "",
+    });
+
   if (courseRepo.getSingle.isLoading) return <LoadingSpinner />;
 
   if (courseRepo.getSingle.error)
@@ -32,7 +39,13 @@ export default function CourseDetailsPage({
         title={courseRepo.getSingle.data?.name ?? ""}
       />
       <Container sx={{ mt: 5 }}>
-        <CourseDetail id={id ?? ""} canEdit={canEdit} />
+        {courseRepo.getSingle.data && (
+          <CourseDetail
+            course={courseRepo.getSingle.data}
+            onSave={handleSave}
+            canEdit={canEdit}
+          />
+        )}
       </Container>
     </>
   );

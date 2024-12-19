@@ -64,6 +64,7 @@ export const useCourses = (props: UseCoursesProps = {}) => {
 
   const create = useMutation({
     mutationFn: async (courseData: CreateCourseDto) => {
+      console.log("here");
       const response = await api.coursesControllerCreate(courseData);
       return response.data;
     },

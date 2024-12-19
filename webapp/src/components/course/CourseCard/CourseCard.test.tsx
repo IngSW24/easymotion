@@ -13,7 +13,7 @@ describe("CourseCard GUI test", () => {
     name: "sample_name",
     short_description: "sample_short_description",
     schedule: [],
-    instructor: [],
+    instructors: [],
     category: "ACQUAGYM",
     level: "BASIC",
     frequency: "SINGLE_SESSION",

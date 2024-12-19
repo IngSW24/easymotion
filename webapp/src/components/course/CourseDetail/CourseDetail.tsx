@@ -7,24 +7,20 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useMemo, useState } from "react";
-import {
-  CourseEntity,
-  UpdateCoursesDto,
-} from "../../../../client/data-contracts";
-import { defaultCourse } from "../../../data/defaults";
-import { useCourses } from "../../../hooks/useCourses";
+import { useState } from "react";
+import { CourseEntity } from "../../../../client/data-contracts";
 import { useSnack } from "../../../hooks/useSnack";
 import ProductCard from "../CourseDetail/CourseDetailCard";
 import { Add, Delete, EventAvailableOutlined } from "@mui/icons-material";
-import LoadingSpinner from "../../ui/LoadingSpinner/LoadingSpinner";
 import LockUnlockButton from "./LockUnlockButton";
 import Selector from "../../editors/Selector/Selector";
 import { courseCategories } from "../../../data/courseEnumerations";
 
 export interface CourseDetailProps {
-  id: string;
+  isNew?: boolean;
   canEdit: boolean;
+  course: CourseEntity;
+  onSave: (course: CourseEntity) => Promise<CourseEntity>;
 }
 
 /**
@@ -32,32 +28,24 @@ export interface CourseDetailProps {
  * @param props the properties for the component, including the course id
  * @returns a react component
  */
-export default function CourseDetail({
-  id,
-  canEdit = false,
-}: CourseDetailProps) {
-  const courses = useCourses({ fetchId: id });
-  const singleCourse = courses.getSingle;
-  const [editCourse, setEditCourse] = useState<UpdateCoursesDto>(
-    courses.getSingle.data ?? defaultCourse
-  );
-  const [isEditing, setIsEditing] = useState(false);
-  const snack = useSnack();
+export default function CourseDetail(props: CourseDetailProps) {
+  const { course, canEdit = false, isNew = false } = props;
 
-  useMemo(() => {
-    if (courses.getSingle.data) {
-      setEditCourse(courses.getSingle.data);
-    }
-  }, [courses.getSingle.data]);
+  const [editCourse, setEditCourse] = useState<CourseEntity>(course);
+
+  const [isEditing, setIsEditing] = useState(isNew); // If the course is new, it is in edit mode
+
+  const snack = useSnack();
 
   const handleSave = async () => {
     try {
-      await courses.update.mutateAsync({
-        courseId: id,
-        courseData: { ...editCourse, cost: Number(editCourse.cost) },
-      });
-      setIsEditing(false); // Exit edit mode
-      snack.showSuccess("Il corso è stato aggiornato con successo");
+      await props.onSave(editCourse);
+
+      setIsEditing(false);
+
+      snack.showSuccess(
+        `Il corso è stato ${!isNew ? "aggiornato" : "creato"} con successo`
+      );
     } catch (e) {
       if (e instanceof Error || typeof e === "string") snack.showError(e);
     }
@@ -74,13 +62,6 @@ export default function CourseDetail({
 
     handleSave();
   };
-
-  if (singleCourse.isLoading) return <LoadingSpinner />;
-
-  if (singleCourse.error || !singleCourse.data)
-    return (
-      <Typography variant="h4">Errore nel caricamento della pagina</Typography>
-    );
 
   return (
     <>
@@ -275,7 +256,6 @@ export default function CourseDetail({
               typeInfo="Organizzatori"
               info={editCourse.instructors?.join(", ") ?? ""}
               isEditing={isEditing}
-              courseId={id}
               onSave={(field, value) => {
                 setEditCourse((prev) => ({
                   ...prev,
@@ -288,7 +268,6 @@ export default function CourseDetail({
               typeInfo="Istruttori"
               info={editCourse.instructors?.join(", ") ?? ""}
               isEditing={isEditing}
-              courseId={id}
               onSave={(field, value) => {
                 setEditCourse((prev) => ({
                   ...prev,
@@ -313,7 +292,6 @@ export default function CourseDetail({
               typeInfo="Posizione"
               info={editCourse.location}
               isEditing={isEditing}
-              courseId={id}
               onSave={(field, value) => {
                 setEditCourse((prev) => ({
                   ...prev,

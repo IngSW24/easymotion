@@ -7,16 +7,14 @@ import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 interface ProductCardProps {
   typeInfo: string; // Indicates the label of each information, e.g., organizer, time, ...
   info?: string; // Indicates the related information
-  courseId: string; // ID of the course to update
   isEditing: boolean; // External control for edit mode
-  onSave: (field: string, value: string, courseId: string) => void; // Function to handle saving
+  onSave: (field: string, value: string) => void; // Function to handle saving
 }
 
 /**
  * Creates the ProductCard
  * @param {string} typeInfo - The label of the information to determine the icon
  * @param {string} info - The actual information to display
- * @param {string} courseId - The ID of the course
  * @param {boolean} isEditing - Determines if the component is in edit mode
  * @param {Function} onSave - Callback to handle saving the updated data
  * @returns A card showing the course information with an appropriate icon
@@ -26,7 +24,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
   info,
   isEditing,
   onSave,
-  courseId,
 }) => {
   const [editedInfo, setEditedInfo] = useState(info);
 
@@ -49,7 +46,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   // Handle saving the edited information
   const handleSave = () => {
     if (editedInfo !== undefined && editedInfo !== info) {
-      onSave(typeInfo, editedInfo, courseId);
+      onSave(typeInfo, editedInfo);
     }
   };
 
