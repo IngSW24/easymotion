@@ -33,15 +33,16 @@ export default function CourseCard(props: CourseCardProps) {
       />
       <CardContent>
         <Typography variant="body1" fontWeight="fontWeightBold" color="primary">
-          Categoria · Difficoltà
+          <span>{course.category}</span> · <span>{course.level}</span>
         </Typography>
         <Typography variant="h5" fontWeight="fontWeightBold">
-          Nome (h5 bold)
+          {course.name}
         </Typography>
-        <Typography variant="body1">{course.description}</Typography>
+        <Typography variant="body1">{course.short_description}</Typography>
         <Stack direction="row" spacing={1} sx={{ marginTop: 2 }}>
-          <Chip label="Tag1" variant="outlined" color="secondary" />
-          <Chip label="Tag2" variant="outlined" color="secondary" />
+          {course.tags.map((tag) => (
+            <Chip key={tag} label={tag} variant="outlined" color="secondary" />
+          ))}
         </Stack>
       </CardContent>
       <CardActions sx={{ justifyContent: "right" }}>
