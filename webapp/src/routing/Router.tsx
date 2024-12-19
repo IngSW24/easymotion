@@ -37,8 +37,8 @@ const Router: React.FC = () => (
         }
       >
         <Route index element={<CourseListPage canEdit />} />
-        <Route path="details/:id" element={<CourseDetailsPage />} />
-        <Route path="new" element={<CourseCreatePage />} />
+        <Route path="details/:id" element={<CourseDetailsPage canEdit />} />
+        <Route path="new" element={<CourseCreatePage canEdit />} />
       </Route>
     </Routes>
   </BrowserRouter>

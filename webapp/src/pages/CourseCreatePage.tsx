@@ -1,17 +1,18 @@
-import { Typography, Container } from "@mui/material"; // Card, CardContent, Box
-import CourseEditor from "../components/course/CourseEditor/CardForm.tsx";
+import { Container } from "@mui/material"; // Card, CardContent, Box
+import CourseDetailsPage from "./CourseDetailsPage.tsx";
+
+interface CreatePageProps {
+  canEdit?: boolean;
+}
 
 /**
  * Defines a page to create a new course
  * @returns a react component
  */
-export default function CourseCreatePage() {
+export default function CourseCreatePage({ canEdit = false }: CreatePageProps) {
   return (
     <Container>
-      <Typography variant="h3" component="h1" align="center" gutterBottom>
-        EasyMotion: Physiotherapist Profile
-      </Typography>
-      <CourseEditor />
+      <CourseDetailsPage canEdit={canEdit} />
     </Container>
   );
 }

@@ -24,6 +24,7 @@ import { courseCategories } from "../../../data/courseEnumerations";
 
 export interface CourseDetailProps {
   id: string;
+  canEdit: boolean;
 }
 
 /**
@@ -31,8 +32,10 @@ export interface CourseDetailProps {
  * @param props the properties for the component, including the course id
  * @returns a react component
  */
-export default function CourseDetail(props: CourseDetailProps) {
-  const { id } = props;
+export default function CourseDetail({
+  id,
+  canEdit = false,
+}: CourseDetailProps) {
   const courses = useCourses({ fetchId: id });
   const singleCourse = courses.getSingle;
   const [editCourse, setEditCourse] = useState<UpdateCoursesDto>(
@@ -75,7 +78,9 @@ export default function CourseDetail(props: CourseDetailProps) {
   if (singleCourse.isLoading) return <LoadingSpinner />;
 
   if (singleCourse.error || !singleCourse.data)
-    return <Typography variant="h4">An error occurred</Typography>;
+    return (
+      <Typography variant="h4">Errore nel caricamento della pagina</Typography>
+    );
 
   return (
     <>
@@ -125,14 +130,19 @@ export default function CourseDetail(props: CourseDetailProps) {
               </Stack>
             )}
           </Grid2>
-          <Grid2
-            size={{ xs: 12, md: 3 }}
-            textAlign={{ xs: "center", md: "end" }}
-            alignItems="center"
-            order={{ xs: 1, md: 2 }}
-          >
-            <LockUnlockButton isEditing={isEditing} onClick={lockUnlockClick} />
-          </Grid2>
+          {canEdit && (
+            <Grid2
+              size={{ xs: 12, md: 3 }}
+              textAlign={{ xs: "center", md: "end" }}
+              alignItems="center"
+              order={{ xs: 1, md: 2 }}
+            >
+              <LockUnlockButton
+                isEditing={isEditing}
+                onClick={lockUnlockClick}
+              />
+            </Grid2>
+          )}
         </Grid2>
         <Grid2 size={{ xs: 12, md: 8 }}>
           <Stack spacing={6}>
