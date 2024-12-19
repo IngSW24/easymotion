@@ -13,7 +13,8 @@ interface CourseListProps {
  * Lists all the courses in a grid and allows to navigate to detail or delete them
  * @returns a react component
  */
-export default function CourseList({ canEdit = false }: CourseListProps) {
+export default function CourseList(props: CourseListProps) {
+  const { canEdit = false } = props;
   const courseRepo = useCourses();
   const snack = useSnack();
   const dialog = useDialog();

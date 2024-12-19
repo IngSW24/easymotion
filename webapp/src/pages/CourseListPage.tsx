@@ -10,9 +10,9 @@ interface CourseListPageProps {
  * Defines the page to list all courses
  * @returns a react component
  */
-export default function CourseListPage({
-  canEdit = false,
-}: CourseListPageProps) {
+export default function CourseListPage(props: CourseListPageProps) {
+  const { canEdit } = props;
+
   return (
     <>
       <HeroImage
