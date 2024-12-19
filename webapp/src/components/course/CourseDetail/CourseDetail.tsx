@@ -81,7 +81,12 @@ export default function CourseDetail(props: CourseDetailProps) {
     <>
       <Grid2 container spacing={4}>
         <Grid2 container size={12} sx={{ mt: 2, mb: 3 }}>
-          <Grid2 size={{ xs: 8 }} alignItems="center">
+          <Grid2
+            size={{ xs: 12, md: 9 }}
+            alignItems="center"
+            textAlign={{ xs: "center", md: "start" }}
+            order={{ xs: 2, md: 1 }}
+          >
             {!isEditing ? (
               <Stack spacing={3}>
                 <Typography variant="h4" color="primary.dark" fontWeight={500}>
@@ -120,7 +125,12 @@ export default function CourseDetail(props: CourseDetailProps) {
               </Stack>
             )}
           </Grid2>
-          <Grid2 size={{ xs: 4 }} textAlign="end" alignItems="center">
+          <Grid2
+            size={{ xs: 12, md: 3 }}
+            textAlign={{ xs: "center", md: "end" }}
+            alignItems="center"
+            order={{ xs: 1, md: 2 }}
+          >
             <LockUnlockButton isEditing={isEditing} onClick={lockUnlockClick} />
           </Grid2>
         </Grid2>
