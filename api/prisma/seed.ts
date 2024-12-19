@@ -20,6 +20,7 @@ async function main() {
         level: e.level,
         frequency: e.frequency,
         session_duration: e.session_duration,
+        schedule: e.schedule,
         cost: e.cost || null,
         discount: e.discount || null,
         availability: e.availability,

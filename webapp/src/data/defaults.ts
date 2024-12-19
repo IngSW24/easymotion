@@ -8,7 +8,7 @@ export const defaultCourse: CourseEntity = {
   name: "",
   short_description: "",
   schedule: [],
-  instructor: [],
+  instructors: [],
   category: "ACQUAGYM",
   level: "BASIC",
   frequency: "SINGLE_SESSION",

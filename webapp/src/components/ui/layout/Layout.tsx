@@ -12,7 +12,7 @@ import ListItemText from "@mui/material/ListItemText";
 import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { Outlet } from "react-router";
+import { Outlet, useLocation } from "react-router";
 import { Button } from "@mui/material";
 import { Link } from "react-router";
 
@@ -30,6 +30,7 @@ const drawerWidth = 240;
 const navItems = ["Home", "About", "Contact"];
 
 export default function Layout(props: LayoutProps) {
+  const location = useLocation();
   const { isPhysiotherapist = false, entries = [] } = props;
 
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -123,9 +124,11 @@ export default function Layout(props: LayoutProps) {
           {drawer}
         </Drawer>
       </nav>
-      <Box component="main" sx={{ p: 3 }}>
+      <Box component="main" sx={{ width: "100%", mb: 3 }}>
         <Toolbar />
-        <Outlet />
+        <div className="fade" key={location.pathname}>
+          <Outlet />
+        </div>
       </Box>
     </Box>
   );

@@ -53,15 +53,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
   return (
     <Card
       sx={{
-        position: "relative",
-        right: "-1350px",
-        top: "200px",
         display: "flex",
         alignItems: "center",
         padding: "8px",
         borderRadius: "8px",
         boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-        width: 500,
         backgroundColor: "rgba(116, 116, 116, 0.24)",
         mb: 1,
       }}

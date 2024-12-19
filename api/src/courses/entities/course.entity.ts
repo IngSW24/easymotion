@@ -48,7 +48,7 @@ export class CourseEntity {
   @ApiProperty({ description: 'Array of user IDs of instructors' })
   @IsArray()
   @IsString({ each: true })
-  instructor: string[];
+  instructors: string[];
 
   @ApiProperty({ description: 'Category of the course', enum: CourseCategory })
   @IsEnum(CourseCategory)

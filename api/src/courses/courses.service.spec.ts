@@ -52,7 +52,7 @@ describe('CoursesService', () => {
       description: 'ddddddddddd',
       short_description: 'dddddddddddd',
       schedule: [],
-      instructor: [],
+      instructors: [],
       category: CourseCategory.ACQUAGYM,
       level: CourseLevel.BASIC,
       frequency: CourseFrequency.SINGLE_SESSION,
@@ -86,7 +86,7 @@ describe('CoursesService', () => {
         description: '',
         short_description: '',
         schedule: [],
-        instructor: [],
+        instructors: [],
         category: 'ACQUAGYM',
         level: 'BASIC',
         frequency: 'SINGLE_SESSION',
@@ -103,7 +103,7 @@ describe('CoursesService', () => {
         description: '',
         short_description: '',
         schedule: [],
-        instructor: [],
+        instructors: [],
         category: 'ACQUAGYM',
         level: 'BASIC',
         frequency: 'SINGLE_SESSION',
@@ -151,7 +151,7 @@ describe('CoursesService', () => {
       description: '',
       short_description: '',
       schedule: [],
-      instructor: [],
+      instructors: [],
       category: 'ACQUAGYM',
       level: 'BASIC',
       frequency: 'SINGLE_SESSION',
@@ -181,7 +181,7 @@ describe('CoursesService', () => {
   it('should update an course', async () => {
     const id = '1';
     const dto: UpdateCoursesDto = {
-      instructor: ['Updated Organizer'],
+      instructors: ['Updated Organizer'],
       cost: 250,
     };
 

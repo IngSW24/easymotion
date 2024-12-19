@@ -46,7 +46,7 @@ describe('CoursesController', () => {
       description: '',
       short_description: '',
       schedule: [],
-      instructor: [],
+      instructors: [],
       category: 'ACQUAGYM',
       level: 'BASIC',
       frequency: 'SINGLE_SESSION',
@@ -88,7 +88,7 @@ describe('CoursesController', () => {
         description: '',
         short_description: '',
         schedule: [],
-        instructor: [],
+        instructors: [],
         category: 'ACQUAGYM',
         level: 'BASIC',
         frequency: 'SINGLE_SESSION',
@@ -133,7 +133,7 @@ describe('CoursesController', () => {
       description: 'aaaaa',
       short_description: '',
       schedule: [],
-      instructor: [],
+      instructors: [],
       category: 'ACQUAGYM',
       level: 'BASIC',
       frequency: 'SINGLE_SESSION',
@@ -164,7 +164,7 @@ describe('CoursesController', () => {
   it('should update a course', async () => {
     const id = '1';
     const dto: UpdateCoursesDto = {
-      instructor: ['Updated Organizer'],
+      instructors: ['Updated Organizer'],
       cost: 250,
     };
 
