@@ -36,7 +36,7 @@ export default function CourseList({ canEdit = false }: CourseListProps) {
   if (courseRepo.get.isLoading) {
     return (
       <Typography align="center" variant="h2" display="block">
-        Loading...
+        Caricamento...
       </Typography>
     );
   }
@@ -44,14 +44,14 @@ export default function CourseList({ canEdit = false }: CourseListProps) {
   if (courseRepo.get.isError)
     return (
       <Typography align="center" variant="h2" display="block">
-        An error occurred
+        Errore
       </Typography>
     );
 
   if (courseRepo.get.data?.length === 0) {
     return (
       <Typography align="center" variant="h2" display="block">
-        No courses to show
+        Nessun corso visualizzato
       </Typography>
     );
   }

@@ -21,7 +21,7 @@ export default function CourseListPage({
         fontWeight={400}
       />
       <Container maxWidth="xl" sx={{ p: 5 }}>
-        <CourseList canEdit={canEdit} />;
+        <CourseList canEdit={canEdit} />
       </Container>
     </>
   );

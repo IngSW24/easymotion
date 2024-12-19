@@ -26,33 +26,55 @@ export interface CourseCardProps {
 export default function CourseCard(props: CourseCardProps) {
   const { course, canEdit = false, onDelete } = props;
   return (
-    <Card>
+    <Card
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        height: "100%",
+        maxWidth: 360,
+        margin: "auto",
+      }}
+    >
       <CardMedia
         sx={{ height: 180 }}
         image="https://wallpapers.com/images/hd/1920-x-1080-hd-1qq8r4pnn8cmcew4.jpg"
       />
-      <CardContent>
+      <CardContent
+        sx={{
+          flexGrow: 1,
+          padding: 2,
+        }}
+      >
         <Typography variant="body1" fontWeight="fontWeightBold" color="primary">
           <span>{course.category}</span> · <span>{course.level}</span>
         </Typography>
-        <Typography variant="h5" fontWeight="fontWeightBold">
+        <Typography variant="h5" fontWeight="fontWeightBold" gutterBottom>
           {course.name}
         </Typography>
         <Typography variant="body1">{course.short_description}</Typography>
-        <Stack direction="row" spacing={1} sx={{ marginTop: 2 }}>
-          {course.tags.map((tag) => (
-            <Chip key={tag} label={tag} variant="outlined" color="secondary" />
-          ))}
-        </Stack>
       </CardContent>
-      <CardActions sx={{ justifyContent: "right" }}>
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{
+          margin: 2,
+          flexWrap: "wrap",
+          rowGap: 1,
+        }}
+      >
+        {course.tags.map((tag) => (
+          <Chip key={tag} label={tag} variant="outlined" color="secondary" />
+        ))}
+      </Stack>
+      <CardActions sx={{ justifyContent: "right", paddingX: 2 }}>
         {canEdit && (
           <Button
             startIcon={<Delete />}
             color="error"
             onClick={() => onDelete(course.id)}
           >
-            Delete
+            Elimina
           </Button>
         )}
         <Button
@@ -61,7 +83,7 @@ export default function CourseCard(props: CourseCardProps) {
           variant="contained"
           to={"details/" + course.id}
         >
-          Learn more
+          Scopri
         </Button>
       </CardActions>
     </Card>

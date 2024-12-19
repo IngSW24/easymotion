@@ -14,10 +14,6 @@ const userMenuEntries: Array<MenuEntry> = [
 const physiotherapistMenuEntries: Array<MenuEntry> = [
   {
     label: "Home",
-    link: "/",
-  },
-  {
-    label: "Modifica",
     link: "/physio",
   },
 ];

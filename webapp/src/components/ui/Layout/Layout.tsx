@@ -86,7 +86,7 @@ export default function Layout(props: LayoutProps) {
             EasyMotion
             {isPhysiotherapist && (
               <Typography component="span" sx={{ color: "#fff", ml: 3 }}>
-                Physioterapist
+                Fisioterapista
               </Typography>
             )}
           </Typography>
