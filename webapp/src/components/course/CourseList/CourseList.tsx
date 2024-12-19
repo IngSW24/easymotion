@@ -3,6 +3,7 @@ import CourseCard from "../CourseCard/CourseCard";
 import { useCourses } from "../../../hooks/useCourses";
 import { useSnack } from "../../../hooks/useSnack";
 import { useDialog } from "../../../hooks/useDialog";
+import FloatingActionButtonZoom from "../CourseEditor/CreateCourseButton";
 
 interface CourseListProps {
   canEdit?: boolean;
@@ -71,6 +72,7 @@ export default function CourseList({ canEdit = false }: CourseListProps) {
           />
         </Grid2>
       ))}
+      {canEdit && <FloatingActionButtonZoom />}
     </Grid2>
   );
 }

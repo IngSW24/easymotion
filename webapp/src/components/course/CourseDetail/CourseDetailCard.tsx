@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Card, CardContent, Typography, Box, TextField } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 
 interface ProductCardProps {
   typeInfo: string; // Indicates the label of each information, e.g., organizer, time, ...
@@ -32,12 +33,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
   // This function returns the icon depending on the information type
   const getIcon = (type: string) => {
     switch (type) {
-      case "Organizzatore":
+      case "Organizzatori":
         return (
           <CheckCircleOutlineIcon sx={{ fontSize: 48, color: "#5c6bc0" }} />
         );
-      case "Appuntamenti":
-        return <AccessTimeIcon sx={{ fontSize: 48, color: "#5c6bc0" }} />;
+      case "Istruttori":
+        return <FitnessCenterIcon sx={{ fontSize: 48, color: "#5c6bc0" }} />;
+      case "Posizione":
+        return <LocationOnIcon sx={{ fontSize: 48, color: "#5c6bc0" }} />;
       default:
         return null;
     }

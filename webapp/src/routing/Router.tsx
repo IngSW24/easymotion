@@ -28,7 +28,7 @@ const Router: React.FC = () => (
       <Route element={<Layout entries={userMenuEntries} />}>
         <Route index element={<CourseListPage />} />
         <Route path="details/:id" element={<CourseDetailsPage />} />
-        <Route path="new" element={<CourseCreatePage />} />
+        {/**<Route path="new" element={<CourseCreatePage />} />*/}
       </Route>
       <Route
         path="physio"
@@ -38,7 +38,7 @@ const Router: React.FC = () => (
       >
         <Route index element={<CourseListPage canEdit />} />
         <Route path="details/:id" element={<CourseDetailsPage canEdit />} />
-        <Route path="new" element={<CourseCreatePage canEdit />} />
+        <Route path="new" element={<CourseCreatePage />} />
       </Route>
     </Routes>
   </BrowserRouter>
