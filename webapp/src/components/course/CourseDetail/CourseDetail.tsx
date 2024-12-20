@@ -299,7 +299,12 @@ export default function CourseDetail(props: CourseDetailProps) {
               onSave={(field, value) => {
                 setEditCourse((prev) => ({
                   ...prev,
-                  [field.toLowerCase()]: [value],
+                  [field.toLowerCase()]: value
+                    .toString()
+                    .split(",")
+                    .map((str) => {
+                      return str.trim();
+                    }),
                 }));
               }}
             />
