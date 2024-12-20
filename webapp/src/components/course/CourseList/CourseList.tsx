@@ -7,7 +7,7 @@ import FilterBlock from "../FilterBlock/FilterBlock";
 import { CourseFilters } from "../FilterBlock/types";
 import { useCallback, useState } from "react";
 import LoadingSpinner from "../../ui/LoadingSpinner/LoadingSpinner";
-import FloatingActionButton from "../CourseEditor/CreateCourseButton";
+import CreateCourseButton from "../CourseEditor/CreateCourseButton";
 
 interface CourseListProps {
   canEdit?: boolean;
@@ -110,7 +110,7 @@ export default function CourseList(props: CourseListProps) {
             )}
           </>
         )}
-        {canEdit && <FloatingActionButton />}
+        {canEdit && <CreateCourseButton />}
       </Grid2>
     </>
   );

@@ -2,7 +2,7 @@ import { Fab, Tooltip } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router";
 
-export default function FloatingActionButton() {
+export default function CreateCourseButton() {
   const navigate = useNavigate();
 
   const handleFabClick = () => {

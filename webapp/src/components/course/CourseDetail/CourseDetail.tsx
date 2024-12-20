@@ -10,7 +10,7 @@ import {
 import { useState } from "react";
 import { CourseEntity } from "../../../../client/data-contracts";
 import { useSnack } from "../../../hooks/useSnack";
-import ProductCard from "../CourseDetail/CourseDetailCard";
+import ProductCard from "./ProductCard";
 import { Add, Delete, EventAvailableOutlined } from "@mui/icons-material";
 import LockUnlockButton from "./LockUnlockButton";
 import Selector from "../../editors/Selector/Selector";
