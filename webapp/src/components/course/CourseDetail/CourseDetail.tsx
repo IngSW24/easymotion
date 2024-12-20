@@ -220,7 +220,7 @@ export default function CourseDetail(props: CourseDetailProps) {
                         }))
                       }
                     >
-                      Add Schedule
+                      {"Aggiuni voce"}
                     </Button>
                   </Stack>
                 )}
