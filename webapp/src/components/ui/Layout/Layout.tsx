@@ -13,8 +13,9 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { Outlet, useLocation } from "react-router";
-import { Button } from "@mui/material";
+import { Button, ThemeProvider } from "@mui/material";
 import { Link } from "react-router";
+import { physiotherapistTheme, userTheme } from "../../../theme/theme";
 
 export type MenuEntry = {
   label: string;
@@ -58,78 +59,73 @@ export default function Layout(props: LayoutProps) {
   );
 
   return (
-    <Box sx={{ display: "flex" }}>
-      <CssBaseline />
-      <AppBar
-        component="nav"
-        sx={{
-          backgroundColor: isPhysiotherapist
-            ? "secondary.main"
-            : "primary.main",
-        }}
-      >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography
-            variant="h6"
-            component="span"
-            sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
-          >
-            EasyMotion
-            {isPhysiotherapist && (
-              <Typography component="span" sx={{ color: "#fff", ml: 3 }}>
-                Fisioterapista
-              </Typography>
-            )}
-          </Typography>
+    <ThemeProvider theme={isPhysiotherapist ? physiotherapistTheme : userTheme}>
+      <Box sx={{ display: "flex" }}>
+        <CssBaseline />
+        <AppBar component="nav" sx={{ backgroundColor: "primary.main" }}>
+          <Toolbar>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ mr: 2, display: { sm: "none" } }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography
+              variant="h6"
+              component="span"
+              sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+            >
+              EasyMotion
+              {isPhysiotherapist && (
+                <Typography component="span" sx={{ color: "#fff", ml: 3 }}>
+                  Fisioterapista
+                </Typography>
+              )}
+            </Typography>
 
-          <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            {entries.map((item) => (
-              <Button
-                component={Link}
-                key={item.link}
-                sx={{ color: "#fff" }}
-                to={item.link}
-              >
-                {item.label}
-              </Button>
-            ))}
-          </Box>
-        </Toolbar>
-      </AppBar>
-      <nav>
-        <Drawer
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}
-          sx={{
-            display: { xs: "block", sm: "none" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth,
-            },
-          }}
-        >
-          {drawer}
-        </Drawer>
-      </nav>
-      <Box component="main" sx={{ width: "100%", mb: 3 }}>
-        <Toolbar />
-        <div className="fade" key={location.pathname}>
-          <Outlet />
-        </div>
+            <Box sx={{ display: { xs: "none", sm: "block" } }}>
+              {entries.map((item) => (
+                <Button
+                  component={Link}
+                  key={item.link}
+                  sx={{ color: "#fff" }}
+                  to={item.link}
+                >
+                  {item.label}
+                </Button>
+              ))}
+            </Box>
+          </Toolbar>
+        </AppBar>
+        <nav>
+          <Drawer
+            variant="temporary"
+            open={mobileOpen}
+            onClose={handleDrawerToggle}
+            ModalProps={{
+              keepMounted: true, // Better open performance on mobile.
+            }}
+            sx={{
+              display: { xs: "block", sm: "none" },
+              "& .MuiDrawer-paper": {
+                boxSizing: "border-box",
+                width: drawerWidth,
+              },
+            }}
+          >
+            {drawer}
+          </Drawer>
+        </nav>
+        <Box component="main" sx={{ width: "100%", mb: 3 }}>
+          <Toolbar />
+          <div className="fade" key={location.pathname}>
+            <Outlet />
+          </div>
+        </Box>
       </Box>
-    </Box>
+    </ThemeProvider>
   );
 }
