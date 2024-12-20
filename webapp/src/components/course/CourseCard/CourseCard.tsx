@@ -38,7 +38,7 @@ export default function CourseCard(props: CourseCardProps) {
     >
       <CardMedia
         sx={{ height: 180 }}
-        image="https://wallpapers.com/images/hd/1920-x-1080-hd-1qq8r4pnn8cmcew4.jpg"
+        image={`/${course.category.toLowerCase()}.jpg`}
       />
       <CardContent
         sx={{
