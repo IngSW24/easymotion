@@ -3,6 +3,10 @@
   padding: 0;
 }
 
+html {
+  overflow-y: scroll; /* Ensures scrollbar is always visible */
+}
+
 @keyframes fadeIn {
   0% {
     opacity: 0;

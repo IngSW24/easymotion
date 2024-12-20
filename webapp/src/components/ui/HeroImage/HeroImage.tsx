@@ -10,7 +10,7 @@ export interface HeroImageProps {
 export default function HeroImage(props: HeroImageProps) {
   const {
     title,
-    height = "380px",
+    height = "320px",
     backgroundImage = "",
     fontWeight = 600,
   } = props;

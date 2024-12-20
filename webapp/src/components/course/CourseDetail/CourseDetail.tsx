@@ -33,7 +33,8 @@ export default function CourseDetail(props: CourseDetailProps) {
 
   const [editCourse, setEditCourse] = useState<CourseEntity>(course);
 
-  const [isEditing, setIsEditing] = useState(isNew); // If the course is new, it is in edit mode
+  // If the course is new, start in edit mode
+  const [isEditing, setIsEditing] = useState(isNew);
 
   const snack = useSnack();
 

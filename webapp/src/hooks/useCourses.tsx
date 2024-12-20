@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Courses } from "../../client/Courses";
 import { CreateCourseDto, UpdateCoursesDto } from "../../client/data-contracts";
-import { CourseFilter } from "../pages/CourseListPage";
+import { CourseFilters } from "../components/course/FilterBlock/types";
 
 const api = new Courses({
   baseUrl: import.meta.env.VITE_API_URL,
@@ -12,7 +12,7 @@ type UseCoursesProps = {
   page?: number;
   perPage?: number;
   fetchAll?: boolean;
-  filters?: CourseFilter;
+  filters?: CourseFilters;
 };
 
 type UpdateMutationParams = {
@@ -51,23 +51,26 @@ export const useCourses = (props: UseCoursesProps = {}) => {
           return false;
 
         if (
-          filters.category.length > 0 &&
-          !filters.category.includes(course.category)
-        )
-          return false;
-
-        if (filters.level.length > 0 && !filters.level.includes(course.level))
-          return false;
-
-        if (
-          filters.frequency.length > 0 &&
-          !filters.frequency.includes(course.frequency)
+          filters.advanced.categories.length > 0 &&
+          !filters.advanced.categories.includes(course.category)
         )
           return false;
 
         if (
-          filters.availability.length > 0 &&
-          !filters.availability.includes(course.availability)
+          filters.advanced.levels.length > 0 &&
+          !filters.advanced.levels.includes(course.level)
+        )
+          return false;
+
+        if (
+          filters.advanced.frequencies.length > 0 &&
+          !filters.advanced.frequencies.includes(course.frequency)
+        )
+          return false;
+
+        if (
+          filters.advanced.availabilities.length > 0 &&
+          !filters.advanced.availabilities.includes(course.availability)
         )
           return false;
 
