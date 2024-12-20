@@ -50,14 +50,14 @@ export default function DialogContextProvider(
           <DialogContent>{dialogOptions.content}</DialogContent>
           <DialogActions>
             <Button onClick={() => handleClose(false)}>
-              {dialogOptions.cancelText || "Cancel"}
+              {dialogOptions.cancelText || "Annulla"}
             </Button>
             <Button
               onClick={() => handleClose(true)}
               color="primary"
               variant="contained"
             >
-              {dialogOptions.confirmText || "Confirm"}
+              {dialogOptions.confirmText || "Conferma"}
             </Button>
           </DialogActions>
         </Dialog>
