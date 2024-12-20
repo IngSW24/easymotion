@@ -7,28 +7,28 @@ export const courseCategories: LiteralUnionDescriptor<
   { value: "CROSSFIT", label: "Crossfit" },
   { value: "PILATES", label: "Pilates" },
   { value: "ZUMBA_FITNESS", label: "Zumba Fitness" },
-  { value: "POSTURAL_TRAINING", label: "Postural Training" },
-  { value: "BODYWEIGHT_WORKOUT", label: "Bodyweight Workout" },
+  { value: "POSTURAL_TRAINING", label: "Training Posturale" },
+  { value: "BODYWEIGHT_WORKOUT", label: "Workout Corpo Libero" },
 ];
 
 export const courseLevels: LiteralUnionDescriptor<CourseEntity["level"]> = [
-  { value: "BASIC", label: "Basic" },
-  { value: "MEDIUM", label: "Medium" },
-  { value: "ADVANCED", label: "Advanced" },
+  { value: "BASIC", label: "Base" },
+  { value: "MEDIUM", label: "Intermedio" },
+  { value: "ADVANCED", label: "Avanzato" },
 ];
 
 export const courseFrequencies: LiteralUnionDescriptor<
   CourseEntity["frequency"]
 > = [
-  { value: "SINGLE_SESSION", label: "Single Session" },
-  { value: "WEEKLY", label: "Weekly" },
-  { value: "MONTHLY", label: "Monthly" },
+  { value: "SINGLE_SESSION", label: "Sessione singola" },
+  { value: "WEEKLY", label: "Settimanale" },
+  { value: "MONTHLY", label: "Mensile" },
 ];
 
 export const courseAvilabilities: LiteralUnionDescriptor<
   CourseEntity["availability"]
 > = [
-  { value: "ACTIVE", label: "Active" },
-  { value: "COMING_SOON", label: "Coming Soon" },
-  { value: "NO_LONGER_AVAILABLE", label: "No Longer Available" },
+  { value: "ACTIVE", label: "Attivo" },
+  { value: "COMING_SOON", label: "Disponibile a breve" },
+  { value: "NO_LONGER_AVAILABLE", label: "Non disponibile" },
 ];
