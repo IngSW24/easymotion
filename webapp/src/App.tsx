@@ -35,7 +35,7 @@ export default function App() {
           </ThemeProvider>
         </SnackbarProvider>
       </DialogContextProvider>
-      <ReactQueryDevtools buttonPosition="bottom-right" />
+      <ReactQueryDevtools buttonPosition="bottom-left" />
     </QueryClientProvider>
   );
 }
