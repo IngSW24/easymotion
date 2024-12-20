@@ -57,7 +57,7 @@ export default function HeroImage(props: HeroImageProps) {
               padding: "10px 20px",
             }}
           >
-            {title}
+            <div className="typewriter">{title}</div>
           </Typography>
         </Box>
       )}
