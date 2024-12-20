@@ -6,11 +6,10 @@ import {
   MenuItem,
   SelectChangeEvent,
 } from "@mui/material";
-import { EnumDescriptor } from "../../../data/courseEnumerations";
 
 interface SelectorProps<T extends string> {
   label: string;
-  options: EnumDescriptor<T>;
+  options: LiteralUnionDescriptor<T>;
   onChange: (value: T) => void;
   initialValue?: T;
 }
