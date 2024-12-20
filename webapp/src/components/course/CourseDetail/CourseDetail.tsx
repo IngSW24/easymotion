@@ -231,6 +231,30 @@ export default function CourseDetail(props: CourseDetailProps) {
             </div>
             <div>
               <Typography variant="h4" color="primary.dark" fontWeight="bold">
+                Durata di ogni sessione
+              </Typography>
+              <Box sx={{ mt: 3 }}>
+                {!isEditing ? (
+                  <Typography
+                    variant="body1"
+                    sx={{ overflowWrap: "break-word" }}
+                  >
+                    {editCourse.session_duration}
+                  </Typography>
+                ) : (
+                  <TextField
+                    multiline
+                    fullWidth
+                    value={editCourse.session_duration}
+                    onChange={(e) =>
+                      updateField("session_duration", e.target.value)
+                    }
+                  />
+                )}
+              </Box>
+            </div>
+            <div>
+              <Typography variant="h4" color="primary.dark" fontWeight="bold">
                 Categoria e Livello di difficoltà
               </Typography>
               <Box sx={{ mt: 3 }}>
@@ -284,6 +308,19 @@ export default function CourseDetail(props: CourseDetailProps) {
               typeInfo="Posizione"
               field="location"
               info={editCourse.location}
+              isEditing={isEditing}
+              onSave={(field, value) => {
+                setEditCourse((prev) => ({
+                  ...prev,
+                  [field.toLowerCase()]: value,
+                }));
+              }}
+            />
+
+            <ProductCard
+              typeInfo="Costo"
+              field="cost"
+              cost={editCourse.cost}
               isEditing={isEditing}
               onSave={(field, value) => {
                 setEditCourse((prev) => ({

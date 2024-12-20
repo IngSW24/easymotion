@@ -12,7 +12,7 @@ export default function CreateCourseButton() {
   return (
     <Tooltip title="Crea un corso" arrow>
       <Fab
-        color="secondary"
+        color="primary"
         sx={{
           position: "fixed", // Mantiene il pulsante in una posizione fissa
           bottom: 20, // Margine dal basso

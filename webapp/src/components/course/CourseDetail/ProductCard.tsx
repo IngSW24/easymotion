@@ -1,22 +1,24 @@
 import React, { useState } from "react";
 import { Card, CardContent, Typography, Box, TextField } from "@mui/material";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
+import EuroIcon from "@mui/icons-material/Euro";
 import { CourseEntity } from "../../../../client/data-contracts";
 
 interface ProductCardProps {
   typeInfo: string; // Indicates the label of each information, e.g., organizer, time, ...
   info?: string; // Indicates the related information
+  cost?: number; // Cost field
   field: keyof CourseEntity; // Indicates the field to update
   isEditing: boolean; // External control for edit mode
-  onSave: (field: string, value: string) => void; // Function to handle saving
+  onSave: (field: string, value: string | number) => void; // Function to handle saving
 }
 
 /**
  * Creates the ProductCard
  * @param {string} typeInfo - The label of the information to determine the icon
  * @param {string} info - The actual information to display
+ * @param {number} cost - The cost information to display if applicable
  * @param {boolean} isEditing - Determines if the component is in edit mode
  * @param {Function} onSave - Callback to handle saving the updated data
  * @returns A card showing the course information with an appropriate icon
@@ -24,32 +26,35 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({
   typeInfo,
   info,
+  cost,
   field,
   isEditing,
   onSave,
 }) => {
   const [editedInfo, setEditedInfo] = useState(info);
+  const [editedCost, setEditedCost] = useState(cost);
 
   // This function returns the icon depending on the information type
   const getIcon = (type: string) => {
     switch (type) {
-      case "Organizzatori":
-        return (
-          <CheckCircleOutlineIcon sx={{ fontSize: 48, color: "#5c6bc0" }} />
-        );
       case "Istruttori":
         return <FitnessCenterIcon sx={{ fontSize: 48, color: "#5c6bc0" }} />;
       case "Posizione":
         return <LocationOnIcon sx={{ fontSize: 48, color: "#5c6bc0" }} />;
+      case "Costo":
+        return <EuroIcon sx={{ fontSize: 48, color: "#5c6bc0" }} />;
       default:
         return null;
     }
   };
 
-  // Handle saving the edited information
+  // Handle saving the edited information or cost
   const handleSave = () => {
-    if (editedInfo !== undefined && editedInfo !== info) {
-      onSave(field, editedInfo);
+    if (info !== undefined && editedInfo !== info) {
+      onSave(field, editedInfo || "");
+    }
+    if (cost !== undefined && editedCost !== cost) {
+      onSave(field, editedCost || 0);
     }
   };
 
@@ -73,23 +78,35 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </Typography>
         {isEditing ? (
           <Box>
-            <TextField
-              label={typeInfo}
-              name="information"
-              value={editedInfo}
-              onChange={(e) => setEditedInfo(e.target.value)}
-              onBlur={handleSave}
-              fullWidth
-              margin="normal"
-            />
+            {info !== undefined ? (
+              <TextField
+                label={typeInfo}
+                name="information"
+                value={editedInfo}
+                onChange={(e) => setEditedInfo(e.target.value)}
+                onBlur={handleSave}
+                fullWidth
+                margin="normal"
+              />
+            ) : cost !== undefined ? (
+              <TextField
+                label={typeInfo}
+                name="cost"
+                value={editedCost}
+                onChange={(e) => setEditedCost(Number(e.target.value))}
+                onBlur={handleSave}
+                fullWidth
+                margin="normal"
+              />
+            ) : null}
           </Box>
         ) : (
           <Typography
             variant="h6"
             component="div"
-            sx={{ fontWeight: "bold", marginBottom: "8px" }}
+            sx={{ fontWeight: "bold", marginBottom: "10px" }}
           >
-            {info}
+            {info ?? `${cost} euro`}
           </Typography>
         )}
       </CardContent>
