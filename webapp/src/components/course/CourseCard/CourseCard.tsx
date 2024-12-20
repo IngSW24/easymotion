@@ -11,12 +11,19 @@ import {
 import { Delete, Launch } from "@mui/icons-material";
 import { Link } from "react-router";
 import { CourseEntity } from "../../../../client/data-contracts";
+import {
+  courseCategories,
+  courseLevels,
+} from "../../../data/courseEnumerations";
 
 export interface CourseCardProps {
   course: CourseEntity;
   canEdit?: boolean;
   onDelete: (id: string) => void;
 }
+
+const getLabel = (value: string, options: LiteralUnionDescriptor<string>) =>
+  options.find((o) => o.value === value)?.label ?? value;
 
 /**
  * Card displaying information about a course
@@ -47,7 +54,8 @@ export default function CourseCard(props: CourseCardProps) {
         }}
       >
         <Typography variant="body1" fontWeight="fontWeightBold" color="primary">
-          <span>{course.category}</span> · <span>{course.level}</span>
+          <span>{getLabel(course.category, courseCategories)}</span> {" · "}
+          <span>{getLabel(course.level, courseLevels)}</span>
         </Typography>
         <Typography variant="h5" fontWeight="fontWeightBold" gutterBottom>
           {course.name}
