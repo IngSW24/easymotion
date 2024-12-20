@@ -13,7 +13,7 @@ export default function LockUnlockButton(props: LockUnlockButtonProps) {
     <Fab
       variant="extended"
       sx={{ minWidth: "13rem" }}
-      color={props.isEditing ? "success" : "secondary"}
+      color={props.isEditing ? "success" : "primary"}
       onClick={props.onClick}
     >
       {props.isEditing ? <Save sx={buttonSx} /> : <Edit sx={buttonSx} />}

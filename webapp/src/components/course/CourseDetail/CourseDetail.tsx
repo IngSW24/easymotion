@@ -14,7 +14,10 @@ import ProductCard from "./ProductCard";
 import { Add, Delete, EventAvailableOutlined } from "@mui/icons-material";
 import LockUnlockButton from "./LockUnlockButton";
 import Selector from "../../editors/Selector/Selector";
-import { courseCategories } from "../../../data/courseEnumerations";
+import {
+  courseCategories,
+  courseLevels,
+} from "../../../data/courseEnumerations";
 
 export interface CourseDetailProps {
   isNew?: boolean;
@@ -129,7 +132,7 @@ export default function CourseDetail(props: CourseDetailProps) {
         <Grid2 size={{ xs: 12, md: 8 }}>
           <Stack spacing={6}>
             <div>
-              <Typography variant="h4" color="secondary.main" fontWeight="bold">
+              <Typography variant="h4" color="primary.dark" fontWeight="bold">
                 Descrizione
               </Typography>
               <Box sx={{ mt: 3 }}>
@@ -151,7 +154,7 @@ export default function CourseDetail(props: CourseDetailProps) {
               </Box>
             </div>
             <div>
-              <Typography variant="h4" color="secondary.main" fontWeight="bold">
+              <Typography variant="h4" color="primary.dark" fontWeight="bold">
                 Programma
               </Typography>
               <Stack spacing={3} sx={{ mt: 3 }}>
@@ -226,28 +229,38 @@ export default function CourseDetail(props: CourseDetailProps) {
                 )}
               </Stack>
             </div>
-            {!isEditing ? (
-              <Stack spacing={3}>
-                <Typography
-                  variant="h4"
-                  color="secondary.main"
-                  fontWeight="bold"
-                >
-                  Categoria
-                </Typography>
-                <Typography variant="body1">
-                  {courseCategories.find((x) => x.value === editCourse.category)
-                    ?.label ?? ""}
-                </Typography>
-              </Stack>
-            ) : (
-              <Selector<CourseEntity["category"]>
-                initialValue={editCourse.category}
-                label="Categoria"
-                options={courseCategories}
-                onChange={(value) => updateField("category", value)}
-              />
-            )}
+            <div>
+              <Typography variant="h4" color="primary.dark" fontWeight="bold">
+                Categoria e Livello di difficoltà
+              </Typography>
+              <Box sx={{ mt: 3 }}>
+                {!isEditing ? (
+                  <Typography variant="body1">
+                    {courseCategories.find(
+                      (x) => x.value === editCourse.category
+                    )?.label ?? ""}{" "}
+                    -{" "}
+                    {courseLevels.find((x) => x.value === editCourse.level)
+                      ?.label ?? ""}
+                  </Typography>
+                ) : (
+                  <Stack spacing={3}>
+                    <Selector<CourseEntity["category"]>
+                      initialValue={editCourse.category}
+                      label="Categoria"
+                      options={courseCategories}
+                      onChange={(value) => updateField("category", value)}
+                    />
+                    <Selector<CourseEntity["level"]>
+                      initialValue={editCourse.level}
+                      label="Livello"
+                      options={courseLevels}
+                      onChange={(value) => updateField("level", value)}
+                    />
+                  </Stack>
+                )}
+              </Box>
+            </div>
           </Stack>
         </Grid2>
         <Grid2 size={{ xs: 12, md: 4 }}>
@@ -285,17 +298,3 @@ export default function CourseDetail(props: CourseDetailProps) {
     </>
   );
 }
-
-// {
-//   /**
-//       <ProductCard
-//         typeInfo="Description"
-//         info={editCourse.description}
-//         isEditing={isEditing}
-//         courseId={id}
-//         onSave={(field, value) => {
-//           setEditCourse((prev) => ({ ...prev, [field.toLowerCase()]: value }));
-//         }}
-//       />
-// */
-// }
