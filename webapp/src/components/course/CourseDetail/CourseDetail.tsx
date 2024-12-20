@@ -253,44 +253,23 @@ export default function CourseDetail(props: CourseDetailProps) {
         <Grid2 size={{ xs: 12, md: 4 }}>
           <div>
             {/* Product Card (dx screen) */}
-            <ProductCard
-              typeInfo="Organizzatori"
-              info={editCourse.instructors?.join(", ") ?? ""}
-              isEditing={isEditing}
-              onSave={(field, value) => {
-                setEditCourse((prev) => ({
-                  ...prev,
-                  [field.toLowerCase()]: value,
-                }));
-              }}
-            />
 
             <ProductCard
               typeInfo="Istruttori"
               info={editCourse.instructors?.join(", ") ?? ""}
+              field="instructors"
               isEditing={isEditing}
               onSave={(field, value) => {
                 setEditCourse((prev) => ({
                   ...prev,
-                  [field.toLowerCase()]: value,
+                  [field.toLowerCase()]: [value],
                 }));
               }}
             />
 
-            {/* <ProductCard
-              typeInfo="Type"
-              info={editCourse.}
-              isEditing={isEditing}
-              courseId={id}
-              onSave={(field, value) => {
-                setEditCourse((prev) => ({
-                  ...prev,
-                  [field.toLowerCase()]: value,
-                }));
-              }}
-            /> */}
             <ProductCard
               typeInfo="Posizione"
+              field="location"
               info={editCourse.location}
               isEditing={isEditing}
               onSave={(field, value) => {

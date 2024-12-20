@@ -3,10 +3,12 @@ import { Card, CardContent, Typography, Box, TextField } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
+import { CourseEntity } from "../../../../client/data-contracts";
 
 interface ProductCardProps {
   typeInfo: string; // Indicates the label of each information, e.g., organizer, time, ...
   info?: string; // Indicates the related information
+  field: keyof CourseEntity; // Indicates the field to update
   isEditing: boolean; // External control for edit mode
   onSave: (field: string, value: string) => void; // Function to handle saving
 }
@@ -22,6 +24,7 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({
   typeInfo,
   info,
+  field,
   isEditing,
   onSave,
 }) => {
@@ -46,7 +49,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   // Handle saving the edited information
   const handleSave = () => {
     if (editedInfo !== undefined && editedInfo !== info) {
-      onSave(typeInfo, editedInfo);
+      onSave(field, editedInfo);
     }
   };
 
