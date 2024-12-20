@@ -4,8 +4,6 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { SnackbarProvider } from "notistack";
 import SnackbarCloseButton from "./components/ui/Snackbar/SnackbarCloseButton";
 import DialogContextProvider from "./context/DialogContext/DialogContextProvider";
-import { ThemeProvider } from "@mui/material";
-import { userTheme } from "./theme/theme";
 
 const queryClient = new QueryClient({
   defaultOptions: {
