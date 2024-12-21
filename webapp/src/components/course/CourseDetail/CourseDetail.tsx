@@ -1,19 +1,18 @@
-import {
-  Box,
-  Button,
-  Grid2,
-  IconButton,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Chip, Grid2, Stack, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import { CourseEntity } from "../../../../client/data-contracts";
 import { useSnack } from "../../../hooks/useSnack";
 import ProductCard from "./ProductCard";
-import { Add, Delete, EventAvailableOutlined } from "@mui/icons-material";
 import LockUnlockButton from "./LockUnlockButton";
-import Selector from "../../editors/Selector/Selector";
+import { Duration } from "luxon";
+import DurationPicker from "../../editors/DurationPicker/DurationPicker";
+import ProductCardSelector from "./ProductCardSelector";
+import ListEditor from "../../editors/ListEditor/ListEditor";
+import EventAvailableOutlinedIcon from "@mui/icons-material/EventAvailableOutlined";
+import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
+import LiveHelpIcon from "@mui/icons-material/LiveHelp";
+import TagIcon from "@mui/icons-material/Tag";
+import WatchIcon from "@mui/icons-material/Watch";
 import {
   courseCategories,
   courseLevels,
@@ -157,77 +156,39 @@ export default function CourseDetail(props: CourseDetailProps) {
               <Typography variant="h4" color="primary.dark" fontWeight="bold">
                 Programma
               </Typography>
-              <Stack spacing={3} sx={{ mt: 3 }}>
-                {editCourse.schedule?.map((item, index) => (
-                  <Stack
-                    key={`schedule-${index}`}
-                    direction="row"
-                    spacing={2}
-                    alignItems="center"
-                  >
-                    <EventAvailableOutlined fontSize="large" color="primary" />
-                    {!isEditing ? (
+              {!isEditing ? (
+                <Stack spacing={2} sx={{ mt: 3 }}>
+                  {editCourse.schedule?.map((item, index) => (
+                    <Stack
+                      key={`schedule-${index}`}
+                      direction="row"
+                      spacing={2}
+                      alignItems="center"
+                    >
+                      <EventAvailableOutlinedIcon
+                        fontSize="large"
+                        color="secondary"
+                      />
                       <Typography
                         component="div"
-                        variant="button"
-                        fontSize={20}
-                        letterSpacing={2}
+                        variant="h5"
+                        letterSpacing={1}
                       >
                         {item}
                       </Typography>
-                    ) : (
-                      <>
-                        <TextField
-                          id={`outlined-basic-${index}`}
-                          value={item}
-                          onChange={(e) =>
-                            setEditCourse((prev) => ({
-                              ...prev,
-                              schedule: prev.schedule?.map((s, i) =>
-                                i === index ? e.target.value : s
-                              ),
-                            }))
-                          }
-                          variant="outlined"
-                          fullWidth
-                        />
-                        <IconButton
-                          color="error"
-                          onClick={() =>
-                            setEditCourse((prev) => ({
-                              ...prev,
-                              schedule: prev.schedule?.filter(
-                                (_, i) => index !== i
-                              ),
-                            }))
-                          } // Removes the current row
-                        >
-                          <Delete />
-                        </IconButton>
-                      </>
-                    )}
-                  </Stack>
-                ))}
-
-                {/* Add Row Button */}
-                {isEditing && (
-                  <Stack direction="row" justifyContent="flex-start" mt={2}>
-                    <Button
-                      variant="contained"
-                      startIcon={<Add />}
-                      color="primary"
-                      onClick={() =>
-                        setEditCourse((prev) => ({
-                          ...prev,
-                          schedule: [...(prev.schedule || []), ""], // Adds an empty new row
-                        }))
-                      }
-                    >
-                      {"Aggiuni voce"}
-                    </Button>
-                  </Stack>
-                )}
-              </Stack>
+                    </Stack>
+                  ))}
+                </Stack>
+              ) : (
+                <ListEditor
+                  entries={editCourse.schedule || []}
+                  onChange={(schedule) =>
+                    setEditCourse((prev) => ({ ...prev, schedule }))
+                  }
+                  entryIcon={<EventAvailableOutlinedIcon fontSize="large" />}
+                  buttonText="Aggiungi voce"
+                />
+              )}
             </div>
             <div>
               <Typography variant="h4" color="primary.dark" fontWeight="bold">
@@ -235,60 +196,69 @@ export default function CourseDetail(props: CourseDetailProps) {
               </Typography>
               <Box sx={{ mt: 3 }}>
                 {!isEditing ? (
-                  <Typography
-                    variant="body1"
-                    sx={{ overflowWrap: "break-word" }}
-                  >
-                    {editCourse.session_duration}
-                  </Typography>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                    <WatchIcon fontSize="large" color="secondary" />
+                    <Typography
+                      variant="h5"
+                      sx={{ overflowWrap: "break-word" }}
+                    >
+                      {Duration.fromISO(editCourse.session_duration).toFormat(
+                        "hh:mm"
+                      )}
+                      {" ore"}
+                    </Typography>
+                  </Box>
                 ) : (
-                  <TextField
-                    multiline
-                    fullWidth
-                    value={editCourse.session_duration}
-                    onChange={(e) =>
-                      updateField("session_duration", e.target.value)
-                    }
+                  <DurationPicker
+                    value={Duration.fromISO(editCourse.session_duration)}
+                    onDurationChange={(d) => {
+                      setEditCourse((prev) => ({
+                        ...prev,
+                        session_duration: d.toISO() ?? "",
+                      }));
+                    }}
                   />
                 )}
               </Box>
             </div>
             <div>
               <Typography variant="h4" color="primary.dark" fontWeight="bold">
-                Categoria e Livello di difficoltà
+                Tags
               </Typography>
-              <Box sx={{ mt: 3 }}>
-                {!isEditing ? (
-                  <Typography variant="body1">
-                    {courseCategories.find(
-                      (x) => x.value === editCourse.category
-                    )?.label ?? ""}{" "}
-                    -{" "}
-                    {courseLevels.find((x) => x.value === editCourse.level)
-                      ?.label ?? ""}
-                  </Typography>
-                ) : (
-                  <Stack spacing={3}>
-                    <Selector<CourseEntity["category"]>
-                      initialValue={editCourse.category}
-                      label="Categoria"
-                      options={courseCategories}
-                      onChange={(value) => updateField("category", value)}
+              {!isEditing ? (
+                <Stack spacing={2} sx={{ mt: 3 }} direction="row">
+                  {editCourse.tags?.map((item, index) => (
+                    <Chip
+                      key={`tag-${index}`}
+                      label={
+                        <Typography
+                          component="div"
+                          variant="h6"
+                          letterSpacing={1}
+                        >
+                          {item}
+                        </Typography>
+                      }
+                      color="primary"
+                      variant="outlined" // Optional: Makes the chip outlined
                     />
-                    <Selector<CourseEntity["level"]>
-                      initialValue={editCourse.level}
-                      label="Livello"
-                      options={courseLevels}
-                      onChange={(value) => updateField("level", value)}
-                    />
-                  </Stack>
-                )}
-              </Box>
+                  ))}
+                </Stack>
+              ) : (
+                <ListEditor
+                  entries={editCourse.tags || []}
+                  onChange={(tags) =>
+                    setEditCourse((prev) => ({ ...prev, tags }))
+                  }
+                  entryIcon={<TagIcon fontSize="medium" />}
+                  buttonText="Aggiungi tag"
+                />
+              )}
             </div>
           </Stack>
         </Grid2>
         <Grid2 size={{ xs: 12, md: 4 }}>
-          <div>
+          <Stack spacing={3}>
             {/* Product Card (dx screen) */}
 
             <ProductCard
@@ -302,9 +272,7 @@ export default function CourseDetail(props: CourseDetailProps) {
                   [field.toLowerCase()]: value
                     .toString()
                     .split(",")
-                    .map((str) => {
-                      return str.trim();
-                    }),
+                    .map((str) => str.trim()),
                 }));
               }}
             />
@@ -334,7 +302,33 @@ export default function CourseDetail(props: CourseDetailProps) {
                 }));
               }}
             />
-          </div>
+
+            <ProductCardSelector<CourseEntity["category"]>
+              label="Categoria"
+              icon={
+                <FitnessCenterIcon
+                  sx={{ fontSize: 48, color: "secondary.dark" }}
+                />
+              }
+              options={courseCategories}
+              value={editCourse.category}
+              isEdit={isEditing}
+              onChange={(v) =>
+                setEditCourse((prev) => ({ ...prev, category: v }))
+              }
+            />
+
+            <ProductCardSelector<CourseEntity["level"]>
+              label="Livello"
+              icon={
+                <LiveHelpIcon sx={{ fontSize: 48, color: "secondary.dark" }} />
+              }
+              isEdit={isEditing}
+              options={courseLevels}
+              value={editCourse.level}
+              onChange={(v) => setEditCourse((prev) => ({ ...prev, level: v }))}
+            />
+          </Stack>
         </Grid2>
       </Grid2>
     </>

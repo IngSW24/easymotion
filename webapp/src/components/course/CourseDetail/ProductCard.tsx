@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Card, CardContent, Typography, Box, TextField } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
-import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import EuroIcon from "@mui/icons-material/Euro";
 import { CourseEntity } from "../../../../client/data-contracts";
+import { Person } from "@mui/icons-material";
 
 interface ProductCardProps {
   typeInfo: string; // Indicates the label of each information, e.g., organizer, time, ...
@@ -38,11 +38,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const getIcon = (type: string) => {
     switch (type) {
       case "Istruttori":
-        return <FitnessCenterIcon sx={{ fontSize: 48, color: "#5c6bc0" }} />;
+        return <Person sx={{ fontSize: 48, color: "secondary.dark" }} />;
       case "Posizione":
-        return <LocationOnIcon sx={{ fontSize: 48, color: "#5c6bc0" }} />;
+        return (
+          <LocationOnIcon sx={{ fontSize: 48, color: "secondary.dark" }} />
+        );
       case "Costo":
-        return <EuroIcon sx={{ fontSize: 48, color: "#5c6bc0" }} />;
+        return <EuroIcon sx={{ fontSize: 48, color: "secondary.dark" }} />;
       default:
         return null;
     }
@@ -62,53 +64,67 @@ const ProductCard: React.FC<ProductCardProps> = ({
     <Card
       sx={{
         display: "flex",
+        gap: 2,
         alignItems: "center",
-        padding: "8px",
+        px: 1,
         borderRadius: "8px",
         boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
         backgroundColor: "rgba(116, 116, 116, 0.24)",
-        mb: 1,
       }}
     >
-      <Box sx={{ marginRight: 2 }}>{getIcon(typeInfo)}</Box>
+      <Box sx={{ flexGrow: 0, display: "flex", alignItems: "center" }}>
+        {getIcon(typeInfo)}
+      </Box>
 
-      <CardContent sx={{ padding: "0", marginTop: 1, flex: 1 }}>
-        <Typography variant="body2" color="text.secondary">
-          {typeInfo}
-        </Typography>
-        {isEditing ? (
-          <Box>
-            {info !== undefined ? (
-              <TextField
-                label={typeInfo}
-                name="information"
-                value={editedInfo}
-                onChange={(e) => setEditedInfo(e.target.value)}
-                onBlur={handleSave}
-                fullWidth
-                margin="normal"
-              />
-            ) : cost !== undefined ? (
-              <TextField
-                label={typeInfo}
-                name="cost"
-                value={editedCost}
-                onChange={(e) => setEditedCost(Number(e.target.value))}
-                onBlur={handleSave}
-                fullWidth
-                margin="normal"
-              />
-            ) : null}
-          </Box>
-        ) : (
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{ fontWeight: "bold", marginBottom: "10px" }}
-          >
-            {info ?? `${cost} euro`}
-          </Typography>
-        )}
+      <CardContent sx={{ flexGrow: 1 }}>
+        <Box
+          sx={{
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}
+        >
+          {!isEditing && (
+            <Typography variant="body2" color="text.secondary">
+              {typeInfo}
+            </Typography>
+          )}
+          {isEditing ? (
+            <Box>
+              {info !== undefined ? (
+                <TextField
+                  label={typeInfo}
+                  name="information"
+                  value={editedInfo}
+                  onChange={(e) => setEditedInfo(e.target.value)}
+                  onBlur={handleSave}
+                  fullWidth
+                  margin="normal"
+                />
+              ) : cost !== undefined ? (
+                <TextField
+                  label={typeInfo}
+                  type="number"
+                  name="cost"
+                  value={editedCost}
+                  onChange={(e) => setEditedCost(Number(e.target.value))}
+                  onBlur={handleSave}
+                  fullWidth
+                  margin="normal"
+                />
+              ) : null}
+            </Box>
+          ) : (
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{ fontWeight: "bold" }}
+            >
+              {info ?? `${cost} €`}
+            </Typography>
+          )}
+        </Box>
       </CardContent>
     </Card>
   );
