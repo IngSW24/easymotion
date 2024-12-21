@@ -10,13 +10,6 @@ WORKDIR /app
 
 ENV NODE_ENV development
 
-RUN addgroup --system --gid 1001 node || true
-RUN adduser --system --uid 1001 node || true
-
-COPY --chown=node:node . .
-
-USER node
-
 # Build the app
 
 FROM node:20-alpine as build
@@ -45,6 +38,8 @@ FROM node:20-alpine as prod
 
 WORKDIR /app
 RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache openssl
+RUN apk add --no-cache curl
 
 ENV NODE_ENV production
 

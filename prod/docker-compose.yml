@@ -1,49 +1,19 @@
 services:
   webapp:
-    build:
-      context: webapp
-      target: dev
-    restart: "no"
+    image: ghcr.io/ingsw24/easymotion-webapp:${WEBAPP_VERSION:-latest}
+    restart: "unless-stopped"
     environment:
-      POLLING: ${POLLING:-false}
-      VITE_API_URL: ${VITE_API_URL:-https://api.easymotion.devlocal}
-    ports:
-      # add variable in .env to change port
-      - "${WEB_DEV_PORT:-8082}:5173"
-    volumes:
-      - ./webapp:/app
+      VITE_API_URL: ${VITE_API_URL:-https://api.easymotion.it}
     depends_on:
       api:
         condition: service_healthy
       db:
         condition: service_started
-    command: >
-      sh -c "
-
-      if [ ! -d "/app/node_modules" ]; then
-        echo 'Dependencies are not installed.';
-        echo 'Attempting to install dependencies... (this may take a while)';
-        npm ci;
-      fi
-
-      if [ ! -d "/app/client" ]; then
-        echo 'API client is missing.';
-        echo 'Attempting to generate API client';
-        npm run generate-client;
-      fi
-
-      npm run dev;"
 
   api:
     build:
-      context: api
-      target: dev
-    restart: "no"
-    ports:
-      # add variable in .env to change port
-      - "${API_DEV_PORT:-8081}:3000"
-    volumes:
-      - ./api:/app
+      image: ghcr.io/ingsw24/easymotion-api:${API_VERSION:-latest}
+    restart: "unless-stopped"
     depends_on:
       db:
         condition: service_started
@@ -56,16 +26,6 @@ services:
       timeout: 5s
       retries: 100
       start_period: 5s
-    command: >
-      sh -c "
-
-      if [ ! -d "/app/node_modules" ]; then
-        echo 'Dependencies are not installed.';
-        echo 'Attempting to install dependencies... (this may take a while)';
-        npm ci;
-      fi
-
-      npm run start:dev;"
 
   db:
     image: postgres
@@ -92,4 +52,4 @@ services:
 
 volumes:
   pgdata:
-  pgadmin_data:
+    external: true
