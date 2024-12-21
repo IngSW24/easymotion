@@ -8,17 +8,22 @@ import {
   API_VERSION,
 } from './common/constants/swagger.constants';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
   });
 
+  const configService = app.get(ConfigService);
+
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
 
+  const corsOrigin = configService.get<string>('API_CORS_ORIGIN');
+
   app.enableCors({
-    origin: 'https://easymotion.devlocal',
+    origin: corsOrigin ?? 'https://easymotion.devlocal',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true, // Allows cookies or auth headers
   });
