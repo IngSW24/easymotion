@@ -41,17 +41,13 @@ export default function CourseDetail(props: CourseDetailProps) {
   const snack = useSnack();
 
   const handleSave = async () => {
-    try {
-      await props.onSave(editCourse);
+    await props.onSave(editCourse);
 
-      setIsEditing(false);
+    setIsEditing(false);
 
-      snack.showSuccess(
-        `Il corso è stato ${!isNew ? "aggiornato" : "creato"} con successo`
-      );
-    } catch (e) {
-      if (e instanceof Error || typeof e === "string") snack.showError(e);
-    }
+    snack.showSuccess(
+      `Il corso è stato ${!isNew ? "aggiornato" : "creato"} con successo`
+    );
   };
 
   const updateField = (field: string, value: string) =>

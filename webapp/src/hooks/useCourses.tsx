@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Courses } from "../../client/Courses";
 import { CreateCourseDto, UpdateCoursesDto } from "../../client/data-contracts";
 import { CourseFilters } from "../components/course/FilterBlock/types";
+import { useSnack } from "./useSnack";
 
 const api = new Courses({
   baseUrl: import.meta.env.VITE_API_URL,
@@ -33,6 +34,7 @@ export const useCourses = (props: UseCoursesProps = {}) => {
     fetchAll = fetchId === "",
     filters,
   } = props;
+  const snack = useSnack();
   const queryClient = useQueryClient();
 
   const get = useQuery({
@@ -101,11 +103,11 @@ export const useCourses = (props: UseCoursesProps = {}) => {
         queryKey: ["courses"],
       });
     },
+    onError: (error) => snack.showError(error),
   });
 
   const create = useMutation({
     mutationFn: async (courseData: CreateCourseDto) => {
-      console.log("here");
       const response = await api.coursesControllerCreate(courseData);
       return response.data;
     },
@@ -114,6 +116,7 @@ export const useCourses = (props: UseCoursesProps = {}) => {
         queryKey: ["courses"],
       });
     },
+    onError: (error) => snack.showError(error),
   });
 
   const remove = useMutation({
@@ -126,6 +129,7 @@ export const useCourses = (props: UseCoursesProps = {}) => {
         queryKey: ["courses"],
       });
     },
+    onError: (error) => snack.showError(error),
   });
 
   return { get, getSingle, update, remove, create };
