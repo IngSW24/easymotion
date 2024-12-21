@@ -15,16 +15,11 @@ WORKDIR /app
 ARG VITE_API_URL ${VITE_API_URL}
 ENV VITE_API_URL ${VITE_API_URL}
 
-ENV NODE_ENV production
+COPY . .
 
-RUN addgroup --system --gid 1001 node || true
-RUN adduser --system --uid 1001 node || true
-
-COPY --chown=node:node . .
+RUN npm install
 
 RUN npm run build
-
-RUN npm install --production && npm cache clean --force
 
 USER node
 
