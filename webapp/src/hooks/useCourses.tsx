@@ -1,16 +1,19 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Courses } from "../../client/Courses";
 import { CreateCourseDto, UpdateCoursesDto } from "../../client/data-contracts";
+import { CourseFilters } from "../components/course/FilterBlock/types";
+import { useSnack } from "./useSnack";
 
 const api = new Courses({
   baseUrl: import.meta.env.VITE_API_URL,
 });
 
 type UseCoursesProps = {
-  id?: string;
+  fetchId?: string;
   page?: number;
   perPage?: number;
-  initialFetch?: boolean;
+  fetchAll?: boolean;
+  filters?: CourseFilters;
 };
 
 type UpdateMutationParams = {
@@ -24,25 +27,70 @@ type UpdateMutationParams = {
  * @returns an object with the CRUD operations
  */
 export const useCourses = (props: UseCoursesProps = {}) => {
-  const { id = "", page = 0, perPage = 100, initialFetch = true } = props;
+  const {
+    fetchId = "",
+    page = 0,
+    perPage = 100,
+    fetchAll = fetchId === "",
+    filters,
+  } = props;
+  const snack = useSnack();
   const queryClient = useQueryClient();
 
   const get = useQuery({
-    queryKey: ["courses", { page, perPage }],
+    queryKey: ["courses", { page, perPage }, { filters }],
     queryFn: async () => {
       const response = await api.coursesControllerFindAll({ page, perPage });
-      return response.data.data;
+      const fullData = response.data.data;
+
+      if (!filters) return fullData;
+
+      const filteredData = fullData.filter((course) => {
+        if (
+          filters.searchText &&
+          !course.name.toLowerCase().includes(filters.searchText.toLowerCase())
+        )
+          return false;
+
+        if (
+          filters.advanced.categories.length > 0 &&
+          !filters.advanced.categories.includes(course.category)
+        )
+          return false;
+
+        if (
+          filters.advanced.levels.length > 0 &&
+          !filters.advanced.levels.includes(course.level)
+        )
+          return false;
+
+        if (
+          filters.advanced.frequencies.length > 0 &&
+          !filters.advanced.frequencies.includes(course.frequency)
+        )
+          return false;
+
+        if (
+          filters.advanced.availabilities.length > 0 &&
+          !filters.advanced.availabilities.includes(course.availability)
+        )
+          return false;
+
+        return true;
+      });
+
+      return filteredData;
     },
-    enabled: initialFetch,
+    enabled: fetchAll,
   });
 
   const getSingle = useQuery({
-    queryKey: ["courses", { id }],
+    queryKey: ["courses", { fetchId }],
     queryFn: async () => {
-      const response = await api.coursesControllerFindOne(id);
+      const response = await api.coursesControllerFindOne(fetchId);
       return response.data;
     },
-    enabled: initialFetch && id !== "",
+    enabled: fetchId !== "",
   });
 
   const update = useMutation({
@@ -55,6 +103,7 @@ export const useCourses = (props: UseCoursesProps = {}) => {
         queryKey: ["courses"],
       });
     },
+    onError: (error) => snack.showError(error),
   });
 
   const create = useMutation({
@@ -67,6 +116,7 @@ export const useCourses = (props: UseCoursesProps = {}) => {
         queryKey: ["courses"],
       });
     },
+    onError: (error) => snack.showError(error),
   });
 
   const remove = useMutation({
@@ -79,6 +129,7 @@ export const useCourses = (props: UseCoursesProps = {}) => {
         queryKey: ["courses"],
       });
     },
+    onError: (error) => snack.showError(error),
   });
 
   return { get, getSingle, update, remove, create };

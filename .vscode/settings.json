@@ -4,6 +4,7 @@
   "editor.tabSize": 2, // Set tab width to 2 spaces
   "editor.insertSpaces": true, // Use spaces instead of tabs
   "editor.detectIndentation": false, // Enforce the specified tab size
+  "typescript.tsserver.experimental.enableProjectDiagnostics": true,
 
   // ESLint Configuration
   "eslint.workingDirectories": [{ "mode": "auto" }], // Auto-detect ESLint config per subfolder

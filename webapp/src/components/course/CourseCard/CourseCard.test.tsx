@@ -2,19 +2,27 @@ import CourseCard from "./CourseCard";
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-import { CourseEntity, CourseType } from "../../../../client/data-contracts";
+import { CourseEntity } from "../../../../client/data-contracts";
 
 describe("CourseCard GUI test", () => {
   const testCourse: CourseEntity = {
     id: "sample_identifier",
-    organizer: "sample_organizer",
     description: "sample_description",
-    type: CourseType.AUTONOMOUS,
-    times: "sample_times",
-    frequency: "sample_frequency",
-    instructor: "sample_instructor",
     location: "sample_location",
     cost: 235478236,
+    name: "sample_name",
+    short_description: "sample_short_description",
+    schedule: [],
+    instructors: [],
+    category: "ACQUAGYM",
+    level: "BASIC",
+    frequency: "SINGLE_SESSION",
+    session_duration: "",
+    availability: "ACTIVE",
+    num_registered_members: 0,
+    tags: ["sample_tag1", "sample_tag2"],
+    created_at: "",
+    updated_at: "",
   };
 
   it("Check if CourseCard shows the correct information", () => {
@@ -25,21 +33,12 @@ describe("CourseCard GUI test", () => {
       </MemoryRouter>
     );
 
-    expect(
-      screen.getByText(`Organizer: ${testCourse.organizer}`)
-    ).toBeDefined();
-    expect(
-      screen.getByText(`Description: ${testCourse.description}`)
-    ).toBeDefined();
-    expect(screen.getByText(`Type: ${testCourse.type}`)).toBeDefined();
-    expect(
-      screen.getByText(`Frequency: ${testCourse.frequency}`)
-    ).toBeDefined();
-    expect(
-      screen.getByText(`Instructor: ${testCourse.instructor}`)
-    ).toBeDefined();
-    expect(screen.getByText(`Location: ${testCourse.location}`)).toBeDefined();
-    expect(screen.getByText(`Times: ${testCourse.times}`)).toBeDefined();
-    expect(screen.getByText(`Cost: ${testCourse.cost}`)).toBeDefined();
+    expect(screen.getByText(testCourse.category)).toBeDefined();
+    expect(screen.getByText(testCourse.level)).toBeDefined();
+    expect(screen.getByText(testCourse.name)).toBeDefined();
+    expect(screen.getByText(testCourse.short_description)).toBeDefined();
+    testCourse.tags.map((tag) => {
+      expect(screen.getByText(tag)).toBeDefined();
+    });
   });
 });
