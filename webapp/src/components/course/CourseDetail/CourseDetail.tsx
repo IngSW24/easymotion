@@ -219,24 +219,26 @@ export default function CourseDetail(props: CourseDetailProps) {
                 Tags
               </Typography>
               {!isEditing ? (
-                <Stack spacing={2} sx={{ mt: 3 }} direction="row">
+                <Grid2 container spacing={2} sx={{ mt: 3 }}>
                   {editCourse.tags?.map((item, index) => (
-                    <Chip
-                      key={`tag-${index}`}
-                      label={
-                        <Typography
-                          component="div"
-                          variant="h6"
-                          letterSpacing={1}
-                        >
-                          {item}
-                        </Typography>
-                      }
-                      color="primary"
-                      variant="outlined" // Optional: Makes the chip outlined
-                    />
+                    <Grid2>
+                      <Chip
+                        key={`tag-${index}`}
+                        label={
+                          <Typography
+                            component="div"
+                            variant="h6"
+                            letterSpacing={1}
+                          >
+                            {item}
+                          </Typography>
+                        }
+                        color="primary"
+                        variant="outlined" // Optional: Makes the chip outlined
+                      />
+                    </Grid2>
                   ))}
-                </Stack>
+                </Grid2>
               ) : (
                 <ListEditor
                   entries={editCourse.tags || []}
