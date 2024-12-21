@@ -50,14 +50,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
     }
   };
 
-  // Handle saving the edited information or cost
-  const handleSave = () => {
-    if (info !== undefined && editedInfo !== info) {
-      onSave(field, editedInfo || "");
-    }
-    if (cost !== undefined && editedCost !== cost) {
-      onSave(field, editedCost || 0);
-    }
+  // Handle saving the edited information or cost immediately onChange
+  const handleChangeInfo = (value: string) => {
+    setEditedInfo(value);
+    onSave(field, value || "");
+  };
+
+  const handleChangeCost = (value: number) => {
+    const positiveValue = value < 0 ? 0 : value;
+    setEditedCost(positiveValue);
+    onSave(field, positiveValue || 0);
   };
 
   return (
@@ -97,8 +99,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   label={typeInfo}
                   name="information"
                   value={editedInfo}
-                  onChange={(e) => setEditedInfo(e.target.value)}
-                  onBlur={handleSave}
+                  onChange={(e) => handleChangeInfo(e.target.value)}
                   fullWidth
                   margin="normal"
                 />
@@ -108,8 +109,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   type="number"
                   name="cost"
                   value={editedCost}
-                  onChange={(e) => setEditedCost(Number(e.target.value))}
-                  onBlur={handleSave}
+                  onChange={(e) => handleChangeCost(Number(e.target.value))}
                   fullWidth
                   margin="normal"
                 />
@@ -121,7 +121,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               component="div"
               sx={{ fontWeight: "bold" }}
             >
-              {info ?? `${cost} €`}
+              {info ?? `${cost} euro`}
             </Typography>
           )}
         </Box>
