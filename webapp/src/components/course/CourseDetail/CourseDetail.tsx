@@ -202,10 +202,7 @@ export default function CourseDetail(props: CourseDetailProps) {
                       variant="h5"
                       sx={{ overflowWrap: "break-word" }}
                     >
-                      {Duration.fromISO(editCourse.session_duration).toFormat(
-                        "hh:mm"
-                      )}
-                      {" ore"}
+                      {Duration.fromISO(editCourse.session_duration).toHuman()}
                     </Typography>
                   </Box>
                 ) : (
