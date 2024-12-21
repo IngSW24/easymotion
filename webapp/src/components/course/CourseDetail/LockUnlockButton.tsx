@@ -1,5 +1,5 @@
 import { Edit, Save } from "@mui/icons-material";
-import { Fab, SxProps } from "@mui/material";
+import { Fab, SxProps, Tooltip } from "@mui/material";
 
 export interface LockUnlockButtonProps {
   isEditing: boolean;
@@ -10,14 +10,19 @@ export default function LockUnlockButton(props: LockUnlockButtonProps) {
   const buttonSx: SxProps = { mr: 1 };
 
   return (
-    <Fab
-      variant="extended"
-      sx={{ minWidth: "13rem" }}
-      color={props.isEditing ? "success" : "primary"}
-      onClick={props.onClick}
+    <Tooltip
+      title={props.isEditing ? "Salva le modifiche" : "Modifica il corso"}
+      arrow
     >
-      {props.isEditing ? <Save sx={buttonSx} /> : <Edit sx={buttonSx} />}
-      {props.isEditing ? "Salva" : "Modalità modifica"}
-    </Fab>
+      <Fab
+        variant="extended"
+        sx={{ minWidth: "13rem" }}
+        color={props.isEditing ? "success" : "primary"}
+        onClick={props.onClick}
+      >
+        {props.isEditing ? <Save sx={buttonSx} /> : <Edit sx={buttonSx} />}
+        {props.isEditing ? "Salva" : "Modalità modifica"}
+      </Fab>
+    </Tooltip>
   );
 }

@@ -84,7 +84,7 @@ export default function FilterBlock({ filters, onChange }: FilterBlockProps) {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ p: 5 }}>
+    <Container maxWidth="xl" sx={{ p: { xs: 0, md: 5 } }}>
       {/* Search Bar */}
       <Stack gap={3} direction="row" mb={2} width="100%">
         <DebouncedSearchBar
@@ -97,7 +97,7 @@ export default function FilterBlock({ filters, onChange }: FilterBlockProps) {
           sx={{ whiteSpace: "nowrap" }}
         >
           {showAdvanced ? <ArrowUpward /> : <FilterList />}
-          <Typography component="span" sx={{ px: 2 }}>
+          <Typography component="span" sx={{ px: { xs: 1, md: 2 } }}>
             Filtri
           </Typography>
         </Button>

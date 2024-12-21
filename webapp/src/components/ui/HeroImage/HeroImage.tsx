@@ -18,30 +18,27 @@ export default function HeroImage(props: HeroImageProps) {
   return (
     <Box
       sx={{
-        position: "relative",
         width: "100%",
         height,
         backgroundPosition: "center",
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
         backgroundImage: `url('${backgroundImage}')`,
+        overflow: "hidden", // Prevents content overflow
+        boxSizing: "border-box", // Ensures padding/border stay within width
       }}
     >
-      {/* Title positioned at the bottom center */}
       {title && (
         <Box
           sx={{
-            position: "absolute",
-            // bottom: 0,
-            textAlign: "center",
             width: "100%",
             height: "100%",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
             background: "rgba(0, 0, 0, 0.7)",
-            color: "white",
-            py: 1,
+            padding: "0 16px", // Add horizontal padding for safety
+            boxSizing: "border-box", // Prevents overflow from padding
           }}
         >
           <Typography
@@ -54,10 +51,14 @@ export default function HeroImage(props: HeroImageProps) {
               letterSpacing: "1px",
               textShadow: "0px 4px 6px rgba(0,0,0,0.5)",
               borderRadius: "8px",
-              padding: "10px 20px",
+              padding: "10px 20px", // Standard padding
+              maxWidth: "100%", // Prevents overflow
+              whiteSpace: "normal", // Allows text to wrap naturally
+              overflowWrap: "break-word", // Wraps long words
+              wordBreak: "break-word", // Breaks long words
             }}
           >
-            <div className="typewriter">{title}</div>
+            {title}
           </Typography>
         </Box>
       )}

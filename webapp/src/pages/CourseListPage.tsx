@@ -17,7 +17,7 @@ export default function CourseListPage(props: CourseListPageProps) {
     <>
       <HeroImage
         backgroundImage="/hero.jpg"
-        title="Trova il corso giusto per te"
+        title="Trova il tuo prossimo corso"
         fontWeight={400}
       />
       <Container maxWidth="xl" sx={{ p: 5 }}>

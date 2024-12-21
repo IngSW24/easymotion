@@ -28,7 +28,6 @@ export interface LayoutProps {
 }
 
 const drawerWidth = 240;
-const navItems = ["Home", "About", "Contact"];
 
 export default function Layout(props: LayoutProps) {
   const location = useLocation();
@@ -42,15 +41,11 @@ export default function Layout(props: LayoutProps) {
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
-      <Typography variant="h6" sx={{ my: 2 }}>
-        EasyMotion
-      </Typography>
-      <Divider />
       <List>
-        {navItems.map((item) => (
-          <ListItem key={item} disablePadding>
+        {props.entries?.map((item) => (
+          <ListItem key={item.link} disablePadding>
             <ListItemButton sx={{ textAlign: "center" }}>
-              <ListItemText primary={item} />
+              <ListItemText primary={item.label} />
             </ListItemButton>
           </ListItem>
         ))}
@@ -72,6 +67,20 @@ export default function Layout(props: LayoutProps) {
               sx={{ mr: 2, display: { sm: "none" } }}
             >
               <MenuIcon />
+
+              <Typography component="span" variant="h6" sx={{ mx: 2 }}>
+                EasyMotion
+                {isPhysiotherapist && (
+                  <Typography
+                    component="span"
+                    color="textSecondary"
+                    sx={{ ml: 3 }}
+                  >
+                    Fisioterapista
+                  </Typography>
+                )}
+              </Typography>
+              <Divider />
             </IconButton>
             <Typography
               variant="h6"
@@ -80,7 +89,7 @@ export default function Layout(props: LayoutProps) {
             >
               EasyMotion
               {isPhysiotherapist && (
-                <Typography component="span" sx={{ color: "#fff", ml: 3 }}>
+                <Typography component="span" sx={{ ml: 3 }} fontWeight={300}>
                   Fisioterapista
                 </Typography>
               )}
