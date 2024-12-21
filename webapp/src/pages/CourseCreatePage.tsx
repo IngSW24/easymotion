@@ -16,11 +16,7 @@ export default function CourseCreatePage() {
 
   const handleSave = async (course: CourseEntity) => {
     // TODO these fields should be set by the user on edit page this is just temporary
-    const promise = courseRepo.create.mutateAsync({
-      ...course,
-      cost: 2,
-      num_registered_members: 1,
-    } as CreateCourseDto);
+    const promise = courseRepo.create.mutateAsync(course as CreateCourseDto);
 
     await promise;
 
