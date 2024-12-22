@@ -45,7 +45,7 @@ jobs:
         run: |
           VERSION=${{ steps.commit_hash.outputs.short_hash }}
           cd api/
-          docker build . --tag ghcr.io/ingsw24/easymotion-api:$VERSION
+          docker build . --tag ghcr.io/ingsw24/easymotion-api:$VERSION --tag ghcr.io/ingsw24/easymotion-api:latest
           docker push ghcr.io/ingsw24/easymotion-api:$VERSION
           docker push ghcr.io/ingsw24/easymotion-api:latest
 
@@ -54,6 +54,6 @@ jobs:
         run: |
           VERSION=${{ steps.commit_hash.outputs.short_hash }}
           cd webapp/
-          docker build --build-arg VITE_API_URL=$VITE_API_URL . --tag ghcr.io/ingsw24/easymotion-webapp:$VERSION
+          docker build --build-arg VITE_API_URL=$VITE_API_URL . --tag ghcr.io/ingsw24/easymotion-webapp:$VERSION --tag ghcr.io/ingsw24/easymotion-webapp:latest
           docker push ghcr.io/ingsw24/easymotion-webapp:$VERSION
           docker push ghcr.io/ingsw24/easymotion-webapp:latest

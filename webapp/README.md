@@ -3,7 +3,7 @@
 Using:
 
 - [React Query](https://tanstack.com/query/v5) for queries to the API and related state management
-- [React MUI]() for styling and graphics
+- React MUI for styling and graphics
 
 Structure:
 
