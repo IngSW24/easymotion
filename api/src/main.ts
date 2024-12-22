@@ -38,17 +38,19 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
-  const config = new DocumentBuilder()
-    .setTitle(API_TITLE)
-    .setDescription(API_DESCRIPTION)
-    .setVersion(API_VERSION)
-    .build();
+  if (process.env.NODE_ENV !== 'production') {
+    const config = new DocumentBuilder()
+      .setTitle(API_TITLE)
+      .setDescription(API_DESCRIPTION)
+      .setVersion(API_VERSION)
+      .build();
 
-  const document = SwaggerModule.createDocument(app, config);
+    const document = SwaggerModule.createDocument(app, config);
 
-  SwaggerModule.setup('swagger', app, document, {
-    jsonDocumentUrl: 'swagger/json',
-  });
+    SwaggerModule.setup('swagger', app, document, {
+      jsonDocumentUrl: 'swagger/json',
+    });
+  }
 
   await app.listen(process.env.PORT ?? 3000);
 }
