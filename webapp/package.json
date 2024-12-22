@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 vite --host 0.0.0.0",
-    "build": "tsc -b && vite build",
+    "build": "npm run generate-client && tsc -b && vite build",
     "lint": "eslint .",
-    "generate-client": "swagger-typescript-api -p /api-schema/schema.json -o ./client --modular",
+    "generate-client": "swagger-typescript-api -p ./api-schema/schema.json -o ./client --modular",
     "preview": "vite preview",
     "test": "vitest",
     "test:watch": "vitest --watch",
