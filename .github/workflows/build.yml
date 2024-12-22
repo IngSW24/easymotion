@@ -1,16 +1,8 @@
-name: Build and Push Docker Images
-
-on:
-  push:
-    branches:
-      - ci/EAS-97
-
-env:
-  VITE_API_URL: "${{ vars.VITE_API_URL }}"
-
 jobs:
   detect-and-build:
     runs-on: ubuntu-latest
+    outputs:
+      builds_performed: ${{ steps.check_builds.outputs.builds_performed }}
 
     steps:
       - name: Checkout repository
@@ -32,6 +24,15 @@ jobs:
           echo "$CHANGED" > changes.txt
           echo "::set-output name=api_changed::$(grep -q '^api/' changes.txt && echo true || echo false)"
           echo "::set-output name=webapp_changed::$(grep -q '^webapp/' changes.txt && echo true || echo false)"
+
+      - name: Check if builds are needed
+        id: check_builds
+        run: |
+          if [[ "${{ steps.changes.outputs.api_changed }}" == "true" || "${{ steps.changes.outputs.webapp_changed }}" == "true" ]]; then
+            echo "::set-output name=builds_performed::true"
+          else
+            echo "::set-output name=builds_performed::false"
+          fi
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
@@ -57,3 +58,9 @@ jobs:
           docker build --build-arg VITE_API_URL=$VITE_API_URL . --tag ghcr.io/ingsw24/easymotion-webapp:$VERSION --tag ghcr.io/ingsw24/easymotion-webapp:latest
           docker push ghcr.io/ingsw24/easymotion-webapp:$VERSION
           docker push ghcr.io/ingsw24/easymotion-webapp:latest
+
+      - name: Mark job as skipped
+        if: steps.check_builds.outputs.builds_performed == 'false'
+        run: |
+          echo "No changes detected in api/ or webapp/. Skipping builds."
+          exit 78
