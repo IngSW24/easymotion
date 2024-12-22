@@ -12,6 +12,7 @@ services:
       - "${WEB_DEV_PORT:-8082}:5173"
     volumes:
       - ./webapp:/app
+      - ./api-schema:/api-schema:ro
     depends_on:
       api:
         condition: service_healthy
@@ -44,6 +45,7 @@ services:
       - "${API_DEV_PORT:-8081}:3000"
     volumes:
       - ./api:/app
+      - ./api-schema:/api-schema:rw
     depends_on:
       db:
         condition: service_started

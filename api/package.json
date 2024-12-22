@@ -22,7 +22,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "prisma:migrate-dev": "prisma migrate dev",
     "prisma:migrate-prod": "prisma migrate deploy",
-    "prisma:gen-client": "prisma generate client"
+    "prisma:gen-client": "prisma generate client",
+    "swagger:generate": "ts-node ./src/generate-schema.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
