@@ -44,7 +44,11 @@ export default function Layout(props: LayoutProps) {
       <List>
         {props.entries?.map((item) => (
           <ListItem key={item.link} disablePadding>
-            <ListItemButton sx={{ textAlign: "center" }}>
+            <ListItemButton
+              component={Link}
+              sx={{ textAlign: "center" }}
+              to={item.link}
+            >
               <ListItemText primary={item.label} />
             </ListItemButton>
           </ListItem>
