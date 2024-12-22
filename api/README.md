@@ -38,4 +38,4 @@ $ npm run test:cov
 
 ## Deployment
 
-To be defined
+TBD
