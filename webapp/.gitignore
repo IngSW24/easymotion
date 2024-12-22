@@ -57,3 +57,5 @@ test/browser/fixtures/update-snapshot/basic.test.ts
 test/cli/fixtures/browser-multiple/basic-*
 .vitest-reports
 *.tsbuildinfo
+
+client
