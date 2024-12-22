@@ -1,0 +1,50 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches:
+      - ci/EAS-97
+
+env:
+  VITE_API_URL: "${{ vars.VITE_API_URL }}"
+
+jobs:
+  detect-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Get short commit hash
+        id: commit_hash
+        run: echo "::set-output name=short_hash::$(git rev-parse --short HEAD)"
+
+      - name: Determine changed directories
+        id: changes
+        run: |
+          CHANGED=$(git diff --name-only HEAD~1 HEAD)
+          echo "$CHANGED" > changes.txt
+          echo "::set-output name=api_changed::$(grep -q '^api/' changes.txt && echo true || echo false)"
+          echo "::set-output name=webapp_changed::$(grep -q '^webapp/' changes.txt && echo true || echo false)"
+
+      - name: Build and push API Docker image (if changed)
+        if: steps.changes.outputs.api_changed == 'true'
+        run: |
+          VERSION=${{ steps.commit_hash.outputs.short_hash }}
+          cd api/
+          docker build . --tag ghcr.io/ingsw24/easymotion-api:$VERSION
+          docker push ghcr.io/ingsw24/easymotion-api:$VERSION
+          docker push ghcr.io/ingsw24/easymotion-api:latest
+
+      - name: Build and push WebApp Docker image (if changed)
+        if: steps.changes.outputs.webapp_changed == 'true'
+        run: |
+          VERSION=${{ steps.commit_hash.outputs.short_hash }}
+          cd webapp/
+          docker build --build-arg VITE_API_URL=$VITE_API_URL . --tag ghcr.io/ingsw24/easymotion-webapp:$VERSION
+          docker push ghcr.io/ingsw24/easymotion-webapp:$VERSION
+          docker push ghcr.io/ingsw24/easymotion-webapp:latest
