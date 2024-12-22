@@ -1,0 +1,617 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/courses": {
+      "post": {
+        "operationId": "CoursesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCourseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseEntity"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Create a new course",
+        "tags": [
+          "Courses"
+        ]
+      },
+      "get": {
+        "operationId": "CoursesController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "PaginatedResponseOfCourseEntity",
+                  "allOf": [
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/CourseEntity"
+                          }
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ]
+                    },
+                    {
+                      "properties": {
+                        "meta": {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "number"
+                            },
+                            "hasNextPage": {
+                              "type": "boolean"
+                            },
+                            "currentPage": {
+                              "type": "number"
+                            },
+                            "totalItems": {
+                              "type": "number"
+                            },
+                            "totalPages": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "items",
+                            "hasNextPage",
+                            "currentPage",
+                            "totalItems",
+                            "totalPages"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "meta"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "summary": "Find all courses",
+        "tags": [
+          "Courses"
+        ]
+      }
+    },
+    "/courses/{id}": {
+      "get": {
+        "operationId": "CoursesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseEntity"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Find a course by its id",
+        "tags": [
+          "Courses"
+        ]
+      },
+      "put": {
+        "operationId": "CoursesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCoursesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseEntity"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update a course by its id",
+        "tags": [
+          "Courses"
+        ]
+      },
+      "delete": {
+        "operationId": "CoursesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Delete a course by its id",
+        "tags": [
+          "Courses"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "EasyMotion API",
+    "description": "The EasyMotion API",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "schemas": {
+      "CreateCourseDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the course"
+          },
+          "description": {
+            "type": "string",
+            "description": "Full description of the course"
+          },
+          "short_description": {
+            "type": "string",
+            "description": "Short description of the course"
+          },
+          "location": {
+            "type": "string",
+            "description": "Location where the course is held (optional)"
+          },
+          "schedule": {
+            "description": "Schedule of course session days",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "instructors": {
+            "description": "Array of user IDs of instructors",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "category": {
+            "type": "string",
+            "description": "Category of the course",
+            "enum": [
+              "ACQUAGYM",
+              "CROSSFIT",
+              "PILATES",
+              "ZUMBA_FITNESS",
+              "POSTURAL_TRAINING",
+              "BODYWEIGHT_WORKOUT"
+            ]
+          },
+          "level": {
+            "type": "string",
+            "description": "Level of the course",
+            "enum": [
+              "BASIC",
+              "MEDIUM",
+              "ADVANCED"
+            ]
+          },
+          "frequency": {
+            "type": "string",
+            "description": "Frequency of the course",
+            "enum": [
+              "SINGLE_SESSION",
+              "WEEKLY",
+              "MONTHLY"
+            ]
+          },
+          "session_duration": {
+            "type": "string",
+            "description": "Duration of each session in POSIX format"
+          },
+          "cost": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Cost of the course (optional)"
+          },
+          "discount": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Discount for the course (optional)"
+          },
+          "availability": {
+            "type": "string",
+            "description": "Availability status of the course",
+            "enum": [
+              "ACTIVE",
+              "COMING_SOON",
+              "NO_LONGER_AVAILABLE"
+            ]
+          },
+          "highlighted_priority": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Priority level for highlighting the course (optional)"
+          },
+          "members_capacity": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Maximum capacity of course members (optional)"
+          },
+          "num_registered_members": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Number of registered members",
+            "default": 0
+          },
+          "tags": {
+            "description": "Tags associated with the course",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "thumbnail_path": {
+            "type": "string",
+            "description": "Path to the thumbnail image for the course (optional)"
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "short_description",
+          "schedule",
+          "instructors",
+          "category",
+          "level",
+          "frequency",
+          "session_duration",
+          "availability",
+          "num_registered_members",
+          "tags"
+        ]
+      },
+      "CourseEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the course"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the course"
+          },
+          "description": {
+            "type": "string",
+            "description": "Full description of the course"
+          },
+          "short_description": {
+            "type": "string",
+            "description": "Short description of the course"
+          },
+          "location": {
+            "type": "string",
+            "description": "Location where the course is held (optional)"
+          },
+          "schedule": {
+            "description": "Schedule of course session days",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "instructors": {
+            "description": "Array of user IDs of instructors",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "category": {
+            "type": "string",
+            "description": "Category of the course",
+            "enum": [
+              "ACQUAGYM",
+              "CROSSFIT",
+              "PILATES",
+              "ZUMBA_FITNESS",
+              "POSTURAL_TRAINING",
+              "BODYWEIGHT_WORKOUT"
+            ]
+          },
+          "level": {
+            "type": "string",
+            "description": "Level of the course",
+            "enum": [
+              "BASIC",
+              "MEDIUM",
+              "ADVANCED"
+            ]
+          },
+          "frequency": {
+            "type": "string",
+            "description": "Frequency of the course",
+            "enum": [
+              "SINGLE_SESSION",
+              "WEEKLY",
+              "MONTHLY"
+            ]
+          },
+          "session_duration": {
+            "type": "string",
+            "description": "Duration of each session in POSIX format"
+          },
+          "cost": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Cost of the course (optional)"
+          },
+          "discount": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Discount for the course (optional)"
+          },
+          "availability": {
+            "type": "string",
+            "description": "Availability status of the course",
+            "enum": [
+              "ACTIVE",
+              "COMING_SOON",
+              "NO_LONGER_AVAILABLE"
+            ]
+          },
+          "highlighted_priority": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Priority level for highlighting the course (optional)"
+          },
+          "members_capacity": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Maximum capacity of course members (optional)"
+          },
+          "num_registered_members": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Number of registered members",
+            "default": 0
+          },
+          "tags": {
+            "description": "Tags associated with the course",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "thumbnail_path": {
+            "type": "string",
+            "description": "Path to the thumbnail image for the course (optional)"
+          },
+          "created_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "short_description",
+          "schedule",
+          "instructors",
+          "category",
+          "level",
+          "frequency",
+          "session_duration",
+          "availability",
+          "num_registered_members",
+          "tags",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "UpdateCoursesDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the course"
+          },
+          "description": {
+            "type": "string",
+            "description": "Full description of the course"
+          },
+          "short_description": {
+            "type": "string",
+            "description": "Short description of the course"
+          },
+          "location": {
+            "type": "string",
+            "description": "Location where the course is held (optional)"
+          },
+          "schedule": {
+            "description": "Schedule of course session days",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "instructors": {
+            "description": "Array of user IDs of instructors",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "category": {
+            "type": "string",
+            "description": "Category of the course",
+            "enum": [
+              "ACQUAGYM",
+              "CROSSFIT",
+              "PILATES",
+              "ZUMBA_FITNESS",
+              "POSTURAL_TRAINING",
+              "BODYWEIGHT_WORKOUT"
+            ]
+          },
+          "level": {
+            "type": "string",
+            "description": "Level of the course",
+            "enum": [
+              "BASIC",
+              "MEDIUM",
+              "ADVANCED"
+            ]
+          },
+          "frequency": {
+            "type": "string",
+            "description": "Frequency of the course",
+            "enum": [
+              "SINGLE_SESSION",
+              "WEEKLY",
+              "MONTHLY"
+            ]
+          },
+          "session_duration": {
+            "type": "string",
+            "description": "Duration of each session in POSIX format"
+          },
+          "cost": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Cost of the course (optional)"
+          },
+          "discount": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Discount for the course (optional)"
+          },
+          "availability": {
+            "type": "string",
+            "description": "Availability status of the course",
+            "enum": [
+              "ACTIVE",
+              "COMING_SOON",
+              "NO_LONGER_AVAILABLE"
+            ]
+          },
+          "highlighted_priority": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Priority level for highlighting the course (optional)"
+          },
+          "members_capacity": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Maximum capacity of course members (optional)"
+          },
+          "num_registered_members": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Number of registered members",
+            "default": 0
+          },
+          "tags": {
+            "description": "Tags associated with the course",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "thumbnail_path": {
+            "type": "string",
+            "description": "Path to the thumbnail image for the course (optional)"
+          }
+        }
+      }
+    }
+  }
+}

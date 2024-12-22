@@ -44,6 +44,7 @@ services:
       - "${API_DEV_PORT:-8081}:3000"
     volumes:
       - ./api:/app
+      - ./webapp/api-schema:/api-schema
     depends_on:
       db:
         condition: service_started

@@ -58,6 +58,4 @@ test/cli/fixtures/browser-multiple/basic-*
 .vitest-reports
 *.tsbuildinfo
 
-# openapi generated client
-
-client/
+client

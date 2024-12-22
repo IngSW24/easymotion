@@ -8,17 +8,22 @@ import {
   API_VERSION,
 } from './common/constants/swagger.constants';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
   });
 
+  const configService = app.get(ConfigService);
+
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
 
+  const corsOrigin = configService.get<string>('API_CORS_ORIGIN');
+
   app.enableCors({
-    origin: 'https://easymotion.devlocal',
+    origin: corsOrigin ?? 'https://easymotion.devlocal',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true, // Allows cookies or auth headers
   });
@@ -33,17 +38,19 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
-  const config = new DocumentBuilder()
-    .setTitle(API_TITLE)
-    .setDescription(API_DESCRIPTION)
-    .setVersion(API_VERSION)
-    .build();
+  if (process.env.NODE_ENV !== 'production') {
+    const config = new DocumentBuilder()
+      .setTitle(API_TITLE)
+      .setDescription(API_DESCRIPTION)
+      .setVersion(API_VERSION)
+      .build();
 
-  const document = SwaggerModule.createDocument(app, config);
+    const document = SwaggerModule.createDocument(app, config);
 
-  SwaggerModule.setup('swagger', app, document, {
-    jsonDocumentUrl: 'swagger/json',
-  });
+    SwaggerModule.setup('swagger', app, document, {
+      jsonDocumentUrl: 'swagger/json',
+    });
+  }
 
   await app.listen(process.env.PORT ?? 3000);
 }
