@@ -6,32 +6,20 @@ WORKDIR /app
 
 ENV NODE_ENV development
 
-RUN addgroup --system --gid 1001 node || true
-RUN adduser --system --uid 1001 node || true
-
-COPY --chown=node:node . .
-
-USER node
-
 # Build the app
 
 FROM node:20-alpine as build
 
 WORKDIR /app
 
-ARG VITE_API_BASE ${VITE_API_BASE}
-ENV VITE_API_BASE ${VITE_API_BASE}
+ARG VITE_API_URL ${VITE_API_URL}
+ENV VITE_API_URL ${VITE_API_URL}
 
-ENV NODE_ENV production
+COPY . .
 
-RUN addgroup --system --gid 1001 node || true
-RUN adduser --system --uid 1001 node || true
-
-COPY --chown=node:node . .
+RUN npm install
 
 RUN npm run build
-
-RUN npm install --production && npm cache clean --force
 
 USER node
 

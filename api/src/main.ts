@@ -1,36 +1,56 @@
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import {
   API_DESCRIPTION,
   API_TITLE,
   API_VERSION,
-} from './constants/app.constants';
+} from './common/constants/swagger.constants';
+import { PrismaClientExceptionFilter } from 'nestjs-prisma';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: ['error', 'warn', 'log', 'debug', 'verbose'],
+  });
 
-  app.enableCors();
+  const configService = app.get(ConfigService);
+
+  const { httpAdapter } = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
+
+  const corsOrigin = configService.get<string>('API_CORS_ORIGIN');
+
+  app.enableCors({
+    origin: corsOrigin ?? 'https://easymotion.devlocal',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true, // Allows cookies or auth headers
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({
-      disableErrorMessages: false,
       transform: true,
       whitelist: true,
+      forbidNonWhitelisted: false,
     }),
   );
 
-  const config = new DocumentBuilder()
-    .setTitle(API_TITLE)
-    .setDescription(API_DESCRIPTION)
-    .setVersion(API_VERSION)
-    .addBearerAuth()
-    .build();
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
-  const document = SwaggerModule.createDocument(app, config);
+  if (process.env.NODE_ENV !== 'production') {
+    const config = new DocumentBuilder()
+      .setTitle(API_TITLE)
+      .setDescription(API_DESCRIPTION)
+      .setVersion(API_VERSION)
+      .build();
 
-  SwaggerModule.setup('swagger', app, document);
+    const document = SwaggerModule.createDocument(app, config);
+
+    SwaggerModule.setup('swagger', app, document, {
+      jsonDocumentUrl: 'swagger/json',
+    });
+  }
 
   await app.listen(process.env.PORT ?? 3000);
 }

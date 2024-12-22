@@ -6,9 +6,61 @@
 
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum CourseCategory {
+  ACQUAGYM
+  CROSSFIT
+  PILATES
+  ZUMBA_FITNESS
+  POSTURAL_TRAINING
+  BODYWEIGHT_WORKOUT
+}
+
+enum CourseLevel {
+  BASIC
+  MEDIUM
+  ADVANCED
+}
+
+enum CourseFrequency {
+  SINGLE_SESSION
+  WEEKLY
+  MONTHLY
+}
+
+enum CourseAvailability {
+  ACTIVE
+  COMING_SOON
+  NO_LONGER_AVAILABLE
+}
+
+model Course {
+  id                        String              @id @default(uuid())
+  name                      String
+  description               String
+  short_description         String
+  location                  String?
+  schedule                  String[]
+  instructors               String[]            // will be a user id
+  category                  CourseCategory
+  level                     CourseLevel
+  frequency                 CourseFrequency
+  session_duration          String              // In POSIX format. Eg: P2H30M -> 2h and 30M
+  cost                      Decimal?
+  discount                  Int?
+  availability              CourseAvailability
+  highlighted_priority      Int?
+  members_capacity          Int?
+  num_registered_members    Int?
+  tags                      String[]
+  thumbnail_path            String?
+  created_at                DateTime            @default(now()) @db.Timestamptz(3)
+  updated_at                DateTime            @updatedAt @db.Timestamptz(3)
 }

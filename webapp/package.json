@@ -1,37 +1,78 @@
 {
-    "name": "webapp",
-    "private": true,
-    "version": "0.0.0",
-    "type": "module",
-    "scripts": {
-        "dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 vite --host 0.0.0.0",
-        "build": "tsc -b && vite build",
-        "lint": "eslint .",
-        "preview": "vite preview"
-    },
-    "dependencies": {
-        "@emotion/react": "^11.13.5",
-        "@emotion/styled": "^11.13.5",
-        "@fontsource/roboto": "^5.1.0",
-        "@mui/icons-material": "^6.1.8",
-        "@mui/material": "^6.1.8",
-        "@tanstack/react-query": "^5.61.4",
-        "react": "^18.3.1",
-        "react-dom": "^18.3.1",
-        "react-router": "^7.0.1"
-    },
-    "devDependencies": {
-        "@eslint/js": "^9.15.0",
-        "@types/node": "^22.10.1",
-        "@types/react": "^18.3.12",
-        "@types/react-dom": "^18.3.1",
-        "@vitejs/plugin-react": "^4.3.4",
-        "eslint": "^9.15.0",
-        "eslint-plugin-react-hooks": "^5.0.0",
-        "eslint-plugin-react-refresh": "^0.4.14",
-        "globals": "^15.12.0",
-        "typescript": "~5.6.2",
-        "typescript-eslint": "^8.15.0",
-        "vite": "^6.0.0"
-    }
+  "name": "webapp",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 vite --host 0.0.0.0",
+    "build": "npm run generate-client && tsc -b && vite build",
+    "lint": "eslint .",
+    "generate-client": "swagger-typescript-api -p ./api-schema/schema.json -o ./client --modular",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.13.5",
+    "@emotion/styled": "^11.13.5",
+    "@fontsource/roboto": "^5.1.0",
+    "@mui/icons-material": "^6.1.8",
+    "@mui/material": "^6.1.8",
+    "@tanstack/react-query": "^5.61.4",
+    "luxon": "^3.5.0",
+    "notistack": "^3.0.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router": "^7.0.1",
+    "swagger-typescript-api": "^13.0.23"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.15.0",
+    "@tanstack/react-query-devtools": "^5.62.7",
+    "@testing-library/react": "^16.1.0",
+    "@types/luxon": "^3.4.2",
+    "@types/node": "^22.10.1",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/coverage-v8": "^2.1.8",
+    "eslint": "^9.15.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.14",
+    "globals": "^15.12.0",
+    "jsdom": "^25.0.1",
+    "prettier": "^3.4.2",
+    "typescript": "~5.6.2",
+    "typescript-eslint": "^8.15.0",
+    "vite": "^6.0.0",
+    "vitest": "^2.1.8"
+  },
+  "prettier": {
+    "semi": true,
+    "singleQuote": false,
+    "jsxSingleQuote": false,
+    "trailingComma": "es5",
+    "printWidth": 80,
+    "tabWidth": 2,
+    "useTabs": false,
+    "bracketSpacing": true,
+    "arrowParens": "always",
+    "endOfLine": "lf",
+    "proseWrap": "preserve",
+    "overrides": [
+      {
+        "files": [
+          "*.json",
+          "*.yml",
+          "*.yaml"
+        ],
+        "options": {
+          "printWidth": 120,
+          "tabWidth": 2
+        }
+      }
+    ]
+  }
 }

@@ -23,14 +23,6 @@ You must edit your /etc/hosts file adding an entry that binds the domain `easymo
 
 You need to add the following line to the bottom of the file.
 
-On Mac/Linux:
-
-```
-127.0.0.1 easymotion.devlocal
-```
-
-On Windows:
-
 ```
 127.0.0.1 easymotion.devlocal
 127.0.0.1 api.easymotion.devlocal
@@ -40,22 +32,27 @@ Then you can save and quit. Note that this application requires sudo/administrat
 
 ### Clone the repository
 
-```bash
-git clone https://github.com/ingsw24/easymotion
+- https:
+
+  ```bash
+  git clone https://github.com/ingsw24/easymotion
+  ```
+
+- ssh:
+
+  ```bash
+  git clone git@github.com:IngSW24/easymotion.git
+  ```
+
+### Create environment variables
+
+You can copy the example file to start with default variables.
+
+```
+cp .env.example .env
 ```
 
-#### Create environment variables
-
-In both the API and WebApp repository you must create the environment files. In the root directory of the repository you can run
-
-```
-cp webapp/.env.example .env
-cp api/.env.example .env
-```
-
-This will provide default environment variables. If new variables need to be added, you will have to include them in your .env file. If you are adding new variables, you should also provide a default one in the .env.example file.
-
-If you are using **Windows**, you also need to create a `.env` in the root directory of the project and add the following variable
+If you are using **Windows**, you need to also add the following variable in your .env file.
 
 ```
 POLLING=true
@@ -65,85 +62,195 @@ POLLING=true
 
 - Run `docker compose up` (the first time it will take a while because it will install dependencies)
 - Visit
-  - API at [https://api.easymotion.devlocal](https://api.easymotion.devlocal)
-  - WebApp at [https://easymotion.dev](https://easymotion.dev)
-  - PgAdmin at [http://localhost:8083](http://localhost:8083) (this is supposed to be used for administration purposes, but not to model the DB since this is done through migrations)
+  - **api** at [https://api.easymotion.devlocal/swagger](https://api.easymotion.devlocal/swagger)
+  - **webapp** at [https://easymotion.devlocal](https://easymotion.devlocal)
+  - **pgAdmin** at [http://localhost:8083](http://localhost:8083):
+    - username: `db@easymotion.devlocal`
+    - password: `1234`
+    - The server configuration must use the connection parameters declared in the `.env` file
 
-⚠️ **Note**: when you visit the https URIs, your browser will probably complain about connection being not private despite the certificate. This is ok since the development certificates are not signed by a real certification authority. Since it's a local connection, you should be able to proceed by clicking `Advanced > Proceed to website`.
+> ⚠️ **HTTPs!** When you visit the https URIs, your browser will probably complain about connection being not private despite the certificate. This is ok since the development certificates are not signed by a real certification authority. Since it's a local connection, you should be able to proceed by clicking `Advanced > Proceed to website`. **You need to accept risks for both API and webapp to ensure communication between the two works**.
 
-### Shutdown the dev environment
+### Run DB migrations and seed
 
-- Run `docker compose down`
-
-If you also want to completely erase the DB data:
-
-- Run `docker volume rm easymotion_pgdata`
-
-If you want to erase the PgAdmin data:
-
-- Run `docker volume rm easymotion_pgadmin_data`
-
-## Usage
-
-### Installing packages
-
-Do **NOT** run npm commands directly in projects subfolders, instead do:
+Finally, you will need to apply database migrations by running:
 
 ```bash
-# Nest API
-docker compose exec api npm install package-name
-
-# Webapp
-docker compose exec webapp npm install package-name
+docker compose exec api npm run prisma:migrate-dev
 ```
 
-You can also use `docker compose attach [container-name]` to attach you shell to a specific container.
-
-If you need to run specific commands in the services without starting them up (for example, to install new dependencies), you can do:
+You can then seed the database by running:
 
 ```bash
-docker compose run [service] [command]
+docker compose exec api npm run seed
 ```
-
-### What to do if you start getting errors with modules
-
-Delete
-
-- `api/node_modules`
-- `webapp/node_modules`
-
-Then, rebuild the docker images by running `docker compose build`.
-
-### View logs
-
-Docker compose, by default, attaches all the logs to the same stdout. This can be a bit overwhelming.
-
-If you want to see logs from one or more specific applications you can run
-
-```bash
-# for the api
-docker compose logs api
-
-# for the webapp
-docker compose logs webapp
-
-# for nginx
-docker compose logs nginx
-
-# for db
-docker compose logs db
-```
-
-You can also use the `-f` flag to attach to the log file and follow new content.
-
-For more information about the usage of docker compose, check the [official docs](https://docs.docker.com/reference/cli/docker/compose/).
 
 ---
 
-# How to develop
+## Interacting with the dev environment
 
+The dev environment is completely handled by docker-compose, which spawns all the services and handles the dependencies between them.
+
+You are **NOT** supposed to run commands using npm in projects subfolders. Everything should be done throught docker-compose by specifying the service you want to execute the command in.
+
+#### Install packages
+
+```bash
+# api
+docker compose exec api npm i [package-name]
+# webapp
+docker compose exec webapp npm i [package-name]
+```
+
+If you need to re-install all the packages you can simply erase the `node_modules` folder. This way, the service will run `npm ci` automatically on start.
+
+#### Run migrations on DB
+
+```bash
+docker compose exec api npm run prisma:migrate-dev
+```
+
+#### Seeding DB with fake data
+
+```bash
+docker compose exec api npm run seed
+```
+
+#### Regenerate prisma client
+
+> Note: this command is always executed automatically after prisma:migrate-dev
+
+```bash
+docker compose exec api npm run prisma:generate-client
+```
+
+#### Regenerate webapp client
+
+> Note: this command is always executed automatically when `webapp/client` is not a directory
+
+```bash
+docker compose exec webapp npm run gen-client
+```
+
+#### Access psql shell
+
+```bash
+docker-compose exec db psql -U easymotion
+```
+
+#### Restart a service
+
+```bash
+# Shut it down
+docker compose restart [service-name]
+```
+
+#### Check running services
+
+```bash
+docker compose ps
+```
+
+#### Attach to logs
+
+```bash
+docker compose logs -f [service-name]
+```
+
+#### Erase DB data
+
+```bash
+docker compose down # if services are running
+docker volume rm easymotion_pgdata
+docker volume rm easymotion_pgadmin_data
+```
+
+#### Rebuild images
+
+```bash
+docker compose build
+```
+
+#### Shutdown the dev environment
+
+```bash
+# add --remove-orphans if you get warnings about orphans containers
+docker compose down
+```
+
+#### Other commands
+
+For more information about the usage of docker compose, check the [official docs](https://docs.docker.com/reference/cli/docker/compose/).
+
+If you use Visual Studio Code, the [Official Docker Extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker) could be helpful to keep tracks of the running containers.
+
+---
+
+# Troubleshooting
+
+### ️If you start getting errors with modules
+
+At some point you might see errors suggesting that some node module is not installed. The possible reasons are two:
+
+- Another dev added dependencies which you haven't installed
+- Something is broken
+
+First, try to install any new dependency if there's any. You can do it by running
+
+```bash
+docker compose exec [service-name] npm i
+```
+
+If your container was running, you may also want to try to restart it
+
+```bash
+docker compose restart [service-name]
+```
+
+If issues **persist**, you can do it the hard way by
+
+- Turning off all the services with `docker compose down`
+- Deleting the `api/node_modules` folder
+- Deleting the `webapp/node_modules` folder
+- Rebuilding the images with `docker compose build`
+- Restarting everything
+
+### If you have issues with port bindings
+
+All the services are exposed towards the host machine. If you have an instance of PSQL running on your host machine, you won't be able to run the container on its default port (5432) since it's already taken.
+
+You can either:
+
+- Turn off the service instance on your machine
+- Change the external binding port
+
+If you want to change the external binding port, you can simply add one or more variables to the `.env` file as follows:
+
+- `API_DEV_PORT=xxxx` (change api port)
+- `WEB_DEV_PORT=xxxx` (change webapp port)
+- `PG_DEV_PORT=xxxx` (change PostgreSQL port)
+- `PG_ADMIN_PORT=xxxx` (change pgAdmin port)
+
+---
+
+## How to develop
+
+- Create a new branch from the `develop` branch
 - Checkout your own branch ensuring that its name follows the standard JIRA naming conventions for GitHub integrations
 - Develop your feature on your branch, eventually rebasing or merging from other branches if you need to do so
 - Open a Pull Request on the `develop` branch and wait for code review and approval
+
+### Code review
+
+| Programmer         | Reviewer           |
+| ------------------ | ------------------ |
+| @Nicola Revelant   | @pittis.matteo     |
+| @pittis.matteo     | @Andrea Cantarutti |
+| @Andrea Cantarutti | @Arghittu Thomas   |
+| @Arghittu Thomas   | @Barbetti Giovanni |
+| @Barbetti Giovanni | @Nicola Revelant   |
+
+### Notes
+
 - Branch `develop` will be aligned with the current sprint progress
 - The production version will be aligned with the status of the `main` branch
