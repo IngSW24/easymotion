@@ -1,18 +1,6 @@
-# Setup dev image
-
-FROM node:20-alpine as dev
-
-RUN apk add --no-cache libc6-compat
-RUN apk add --no-cache openssl
-RUN apk add --no-cache curl
-
-WORKDIR /app
-
-ENV NODE_ENV development
-
 # Build the app
 
-FROM node:20-alpine as build
+FROM node:20-alpine AS build
 
 WORKDIR /app
 RUN apk add --no-cache libc6-compat
@@ -28,14 +16,14 @@ RUN npm run build
 
 # Prepare production image
 
-FROM node:20-alpine as prod
+FROM node:20-alpine AS prod
 
 WORKDIR /app
 RUN apk add --no-cache libc6-compat
 RUN apk add --no-cache openssl
 RUN apk add --no-cache curl
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
 
 RUN addgroup --system --gid 1001 node || true
 RUN adduser --system --uid 1001 node || true
