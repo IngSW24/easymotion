@@ -2,7 +2,7 @@ services:
   webapp:
     build:
       context: webapp
-      target: dev
+      dockerfile: Dockerfile.dev
     restart: "no"
     environment:
       POLLING: ${POLLING:-false}
@@ -11,45 +11,31 @@ services:
       # add variable in .env to change port
       - "${WEB_DEV_PORT:-8082}:5173"
     volumes:
-      - ./webapp:/app
+      - .:/workspace:cached
     depends_on:
       api:
         condition: service_healthy
-      db:
-        condition: service_started
-    command: >
-      sh -c "
-
-      if [ ! -d "/app/node_modules" ]; then
-        echo 'Dependencies are not installed.';
-        echo 'Attempting to install dependencies... (this may take a while)';
-        npm ci;
-      fi
-
-      if [ ! -d "/app/client" ]; then
-        echo 'API client is missing.';
-        echo 'Attempting to generate API client';
-        npm run generate-client;
-      fi
-
-      npm run dev;"
+        # condition: service_started
+    tty: true
+    entrypoint: sh /workspace/webapp/entrypoint.sh
+    command: npm run dev
 
   api:
     build:
       context: api
-      target: dev
-    restart: "no"
+      dockerfile: Dockerfile.dev
+    # restart: "no"
     ports:
       # add variable in .env to change port
       - "${API_DEV_PORT:-8081}:3000"
     volumes:
-      - ./api:/app
-      - ./webapp/api-schema:/api-schema
+      - .:/workspace:cached
     depends_on:
       db:
         condition: service_started
     environment:
       DATABASE_URL: ${DATABASE_URL}
+
     healthcheck:
       # Check if the API is up and running every 5 seconds for ~8 minutes
       test: ["CMD", "curl", "-f", "http://localhost:3000/swagger/json"]
@@ -57,16 +43,10 @@ services:
       timeout: 5s
       retries: 100
       start_period: 5s
-    command: >
-      sh -c "
-
-      if [ ! -d "/app/node_modules" ]; then
-        echo 'Dependencies are not installed.';
-        echo 'Attempting to install dependencies... (this may take a while)';
-        npm ci;
-      fi
-
-      npm run start:dev;"
+    # tty: true
+    entrypoint: sh /workspace/api/entrypoint.sh
+    command: npm run start:dev
+    # command: pm2-runtime start 'npm run start:dev' --name api-dev && sleep infinity
 
   db:
     image: postgres
