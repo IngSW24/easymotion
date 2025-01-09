@@ -221,9 +221,8 @@ export default function CourseDetail(props: CourseDetailProps) {
               {!isEditing ? (
                 <Grid2 container spacing={2} sx={{ mt: 3 }}>
                   {editCourse.tags?.map((item, index) => (
-                    <Grid2>
+                    <Grid2 key={`tag-${index}`}>
                       <Chip
-                        key={`tag-${index}`}
                         label={
                           <Typography
                             component="div"
