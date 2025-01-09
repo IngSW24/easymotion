@@ -3,6 +3,13 @@ import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { CourseEntity } from "../../../../client/data-contracts";
+import {
+  courseCategories,
+  courseLevels,
+} from "../../../data/courseEnumerations";
+
+const getLabel = (value: string, options: LiteralUnionDescriptor<string>) =>
+  options.find((o) => o.value === value)?.label ?? value;
 
 describe("CourseCard GUI test", () => {
   const testCourse: CourseEntity = {
@@ -33,8 +40,12 @@ describe("CourseCard GUI test", () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText(testCourse.category)).toBeDefined();
-    expect(screen.getByText(testCourse.level)).toBeDefined();
+    expect(
+      screen.getByText(getLabel(testCourse.category, courseCategories))
+    ).toBeDefined();
+    expect(
+      screen.getByText(getLabel(testCourse.level, courseLevels))
+    ).toBeDefined();
     expect(screen.getByText(testCourse.name)).toBeDefined();
     expect(screen.getByText(testCourse.short_description)).toBeDefined();
     testCourse.tags.map((tag) => {
