@@ -3,10 +3,17 @@ import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { CourseEntity } from "../../../../client/data-contracts";
+import {
+  courseCategories,
+  courseLevels,
+} from "../../../data/courseEnumerations";
 
 async function onCourseDetailSave(course: CourseEntity): Promise<CourseEntity> {
   return Promise.resolve(course);
 }
+
+const getLabel = (value: string, options: LiteralUnionDescriptor<string>) =>
+  options.find((o) => o.value === value)?.label ?? value;
 
 describe("CourseDetail GUI test", () => {
   const testCourse: CourseEntity = {
@@ -47,15 +54,19 @@ describe("CourseDetail GUI test", () => {
     );
 
     //expect(screen.getByText(testCourse.name)).toBeDefined();
-    //expect(screen.getByText(testCourse.level)).toBeDefined();
+    expect(
+      screen.getByText(getLabel(testCourse.level, courseLevels))
+    ).toBeDefined();
     expect(screen.getByText(testCourse.short_description)).toBeDefined();
     expect(screen.getByText(testCourse.description)).toBeDefined();
-    expect(screen.getByText("Acquagym")).toBeDefined();
+    expect(
+      screen.getByText(getLabel(testCourse.category, courseCategories))
+    ).toBeDefined();
     testCourse.schedule.map((schedule) => {
       expect(screen.getByText(schedule)).toBeDefined();
     });
-    //testCourse.schedule.map((tag) => {
-    //  expect(screen.getByText(tag)).toBeDefined();
-    //});
+    testCourse.schedule.map((tag) => {
+      expect(screen.getByText(tag)).toBeDefined();
+    });
   });
 });
