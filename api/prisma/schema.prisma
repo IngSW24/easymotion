@@ -41,6 +41,7 @@ enum CourseAvailability {
   NO_LONGER_AVAILABLE
 }
 
+// TODO: Align Course model to use camelCase instead of snake_case for field names
 model Course {
   id                        String              @id @default(uuid())
   name                      String
@@ -63,4 +64,52 @@ model Course {
   thumbnail_path            String?
   created_at                DateTime            @default(now()) @db.Timestamptz(3)
   updated_at                DateTime            @updatedAt @db.Timestamptz(3)
+}
+
+enum Role {
+  USER
+  ADMIN
+  PHYSIOTHERAPIST
+}
+
+model ApplicationUser {
+  id                        String              @id @default(uuid())
+  email                     String              @unique
+  password                  String
+  username                  String              @unique
+  firstName                 String
+  middleName                String?
+  lastName                  String
+  phoneNumber               String?
+  birthDate                 String?
+  role                      Role                @default(USER)
+  isEmailVerified           Boolean             @default(false)
+  lastLogin                 DateTime?
+  failedLoginAttempts       Int                 @default(0)
+  createdAt                 DateTime            @default(now()) @db.Timestamptz(3)
+  updatedAt                 DateTime            @updatedAt @db.Timestamptz(3)
+
+  Physiotherapist           Physiotherapist[]
+
+  FinalUser                 FinalUser[]
+}
+
+model Physiotherapist {
+  id                        String              @id @default(uuid())
+  ApplicationUser           ApplicationUser     @relation(fields: [id], references: [id])
+
+  specialization            String
+  publicPhoneNumber         String?
+}
+
+model FinalUser {
+  id                        String              @id @default(uuid())
+  ApplicationUser           ApplicationUser     @relation(fields: [id], references: [id])
+
+  // TODO: Specify body measurements
+  // bodyWeight                Decimal?
+  // bodyHeight                Decimal?
+  // bodyFatPercentage         Decimal?
+  // bodyMassIndex             Decimal?
+  // bodyWaterPercentage       Decimal?
 }

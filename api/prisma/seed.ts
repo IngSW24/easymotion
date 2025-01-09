@@ -1,4 +1,6 @@
 import { PrismaClient } from '@prisma/client';
+import { create } from 'domain';
+import { last } from 'rxjs';
 import { CourseEntity } from 'src/courses/entities/course.entity';
 
 const prisma = new PrismaClient();
@@ -7,7 +9,7 @@ async function main() {
   const data = require('./seed_data.json');
   console.log(data);
 
-  await data.courses.forEach(async (e: CourseEntity) => {
+  for (const e of data.courses) {
     await prisma.course.upsert({
       where: { id: e.id },
       update: {},
@@ -32,7 +34,48 @@ async function main() {
         thumbnail_path: e.thumbnail_path || null,
       },
     });
-  });
+  }
+
+  for (const e of data.applicationUsers) {
+    await prisma.applicationUser.upsert({
+      where: { id: e.id },
+      update: {},
+      create: {
+        email: e.email,
+        password: e.password,
+        username: e.username,
+        firstName: e.firstName,
+        middleName: e.middleName || null,
+        lastName: e.lastName,
+        phoneNumber: e.phoneNumber || null,
+        birthDate: e.birthDate || null,
+        role: e.role,
+        isEmailVerified: e.isEmailVerified,
+        lastLogin: e.lastLogin || null,
+        failedLoginAttempts: e.failedLoginAttempts,
+      },
+    });
+  }
+
+  for (const e of data.physiotherapists) {
+    console.log(e);
+    await prisma.physiotherapist.upsert({
+      where: { id: e.id },
+      update: {},
+      create: {
+        specialization: e.specialization,
+        publicPhoneNumber: e.publicPhoneNumber,
+      },
+    });
+  }
+
+  for (const e of data.finalUsers) {
+    await prisma.finalUser.upsert({
+      where: { id: e.id },
+      update: {},
+      create: {},
+    });
+  }
 }
 
 main()
