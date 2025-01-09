@@ -15,7 +15,7 @@ import Typography from "@mui/material/Typography";
 import { Outlet, useLocation } from "react-router";
 import { Button, ThemeProvider } from "@mui/material";
 import { Link } from "react-router";
-import { physiotherapistTheme, userTheme } from "../../../theme/theme";
+import { physiotherapistTheme, userTheme } from "../../theme/theme";
 
 export type MenuEntry = {
   label: string;

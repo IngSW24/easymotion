@@ -1,6 +1,6 @@
-import React from "react";
 import { Duration } from "luxon";
-import { TextField, Stack } from "@mui/material";
+import { Stack } from "@mui/material";
+import FormTextField from "../../atoms/TextField/FormTextField";
 
 interface DurationPickerProps {
   value: Duration;
@@ -10,31 +10,28 @@ interface DurationPickerProps {
 export default function DurationPicker(props: DurationPickerProps) {
   const { onDurationChange, value } = props;
 
-  const handleHoursChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newHours = Math.max(0, parseInt(e.target.value, 10) || 0);
+  const handleHoursChange = (v: string) => {
+    const newHours = Math.max(0, parseInt(v, 10) || 0);
     onDurationChange(value.set({ hours: newHours }));
   };
 
-  const handleMinutesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newMinutes = Math.max(
-      0,
-      Math.min(59, parseInt(e.target.value, 10) || 0)
-    );
+  const handleMinutesChange = (v: string) => {
+    const newMinutes = Math.max(0, Math.min(59, parseInt(v, 10) || 0));
     onDurationChange(value.set({ minutes: newMinutes }));
   };
 
   return (
     <Stack direction="row" gap={3}>
-      <TextField
+      <FormTextField
         label="Ore"
         type="number"
-        value={value.get("hours")}
+        value={value.get("hours").toString()}
         onChange={handleHoursChange}
       />
-      <TextField
+      <FormTextField
         label="Minuti"
         type="number"
-        value={value.get("minutes")}
+        value={value.get("minutes").toString()}
         onChange={handleMinutesChange}
       />
     </Stack>

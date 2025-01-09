@@ -1,4 +1,4 @@
-import { Box, Chip, Grid2, Stack, TextField, Typography } from "@mui/material";
+import { Box, Chip, Grid2, Stack, Typography } from "@mui/material";
 import { useState } from "react";
 import { CourseEntity } from "../../../../client/data-contracts";
 import { useSnack } from "../../../hooks/useSnack";
@@ -17,6 +17,7 @@ import {
   courseCategories,
   courseLevels,
 } from "../../../data/courseEnumerations";
+import FormTextField from "../../atoms/TextField/FormTextField";
 
 export interface CourseDetailProps {
   isNew?: boolean;
@@ -80,32 +81,28 @@ export default function CourseDetail(props: CourseDetailProps) {
               </Stack>
             ) : (
               <Stack spacing={3}>
-                <TextField
+                <FormTextField
                   id="outlined-basic"
                   value={editCourse.name}
                   label="Nome del corso"
-                  fullWidth
-                  onChange={(e) =>
+                  onChange={(v) =>
                     setEditCourse((prev) => ({
                       ...prev,
-                      name: e.target.value,
+                      name: v,
                     }))
                   }
-                  variant="outlined"
                 />
 
-                <TextField
+                <FormTextField
                   id="outlined-basic"
                   value={editCourse.short_description}
                   label="Breve descrizione"
-                  fullWidth
-                  onChange={(e) =>
+                  onChange={(v) =>
                     setEditCourse((prev) => ({
                       ...prev,
-                      short_description: e.target.value,
+                      short_description: v,
                     }))
                   }
-                  variant="outlined"
                 />
               </Stack>
             )}
@@ -139,11 +136,10 @@ export default function CourseDetail(props: CourseDetailProps) {
                     {editCourse.description}
                   </Typography>
                 ) : (
-                  <TextField
+                  <FormTextField
                     multiline
-                    fullWidth
                     value={editCourse.description}
-                    onChange={(e) => updateField("description", e.target.value)}
+                    onChange={(v) => updateField("description", v)}
                   />
                 )}
               </Box>

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Card, CardContent, Typography, Box, TextField } from "@mui/material";
+import { Card, CardContent, Typography, Box } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EuroIcon from "@mui/icons-material/Euro";
 import { CourseEntity } from "../../../../client/data-contracts";
 import { Person } from "@mui/icons-material";
+import FormTextField from "../../atoms/TextField/FormTextField";
 
 interface ProductCardProps {
   typeInfo: string; // Indicates the label of each information, e.g., organizer, time, ...
@@ -95,23 +96,17 @@ const ProductCard: React.FC<ProductCardProps> = ({
           {isEditing ? (
             <Box>
               {info !== undefined ? (
-                <TextField
+                <FormTextField
                   label={typeInfo}
-                  name="information"
-                  value={editedInfo}
-                  onChange={(e) => handleChangeInfo(e.target.value)}
-                  fullWidth
-                  margin="normal"
+                  value={editedInfo ?? ""}
+                  onChange={(v) => handleChangeInfo(v)}
                 />
               ) : cost !== undefined ? (
-                <TextField
+                <FormTextField
                   label={typeInfo}
                   type="number"
-                  name="cost"
-                  value={editedCost}
-                  onChange={(e) => handleChangeCost(Number(e.target.value))}
-                  fullWidth
-                  margin="normal"
+                  value={editedCost ? editedCost.toString() : "0"}
+                  onChange={(v) => handleChangeCost(Number(v))}
                 />
               ) : null}
             </Box>

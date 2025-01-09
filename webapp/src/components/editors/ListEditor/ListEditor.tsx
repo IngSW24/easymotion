@@ -1,5 +1,6 @@
 import { Add, Delete } from "@mui/icons-material";
-import { Box, Button, IconButton, Stack, TextField } from "@mui/material";
+import { Box, Button, IconButton, Stack } from "@mui/material";
+import FormTextField from "../../atoms/TextField/FormTextField";
 
 export interface ListEditorProps {
   entries: string[];
@@ -35,12 +36,10 @@ export default function ListEditor(props: ListEditorProps) {
           >
             {entryIcon}
             <>
-              <TextField
+              <FormTextField
                 id={`outlined-basic-${index}`}
                 value={item}
-                onChange={(e) => updateEntry(e.target.value, index)}
-                variant="outlined"
-                fullWidth
+                onChange={(v) => updateEntry(v, index)}
               />
               <IconButton color="error" onClick={() => deleteEntry(index)}>
                 <Delete />
