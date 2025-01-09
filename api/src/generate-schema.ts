@@ -1,21 +1,16 @@
 import { writeFileSync } from 'fs';
+import { bootstrap, setupSwagger } from './bootstrap';
 
-const SWAGGER_URL = 'http://localhost:3000/swagger/json';
-const OUTPUT_FILE = '/api-schema/schema.json';
-
-async function fetchSwagger() {
-  try {
-    console.log(`Fetching Swagger JSON from ${SWAGGER_URL}...`);
-    const response = await fetch(SWAGGER_URL);
-
-    const data = await response.json();
-
-    writeFileSync(OUTPUT_FILE, JSON.stringify(data, null, 2));
-    console.log(`Swagger schema saved to ${OUTPUT_FILE}`);
-  } catch (error) {
-    console.error('Failed to fetch Swagger JSON:', error.message);
-    process.exit(1);
-  }
+async function generateSchema() {
+  const app = await bootstrap();
+  const document = setupSwagger(app);
+  console.log('Writing schema to /api-schema/schema.json');
+  writeFileSync(
+    '/workspace/webapp/api-schema/schema.json',
+    JSON.stringify(document, null, 2),
+  );
+  console.log('Done!');
+  process.exit(0);
 }
 
-fetchSwagger();
+generateSchema();

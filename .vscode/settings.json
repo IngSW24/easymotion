@@ -1,35 +1,47 @@
+// {
+//   "folders": [
+//     {
+//       "path": "./webapp",
+//       "name": "webapp"
+//     },
+//     {
+//       "path": "./api",
+//       "name": "api",
+//     }
+//   ],
+//   "settings": {
+//     "editor.formatOnSave": true,
+//     "editor.tabSize": 2,
+//     "editor.insertSpaces": true,
+//     "typescript.tsserver.experimental.enableProjectDiagnostics": true,
+//     "editor.detectIndentation": false,
+//     "terminal.integrated.cwd": ".."
+//   }
+// }
+
 {
-  "editor.formatOnSave": true, // Format on save globally
-  "editor.defaultFormatter": "esbenp.prettier-vscode", // Set Prettier as the default formatter
-  "editor.tabSize": 2, // Set tab width to 2 spaces
-  "editor.insertSpaces": true, // Use spaces instead of tabs
-  "editor.detectIndentation": false, // Enforce the specified tab size
-  "typescript.tsserver.experimental.enableProjectDiagnostics": true,
-
-  // ESLint Configuration
-  "eslint.workingDirectories": [{ "mode": "auto" }], // Auto-detect ESLint config per subfolder
-  "eslint.validate": [
-    "javascript",
-    "typescript",
-    "javascriptreact",
-    "typescriptreact"
-  ],
-
-  // Prettier Configuration
-  "prettier.useEditorConfig": true, // Respect .editorconfig files
-  "prettier.configPath": "", // Auto-resolve Prettier config per project
-
-  // Language-Specific Settings
-  "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[javascriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+    "editor.formatOnSave": true,
+    "typescript.tsserver.experimental.enableProjectDiagnostics": true,
+    "editor.detectIndentation": false
 }
+  // "settings": {
+  //   "editor.formatOnSave": false, 
+  //   "editor.defaultFormatter": "esbenp.prettier-vscode", 
+  //   "editor.tabSize": 2, 
+  //   "editor.insertSpaces": true, 
+  //   "editor.detectIndentation": false, 
+  //   "typescript.tsserver.experimental.enableProjectDiagnostics": true,
+
+    
+  //   "eslint.workingDirectories": [{ "mode": "auto" }], 
+  //   "eslint.validate": [
+  //     "javascript",
+  //     "typescript",
+  //     "javascriptreact",
+  //     "typescriptreact"
+  //   ],
+
+    
+  //   "prettier.useEditorConfig": true, 
+  //   "prettier.configPath": "", 
+  // }
