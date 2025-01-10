@@ -2,7 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router";
 import CourseListPage from "../pages/CourseListPage";
 import CourseDetailsPage from "../pages/CourseDetailsPage";
 import CourseCreatePage from "../pages/CourseCreatePage";
-import Layout, { MenuEntry } from "../components/ui/Layout/Layout";
+import Layout, { MenuEntry } from "../components/Layout/Layout";
 
 const userMenuEntries: Array<MenuEntry> = [
   {

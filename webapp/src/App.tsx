@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Router from "./routing/Router";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { SnackbarProvider } from "notistack";
-import SnackbarCloseButton from "./components/ui/Snackbar/SnackbarCloseButton";
+import SnackbarCloseButton from "./components/Snackbar/SnackbarCloseButton";
 import DialogContextProvider from "./context/DialogContext/DialogContextProvider";
 
 const queryClient = new QueryClient({
