@@ -1,5 +1,5 @@
 {
-  "jest.shell": "/bin/zsh",
+  "jest.shell": "/bin/sh",
   "jest.jestCommandLine": "",
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
