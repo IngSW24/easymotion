@@ -9,6 +9,8 @@ RUN apk add --no-cache zsh
 
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
+RUN npm i -g @nestjs/cli
+
 WORKDIR /workspace/api
 
 ENV NODE_ENV=development

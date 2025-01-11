@@ -1,17 +1,38 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CourseModule } from './courses/courses.module';
 import { PrismaModule } from 'nestjs-prisma';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { EmailModule } from './email/email.module';
+import configurations from './config';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      load: [...configurations],
+      isGlobal: true,
+    }),
     CourseModule,
     PrismaModule,
+    PrismaModule.forRootAsync({
+      isGlobal: true,
+      useFactory: async (configService: ConfigService) => {
+        return {
+          prismaOptions: {
+            datasources: {
+              db: {
+                url: configService.get<string>('db.url'),
+              },
+            },
+          },
+        };
+      },
+      inject: [ConfigService],
+    }),
     AuthModule,
     UsersModule,
+    EmailModule,
   ],
 })
 export class AppModule {}
