@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
-import { IsEmail } from 'class-validator';
+import { IsEmail, IsStrongPassword } from 'class-validator';
 
 export class SignInDto {
   @ApiProperty({
@@ -11,9 +10,16 @@ export class SignInDto {
   email: string;
 
   @ApiProperty({
-    description: 'Hashed password (using Aragon2i) in Encoded Form',
-    example: '$argon2i$v=19$m=16,t=2,p=1$cGFzc3dvcmQ$A9HKT/FCm9ft8VCFgT4rVw',
+    description: 'Password of the user',
+    example: 'password',
   })
-  @Exclude()
-  passwordHash: string;
+  // TODO: Change with NestJS Config
+  @IsStrongPassword({
+    minLength: 4,
+    minLowercase: 0,
+    minNumbers: 0,
+    minSymbols: 0,
+    minUppercase: 0,
+  })
+  password: string;
 }
