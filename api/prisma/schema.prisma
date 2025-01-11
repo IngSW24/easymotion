@@ -73,38 +73,43 @@ enum Role {
 }
 
 model ApplicationUser {
-  id                        String              @id @default(uuid())
-  email                     String              @unique
-  password                  String
-  username                  String              @unique
-  firstName                 String
-  middleName                String?
-  lastName                  String
-  phoneNumber               String?
-  birthDate                 String?
-  role                      Role                @default(USER)
-  isEmailVerified           Boolean             @default(false)
-  lastLogin                 DateTime?
-  failedLoginAttempts       Int                 @default(0)
-  createdAt                 DateTime            @default(now()) @db.Timestamptz(3)
-  updatedAt                 DateTime            @updatedAt @db.Timestamptz(3)
-
-  Physiotherapist           Physiotherapist[]
-
-  FinalUser                 FinalUser[]
+  id                           String              @id @default(uuid())
+  email                        String              @unique
+  isEmailVerified              Boolean             @default(false)
+  emailConfirmationToken       String?
+  emailConfirmationTokenExpiry DateTime?
+  passwordHash                 String              @default("")
+  passwordResetToken           String?
+  passwordResetTokenExpiry     DateTime?
+  twoFactorCode                String?
+  twoFactorExpiry              DateTime?
+  twoFactorEnabled             Boolean             @default(false)
+  username                     String              @unique
+  firstName                    String
+  middleName                   String?
+  lastName                     String
+  phoneNumber                  String?
+  birthDate                    String?
+  role                         Role                @default(USER)
+  lastLogin                    DateTime?
+  failedLoginAttempts          Int                 @default(0)
+  createdAt                    DateTime            @default(now()) @db.Timestamptz(3)
+  updatedAt                    DateTime            @updatedAt @db.Timestamptz(3)
+  physiotherapistData          Physiotherapist?
+  finalUserData                FinalUser?
 }
 
 model Physiotherapist {
-  id                        String              @id @default(uuid())
-  ApplicationUser           ApplicationUser     @relation(fields: [id], references: [id])
+  applicationUserId         String              @id
+  applicationUser           ApplicationUser     @relation(fields: [applicationUserId], references: [id])
 
   specialization            String
   publicPhoneNumber         String?
 }
 
 model FinalUser {
-  id                        String              @id @default(uuid())
-  ApplicationUser           ApplicationUser     @relation(fields: [id], references: [id])
+  applicationUserId         String              @id
+  applicationUser           ApplicationUser     @relation(fields: [applicationUserId], references: [id])
 
   // TODO: Specify body measurements
   // bodyWeight                Decimal?
