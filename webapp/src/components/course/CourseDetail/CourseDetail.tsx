@@ -3,7 +3,7 @@ import { useState } from "react";
 import { CourseEntity } from "../../../../client/data-contracts";
 import { useSnack } from "../../../hooks/useSnack";
 import ProductCard from "./ProductCard";
-import LockUnlockButton from "./LockUnlockButton";
+import LockUnlockButton from "../../atoms/Button/LockUnlockButton";
 import { Duration } from "luxon";
 import DurationPicker from "../../editors/DurationPicker/DurationPicker";
 import ProductCardSelector from "./ProductCardSelector";
