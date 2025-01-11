@@ -7,7 +7,7 @@ import FilterBlock from "../FilterBlock/FilterBlock";
 import { CourseFilters } from "../FilterBlock/types";
 import { useCallback, useState } from "react";
 import LoadingSpinner from "../../LoadingSpinner/LoadingSpinner";
-import CreateCourseButton from "../CourseEditor/CreateCourseButton";
+import CreateCourseButton from "../../atoms/Button/CreateCourseButton";
 
 interface CourseListProps {
   canEdit?: boolean;
