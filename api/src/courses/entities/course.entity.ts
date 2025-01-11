@@ -1,7 +1,6 @@
 import {
   IsArray,
   IsDate,
-  IsDecimal,
   IsEnum,
   IsInt,
   IsNumber,
