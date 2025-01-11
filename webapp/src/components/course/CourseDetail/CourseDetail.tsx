@@ -254,12 +254,11 @@ export default function CourseDetail(props: CourseDetailProps) {
             <ProductCard
               typeInfo="Istruttori"
               info={editCourse.instructors?.join(", ") ?? ""}
-              field="instructors"
               isEditing={isEditing}
-              onSave={(field, value) => {
+              onSave={(value) => {
                 setEditCourse((prev) => ({
                   ...prev,
-                  [field.toLowerCase()]: value
+                  instructors: value
                     .toString()
                     .split(",")
                     .map((str) => str.trim()),
@@ -269,26 +268,24 @@ export default function CourseDetail(props: CourseDetailProps) {
 
             <ProductCard
               typeInfo="Posizione"
-              field="location"
               info={editCourse.location}
               isEditing={isEditing}
-              onSave={(field, value) => {
+              onSave={(value) => {
                 setEditCourse((prev) => ({
                   ...prev,
-                  [field.toLowerCase()]: value,
+                  location: value.toString(),
                 }));
               }}
             />
 
             <ProductCard
               typeInfo="Costo"
-              field="cost"
               cost={editCourse.cost}
               isEditing={isEditing}
-              onSave={(field, value) => {
+              onSave={(value) => {
                 setEditCourse((prev) => ({
                   ...prev,
-                  [field.toLowerCase()]: value,
+                  cost: Number(value),
                 }));
               }}
             />
