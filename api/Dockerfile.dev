@@ -2,8 +2,14 @@ FROM node:20-alpine
 
 RUN apk add --no-cache libc6-compat
 RUN apk add --no-cache openssl
+RUN apk add --no-cache openssh
 RUN apk add --no-cache curl
+RUN apk add --no-cache git
+RUN apk add --no-cache zsh
+
+RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 WORKDIR /workspace/api
 
 ENV NODE_ENV=development
+ENV SHELL=/bin/zsh
