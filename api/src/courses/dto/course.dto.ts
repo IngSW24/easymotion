@@ -82,6 +82,7 @@ export class CourseEntity {
   @ApiProperty({
     description: 'Cost of the course (optional)',
     required: false,
+    type: 'number',
   })
   @Transform(({ value }) => value)
   @Type(() => Number)
