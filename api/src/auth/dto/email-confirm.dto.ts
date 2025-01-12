@@ -11,4 +11,12 @@ export class EmailConfirmDto extends EmailDto {
   @IsString()
   @Expose()
   token: string;
+
+  @ApiProperty({
+    description: 'User ID of the user to confirm the email',
+    example: '00000000-0000-0000-0000-000000000000',
+  })
+  @IsString()
+  @Expose()
+  userId: string;
 }

@@ -7,7 +7,6 @@ import {
   Delete,
   Put,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
@@ -17,13 +16,13 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ApplicationUserDto } from './dto/application-user.dto';
 import { PaginationFilter } from 'src/common/dto/pagination-filter.dto';
 import { ApiPaginatedResponse } from 'src/common/decorators/api-paginated-response.decorator';
-import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import UseAuth from 'src/auth/decorators/auth-with-role.decorator';
 
 /**
  * A controller for managing user-related operations, providing
  * standard CRUD endpoints for creating, reading, updating, and deleting users.
  */
-@ApiTags('users')
+@ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -33,6 +32,7 @@ export class UsersController {
    * @param createUserDto - The DTO containing user creation data (e.g., email, password).
    * @returns The created user as ApplicationUserDto.
    */
+  @UseAuth(['admin'])
   @Post()
   @ApiCreatedResponse({ type: ApplicationUserDto })
   create(@Body() createUserDto: CreateUserDto) {
@@ -44,7 +44,7 @@ export class UsersController {
    * @param pagination - The pagination filters: page, perPage, etc.
    * @returns A paginated response containing ApplicationUserDto items.
    */
-  @UseGuards(JwtGuard)
+  @UseAuth(['admin'])
   @Get()
   @ApiPaginatedResponse(ApplicationUserDto)
   findAll(@Query() pagination: PaginationFilter) {
@@ -56,6 +56,7 @@ export class UsersController {
    * @param id - The UUID of the user.
    * @returns The user as ApplicationUserDto, if found.
    */
+  @UseAuth(['admin'])
   @Get(':id')
   @ApiOkResponse({ type: ApplicationUserDto })
   findOne(@Param('id') id: string) {
@@ -68,6 +69,7 @@ export class UsersController {
    * @param updateUserDto - The fields to update (e.g., firstName, lastName).
    * @returns The updated user as ApplicationUserDto.
    */
+  @UseAuth(['admin'])
   @Put(':id')
   @ApiOkResponse({ type: ApplicationUserDto })
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
@@ -78,6 +80,7 @@ export class UsersController {
    * Delete a user by its unique ID.
    * @param id - The UUID of the user.
    */
+  @UseAuth(['admin'])
   @Delete(':id')
   @ApiOkResponse()
   remove(@Param('id') id: string) {

@@ -9,6 +9,7 @@ import {
 } from './common/constants/swagger.constants';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 import { ConfigService } from '@nestjs/config';
+import * as cookieParser from 'cookie-parser';
 
 export async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -42,6 +43,8 @@ export async function bootstrap() {
     }),
   );
 
+  app.use(cookieParser());
+
   return app;
 }
 
@@ -50,6 +53,15 @@ export function setupSwagger(app) {
     .setTitle(API_TITLE)
     .setDescription(API_DESCRIPTION)
     .setVersion(API_VERSION)
+    .addBearerAuth({
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+      in: 'header',
+      name: 'Authorization',
+      description: 'Enter your Bearer token',
+    })
+    .addSecurityRequirements('bearer')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

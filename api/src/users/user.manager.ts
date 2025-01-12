@@ -101,6 +101,10 @@ export class UserManager {
     return { success: true, data: user };
   }
 
+  canUserLogin(user: ApplicationUser): boolean {
+    return user.failedLoginAttempts < 5 && user.isEmailVerified;
+  }
+
   /**
    * Updates a user's information by user ID.
    * @param userId - The ID of the user to update.

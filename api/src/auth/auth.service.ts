@@ -1,4 +1,4 @@
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, Inject } from '@nestjs/common';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
@@ -17,6 +17,9 @@ import { EmailService } from 'src/email/email.service';
 import { EmailConfirmDto } from './dto/email-confirm.dto';
 import { plainToInstance } from 'class-transformer';
 import { AuthUserDto } from './dto/auth-user.dto';
+import { ConfigType } from '@nestjs/config';
+import jwtConfig from 'src/config/jwt.config';
+import { JwtPayloadDto } from './dto/jwt-payload.dto';
 
 @Injectable()
 export class AuthService {
@@ -24,8 +27,16 @@ export class AuthService {
     private readonly userManager: UserManager,
     private readonly jwtService: JwtService,
     private readonly emailService: EmailService,
+    @Inject(jwtConfig.KEY)
+    private readonly configService: ConfigType<typeof jwtConfig>,
   ) {}
 
+  /**
+   * Validates a user's credentials in order to allow login.
+   * @param email the email of the user
+   * @param password the password of the user
+   * @returns the user if the credentials are valid, otherwise null
+   */
   async validateUser(email: string, password: string) {
     const result = await this.userManager.getUserByEmail(email);
 
@@ -34,6 +45,10 @@ export class AuthService {
     }
 
     const user = result.data;
+
+    if (!this.userManager.canUserLogin(user)) {
+      return null;
+    }
 
     const isValidPwd = await this.userManager.verifyPassword(
       user.passwordHash,
@@ -49,18 +64,60 @@ export class AuthService {
     });
   }
 
+  /**
+   * Logs the current user in by generating an access token and a refresh token.
+   * Assumes the user has already been validated.
+   * @param user the user to log in
+   * @returns a tuple containing the user (with access token) and the refresh token
+   */
   async login(user: AuthUserDto) {
-    const payload = {
-      sub: user.id,
-      username: user.username,
-      email: user.email,
-      role: user.role,
-    };
+    await this.userManager.setLastLogin(user.id);
+    await this.userManager.clearFailedLoginAttempts(user.id);
+    return this.getLoginResponse(user);
+  }
 
-    return {
-      ...user,
-      access_token: this.jwtService.sign(payload),
-    };
+  /**
+   * Creates a login response for the user containing an access token and a refresh token
+   * together with user information.
+   * @param user the user to create the response for
+   * @returns a tuple containing the user and the refresh token
+   */
+  private async getLoginResponse(user: AuthUserDto) {
+    const payload = JwtPayloadDto.fromUser(user);
+
+    return [
+      {
+        accessToken: this.jwtService.sign(payload),
+        ...user,
+      },
+      {
+        refreshToken: this.jwtService.sign(
+          { sub: user.id },
+          {
+            expiresIn: this.configService.refreshExpiresIn,
+          },
+        ),
+      },
+    ];
+  }
+
+  /**
+   * Refereshes the access token of the user.
+   * @param user the user to refresh the token for
+   * @returns a tuple containing the new access token and the refresh token
+   */
+  async refresh(userId: string) {
+    const result = await this.userManager.getUserById(userId);
+
+    if (!isSuccessResult(result)) {
+      return null;
+    }
+
+    const user = plainToInstance(AuthUserDto, result.data, {
+      excludeExtraneousValues: true,
+    });
+
+    return this.getLoginResponse(user);
   }
 
   /**
@@ -196,6 +253,12 @@ export class AuthService {
     }
   }
 
+  /**
+   * Set the two-factor authentication status (enabled/disabled) for a user.
+   * @param userId - The unique identifier of the user to update.
+   * @param otpSwitchDto - The data transfer object containing the new two-factor status.
+   * @returns A promise that resolves with the new two-factor status.
+   */
   async switchTwoFactorEnabled(
     userId: string,
     otpSwitchDto: OtpSwitchDto,
@@ -208,6 +271,12 @@ export class AuthService {
     return { enabled: currentStatus };
   }
 
+  /**
+   * Second login step with one time password which is required for users with
+   * two-factor authentication enabled.
+   * @param otpLoginDto - The data transfer object containing the user's OTP.
+   * @returns A promise that resolves with the user and the refresh token.
+   */
   async signInOtp(otpLoginDto: OtpLoginDto) {
     const { userId, otp } = otpLoginDto;
 
@@ -219,32 +288,33 @@ export class AuthService {
       throw new UnauthorizedException('Invalid OTP');
     }
 
-    // TODO: should be extracted to a separate method
-    const payload = {
-      sub: user.id,
-      username: user.username,
-      email: user.email,
-      role: user.role,
-    };
-
-    return {
-      access_token: await this.jwtService.signAsync(payload),
-    };
+    return this.getLoginResponse(user);
   }
 
+  /**
+   * Request to update the email address of a user.
+   * @param userId The unique identifier of the user to update.
+   * @param emailDto The data transfer object containing the new email address.
+   */
   async requestEmailUpdate(userId: string, emailDto: EmailDto) {
     const user = await this.getUserByIdOrThrow(userId);
-    const token = this.userManager.generateEmailConfirmationToken(user.id);
+    const token = await this.userManager.generateEmailConfirmationToken(
+      user.id,
+    );
 
     await this.emailService.sendEmail(
       emailDto.email,
       'Email verification',
-      `Email verification token is ${token}`,
+      `Email verification token is ${token}. User id is ${user.id}`,
     );
   }
 
-  async confirmEmail(userId: string, emailConfirmDto: EmailConfirmDto) {
-    const user = await this.getUserByIdOrThrow(userId);
+  /**
+   * Confirm the email address update for a user.
+   * @param emailConfirmDto The data transfer object containing the user ID, token, and new email.
+   */
+  async confirmEmail(emailConfirmDto: EmailConfirmDto) {
+    const user = await this.getUserByIdOrThrow(emailConfirmDto.userId);
 
     const result = await this.userManager.changeEmail(
       user.id,
@@ -257,6 +327,11 @@ export class AuthService {
     }
   }
 
+  /**
+   * Retrieves a user by their unique identifier or throws an exception if any error occours.
+   * @param userId The unique identifier of the user to retrieve.
+   * @returns A promise that resolves with the user if found.
+   */
   private async getUserByIdOrThrow(userId: string) {
     const user = await this.userManager.getUserById(userId);
 

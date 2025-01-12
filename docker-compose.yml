@@ -6,7 +6,7 @@ services:
     restart: "no"
     environment:
       POLLING: ${POLLING:-false}
-      VITE_API_URL: ${VITE_API_URL:-https://api.easymotion.devlocal}
+      VITE_API_URL: ${WEBAPP_VITE_API_URL:-https://api.easymotion.devlocal}
     ports:
       # add variable in .env to change port
       - "${WEB_DEV_PORT:-8082}:5173"
@@ -35,13 +35,14 @@ services:
         condition: service_started
     environment:
       DATABASE_URL: ${DATABASE_URL}
-      SMTP_HOST: "mailhog"
-      SMTP_PORT: 1025
-      SMTP_SECURE: false
-      JWT_SECRET: "KzSMuZlKyQcFk2haMuZ6x6rGq/wlHDZ8/+VS1YSQSIkw"
-      JWT_AUDIENCE: "easymotion.dev"
-      JWT_ISSUER: "api.easymotion.devlocal"
-      JWT_EXPIRES_IN: "1800s"
+      SMTP_HOST: ${API_SMTP_HOST:-mailhog}
+      SMTP_PORT: ${API_SMTP_PORT:-1025}
+      SMTP_SECURE: ${API_SMTP_SECURE:-false}
+      JWT_SECRET: ${API_JWT_SECRET:-jwtsecretkey}
+      JWT_AUDIENCE: ${API_JWT_AUDIENCE:-easymotion.dev}
+      JWT_ISSUER: ${API_JWT_ISSUER:-api.easymotion.devlocal}
+      JWT_EXPIRES_IN: ${API_JWT_EXPIRES_IN:-1800s}
+      JWT_REFRESH_EXPIRES_IN: ${API_JWT_REFRESH_EXPIRES_IN:-4d}
 
     healthcheck:
       # Check if the API is up and running every 5 seconds for ~8 minutes

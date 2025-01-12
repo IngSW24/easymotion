@@ -22,10 +22,6 @@ import { plainToInstance } from 'class-transformer';
 export class UsersService
   implements CrudService<CreateUserDto, UpdateUserDto, ApplicationUserDto>
 {
-  /**
-   * @param prisma      - The PrismaService instance used for database interactions.
-   * @param userManager - The UserManager which handles user-related database logic.
-   */
   constructor(
     private readonly prisma: PrismaService,
     private readonly userManager: UserManager,
