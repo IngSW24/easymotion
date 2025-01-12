@@ -4,7 +4,7 @@ import { CoursesService } from './courses.service';
 import { PrismaService } from 'nestjs-prisma';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCoursesDto } from './dto/update-course.dto';
-import { CourseEntity } from './entities/course.entity';
+import { CourseEntity } from './dto/course.dto';
 import { Decimal } from '@prisma/client/runtime/library';
 import { PaginationFilter } from 'src/common/dto/pagination-filter.dto';
 
@@ -41,7 +41,7 @@ describe('CoursesController', () => {
 
   // Test Create
   it('should create a new course', async () => {
-    const dto: CreateCourseDto = {
+    const dto = new CreateCourseDto({
       name: 'aa',
       description: '',
       short_description: '',
@@ -54,13 +54,21 @@ describe('CoursesController', () => {
       availability: 'ACTIVE',
       num_registered_members: 0,
       tags: [],
-    };
+      cost: 100,
+      created_at: new Date(),
+      updated_at: new Date(),
+      discount: null,
+      highlighted_priority: null,
+      location: null,
+      members_capacity: null,
+      thumbnail_path: null,
+    });
 
-    const createdCourse = {
+    const createdCourse = new CourseEntity({
       id: '1',
       ...dto,
       cost: new Decimal(100),
-    };
+    });
 
     prismaMock.course.create.mockResolvedValue(createdCourse);
 
@@ -69,12 +77,10 @@ describe('CoursesController', () => {
     expect(prismaMock.course.create).toHaveBeenCalledWith({
       data: { ...dto },
     });
-    expect(result).toEqual(
-      new CourseEntity({
-        ...createdCourse,
-        cost: createdCourse.cost.toNumber(),
-      }),
-    );
+    expect(result).toEqual({
+      ...createdCourse,
+      cost: createdCourse.cost.toNumber(),
+    });
   });
 
   // Test FindAll
@@ -165,14 +171,14 @@ describe('CoursesController', () => {
     const id = '1';
     const dto: UpdateCoursesDto = {
       instructors: ['Updated Organizer'],
-      cost: 250,
+      cost: new Decimal(250),
     };
 
-    const updatedCourse = {
+    const updatedCourse = new UpdateCoursesDto({
       id,
       ...dto,
       cost: new Decimal(250),
-    };
+    });
 
     prismaMock.course.update.mockResolvedValue(updatedCourse);
 
@@ -185,7 +191,6 @@ describe('CoursesController', () => {
     expect(result).toEqual(
       new CourseEntity({
         ...updatedCourse,
-        cost: updatedCourse.cost.toNumber(),
       }),
     );
   });

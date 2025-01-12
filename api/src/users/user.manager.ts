@@ -263,6 +263,8 @@ export class UserManager {
         passwordResetTokenExpiry: null,
       },
     });
+
+    return { success: true, data: null };
   }
 
   /**
@@ -347,12 +349,14 @@ export class UserManager {
    * @returns A promise that resolves to the updated ApplicationUser.
    */
   async setTwoFactor(userId: string, enabled: boolean) {
-    return this.prisma.applicationUser.update({
+    const updatedUser = await this.prisma.applicationUser.update({
       where: { id: userId },
       data: {
         twoFactorEnabled: enabled,
       },
     });
+
+    return updatedUser.twoFactorEnabled;
   }
 
   /**
@@ -383,7 +387,7 @@ export class UserManager {
    * @param code - The OTP code to check.
    * @returns A boolean indicating if the OTP was valid and not expired.
    */
-  async validateOtpCode(userId: string, code: string): Promise<boolean> {
+  async validateTwoFactor(userId: string, code: string): Promise<boolean> {
     const userResult = await this.getUserById(userId);
 
     if (!isSuccessResult(userResult)) return false;

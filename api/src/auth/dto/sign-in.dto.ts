@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
 import { IsEmail, IsStrongPassword } from 'class-validator';
 
 export class SignInDto {
@@ -7,6 +8,7 @@ export class SignInDto {
     example: 'superadmin@easymotion.it',
   })
   @IsEmail()
+  @Expose()
   email: string;
 
   @ApiProperty({
@@ -21,5 +23,6 @@ export class SignInDto {
     minSymbols: 0,
     minUppercase: 0,
   })
+  @Expose()
   password: string;
 }

@@ -8,6 +8,7 @@ import {
   Length,
 } from 'class-validator';
 import { Role } from '@prisma/client';
+import { Expose } from 'class-transformer';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -15,6 +16,7 @@ export class CreateUserDto {
     example: 'john.doe@example.com',
   })
   @IsEmail()
+  @Expose()
   email: string;
 
   @ApiProperty({
@@ -24,6 +26,7 @@ export class CreateUserDto {
   })
   @IsString()
   @Length(6)
+  @Expose()
   password: string;
 
   @ApiProperty({
@@ -31,6 +34,7 @@ export class CreateUserDto {
     example: 'john_doe',
   })
   @IsString()
+  @Expose()
   username: string;
 
   @ApiProperty({
@@ -38,6 +42,7 @@ export class CreateUserDto {
     example: 'John',
   })
   @IsString()
+  @Expose()
   firstName: string;
 
   @ApiPropertyOptional({
@@ -46,6 +51,7 @@ export class CreateUserDto {
   })
   @IsOptional()
   @IsString()
+  @Expose()
   middleName?: string;
 
   @ApiProperty({
@@ -53,6 +59,7 @@ export class CreateUserDto {
     example: 'Doe',
   })
   @IsString()
+  @Expose()
   lastName: string;
 
   @ApiPropertyOptional({
@@ -61,6 +68,7 @@ export class CreateUserDto {
   })
   @IsOptional()
   @IsString()
+  @Expose()
   phoneNumber?: string;
 
   @ApiPropertyOptional({
@@ -69,6 +77,7 @@ export class CreateUserDto {
   })
   @IsOptional()
   @IsDateString()
+  @Expose()
   birthDate?: string;
 
   @ApiPropertyOptional({
@@ -78,5 +87,6 @@ export class CreateUserDto {
   })
   @IsOptional()
   @IsEnum(Role)
+  @Expose()
   role?: Role;
 }

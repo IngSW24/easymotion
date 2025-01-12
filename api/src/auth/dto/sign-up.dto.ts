@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
 import {
   IsDateString,
   IsEmail,
@@ -13,6 +14,7 @@ export class SignUpDto {
     example: 'john.doe@example.com',
   })
   @IsEmail()
+  @Expose()
   email: string;
 
   @ApiProperty({
@@ -27,6 +29,7 @@ export class SignUpDto {
     minSymbols: 0,
     minUppercase: 0,
   })
+  @Expose()
   password: string;
 
   @ApiProperty({
@@ -34,6 +37,7 @@ export class SignUpDto {
     example: 'password',
   })
   @IsString()
+  @Expose()
   repeatedPassword: string;
 
   @ApiProperty({
@@ -41,6 +45,7 @@ export class SignUpDto {
     example: 'john_doe',
   })
   @IsString()
+  @Expose()
   username: string;
 
   @ApiProperty({
@@ -48,6 +53,7 @@ export class SignUpDto {
     example: 'John',
   })
   @IsString()
+  @Expose()
   firstName: string;
 
   @ApiPropertyOptional({
@@ -56,6 +62,7 @@ export class SignUpDto {
   })
   @IsOptional()
   @IsString()
+  @Expose()
   middleName?: string;
 
   @ApiProperty({
@@ -63,6 +70,7 @@ export class SignUpDto {
     example: 'Doe',
   })
   @IsString()
+  @Expose()
   lastName: string;
 
   @ApiPropertyOptional({
@@ -71,6 +79,7 @@ export class SignUpDto {
   })
   @IsOptional()
   @IsString()
+  @Expose()
   phoneNumber?: string;
 
   @ApiPropertyOptional({
@@ -79,5 +88,6 @@ export class SignUpDto {
   })
   @IsOptional()
   @IsDateString()
+  @Expose()
   birthDate?: string;
 }

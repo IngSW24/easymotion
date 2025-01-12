@@ -1,0 +1,14 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { EmailDto } from './email.dto';
+import { IsString } from 'class-validator';
+import { Expose } from 'class-transformer';
+
+export class EmailConfirmDto extends EmailDto {
+  @ApiProperty({
+    description: 'Token sent to the user',
+    example: '00000000-0000-0000-0000-000000000000',
+  })
+  @IsString()
+  @Expose()
+  token: string;
+}

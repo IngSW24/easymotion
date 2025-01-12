@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCoursesDto } from './dto/update-course.dto';
-import { CourseEntity } from './entities/course.entity';
-import { Course } from '@prisma/client';
+import { CourseEntity } from './dto/course.dto';
 import { PrismaService } from 'nestjs-prisma';
 import { PaginatedOutput } from 'src/common/dto/paginated-output.dto';
 import { PaginationFilter } from 'src/common/dto/pagination-filter.dto';
 import { CrudService } from 'src/common/abstractions/crud-service.interface';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 /**
@@ -33,7 +33,7 @@ export class CoursesService
       data: { ...(data as any) },
     });
 
-    return this.mapToDto(course);
+    return plainToInstance(CourseEntity, course);
   }
 
   /**
@@ -54,7 +54,7 @@ export class CoursesService
     });
 
     return {
-      data: this.mapToDto(courses), // Array of mapped courses
+      data: courses.map((x) => plainToInstance(CourseEntity, x)), // Array of mapped courses
       meta: {
         currentPage: page,
         items: courses.length,
@@ -76,7 +76,7 @@ export class CoursesService
       where: { id },
     });
 
-    return this.mapToDto(course);
+    return plainToInstance(CourseEntity, course);
   }
 
   /**
@@ -91,7 +91,7 @@ export class CoursesService
       data: { ...(data as any) },
     });
 
-    return this.mapToDto(updatedCourse);
+    return plainToInstance(CourseEntity, updatedCourse);
   }
 
   /**
@@ -103,28 +103,4 @@ export class CoursesService
       where: { id },
     });
   }
-
-  /**
-   * Maps a Course entity (or an array of entities) to the corresponding DTO.
-   * @param course - A single Course or an array of Courses from the database.
-   * @returns A mapped CourseEntity or an array of CourseEntities.
-   */
-  private mapToDto<T extends Course | Course[]>(course: T): MapOutput<T> {
-    if (Array.isArray(course)) {
-      return course.map(
-        (x) => new CourseEntity({ ...x, cost: x.cost?.toNumber() }),
-      ) as MapOutput<T>;
-    }
-
-    return new CourseEntity({
-      ...course,
-      cost: course.cost?.toNumber(),
-    }) as MapOutput<T>;
-  }
 }
-
-/**
- * Type alias to define the output of the mapToDto method.
- * Ensures correct type mapping between Course and CourseEntity.
- */
-type MapOutput<T> = T extends Course[] ? CourseEntity[] : CourseEntity;

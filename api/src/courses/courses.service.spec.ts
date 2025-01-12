@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CoursesService } from './courses.service';
 import { PrismaService } from 'nestjs-prisma';
-import { CourseEntity } from './entities/course.entity';
+import { CourseEntity } from './dto/course.dto';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCoursesDto } from './dto/update-course.dto';
 import { Decimal } from '@prisma/client/runtime/library';
@@ -182,14 +182,14 @@ describe('CoursesService', () => {
     const id = '1';
     const dto: UpdateCoursesDto = {
       instructors: ['Updated Organizer'],
-      cost: 250,
+      cost: new Decimal(250),
     };
 
-    const updatedCourse = {
+    const updatedCourse = new UpdateCoursesDto({
       id,
       ...dto,
       cost: new Decimal(250),
-    };
+    });
 
     prismaMock.course.update.mockResolvedValue(updatedCourse);
 
@@ -202,7 +202,6 @@ describe('CoursesService', () => {
     expect(result).toEqual(
       new CourseEntity({
         ...updatedCourse,
-        cost: updatedCourse.cost.toNumber(),
       }),
     );
   });

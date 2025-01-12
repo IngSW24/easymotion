@@ -12,7 +12,7 @@ import {
   IsEnum,
   IsUUID,
 } from 'class-validator';
-import { Exclude, Type } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import { ApplicationUser, Role } from '@prisma/client';
 
 export class ApplicationUserDto implements Readonly<ApplicationUser> {
@@ -21,6 +21,7 @@ export class ApplicationUserDto implements Readonly<ApplicationUser> {
     example: 'b3bf4d18-8dd0-43a1-b1da-fd3f7b9553a1',
   })
   @IsUUID()
+  @Expose()
   id: string;
 
   @ApiProperty({
@@ -28,6 +29,7 @@ export class ApplicationUserDto implements Readonly<ApplicationUser> {
     example: 'user@example.com',
   })
   @IsEmail()
+  @Expose()
   email: string;
 
   @ApiProperty({
@@ -35,6 +37,7 @@ export class ApplicationUserDto implements Readonly<ApplicationUser> {
     example: 'john_doe',
   })
   @IsString()
+  @Expose()
   username: string;
 
   @ApiProperty({
@@ -42,6 +45,7 @@ export class ApplicationUserDto implements Readonly<ApplicationUser> {
     example: 'John',
   })
   @IsString()
+  @Expose()
   firstName: string;
 
   @ApiPropertyOptional({
@@ -50,6 +54,7 @@ export class ApplicationUserDto implements Readonly<ApplicationUser> {
   })
   @IsString()
   @IsOptional()
+  @Expose()
   middleName: string | null;
 
   @ApiProperty({
@@ -57,6 +62,7 @@ export class ApplicationUserDto implements Readonly<ApplicationUser> {
     example: 'Doe',
   })
   @IsString()
+  @Expose()
   lastName: string;
 
   @ApiPropertyOptional({
@@ -65,6 +71,7 @@ export class ApplicationUserDto implements Readonly<ApplicationUser> {
   })
   @IsString()
   @IsOptional()
+  @Expose()
   phoneNumber: string | null;
 
   @ApiPropertyOptional({
@@ -73,6 +80,7 @@ export class ApplicationUserDto implements Readonly<ApplicationUser> {
   })
   @IsOptional()
   @IsString()
+  @Expose()
   birthDate: string | null;
 
   @ApiProperty({
@@ -81,6 +89,7 @@ export class ApplicationUserDto implements Readonly<ApplicationUser> {
     default: Role.USER,
   })
   @IsEnum(Role)
+  @Expose()
   role: Role;
 
   @ApiProperty({
@@ -89,6 +98,7 @@ export class ApplicationUserDto implements Readonly<ApplicationUser> {
     example: false,
   })
   @IsBoolean()
+  @Expose()
   isEmailVerified: boolean;
 
   @ApiProperty({
@@ -97,6 +107,7 @@ export class ApplicationUserDto implements Readonly<ApplicationUser> {
   })
   @Type(() => Date)
   @IsDate()
+  @Expose()
   lastLogin: Date;
 
   @ApiProperty({
@@ -105,6 +116,7 @@ export class ApplicationUserDto implements Readonly<ApplicationUser> {
   })
   @Type(() => Date)
   @IsDate()
+  @Expose()
   createdAt: Date;
 
   @ApiProperty({
@@ -113,42 +125,34 @@ export class ApplicationUserDto implements Readonly<ApplicationUser> {
   })
   @Type(() => Date)
   @IsDate()
+  @Expose()
   updatedAt: Date;
 
   @ApiHideProperty()
-  @Exclude()
   emailConfirmationToken: string;
 
   @ApiHideProperty()
-  @Exclude()
   emailConfirmationTokenExpiry: Date;
 
   @ApiHideProperty()
-  @Exclude()
   passwordHash: string;
 
   @ApiHideProperty()
-  @Exclude()
   passwordResetToken: string;
 
   @ApiHideProperty()
-  @Exclude()
   passwordResetTokenExpiry: Date;
 
   @ApiHideProperty()
-  @Exclude()
   twoFactorCode: string;
 
   @ApiHideProperty()
-  @Exclude()
   twoFactorExpiry: Date;
 
   @ApiHideProperty()
-  @Exclude()
   twoFactorEnabled: boolean;
 
   @ApiHideProperty()
-  @Exclude()
   failedLoginAttempts: number;
 
   constructor(partial: Partial<ApplicationUserDto>) {

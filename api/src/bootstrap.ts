@@ -36,7 +36,11 @@ export async function bootstrap() {
     }),
   );
 
-  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+  app.useGlobalInterceptors(
+    new ClassSerializerInterceptor(app.get(Reflector), {
+      excludeExtraneousValues: true,
+    }),
+  );
 
   return app;
 }

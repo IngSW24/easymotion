@@ -11,6 +11,7 @@ import {
 import { CrudService } from 'src/common/abstractions/crud-service.interface';
 import { PaginationFilter } from 'src/common/dto/pagination-filter.dto';
 import { PaginatedOutput } from 'src/common/dto/paginated-output.dto';
+import { plainToInstance } from 'class-transformer';
 
 /**
  * The UsersService class provides high-level CRUD operations for ApplicationUsers,
@@ -37,8 +38,12 @@ export class UsersService
    * @throws HttpException (mapped from Result) if user creation fails, e.g., if the user already exists.
    */
   async create(newUser: CreateUserDto): Promise<ApplicationUserDto> {
+    const mappedUser = plainToInstance(ApplicationUserDto, newUser, {
+      excludeExtraneousValues: true,
+    });
+
     const result = await this.userManager.createUser(
-      { ...newUser, passwordHash: '' },
+      { ...mappedUser, passwordHash: '' },
       newUser.password,
     );
 

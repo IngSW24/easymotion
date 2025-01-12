@@ -11,7 +11,7 @@ import {
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCoursesDto } from './dto/update-course.dto';
-import { CourseEntity } from './entities/course.entity';
+import { CourseEntity } from './dto/course.dto';
 import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import { PaginationFilter } from 'src/common/dto/pagination-filter.dto';
 import { ApiPaginatedResponse } from 'src/common/decorators/api-paginated-response.decorator';

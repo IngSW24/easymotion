@@ -7,6 +7,7 @@ import {
   Delete,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
@@ -16,6 +17,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ApplicationUserDto } from './dto/application-user.dto';
 import { PaginationFilter } from 'src/common/dto/pagination-filter.dto';
 import { ApiPaginatedResponse } from 'src/common/decorators/api-paginated-response.decorator';
+import { JwtGuard } from 'src/auth/guards/jwt.guard';
 
 /**
  * A controller for managing user-related operations, providing
@@ -42,6 +44,7 @@ export class UsersController {
    * @param pagination - The pagination filters: page, perPage, etc.
    * @returns A paginated response containing ApplicationUserDto items.
    */
+  @UseGuards(JwtGuard)
   @Get()
   @ApiPaginatedResponse(ApplicationUserDto)
   findAll(@Query() pagination: PaginationFilter) {

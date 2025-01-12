@@ -6,16 +6,62 @@ import {
   resultToHttpException,
 } from 'src/common/types/result';
 import { UserManager } from 'src/users/user.manager';
-import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
 import { Prisma } from '@prisma/client';
+import { EmailDto } from './dto/email.dto';
+import { PasswordUpdateDto } from './dto/password-update.dto';
+import { PasswordChangeDto } from './dto/password-change.dto';
+import { OtpSwitchDto } from './dto/otp-switch.dto';
+import { OtpLoginDto } from './dto/otp-login.dto';
+import { EmailService } from 'src/email/email.service';
+import { EmailConfirmDto } from './dto/email-confirm.dto';
+import { plainToInstance } from 'class-transformer';
+import { AuthUserDto } from './dto/auth-user.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private userManager: UserManager,
-    private jwtService: JwtService,
+    private readonly userManager: UserManager,
+    private readonly jwtService: JwtService,
+    private readonly emailService: EmailService,
   ) {}
+
+  async validateUser(email: string, password: string) {
+    const result = await this.userManager.getUserByEmail(email);
+
+    if (!isSuccessResult(result)) {
+      return null;
+    }
+
+    const user = result.data;
+
+    const isValidPwd = await this.userManager.verifyPassword(
+      user.passwordHash,
+      password,
+    );
+
+    if (!isValidPwd) {
+      return null;
+    }
+
+    return plainToInstance(AuthUserDto, user, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  async login(user: AuthUserDto) {
+    const payload = {
+      sub: user.id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+    };
+
+    return {
+      ...user,
+      access_token: this.jwtService.sign(payload),
+    };
+  }
 
   /**
    * Handles the user registration process.
@@ -59,53 +105,16 @@ export class AuthService {
     if (!isSuccessResult(result)) {
       throw resultToHttpException(result);
     }
-  }
 
-  /**
-   * Authenticates a user by their email and password.
-   * @param signInDto - The data transfer object containing the user's login details.
-   * @returns A promise that resolves with an object containing the access token
-   *          if authentication is successful.
-   * @throws NotFoundException if the user is not found.
-   * @throws UnauthorizedException if the password is invalid.
-   * @throws BadRequestException if user's mail is not verified.
-   */
-  async signIn(signInDto: SignInDto): Promise<{ access_token: string }> {
-    const result = await this.userManager.getUserByEmail(signInDto.email);
-
-    if (!isSuccessResult(result)) {
-      throw resultToHttpException(result);
-    }
-
-    const user = result.data;
-
-    const isValidPwd = await this.userManager.verifyPassword(
-      user.passwordHash,
-      signInDto.password,
+    const emailToken = await this.userManager.generateEmailConfirmationToken(
+      result.data.id,
     );
 
-    if (!isValidPwd) {
-      await this.userManager.increaseFailedLoginAttempts(user.id);
-      throw new UnauthorizedException('Invalid password');
-    }
-
-    if (!user.isEmailVerified) {
-      throw new BadRequestException('Email unverified');
-    }
-
-    await this.userManager.clearFailedLoginAttempts(user.id);
-    await this.userManager.setLastLogin(user.id);
-
-    const payload = {
-      sub: user.id,
-      username: user.username,
-      email: user.email,
-      role: user.role,
-    };
-
-    return {
-      access_token: await this.jwtService.signAsync(payload),
-    };
+    await this.emailService.sendEmail(
+      email,
+      'Email verification',
+      `Email verification token is ${emailToken}`,
+    );
   }
 
   /**
@@ -120,17 +129,14 @@ export class AuthService {
    */
   async changePassword(
     userId: string,
-    oldPassword: string,
-    newPassword: string,
+    passwordChangeDto: PasswordChangeDto,
   ): Promise<void> {
-    const user = await this.userManager.getUserById(userId);
+    const user = await this.getUserByIdOrThrow(userId);
 
-    if (!isSuccessResult(user)) {
-      throw resultToHttpException(user);
-    }
+    const { oldPassword, newPassword } = passwordChangeDto;
 
     const result = await this.userManager.changePassword(
-      userId,
+      user.id,
       oldPassword,
       newPassword,
     );
@@ -147,18 +153,22 @@ export class AuthService {
    * @throws NotFoundException if the user is not found.
    * @throws InternalServerErrorException if the password reset token cannot be generated.
    */
-  async requestResetPassword(email: string): Promise<void> {
-    const user = await this.userManager.getUserByEmail(email);
+  async requestResetPassword(requestDto: EmailDto): Promise<void> {
+    const user = await this.userManager.getUserByEmail(requestDto.email);
 
     if (!isSuccessResult(user)) {
-      throw resultToHttpException(user);
+      return; // no exception thrown if user not found to prevent user enumeration
     }
 
     const resetToken = await this.userManager.generatePasswordResetToken(
       user.data.id,
     );
 
-    // TODO: Send email with reset token
+    await this.emailService.sendEmail(
+      user.data.email,
+      'Email reset token',
+      `Reset token is ${resetToken}`,
+    );
   }
 
   /**
@@ -171,25 +181,89 @@ export class AuthService {
    * @throws UnauthorizedException if the reset token is invalid or expired.
    * @throws BadRequestException if the new password does not meet the required criteria.
    */
-  async resetPassword(
-    email: string,
-    resetRequestToken: string,
-    newPassword: string,
-  ): Promise<void> {
-    const user = await this.userManager.getUserByEmail(email);
-
-    if (!isSuccessResult(user)) {
-      throw resultToHttpException(user);
-    }
+  async updatePassword(passwordUpdateDto: PasswordUpdateDto): Promise<void> {
+    const { userId, token, newPassword } = passwordUpdateDto;
+    const user = await this.getUserByIdOrThrow(userId);
 
     const result = await this.userManager.resetPassword(
-      email,
-      resetRequestToken,
+      user.id,
+      token,
       newPassword,
     );
 
     if (!isSuccessResult(result)) {
       throw resultToHttpException(result);
     }
+  }
+
+  async switchTwoFactorEnabled(
+    userId: string,
+    otpSwitchDto: OtpSwitchDto,
+  ): Promise<OtpSwitchDto> {
+    const currentStatus = await this.userManager.setTwoFactor(
+      userId,
+      otpSwitchDto.enabled,
+    );
+
+    return { enabled: currentStatus };
+  }
+
+  async signInOtp(otpLoginDto: OtpLoginDto) {
+    const { userId, otp } = otpLoginDto;
+
+    const user = await this.getUserByIdOrThrow(userId);
+
+    const result = await this.userManager.validateTwoFactor(user.id, otp);
+
+    if (!result) {
+      throw new UnauthorizedException('Invalid OTP');
+    }
+
+    // TODO: should be extracted to a separate method
+    const payload = {
+      sub: user.id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+    };
+
+    return {
+      access_token: await this.jwtService.signAsync(payload),
+    };
+  }
+
+  async requestEmailUpdate(userId: string, emailDto: EmailDto) {
+    const user = await this.getUserByIdOrThrow(userId);
+    const token = this.userManager.generateEmailConfirmationToken(user.id);
+
+    await this.emailService.sendEmail(
+      emailDto.email,
+      'Email verification',
+      `Email verification token is ${token}`,
+    );
+  }
+
+  async confirmEmail(userId: string, emailConfirmDto: EmailConfirmDto) {
+    const user = await this.getUserByIdOrThrow(userId);
+
+    const result = await this.userManager.changeEmail(
+      user.id,
+      emailConfirmDto.token,
+      emailConfirmDto.email,
+    );
+
+    if (!isSuccessResult(result)) {
+      throw resultToHttpException(result);
+    }
+  }
+
+  private async getUserByIdOrThrow(userId: string) {
+    const user = await this.userManager.getUserById(userId);
+
+    if (!isSuccessResult(user)) {
+      throw resultToHttpException(user);
+    }
+
+    return user.data;
   }
 }
