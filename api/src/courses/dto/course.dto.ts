@@ -3,7 +3,6 @@ import {
   IsDate,
   IsEnum,
   IsInt,
-  IsNumber,
   IsOptional,
   IsPositive,
   IsString,
@@ -16,7 +15,6 @@ import {
   CourseLevel,
   Prisma,
 } from '@prisma/client';
-import { Decimal } from '@prisma/client/runtime/library';
 import { Expose, Transform, Type } from 'class-transformer';
 
 export class CourseEntity {
