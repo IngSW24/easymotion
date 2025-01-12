@@ -8,7 +8,7 @@ import jwtConfig from 'src/config/jwt.config';
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
     @Inject(jwtConfig.KEY)
-    private config: ConfigType<typeof jwtConfig>,
+    config: ConfigType<typeof jwtConfig>,
     private readonly authService: AuthService,
   ) {
     super({
