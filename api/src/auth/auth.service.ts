@@ -169,8 +169,8 @@ export class AuthService {
 
     await this.emailService.sendEmail(
       email,
-      'Email verification',
-      `Email verification token is ${emailToken}`,
+      'Finish sign up',
+      `Email verification token is ${emailToken}. User id is ${result.data.id}. Email is ${email}`,
     );
   }
 
