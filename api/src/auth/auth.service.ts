@@ -127,7 +127,7 @@ export class AuthService {
    * @throws BadRequestException if password and repeated password not correspond.
    * @throws ConflictException if the user creation fails
    */
-  async userSignUp(signUpDto: SignUpDto): Promise<void> {
+  async customerSignup(signUpDto: SignUpDto): Promise<void> {
     const {
       email,
       password,
@@ -153,7 +153,7 @@ export class AuthService {
 
     if (password !== repeatedPassword) {
       throw new BadRequestException(
-        'Password and repeated password not correspond',
+        "Password and repeated password don't correspond",
       );
     }
 
@@ -263,7 +263,7 @@ export class AuthService {
     userId: string,
     otpSwitchDto: OtpSwitchDto,
   ): Promise<OtpSwitchDto> {
-    const currentStatus = await this.userManager.setTwoFactor(
+    const currentStatus = await this.userManager.setTwoFactorEnabled(
       userId,
       otpSwitchDto.enabled,
     );
@@ -316,7 +316,7 @@ export class AuthService {
   async confirmEmail(emailConfirmDto: EmailConfirmDto) {
     const user = await this.getUserByIdOrThrow(emailConfirmDto.userId);
 
-    const result = await this.userManager.changeEmail(
+    const result = await this.userManager.resetEmail(
       user.id,
       emailConfirmDto.token,
       emailConfirmDto.email,

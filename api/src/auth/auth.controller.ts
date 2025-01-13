@@ -76,7 +76,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('signup/customer')
   signUp(@Body() signUpDto: SignUpDto) {
-    return this.authService.userSignUp(signUpDto);
+    return this.authService.customerSignup(signUpDto);
   }
 
   @Post('password')

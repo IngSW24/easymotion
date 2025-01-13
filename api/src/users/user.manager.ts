@@ -3,7 +3,7 @@ import { ApplicationUser, Prisma } from '@prisma/client';
 import { ResultPromise, isSuccessResult } from 'src/common/types/result';
 import * as argon2 from 'argon2';
 import { DateTime } from 'luxon';
-import { randomBytes } from 'node:crypto';
+import { randomBytes, randomInt } from 'node:crypto';
 import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from 'nestjs-prisma';
 
@@ -46,15 +46,6 @@ export class UserManager {
     });
 
     return { success: true, data: createdUser };
-  }
-
-  /**
-   * Retrieves all users from the database.
-   * @returns A promise that resolves with a success Result containing an array of ApplicationUser.
-   */
-  async getUsers(): ResultPromise<ApplicationUser[]> {
-    const data = await this.prisma.applicationUser.findMany();
-    return { success: true, data };
   }
 
   /**
@@ -101,6 +92,12 @@ export class UserManager {
     return { success: true, data: user };
   }
 
+  /**
+   * Determines if a user is allowed to log in based on their failed login attempts
+   * and email verification status.
+   * @param user - The user to check for login eligibility.
+   * @returns A boolean indicating if the user can log in.
+   */
   canUserLogin(user: ApplicationUser): boolean {
     return user.failedLoginAttempts < 5 && user.isEmailVerified;
   }
@@ -165,7 +162,7 @@ export class UserManager {
    * @param userId - The ID of the user whose password is to be set.
    * @param password - The new plain text password to be hashed.
    */
-  async setPassword(userId: string, password: string) {
+  async setNewPassword(userId: string, password: string) {
     const hashedPassword = await this.hashPassword(password);
     this.prisma.applicationUser.update({
       where: { id: userId },
@@ -294,19 +291,19 @@ export class UserManager {
   /**
    * Changes a user's email if the provided token is valid and not expired.
    * @param userId - The ID of the user.
-   * @param token - The email confirmation token.
+   * @param resetToken - The email confirmation token.
    * @param newEmail - The new email address to set.
    * @returns A promise that resolves to the updated ApplicationUser.
    */
-  async changeEmail(
+  async resetEmail(
     userId: string,
-    token: string,
+    resetToken: string,
     newEmail: string,
   ): ResultPromise<void> {
     const result = await this.prisma.applicationUser.findUnique({
       where: {
         id: userId,
-        emailConfirmationToken: token,
+        emailConfirmationToken: resetToken,
         emailConfirmationTokenExpiry: { gte: DateTime.now().toJSDate() },
       },
     });
@@ -336,7 +333,7 @@ export class UserManager {
    * @param email - The new email address to set.
    * @returns A promise that resolves to the updated ApplicationUser.
    */
-  async setEmail(userId: string, email: string) {
+  async setNewEmail(userId: string, email: string) {
     return this.prisma.applicationUser.update({
       where: { id: userId },
       data: {
@@ -352,7 +349,7 @@ export class UserManager {
    * @param enabled - Whether to enable or disable 2FA.
    * @returns A promise that resolves to the updated ApplicationUser.
    */
-  async setTwoFactor(userId: string, enabled: boolean) {
+  async setTwoFactorEnabled(userId: string, enabled: boolean) {
     const updatedUser = await this.prisma.applicationUser.update({
       where: { id: userId },
       data: {
@@ -495,6 +492,6 @@ export class UserManager {
    * @returns A 6-digit random code in string format.
    */
   private generateRandomSixDigitCode(): string {
-    return Math.floor(100000 + Math.random() * 900000).toString();
+    return randomInt(100000, 1000000).toString();
   }
 }
