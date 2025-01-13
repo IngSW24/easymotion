@@ -6,7 +6,7 @@ const getUsers = async (): Promise<Prisma.ApplicationUserCreateInput[]> => {
   const passwordHash = await argon2.hash('password');
   return [
     {
-      id: v4(),
+      id: 'f44cb306-cfdd-488b-bd4f-6ac9b14b3ddf',
       email: 'admin@easymotion.it',
       passwordHash,
       username: 'admin',
@@ -21,7 +21,7 @@ const getUsers = async (): Promise<Prisma.ApplicationUserCreateInput[]> => {
       failedLoginAttempts: 0,
     },
     {
-      id: v4(),
+      id: '64d007c8-1853-4a1f-8c1c-993719ab857f',
       email: 'user@easymotion.it',
       passwordHash,
       username: 'customer',
@@ -36,7 +36,7 @@ const getUsers = async (): Promise<Prisma.ApplicationUserCreateInput[]> => {
       failedLoginAttempts: 0,
     },
     {
-      id: v4(),
+      id: 'ced013b7-9931-4499-ba6b-64274a1700f6',
       email: 'physiotherapist@easymotion.it',
       passwordHash,
       username: 'physio',
