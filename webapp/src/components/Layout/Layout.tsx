@@ -1,37 +1,43 @@
 import * as React from "react";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import CssBaseline from "@mui/material/CssBaseline";
-import Divider from "@mui/material/Divider";
-import Drawer from "@mui/material/Drawer";
-import IconButton from "@mui/material/IconButton";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
 import MenuIcon from "@mui/icons-material/Menu";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
 import { Outlet, useLocation } from "react-router";
-import { Button, ThemeProvider } from "@mui/material";
+import {
+  AppBar,
+  Box,
+  Button,
+  CssBaseline,
+  Divider,
+  Drawer,
+  IconButton,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  ThemeProvider,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 import { Link } from "react-router";
 import { physiotherapistTheme, userTheme } from "../../theme/theme";
 
 export type MenuEntry = {
   label: string;
   link: string;
+  icon?: React.ReactNode;
 };
 
 export interface LayoutProps {
   isPhysiotherapist?: boolean;
   entries?: MenuEntry[];
+  homeLink?: string;
 }
 
 const drawerWidth = 240;
 
 export default function Layout(props: LayoutProps) {
   const location = useLocation();
-  const { isPhysiotherapist = false, entries = [] } = props;
+  const { isPhysiotherapist = false, entries = [], homeLink = "/" } = props;
 
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
@@ -40,15 +46,19 @@ export default function Layout(props: LayoutProps) {
   };
 
   const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
+    <Box
+      onClick={handleDrawerToggle}
+      sx={{ textAlign: "center", width: drawerWidth }}
+    >
       <List>
-        {props.entries?.map((item) => (
+        {entries?.map((item) => (
           <ListItem key={item.link} disablePadding>
             <ListItemButton
               component={Link}
               sx={{ textAlign: "center" }}
               to={item.link}
             >
+              <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.label} />
             </ListItemButton>
           </ListItem>
@@ -71,33 +81,56 @@ export default function Layout(props: LayoutProps) {
               sx={{ mr: 2, display: { sm: "none" } }}
             >
               <MenuIcon />
-
-              <Typography component="span" variant="h6" sx={{ mx: 2 }}>
-                EasyMotion
-                {isPhysiotherapist && (
-                  <Typography
-                    component="span"
-                    color="textSecondary"
-                    sx={{ ml: 3 }}
-                  >
-                    Fisioterapista
-                  </Typography>
-                )}
-              </Typography>
-              <Divider />
             </IconButton>
+
             <Typography
+              component={Link}
               variant="h6"
-              component="span"
-              sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+              sx={{
+                mx: 2,
+                display: { sm: "none" },
+                color: "inherit",
+                textDecoration: "none",
+              }}
+              to={homeLink}
             >
               EasyMotion
-              {isPhysiotherapist && (
-                <Typography component="span" sx={{ ml: 3 }} fontWeight={300}>
-                  Fisioterapista
-                </Typography>
-              )}
             </Typography>
+            {isPhysiotherapist && (
+              <Typography
+                component="span"
+                sx={{ ml: 3, display: { sm: "none" } }}
+              >
+                Fisioterapista
+              </Typography>
+            )}
+            <Typography
+              variant="h6"
+              component={Link}
+              sx={{
+                display: { xs: "none", sm: "block" },
+                color: "inherit",
+                textDecoration: "none",
+              }}
+              to={homeLink}
+            >
+              EasyMotion
+            </Typography>
+            {isPhysiotherapist && (
+              <Typography
+                component="span"
+                sx={{ ml: 3, display: { xs: "none", sm: "block" } }}
+                fontWeight={300}
+              >
+                Fisioterapista
+              </Typography>
+            )}
+
+            <Box
+              sx={{
+                flexGrow: 1,
+              }}
+            />
 
             <Box sx={{ display: { xs: "none", sm: "block" } }}>
               {entries.map((item) => (
@@ -105,6 +138,7 @@ export default function Layout(props: LayoutProps) {
                   component={Link}
                   key={item.link}
                   sx={{ color: "#fff" }}
+                  startIcon={item.icon}
                   to={item.link}
                 >
                   {item.label}
@@ -123,10 +157,6 @@ export default function Layout(props: LayoutProps) {
             }}
             sx={{
               display: { xs: "block", sm: "none" },
-              "& .MuiDrawer-paper": {
-                boxSizing: "border-box",
-                width: drawerWidth,
-              },
             }}
           >
             {drawer}

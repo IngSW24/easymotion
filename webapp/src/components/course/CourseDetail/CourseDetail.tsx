@@ -3,7 +3,7 @@ import { useState } from "react";
 import { CourseEntity } from "../../../../client/data-contracts";
 import { useSnack } from "../../../hooks/useSnack";
 import ProductCard from "./ProductCard";
-import LockUnlockButton from "./LockUnlockButton";
+import LockUnlockButton from "../../atoms/Button/LockUnlockButton";
 import { Duration } from "luxon";
 import DurationPicker from "../../editors/DurationPicker/DurationPicker";
 import ProductCardSelector from "./ProductCardSelector";
@@ -21,7 +21,7 @@ import FormTextField from "../../atoms/TextField/FormTextField";
 
 export interface CourseDetailProps {
   isNew?: boolean;
-  canEdit: boolean;
+  canEdit?: boolean;
   course: CourseEntity;
   onSave: (course: CourseEntity) => Promise<CourseEntity>;
 }
@@ -32,7 +32,7 @@ export interface CourseDetailProps {
  * @returns a react component
  */
 export default function CourseDetail(props: CourseDetailProps) {
-  const { course, canEdit = false, isNew = false } = props;
+  const { isNew = false, canEdit = false, course, onSave } = props;
 
   const [editCourse, setEditCourse] = useState<CourseEntity>(course);
 
@@ -42,7 +42,7 @@ export default function CourseDetail(props: CourseDetailProps) {
   const snack = useSnack();
 
   const handleSave = async () => {
-    await props.onSave(editCourse);
+    await onSave(editCourse);
 
     setIsEditing(false);
 
@@ -254,12 +254,11 @@ export default function CourseDetail(props: CourseDetailProps) {
             <ProductCard
               typeInfo="Istruttori"
               info={editCourse.instructors?.join(", ") ?? ""}
-              field="instructors"
               isEditing={isEditing}
-              onSave={(field, value) => {
+              onSave={(value) => {
                 setEditCourse((prev) => ({
                   ...prev,
-                  [field.toLowerCase()]: value
+                  instructors: value
                     .toString()
                     .split(",")
                     .map((str) => str.trim()),
@@ -269,26 +268,24 @@ export default function CourseDetail(props: CourseDetailProps) {
 
             <ProductCard
               typeInfo="Posizione"
-              field="location"
               info={editCourse.location}
               isEditing={isEditing}
-              onSave={(field, value) => {
+              onSave={(value) => {
                 setEditCourse((prev) => ({
                   ...prev,
-                  [field.toLowerCase()]: value,
+                  location: value.toString(),
                 }));
               }}
             />
 
             <ProductCard
               typeInfo="Costo"
-              field="cost"
               cost={editCourse.cost}
               isEditing={isEditing}
-              onSave={(field, value) => {
+              onSave={(value) => {
                 setEditCourse((prev) => ({
                   ...prev,
-                  [field.toLowerCase()]: value,
+                  cost: Number(value),
                 }));
               }}
             />

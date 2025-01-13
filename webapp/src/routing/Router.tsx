@@ -4,17 +4,44 @@ import CourseDetailsPage from "../pages/CourseDetailsPage";
 import CourseCreatePage from "../pages/CourseCreatePage";
 import Layout, { MenuEntry } from "../components/Layout/Layout";
 
+import { Home, Login, Logout, Person } from "@mui/icons-material";
+
+const notLoggedMenuEntries: Array<MenuEntry> = [
+  {
+    label: "Login",
+    link: "/login",
+    icon: <Login />,
+  },
+  {
+    label: "Register",
+    link: "/register",
+    icon: <Login />,
+  },
+];
+
 const userMenuEntries: Array<MenuEntry> = [
   {
-    label: "Home",
-    link: "/",
+    label: "Logout",
+    link: "/logout",
+    icon: <Logout />,
+  },
+  {
+    label: "Profile",
+    link: "/profile",
+    icon: <Person />,
   },
 ];
 
 const physiotherapistMenuEntries: Array<MenuEntry> = [
   {
-    label: "Home",
-    link: "/physio",
+    label: "Logout",
+    link: "/logout",
+    icon: <Logout />,
+  },
+  {
+    label: "Profile",
+    link: "/profile",
+    icon: <Person />,
   },
 ];
 
@@ -32,7 +59,11 @@ const Router: React.FC = () => (
       <Route
         path="physio"
         element={
-          <Layout isPhysiotherapist entries={physiotherapistMenuEntries} />
+          <Layout
+            isPhysiotherapist
+            homeLink="/physio"
+            entries={physiotherapistMenuEntries}
+          />
         }
       >
         <Route index element={<CourseListPage canEdit />} />

@@ -20,28 +20,27 @@
 // }
 
 {
-    "editor.formatOnSave": true,
-    "typescript.tsserver.experimental.enableProjectDiagnostics": true,
-    "editor.detectIndentation": false
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.detectIndentation": false,
+  "editor.formatOnSave": true,
+  "typescript.tsserver.experimental.enableProjectDiagnostics": true
 }
-  // "settings": {
-  //   "editor.formatOnSave": false, 
-  //   "editor.defaultFormatter": "esbenp.prettier-vscode", 
-  //   "editor.tabSize": 2, 
-  //   "editor.insertSpaces": true, 
-  //   "editor.detectIndentation": false, 
-  //   "typescript.tsserver.experimental.enableProjectDiagnostics": true,
+// "settings": {
+//   "editor.formatOnSave": false,
+//   "editor.defaultFormatter": "esbenp.prettier-vscode",
+//   "editor.tabSize": 2,
+//   "editor.insertSpaces": true,
+//   "editor.detectIndentation": false,
+//   "typescript.tsserver.experimental.enableProjectDiagnostics": true,
 
-    
-  //   "eslint.workingDirectories": [{ "mode": "auto" }], 
-  //   "eslint.validate": [
-  //     "javascript",
-  //     "typescript",
-  //     "javascriptreact",
-  //     "typescriptreact"
-  //   ],
+//   "eslint.workingDirectories": [{ "mode": "auto" }],
+//   "eslint.validate": [
+//     "javascript",
+//     "typescript",
+//     "javascriptreact",
+//     "typescriptreact"
+//   ],
 
-    
-  //   "prettier.useEditorConfig": true, 
-  //   "prettier.configPath": "", 
-  // }
+//   "prettier.useEditorConfig": true,
+//   "prettier.configPath": "",
+// }
