@@ -66,6 +66,13 @@ export class AuthController {
     res.send(user);
   }
 
+  @Post('logout')
+  @UseAuth()
+  async logout(@Res() res) {
+    res.clearCookie('refreshToken');
+    res.sendStatus(200);
+  }
+
   @HttpCode(HttpStatus.OK)
   @Post('signup/customer')
   signUp(@Body() signUpDto: SignUpDto) {
