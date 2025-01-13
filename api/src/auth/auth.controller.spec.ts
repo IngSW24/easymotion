@@ -5,7 +5,6 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import { UserManager } from 'src/users/user.manager';
 import { EmailService } from 'src/email/email.service';
-import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'nestjs-prisma';
 
 describe('AuthController', () => {
@@ -33,17 +32,13 @@ describe('AuthController', () => {
           },
         },
         {
-          provide: ConfigService,
+          provide: 'CONFIGURATION(jwt)',
           useValue: {
-            get: jest.fn((key: string) => {
-              const mockConfig = {
-                'jwt.secret': 'test-secret',
-                'jwt.expiresIn': '1h',
-                'jwt.audience': 'test-audience',
-                'jwt.issuer': 'test-issuer',
-              };
-              return mockConfig[key];
-            }),
+            secret: 'test-secret',
+            expiresIn: '1h',
+            audience: 'test-audience',
+            issuer: 'test-issuer',
+            refreshExpiresIn: '7d',
           },
         },
         {

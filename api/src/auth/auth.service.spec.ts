@@ -4,7 +4,6 @@ import { JwtService } from '@nestjs/jwt';
 import { EmailService } from 'src/email/email.service';
 import { UsersService } from 'src/users/users.service';
 import { UserManager } from 'src/users/user.manager';
-import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'nestjs-prisma';
 
 describe('AuthService', () => {
@@ -28,23 +27,19 @@ describe('AuthService', () => {
         UsersService,
         UserManager,
         {
-          provide: EmailService,
+          provide: 'CONFIGURATION(jwt)',
           useValue: {
-            sendEmail: jest.fn(), // Mock the `sendEmail` method
+            secret: 'test-secret',
+            expiresIn: '1h',
+            audience: 'test-audience',
+            issuer: 'test-issuer',
+            refreshExpiresIn: '7d',
           },
         },
         {
-          provide: ConfigService,
+          provide: EmailService,
           useValue: {
-            get: jest.fn((key: string) => {
-              const mockConfig = {
-                'jwt.secret': 'test-secret',
-                'jwt.expiresIn': '1h',
-                'jwt.audience': 'test-audience',
-                'jwt.issuer': 'test-issuer',
-              };
-              return mockConfig[key];
-            }),
+            sendEmail: jest.fn(), // Mock the `sendEmail` method
           },
         },
         {
