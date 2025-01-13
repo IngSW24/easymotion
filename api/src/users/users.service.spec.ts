@@ -2,9 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
 import { PrismaService } from 'nestjs-prisma';
 import { UserManager } from './user.manager';
-import { CreateUserDto } from './dto/create-user.dto';
-import { ApplicationUserDto } from './dto/application-user.dto';
-import { Prisma } from '@prisma/client';
 
 describe('UsersService', () => {
   let service: UsersService;
