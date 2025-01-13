@@ -102,14 +102,15 @@ describe('UsersService', () => {
   it('should throw an HttpException if user creation fails', async () => {
     const newUser: CreateUserDto = {
       email: 'test@example.com',
-      username: 'testuser',
-      password: 'securepassword123',
+
       firstName: 'testname',
       lastName: 'lastname',
       middleName: 'middlename',
       birthDate: '01-01-1999',
       phoneNumber: '0000000000',
       role: 'ADMIN',
+      password: 'password',
+      username: 'testuser',
     };
 
     const mappedUser = plainToInstance(ApplicationUserDto, newUser, {
