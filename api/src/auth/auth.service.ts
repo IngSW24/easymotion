@@ -83,7 +83,7 @@ export class AuthService {
    * @returns a tuple containing the user and the refresh token
    */
   private async getLoginResponse(user: AuthUserDto) {
-    const payload = JwtPayloadDto.fromUser(user);
+    const payload = JwtPayloadDto.fromUser(user).toObject();
 
     return [
       {

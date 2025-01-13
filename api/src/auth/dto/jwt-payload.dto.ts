@@ -22,4 +22,13 @@ export class JwtPayloadDto {
       role: authUserDto.role,
     });
   }
+
+  toObject() {
+    return {
+      sub: this.sub,
+      username: this.username,
+      email: this.email,
+      role: this.role,
+    };
+  }
 }
