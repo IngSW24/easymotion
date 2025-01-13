@@ -46,6 +46,15 @@ describe('AuthService', () => {
           provide: PrismaService, // Use the actual PrismaService class
           useValue: mockPrismaClient, // Inject the mock implementation
         },
+        {
+          provide: 'CONFIGURATION(jwt)',
+          useValue: {
+            secret: 'test-secret',
+            expiresIn: '1h',
+            audience: 'test-audience',
+            issuer: 'test-issuer',
+          },
+        },
       ],
     }).compile();
 

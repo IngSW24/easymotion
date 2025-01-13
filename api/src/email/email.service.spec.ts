@@ -6,7 +6,19 @@ describe('EmailService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [EmailService],
+      providers: [
+        EmailService,
+        {
+          provide: 'CONFIGURATION(smtp)',
+          useValue: {
+            host: 'test-host',
+            port: '2525',
+            secure: 'true',
+            user: 'test-user',
+            pass: 'test-pass',
+          },
+        },
+      ],
     }).compile();
 
     service = module.get<EmailService>(EmailService);
