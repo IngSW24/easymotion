@@ -81,10 +81,9 @@ describe('UsersService', () => {
     // Mock for checking user existence
     userManagerMock.prisma.applicationUser.findFirst.mockResolvedValue(null);
 
-    const createdUser = {
+    const createdUser: ApplicationUserDto = {
       id: 'e5b754a9-9ea3-43e0-8acf-aa664b06d995',
-      email: 'test@example.com',
-      username: 'testuser',
+      ...mappedUser,
     };
 
     const result = { success: true, data: createdUser };
@@ -97,7 +96,7 @@ describe('UsersService', () => {
       newUser.password,
     );
 
-    expect(output).toEqual(new ApplicationUserDto(createdUser));
+    expect(output).toEqual(mappedUser);
   });
 
   it('should throw an HttpException if user creation fails', async () => {

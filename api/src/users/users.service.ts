@@ -47,7 +47,9 @@ export class UsersService
       throw resultToHttpException(result);
     }
 
-    return new ApplicationUserDto(result.data);
+    return plainToInstance(ApplicationUserDto, result.data, {
+      excludeExtraneousValues: true,
+    });
   }
 
   /**
