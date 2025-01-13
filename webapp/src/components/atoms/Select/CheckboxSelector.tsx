@@ -1,6 +1,6 @@
 import { Box, Checkbox, ListItemText, MenuItem, Select } from "@mui/material";
 
-export interface CheckboxSelectorProps {
+interface CheckboxSelectorProps {
   values: string[];
   allValues: { label: string; value: string }[];
   onChange: (value: string[]) => void;

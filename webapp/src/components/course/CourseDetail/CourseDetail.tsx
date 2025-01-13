@@ -21,7 +21,7 @@ import FormTextField from "../../atoms/TextField/FormTextField";
 
 export interface CourseDetailProps {
   isNew?: boolean;
-  canEdit: boolean;
+  canEdit?: boolean;
   course: CourseEntity;
   onSave: (course: CourseEntity) => Promise<CourseEntity>;
 }
@@ -32,7 +32,7 @@ export interface CourseDetailProps {
  * @returns a react component
  */
 export default function CourseDetail(props: CourseDetailProps) {
-  const { course, canEdit = false, isNew = false } = props;
+  const { isNew = false, canEdit = false, course, onSave } = props;
 
   const [editCourse, setEditCourse] = useState<CourseEntity>(course);
 
@@ -42,7 +42,7 @@ export default function CourseDetail(props: CourseDetailProps) {
   const snack = useSnack();
 
   const handleSave = async () => {
-    await props.onSave(editCourse);
+    await onSave(editCourse);
 
     setIsEditing(false);
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, CardContent, Box, Typography } from "@mui/material";
-import Selector from "../../editors/Selector/Selector";
+import Selector from "../../atoms/Select/Selector";
 
 export interface ProductCardSelectorProps<T extends string> {
   label: string;

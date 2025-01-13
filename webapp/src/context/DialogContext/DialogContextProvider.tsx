@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { useState } from "react";
 import { DialogContext, DialogContextProps } from "./DialogContext";
 import {
   Dialog,
@@ -9,12 +9,12 @@ import {
 } from "@mui/material";
 
 export interface DialogContextProviderProps {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
-export default function DialogContextProvider(
-  props: DialogContextProviderProps
-) {
+export default function DialogContextProvider({
+  children,
+}: DialogContextProviderProps) {
   const [dialogOptions, setDialogOptions] = useState<DialogContextProps | null>(
     null
   );
@@ -42,7 +42,7 @@ export default function DialogContextProvider(
 
   return (
     <DialogContext.Provider value={{ showConfirmationDialog }}>
-      {props.children}
+      {children}
 
       {dialogOptions && (
         <Dialog open={!!dialogOptions} onClose={() => handleClose(false)}>
