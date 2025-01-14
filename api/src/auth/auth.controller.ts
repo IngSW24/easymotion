@@ -143,7 +143,20 @@ export class AuthController {
   }
 
   @Put('email')
-  confirmEmailUpdate(@Body() emailConfirmDto: EmailConfirmDto) {
-    return this.authService.confirmEmail(emailConfirmDto);
+  @ApiResponse({
+    status: 200,
+    description: 'Successful login',
+    type: IntersectionType(AccessTokenDto, AuthUserDto),
+  })
+  async confirmEmail(
+    @Body() emailConfirmDto: EmailConfirmDto,
+    @Res() res,
+  ): Promise<void> {
+    const [user, refresh] =
+      await this.authService.confirmEmail(emailConfirmDto);
+
+    this.setRefreshTokenCookie(res, refresh.refreshToken);
+
+    res.send(user);
   }
 }

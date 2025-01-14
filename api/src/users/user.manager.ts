@@ -321,8 +321,41 @@ export class UserManager {
       data: {
         email: newEmail,
         isEmailVerified: true,
+        emailConfirmationToken: null,
+        emailConfirmationTokenExpiry: null,
       },
     });
+
+    return { success: true, data: null };
+  }
+
+  /**
+   * Confirms a user's email address if the provided token is valid and not expired.
+   * @param userId The ID of the user.
+   * @param token The email confirmation token.
+   * @returns A promise that resolves with a success Result on success or an error Result on failure.
+   */
+  async confirmEmail(userId: string, token: string): ResultPromise<void> {
+    const result = await this.prisma.applicationUser.update({
+      where: {
+        id: userId,
+        emailConfirmationToken: token,
+        emailConfirmationTokenExpiry: { gte: DateTime.now().toJSDate() },
+      },
+      data: {
+        emailConfirmationToken: null,
+        emailConfirmationTokenExpiry: null,
+        isEmailVerified: true,
+      },
+    });
+
+    if (!result) {
+      return {
+        success: false,
+        errors: ['Invalid or expired confirmation token'],
+        code: HttpStatus.BAD_REQUEST,
+      };
+    }
 
     return { success: true, data: null };
   }
@@ -339,6 +372,8 @@ export class UserManager {
       data: {
         email,
         isEmailVerified: true,
+        emailConfirmationToken: null,
+        emailConfirmationTokenExpiry: null,
       },
     });
   }

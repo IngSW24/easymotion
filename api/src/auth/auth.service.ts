@@ -355,7 +355,7 @@ export class AuthService {
     await this.emailService.sendEmail(
       emailDto.email,
       'Email verification',
-      `Email verification token is ${token}. User id is ${user.id}`,
+      `Email verification token is ${token}.\nUser id is ${user.id}\nEmail is ${emailDto.email}`,
     );
   }
 
@@ -366,15 +366,31 @@ export class AuthService {
   async confirmEmail(emailConfirmDto: EmailConfirmDto) {
     const user = await this.getUserByIdOrThrow(emailConfirmDto.userId);
 
-    const result = await this.userManager.resetEmail(
-      user.id,
-      emailConfirmDto.token,
-      emailConfirmDto.email,
-    );
+    let result;
+    if (user.email === emailConfirmDto.email && user.isEmailVerified) {
+      result = await this.userManager.confirmEmail(
+        user.id,
+        emailConfirmDto.token,
+      );
+    } else {
+      result = await this.userManager.resetEmail(
+        user.id,
+        emailConfirmDto.token,
+        emailConfirmDto.email,
+      );
+    }
 
     if (!isSuccessResult(result)) {
-      throw resultToHttpException(result);
+      throw new BadRequestException({
+        message: 'Data provided is not valid for email confirmation',
+      });
     }
+
+    const authData = plainToInstance(AuthUserDto, user, {
+      excludeExtraneousValues: true,
+    });
+
+    return this.getLoginResponse(authData);
   }
 
   /**
