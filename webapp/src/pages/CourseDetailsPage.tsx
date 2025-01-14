@@ -1,9 +1,9 @@
 import { useParams } from "react-router";
 import { Container } from "@mui/material";
 import CourseDetail from "../components/course/CourseDetail/CourseDetail";
-import HeroImage from "../components/ui/HeroImage/HeroImage";
+import HeroImage from "../components/HeroImage/HeroImage";
 import { useCourses } from "../hooks/useCourses";
-import LoadingSpinner from "../components/ui/LoadingSpinner/LoadingSpinner";
+import LoadingSpinner from "../components/LoadingSpinner/LoadingSpinner";
 import { CourseEntity, UpdateCoursesDto } from "../../client/data-contracts";
 
 export interface CourseDetailPageProps {

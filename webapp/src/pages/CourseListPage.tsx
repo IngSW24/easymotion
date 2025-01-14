@@ -1,6 +1,6 @@
 import { Container } from "@mui/material";
 import CourseList from "../components/course/CourseList/CourseList";
-import HeroImage from "../components/ui/HeroImage/HeroImage";
+import HeroImage from "../components/HeroImage/HeroImage";
 
 interface CourseListPageProps {
   canEdit?: boolean;

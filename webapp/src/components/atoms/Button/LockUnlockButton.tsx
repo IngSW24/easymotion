@@ -7,21 +7,22 @@ export interface LockUnlockButtonProps {
 }
 
 export default function LockUnlockButton(props: LockUnlockButtonProps) {
+  const { isEditing, onClick } = props;
   const buttonSx: SxProps = { mr: 1 };
 
   return (
     <Tooltip
-      title={props.isEditing ? "Salva le modifiche" : "Modifica il corso"}
+      title={isEditing ? "Salva le modifiche" : "Modifica il corso"}
       arrow
     >
       <Fab
         variant="extended"
         sx={{ minWidth: "13rem" }}
-        color={props.isEditing ? "success" : "primary"}
-        onClick={props.onClick}
+        color={isEditing ? "success" : "primary"}
+        onClick={onClick}
       >
-        {props.isEditing ? <Save sx={buttonSx} /> : <Edit sx={buttonSx} />}
-        {props.isEditing ? "Salva" : "Modalità modifica"}
+        {isEditing ? <Save sx={buttonSx} /> : <Edit sx={buttonSx} />}
+        {isEditing ? "Salva" : "Modalità modifica"}
       </Fab>
     </Tooltip>
   );

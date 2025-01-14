@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { ArrowUpward, FilterList } from "@mui/icons-material";
 import { useState } from "react";
-import CheckboxSelector from "./CheckboxSelector";
+import CheckboxSelector from "../../atoms/Select/CheckboxSelector";
 import { CourseFilters } from "./types";
 import {
   courseAvilabilities,

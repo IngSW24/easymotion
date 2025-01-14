@@ -6,8 +6,8 @@ import { useDialog } from "../../../hooks/useDialog";
 import FilterBlock from "../FilterBlock/FilterBlock";
 import { CourseFilters } from "../FilterBlock/types";
 import { useCallback, useState } from "react";
-import LoadingSpinner from "../../ui/LoadingSpinner/LoadingSpinner";
-import CreateCourseButton from "../CourseEditor/CreateCourseButton";
+import LoadingSpinner from "../../LoadingSpinner/LoadingSpinner";
+import CreateCourseButton from "../../atoms/Button/CreateCourseButton";
 
 interface CourseListProps {
   canEdit?: boolean;

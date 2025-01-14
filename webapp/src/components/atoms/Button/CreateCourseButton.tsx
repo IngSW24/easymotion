@@ -1,17 +1,12 @@
 import { Fab, Tooltip } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import { useNavigate } from "react-router";
+import { Link } from "react-router";
 
 export default function CreateCourseButton() {
-  const navigate = useNavigate();
-
-  const handleFabClick = () => {
-    navigate("/physio/new");
-  };
-
   return (
     <Tooltip title="Crea un corso" arrow>
       <Fab
+        component={Link}
         color="primary"
         sx={{
           position: "fixed", // Mantiene il pulsante in una posizione fissa
@@ -23,7 +18,7 @@ export default function CreateCourseButton() {
             fontSize: 30, // Dimensione dell'icona
           },
         }}
-        onClick={handleFabClick} // Azione al clic
+        to={"/physio/new"}
         aria-label="Add"
       >
         <AddIcon />

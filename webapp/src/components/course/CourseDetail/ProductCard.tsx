@@ -1,17 +1,16 @@
 import React, { useState } from "react";
-import { Card, CardContent, Typography, Box, TextField } from "@mui/material";
+import { Card, CardContent, Typography, Box } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EuroIcon from "@mui/icons-material/Euro";
-import { CourseEntity } from "../../../../client/data-contracts";
 import { Person } from "@mui/icons-material";
+import FormTextField from "../../atoms/TextField/FormTextField";
 
 interface ProductCardProps {
   typeInfo: string; // Indicates the label of each information, e.g., organizer, time, ...
   info?: string; // Indicates the related information
   cost?: number; // Cost field
-  field: keyof CourseEntity; // Indicates the field to update
   isEditing: boolean; // External control for edit mode
-  onSave: (field: string, value: string | number) => void; // Function to handle saving
+  onSave: (value: string | number) => void; // Function to handle saving
 }
 
 /**
@@ -27,10 +26,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
   typeInfo,
   info,
   cost,
-  field,
   isEditing,
   onSave,
-}) => {
+}: ProductCardProps) => {
   const [editedInfo, setEditedInfo] = useState(info);
   const [editedCost, setEditedCost] = useState(cost);
 
@@ -53,13 +51,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
   // Handle saving the edited information or cost immediately onChange
   const handleChangeInfo = (value: string) => {
     setEditedInfo(value);
-    onSave(field, value || "");
+    onSave(value || "");
   };
 
   const handleChangeCost = (value: number) => {
     const positiveValue = value < 0 ? 0 : value;
     setEditedCost(positiveValue);
-    onSave(field, positiveValue || 0);
+    onSave(positiveValue || 0);
   };
 
   return (
@@ -95,23 +93,17 @@ const ProductCard: React.FC<ProductCardProps> = ({
           {isEditing ? (
             <Box>
               {info !== undefined ? (
-                <TextField
+                <FormTextField
                   label={typeInfo}
-                  name="information"
-                  value={editedInfo}
-                  onChange={(e) => handleChangeInfo(e.target.value)}
-                  fullWidth
-                  margin="normal"
+                  value={editedInfo ?? ""}
+                  onChange={(v) => handleChangeInfo(v)}
                 />
               ) : cost !== undefined ? (
-                <TextField
+                <FormTextField
                   label={typeInfo}
                   type="number"
-                  name="cost"
-                  value={editedCost}
-                  onChange={(e) => handleChangeCost(Number(e.target.value))}
-                  fullWidth
-                  margin="normal"
+                  value={editedCost ? editedCost.toString() : "0"}
+                  onChange={(v) => handleChangeCost(Number(v))}
                 />
               ) : null}
             </Box>
