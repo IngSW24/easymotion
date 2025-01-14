@@ -5,7 +5,7 @@ import { IsEmail, IsStrongPassword } from 'class-validator';
 export class SignInDto {
   @ApiProperty({
     description: 'Email address of the user',
-    example: 'superadmin@easymotion.it',
+    example: 'admin@easymotion.it',
   })
   @IsEmail()
   @Expose()

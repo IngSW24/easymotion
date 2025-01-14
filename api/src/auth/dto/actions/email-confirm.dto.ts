@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { EmailDto } from './email.dto';
 import { IsString } from 'class-validator';
 import { Expose } from 'class-transformer';
+import { EmailDto } from './email.dto';
 
 export class EmailConfirmDto extends EmailDto {
   @ApiProperty({
