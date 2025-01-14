@@ -7,6 +7,13 @@ import { ApplicationUserDto } from './dto/application-user.dto';
 import { plainToInstance } from 'class-transformer';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
+import {
+  applicationUserDtoMock,
+  createUserDtoMock,
+  applicationUsersList,
+  mappedUserPlainToInstanceMock,
+  updateUserDtoMock,
+} from 'test/mocks/users.mock';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -60,60 +67,29 @@ describe('UsersService', () => {
   // #region Create method test
 
   it('should create a new user successfully', async () => {
-    const newUser: CreateUserDto = {
-      email: 'test@example.com',
-      username: 'testuser',
-      password: 'securepassword123',
-      firstName: 'testname',
-      lastName: 'lastname',
-      middleName: 'middlename',
-      birthDate: '01-01-1999',
-      phoneNumber: '0000000000',
-      role: 'ADMIN',
-    };
+    const newUserInputData: CreateUserDto = createUserDtoMock();
+    const mappedUserPlainToInstance = mappedUserPlainToInstanceMock();
 
-    const mappedUser = plainToInstance(ApplicationUserDto, newUser, {
-      excludeExtraneousValues: true,
-    });
-
-    const createUserInput = { ...mappedUser, passwordHash: '' };
-
-    // Mock for checking user existence
-    userManagerMock.prisma.applicationUser.findFirst.mockResolvedValue(null);
-
-    const createdUser: ApplicationUserDto = {
-      id: 'e5b754a9-9ea3-43e0-8acf-aa664b06d995',
-      ...mappedUser,
-    };
-
-    const result = { success: true, data: createdUser };
+    const result = { success: true, data: mappedUserPlainToInstance };
     userManagerMock.createUser.mockResolvedValue(result);
 
-    const output = await service.create(newUser);
+    const output = await service.create(newUserInputData);
 
     expect(userManagerMock.createUser).toHaveBeenCalledWith(
-      createUserInput,
-      newUser.password,
+      {
+        ...mappedUserPlainToInstance,
+        passwordHash: '',
+      },
+      newUserInputData.password,
     );
 
-    expect(output).toEqual(mappedUser);
+    expect(output).toEqual(mappedUserPlainToInstance);
   });
 
   it('should throw an HttpException if user creation fails', async () => {
-    const newUser: CreateUserDto = {
-      email: 'test@example.com',
+    const newUserInputData: CreateUserDto = createUserDtoMock();
 
-      firstName: 'testname',
-      lastName: 'lastname',
-      middleName: 'middlename',
-      birthDate: '01-01-1999',
-      phoneNumber: '0000000000',
-      role: 'ADMIN',
-      password: 'password',
-      username: 'testuser',
-    };
-
-    const mappedUser = plainToInstance(ApplicationUserDto, newUser, {
+    const mappedUser = plainToInstance(ApplicationUserDto, newUserInputData, {
       excludeExtraneousValues: true,
     });
 
@@ -127,11 +103,13 @@ describe('UsersService', () => {
 
     userManagerMock.createUser.mockResolvedValue(errorResult);
 
-    await expect(service.create(newUser)).rejects.toThrow(HttpException);
+    await expect(service.create(newUserInputData)).rejects.toThrow(
+      HttpException,
+    );
 
     expect(userManagerMock.createUser).toHaveBeenCalledWith(
       createUserInput,
-      newUser.password,
+      newUserInputData.password,
     );
   });
 
@@ -141,18 +119,7 @@ describe('UsersService', () => {
 
   // Successfull data return
   it('should return paginated users with metadata', async () => {
-    const users = [
-      {
-        id: '27b10d39-b26f-4786-874b-ee53556e6bdd',
-        email: 'user1@example.com',
-        username: 'user1',
-      },
-      {
-        id: '58dbaf7f-ab07-4e77-a77d-c47851ba1be7',
-        email: 'user2@example.com',
-        username: 'user2',
-      },
-    ];
+    const users = applicationUsersList();
 
     const pagination = { page: 0, perPage: 5 };
 
@@ -216,30 +183,7 @@ describe('UsersService', () => {
 
   // Successful data return
   it('should return user data succesfully', async () => {
-    const user: ApplicationUserDto = {
-      id: 'e3bbff8c-9c49-439f-9c70-9ff5b0adf29a',
-      email: 'test@example.com',
-      username: 'testuser',
-      passwordHash: 'securepassword123',
-      firstName: 'testname',
-      lastName: 'lastname',
-      middleName: 'middlename',
-      birthDate: '01-01-1999',
-      phoneNumber: '0000000000',
-      role: 'ADMIN',
-      isEmailVerified: false,
-      lastLogin: undefined,
-      createdAt: undefined,
-      updatedAt: undefined,
-      emailConfirmationToken: '',
-      emailConfirmationTokenExpiry: undefined,
-      passwordResetToken: '',
-      passwordResetTokenExpiry: undefined,
-      twoFactorCode: '',
-      twoFactorExpiry: undefined,
-      twoFactorEnabled: false,
-      failedLoginAttempts: 0,
-    };
+    const user: ApplicationUserDto = applicationUserDtoMock();
 
     const result = { success: true, data: user };
 
@@ -254,9 +198,7 @@ describe('UsersService', () => {
 
   // User not found
   it('should throw an HttpException if user is not found', async () => {
-    const user = {
-      id: 'e74eb1e1-65cd-48ff-b976-1d1d5f9761cb',
-    };
+    const user = applicationUsersList()[0];
 
     const result = {
       success: false,
@@ -276,30 +218,7 @@ describe('UsersService', () => {
 
   // Successful data return
   it('should found and return user data succesfully by email', async () => {
-    const user: ApplicationUserDto = {
-      id: 'e3bbff8c-9c49-439f-9c70-9ff5b0adf29a',
-      email: 'test@example.com',
-      username: 'testuser',
-      passwordHash: 'securepassword123',
-      firstName: 'testname',
-      lastName: 'lastname',
-      middleName: 'middlename',
-      birthDate: '01-01-1999',
-      phoneNumber: '0000000000',
-      role: 'ADMIN',
-      isEmailVerified: false,
-      lastLogin: undefined,
-      createdAt: undefined,
-      updatedAt: undefined,
-      emailConfirmationToken: '',
-      emailConfirmationTokenExpiry: undefined,
-      passwordResetToken: '',
-      passwordResetTokenExpiry: undefined,
-      twoFactorCode: '',
-      twoFactorExpiry: undefined,
-      twoFactorEnabled: false,
-      failedLoginAttempts: 0,
-    };
+    const user: ApplicationUserDto = applicationUserDtoMock();
 
     const result = { success: true, data: user };
 
@@ -314,9 +233,7 @@ describe('UsersService', () => {
 
   // User not found
   it('should throw an HttpException if user is not found', async () => {
-    const user = {
-      email: 'test@example.com',
-    };
+    const user = applicationUsersList()[0];
 
     const result = {
       success: false,
@@ -337,13 +254,8 @@ describe('UsersService', () => {
   // #region Update method test
 
   it('should update an existing user successfully', async () => {
-    const id = '6fcc3b17-3f79-4ca9-9ab2-ef8e02eadbed';
-    const dto: UpdateUserDto = {
-      email: 'newemail@example.com',
-      username: 'newusername',
-      firstName: 'newname',
-      lastName: 'newlastname',
-    };
+    const user = applicationUsersList()[0];
+    const dto: UpdateUserDto = updateUserDtoMock();
 
     const result = {
       success: true,
@@ -352,20 +264,15 @@ describe('UsersService', () => {
 
     userManagerMock.updateUser.mockResolvedValue(result);
 
-    const updatedUser = await service.update(id, dto);
+    const updatedUser = await service.update(user.id, dto);
 
-    expect(userManagerMock.updateUser).toHaveBeenCalledWith(id, dto);
+    expect(userManagerMock.updateUser).toHaveBeenCalledWith(user.id, dto);
     expect(updatedUser).toEqual(new ApplicationUserDto(result.data));
   });
 
   it('should throw an error if user does not exist', async () => {
-    const id = 'f00b6a5f-4f5c-4508-be01-9598b3e5be98';
-    const dto: UpdateUserDto = {
-      email: 'newemail@example.com',
-      username: 'newusername',
-      firstName: 'newname',
-      lastName: 'newlastname',
-    };
+    const user = applicationUsersList()[0];
+    const dto: UpdateUserDto = updateUserDtoMock();
 
     const result = {
       success: false,
@@ -375,9 +282,9 @@ describe('UsersService', () => {
 
     userManagerMock.updateUser.mockResolvedValue(result);
 
-    await expect(service.update(id, dto)).rejects.toThrow(HttpException);
+    await expect(service.update(user.id, dto)).rejects.toThrow(HttpException);
 
-    expect(userManagerMock.updateUser).toHaveBeenCalledWith(id, dto);
+    expect(userManagerMock.updateUser).toHaveBeenCalledWith(user.id, dto);
   });
 
   // #endregion
@@ -385,19 +292,19 @@ describe('UsersService', () => {
   // #region Remove method test
 
   it('should remove a user successfully', async () => {
-    const id = '76c354b2-d4cc-482d-828d-88dc1aa47eda';
+    const user = applicationUsersList()[0];
 
     const result = { success: true };
 
     userManagerMock.deleteUser.mockResolvedValue(result);
 
-    await service.remove(id);
+    await service.remove(user.id);
 
-    expect(userManagerMock.deleteUser).toHaveBeenCalledWith(id);
+    expect(userManagerMock.deleteUser).toHaveBeenCalledWith(user.id);
   });
 
   it('should throw an error if user removal fails', async () => {
-    const id = '78d95fd5-aeee-41ff-8634-eb1a62cf43a9';
+    const user = applicationUsersList()[0];
 
     const result = {
       success: false,
@@ -407,7 +314,7 @@ describe('UsersService', () => {
 
     userManagerMock.deleteUser.mockResolvedValue(result);
 
-    await expect(service.remove(id)).rejects.toThrow(HttpException);
+    await expect(service.remove(user.id)).rejects.toThrow(HttpException);
   });
   // #endregion
 });
