@@ -1,6 +1,6 @@
 import { Box, Chip, Grid2, Stack, Typography } from "@mui/material";
 import { useState } from "react";
-import { CourseEntity } from "../../../../client/data-contracts";
+import { CourseEntity } from "../../../client/Api";
 import { useSnack } from "../../../hooks/useSnack";
 import ProductCard from "./ProductCard";
 import LockUnlockButton from "../../atoms/Button/LockUnlockButton";

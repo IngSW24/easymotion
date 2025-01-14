@@ -27,6 +27,11 @@
             }
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "summary": "Create a new course",
         "tags": [
           "Courses"
@@ -185,6 +190,11 @@
             }
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "summary": "Update a course by its id",
         "tags": [
           "Courses"
@@ -207,6 +217,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "summary": "Delete a course by its id",
         "tags": [
           "Courses"
@@ -215,14 +230,168 @@
     },
     "/auth/login": {
       "post": {
-        "operationId": "AuthController_signIn",
+        "operationId": "AuthController_login",
         "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ApplicationUserDto"
+                "$ref": "#/components/schemas/SignInDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntersectionAccessTokenDtoAuthUserDto"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "operationId": "AuthController_refresh",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntersectionAccessTokenDtoAuthUserDto"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/profile": {
+      "get": {
+        "operationId": "AuthController_getUserProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthUserDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Auth"
+        ]
+      },
+      "put": {
+        "operationId": "AuthController_updateUserProfile",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAuthUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthUserDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Auth"
+        ]
+      },
+      "delete": {
+        "operationId": "AuthController_deleteUserProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/signup/customer": {
+      "post": {
+        "operationId": "AuthController_signUp",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignUpDto"
               }
             }
           }
@@ -230,6 +399,201 @@
         "responses": {
           "200": {
             "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/password": {
+      "post": {
+        "operationId": "AuthController_requestPasswordReset",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/password/update": {
+      "post": {
+        "operationId": "AuthController_updatePassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordUpdateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/password/change": {
+      "post": {
+        "operationId": "AuthController_changePassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordChangeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/otp": {
+      "put": {
+        "operationId": "AuthController_switchOtp",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OtpSwitchDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/login/otp": {
+      "post": {
+        "operationId": "AuthController_signInOtp",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OtpLoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/email": {
+      "post": {
+        "operationId": "AuthController_requestEmailUpdate",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Auth"
+        ]
+      },
+      "put": {
+        "operationId": "AuthController_confirmEmail",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailConfirmDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntersectionAccessTokenDtoAuthUserDto"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -263,9 +627,14 @@
             }
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "summary": "Create a new user.",
         "tags": [
-          "users"
+          "Users"
         ]
       },
       "get": {
@@ -351,9 +720,14 @@
             }
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "summary": "Retrieve a paginated list of users.",
         "tags": [
-          "users"
+          "Users"
         ]
       }
     },
@@ -382,9 +756,14 @@
             }
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "summary": "Retrieve a single user by its unique ID.",
         "tags": [
-          "users"
+          "Users"
         ]
       },
       "put": {
@@ -421,9 +800,14 @@
             }
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "summary": "Update a user by its unique ID.",
         "tags": [
-          "users"
+          "Users"
         ]
       },
       "delete": {
@@ -443,9 +827,28 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "summary": "Delete a user by its unique ID.",
         "tags": [
-          "users"
+          "Users"
+        ]
+      }
+    },
+    "/email/test": {
+      "post": {
+        "operationId": "EmailController_sendEmail",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Email"
         ]
       }
     }
@@ -459,6 +862,16 @@
   "tags": [],
   "servers": [],
   "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "in": "header",
+        "name": "Authorization",
+        "description": "Enter your Bearer token"
+      }
+    },
     "schemas": {
       "CreateCourseDto": {
         "type": "object",
@@ -848,6 +1261,448 @@
           }
         }
       },
+      "SignInDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the user",
+            "example": "admin@easymotion.it"
+          },
+          "password": {
+            "type": "string",
+            "description": "Password of the user",
+            "example": "password"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "IntersectionAccessTokenDtoAuthUserDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "The access token"
+          },
+          "id": {
+            "type": "string",
+            "description": "Unique user identifier (UUID)",
+            "example": "b3bf4d18-8dd0-43a1-b1da-fd3f7b9553a1"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the user",
+            "example": "user@example.com"
+          },
+          "username": {
+            "type": "string",
+            "description": "Unique username for the user",
+            "example": "john_doe"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "User first name",
+            "example": "John"
+          },
+          "middleName": {
+            "type": "string",
+            "nullable": true,
+            "description": "User middle name",
+            "example": "Alexander"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "User last name",
+            "example": "Doe"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true,
+            "description": "User phone number",
+            "example": "+1234567890"
+          },
+          "birthDate": {
+            "type": "string",
+            "nullable": true,
+            "description": "User birth date",
+            "example": "1990-01-01"
+          },
+          "role": {
+            "type": "string",
+            "description": "User role in the system",
+            "enum": [
+              "USER",
+              "ADMIN",
+              "PHYSIOTHERAPIST"
+            ],
+            "default": "USER"
+          },
+          "isEmailVerified": {
+            "type": "boolean",
+            "description": "Indicates if the user email has been verified",
+            "default": false,
+            "example": false
+          }
+        },
+        "required": [
+          "accessToken",
+          "id",
+          "email",
+          "username",
+          "firstName",
+          "lastName",
+          "role",
+          "isEmailVerified"
+        ]
+      },
+      "AuthUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique user identifier (UUID)",
+            "example": "b3bf4d18-8dd0-43a1-b1da-fd3f7b9553a1"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the user",
+            "example": "user@example.com"
+          },
+          "username": {
+            "type": "string",
+            "description": "Unique username for the user",
+            "example": "john_doe"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "User first name",
+            "example": "John"
+          },
+          "middleName": {
+            "type": "string",
+            "nullable": true,
+            "description": "User middle name",
+            "example": "Alexander"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "User last name",
+            "example": "Doe"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true,
+            "description": "User phone number",
+            "example": "+1234567890"
+          },
+          "birthDate": {
+            "type": "string",
+            "nullable": true,
+            "description": "User birth date",
+            "example": "1990-01-01"
+          },
+          "role": {
+            "type": "string",
+            "description": "User role in the system",
+            "enum": [
+              "USER",
+              "ADMIN",
+              "PHYSIOTHERAPIST"
+            ],
+            "default": "USER"
+          },
+          "isEmailVerified": {
+            "type": "boolean",
+            "description": "Indicates if the user email has been verified",
+            "default": false,
+            "example": false
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "username",
+          "firstName",
+          "lastName",
+          "role",
+          "isEmailVerified"
+        ]
+      },
+      "UpdateAuthUserDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Unique username for the user",
+            "example": "john_doe"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "User first name",
+            "example": "John"
+          },
+          "middleName": {
+            "type": "string",
+            "nullable": true,
+            "description": "User middle name",
+            "example": "Alexander"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "User last name",
+            "example": "Doe"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true,
+            "description": "User phone number",
+            "example": "+1234567890"
+          },
+          "birthDate": {
+            "type": "string",
+            "nullable": true,
+            "description": "User birth date",
+            "example": "1990-01-01"
+          }
+        }
+      },
+      "SignUpDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the new user",
+            "example": "john.doe@example.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "Password of the user",
+            "example": "password"
+          },
+          "repeatedPassword": {
+            "type": "string",
+            "description": "Repeated password of the user",
+            "example": "password"
+          },
+          "username": {
+            "type": "string",
+            "description": "Unique username for the new user",
+            "example": "john_doe"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "First name of the new user",
+            "example": "John"
+          },
+          "middleName": {
+            "type": "string",
+            "description": "Middle name of the new user (optional)",
+            "example": "Alexander"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Last name of the new user",
+            "example": "Doe"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "description": "Phone number of the new user (optional)",
+            "example": "+123456789"
+          },
+          "birthDate": {
+            "type": "string",
+            "description": "Birth date in ISO format (YYYY-MM-DD) (optional)",
+            "example": "1990-01-01"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "repeatedPassword",
+          "username",
+          "firstName",
+          "lastName"
+        ]
+      },
+      "EmailDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the user",
+            "example": "user@easymotion.it"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "PasswordUpdateDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "User ID of the user to reset the password"
+          },
+          "token": {
+            "type": "string",
+            "description": "Token to reset the password"
+          },
+          "newPassword": {
+            "type": "string",
+            "description": "New password for the user"
+          }
+        },
+        "required": [
+          "userId",
+          "token",
+          "newPassword"
+        ]
+      },
+      "PasswordChangeDto": {
+        "type": "object",
+        "properties": {
+          "oldPassword": {
+            "type": "string",
+            "description": "The previous password"
+          },
+          "newPassword": {
+            "type": "string",
+            "description": "The new password"
+          }
+        },
+        "required": [
+          "oldPassword",
+          "newPassword"
+        ]
+      },
+      "OtpSwitchDto": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Indicates if the OTP is enabled"
+          }
+        },
+        "required": [
+          "enabled"
+        ]
+      },
+      "OtpLoginDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "User ID of the user"
+          },
+          "otp": {
+            "type": "string",
+            "description": "One-time password"
+          }
+        },
+        "required": [
+          "userId",
+          "otp"
+        ]
+      },
+      "EmailConfirmDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the user",
+            "example": "user@easymotion.it"
+          },
+          "token": {
+            "type": "string",
+            "description": "Token sent to the user",
+            "example": "00000000-0000-0000-0000-000000000000"
+          },
+          "userId": {
+            "type": "string",
+            "description": "User ID of the user to confirm the email",
+            "example": "00000000-0000-0000-0000-000000000000"
+          }
+        },
+        "required": [
+          "email",
+          "token",
+          "userId"
+        ]
+      },
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the new user",
+            "example": "john.doe@example.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "description": "Plain-text password for the new user (will be hashed)",
+            "example": "MyStrongP@ssw0rd!"
+          },
+          "username": {
+            "type": "string",
+            "description": "Unique username for the new user",
+            "example": "john_doe"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "First name of the new user",
+            "example": "John"
+          },
+          "middleName": {
+            "type": "string",
+            "description": "Middle name of the new user (optional)",
+            "example": "Alexander"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Last name of the new user",
+            "example": "Doe"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "description": "Phone number of the new user (optional)",
+            "example": "+123456789"
+          },
+          "birthDate": {
+            "type": "string",
+            "description": "Birth date in ISO format (YYYY-MM-DD) (optional)",
+            "example": "1990-01-01"
+          },
+          "role": {
+            "type": "string",
+            "description": "Role of the new user (defaults to USER if not provided)",
+            "enum": [
+              "USER",
+              "ADMIN",
+              "PHYSIOTHERAPIST"
+            ],
+            "default": "USER"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "username",
+          "firstName",
+          "lastName"
+        ]
+      },
       "ApplicationUserDto": {
         "type": "object",
         "properties": {
@@ -943,70 +1798,6 @@
           "updatedAt"
         ]
       },
-      "CreateUserDto": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "format": "email",
-            "description": "Email address of the new user",
-            "example": "john.doe@example.com"
-          },
-          "password": {
-            "type": "string",
-            "minLength": 6,
-            "description": "Plain-text password for the new user (will be hashed)",
-            "example": "MyStrongP@ssw0rd!"
-          },
-          "username": {
-            "type": "string",
-            "description": "Unique username for the new user",
-            "example": "john_doe"
-          },
-          "firstName": {
-            "type": "string",
-            "description": "First name of the new user",
-            "example": "John"
-          },
-          "middleName": {
-            "type": "string",
-            "description": "Middle name of the new user (optional)",
-            "example": "Alexander"
-          },
-          "lastName": {
-            "type": "string",
-            "description": "Last name of the new user",
-            "example": "Doe"
-          },
-          "phoneNumber": {
-            "type": "string",
-            "description": "Phone number of the new user (optional)",
-            "example": "+123456789"
-          },
-          "birthDate": {
-            "type": "string",
-            "description": "Birth date in ISO format (YYYY-MM-DD) (optional)",
-            "example": "1990-01-01"
-          },
-          "role": {
-            "type": "string",
-            "description": "Role of the new user (defaults to USER if not provided)",
-            "enum": [
-              "USER",
-              "ADMIN",
-              "PHYSIOTHERAPIST"
-            ],
-            "default": "USER"
-          }
-        },
-        "required": [
-          "email",
-          "password",
-          "username",
-          "firstName",
-          "lastName"
-        ]
-      },
       "UpdateUserDto": {
         "type": "object",
         "properties": {
@@ -1065,5 +1856,10 @@
         }
       }
     }
-  }
+  },
+  "security": [
+    {
+      "bearer": []
+    }
+  ]
 }

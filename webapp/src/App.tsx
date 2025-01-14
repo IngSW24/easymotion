@@ -4,6 +4,8 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { SnackbarProvider } from "notistack";
 import SnackbarCloseButton from "./components/Snackbar/SnackbarCloseButton";
 import DialogContextProvider from "./context/DialogContext/DialogContextProvider";
+import ApiContextProvider from "./context/ApiContext/ApiContextProvider";
+import AuthContextProvider from "./context/AuthContext/AuthContextProvider";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,17 +23,21 @@ const queryClient = new QueryClient({
  */
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <DialogContextProvider>
-        <SnackbarProvider
-          action={(snackbarKey) => (
-            <SnackbarCloseButton snackbarKey={snackbarKey} />
-          )}
-        >
-          <Router />
-        </SnackbarProvider>
-      </DialogContextProvider>
-      <ReactQueryDevtools buttonPosition="bottom-left" />
-    </QueryClientProvider>
+    <ApiContextProvider>
+      <AuthContextProvider>
+        <QueryClientProvider client={queryClient}>
+          <DialogContextProvider>
+            <SnackbarProvider
+              action={(snackbarKey) => (
+                <SnackbarCloseButton snackbarKey={snackbarKey} />
+              )}
+            >
+              <Router />
+            </SnackbarProvider>
+          </DialogContextProvider>
+          <ReactQueryDevtools buttonPosition="bottom-left" />
+        </QueryClientProvider>
+      </AuthContextProvider>
+    </ApiContextProvider>
   );
 }

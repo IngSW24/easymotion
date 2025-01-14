@@ -1,10 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Courses } from "../../client/Courses";
-import { CreateCourseDto, UpdateCoursesDto } from "../../client/data-contracts";
+import { CreateCourseDto, UpdateCoursesDto, Api } from "../client/Api";
 import { CourseFilters } from "../components/course/FilterBlock/types";
 import { useSnack } from "./useSnack";
 
-const api = new Courses({
+const api = new Api({
   baseUrl: import.meta.env.VITE_API_URL,
 });
 
@@ -40,7 +39,10 @@ export const useCourses = (props: UseCoursesProps = {}) => {
   const get = useQuery({
     queryKey: ["courses", { page, perPage }, { filters }],
     queryFn: async () => {
-      const response = await api.coursesControllerFindAll({ page, perPage });
+      const response = await api.courses.coursesControllerFindAll({
+        page,
+        perPage,
+      });
       const fullData = response.data.data;
 
       if (!filters) return fullData;
@@ -87,7 +89,7 @@ export const useCourses = (props: UseCoursesProps = {}) => {
   const getSingle = useQuery({
     queryKey: ["courses", { fetchId }],
     queryFn: async () => {
-      const response = await api.coursesControllerFindOne(fetchId);
+      const response = await api.courses.coursesControllerFindOne(fetchId);
       return response.data;
     },
     enabled: fetchId !== "",
@@ -95,7 +97,10 @@ export const useCourses = (props: UseCoursesProps = {}) => {
 
   const update = useMutation({
     mutationFn: async ({ courseId, courseData }: UpdateMutationParams) => {
-      const response = await api.coursesControllerUpdate(courseId, courseData);
+      const response = await api.courses.coursesControllerUpdate(
+        courseId,
+        courseData
+      );
       return response.data;
     },
     onSuccess: () => {
@@ -108,7 +113,7 @@ export const useCourses = (props: UseCoursesProps = {}) => {
 
   const create = useMutation({
     mutationFn: async (courseData: CreateCourseDto) => {
-      const response = await api.coursesControllerCreate(courseData);
+      const response = await api.courses.coursesControllerCreate(courseData);
       return response.data;
     },
     onSuccess: () => {
@@ -121,7 +126,7 @@ export const useCourses = (props: UseCoursesProps = {}) => {
 
   const remove = useMutation({
     mutationFn: async (id: string) => {
-      await api.coursesControllerRemove(id);
+      await api.courses.coursesControllerRemove(id);
       return id;
     },
     onSuccess: () => {

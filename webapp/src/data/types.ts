@@ -1,5 +1,5 @@
-import { Courses } from "../../client/Courses";
+import { Api } from "../client/Api";
 
 export type PaginatedCourse = Awaited<
-  ReturnType<typeof Courses.prototype.coursesControllerFindAll>
+  ReturnType<typeof Api.prototype.courses.coursesControllerFindAll>
 >;
