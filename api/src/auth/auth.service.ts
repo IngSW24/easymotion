@@ -6,20 +6,21 @@ import {
   resultToHttpException,
 } from 'src/common/types/result';
 import { UserManager } from 'src/users/user.manager';
-import { SignUpDto } from './dto/sign-up.dto';
+import { SignUpDto } from './dto/actions/sign-up.dto';
 import { Prisma } from '@prisma/client';
-import { EmailDto } from './dto/email.dto';
-import { PasswordUpdateDto } from './dto/password-update.dto';
-import { PasswordChangeDto } from './dto/password-change.dto';
-import { OtpSwitchDto } from './dto/otp-switch.dto';
-import { OtpLoginDto } from './dto/otp-login.dto';
+import { EmailDto } from './dto/actions/email.dto';
+import { PasswordUpdateDto } from './dto/actions/password-update.dto';
+import { PasswordChangeDto } from './dto/actions/password-change.dto';
+import { OtpSwitchDto } from './dto/actions/otp-switch.dto';
+import { OtpLoginDto } from './dto/actions/otp-login.dto';
 import { EmailService } from 'src/email/email.service';
-import { EmailConfirmDto } from './dto/email-confirm.dto';
+import { EmailConfirmDto } from './dto/actions/email-confirm.dto';
 import { plainToInstance } from 'class-transformer';
-import { AuthUserDto } from './dto/auth-user.dto';
+import { AuthUserDto } from './dto/auth-user/auth-user.dto';
 import { ConfigType } from '@nestjs/config';
 import jwtConfig from 'src/config/jwt.config';
-import { JwtPayloadDto } from './dto/jwt-payload.dto';
+import { JwtPayloadDto } from './dto/auth-user/jwt-payload.dto';
+import { UpdateAuthUserDto } from './dto/auth-user/update-auth-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -118,6 +119,55 @@ export class AuthService {
     });
 
     return this.getLoginResponse(user);
+  }
+
+  /**
+   * Fetches the user profile for the given user ID.
+   * @param userId the ID of the user to fetch the profile for
+   * @returns the user profile as an AuthUserDto
+   */
+  async getUserProfile(userId: string) {
+    const result = await this.userManager.getUserById(userId);
+    if (!isSuccessResult(result)) {
+      throw resultToHttpException(result);
+    }
+
+    return plainToInstance(AuthUserDto, result.data, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  /**
+   * Updates the user profile for the given user ID.
+   * @param userId the ID of the user to update the profile for
+   * @param updateAuthUserDto the updated user profile
+   * @returns the updated user profile as an AuthUserDto
+   */
+  async updateUserProfile(
+    userId: string,
+    updateAuthUserDto: UpdateAuthUserDto,
+  ) {
+    const result = await this.userManager.updateUser(userId, updateAuthUserDto);
+
+    if (!isSuccessResult(result)) {
+      throw resultToHttpException(result);
+    }
+
+    return plainToInstance(AuthUserDto, result.data, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  /**
+   * Deletes the user profile for the given user ID.
+   * @param userId the ID of the user to delete the profile for
+   */
+  async deleteUserProfile(userId: string) {
+    const result = await this.userManager.deleteUser(userId);
+
+    if (!isSuccessResult(result)) {
+      throw resultToHttpException(result);
+    }
   }
 
   /**
