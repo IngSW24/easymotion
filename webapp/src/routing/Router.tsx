@@ -5,7 +5,6 @@ import CourseCreatePage from "../pages/CourseCreatePage";
 import Layout, { MenuEntry } from "../components/Layout/Layout";
 
 import { Login, Logout, Person } from "@mui/icons-material";
-import TestAuthPage from "../pages/TestAuthPage";
 
 const notLoggedMenuEntries: Array<MenuEntry> = [
   {
@@ -56,7 +55,6 @@ const Router: React.FC = () => (
       <Route element={<Layout entries={userMenuEntries} />}>
         <Route index element={<CourseListPage />} />
         <Route path="details/:id" element={<CourseDetailsPage />} />
-        <Route path="test" element={<TestAuthPage />} />
       </Route>
       <Route
         path="physio"
