@@ -1,10 +1,8 @@
 import {
   IsArray,
   IsDate,
-  IsDecimal,
   IsEnum,
   IsInt,
-  IsNumber,
   IsOptional,
   IsPositive,
   IsString,
@@ -15,47 +13,57 @@ import {
   CourseAvailability,
   CourseFrequency,
   CourseLevel,
+  Prisma,
 } from '@prisma/client';
-import { Decimal } from '@prisma/client/runtime/library';
+import { Expose, Transform, Type } from 'class-transformer';
 
 export class CourseEntity {
   @ApiProperty({ description: 'Unique identifier for the course' })
   @IsString()
+  @Expose()
   id: string;
 
   @ApiProperty({ description: 'Name of the course' })
   @IsString()
+  @Expose()
   name: string;
 
   @ApiProperty({ description: 'Full description of the course' })
   @IsString()
+  @Expose()
   description: string;
 
   @ApiProperty({ description: 'Short description of the course' })
   @IsString()
+  @Expose()
   short_description: string;
 
   @ApiProperty({ description: 'Location where the course is held (optional)' })
   @IsOptional()
   @IsString()
+  @Expose()
   location?: string;
 
   @ApiProperty({ description: 'Schedule of course session days' })
   @IsArray()
   @IsString({ each: true })
+  @Expose()
   schedule: string[];
 
   @ApiProperty({ description: 'Array of user IDs of instructors' })
   @IsArray()
   @IsString({ each: true })
+  @Expose()
   instructors: string[];
 
   @ApiProperty({ description: 'Category of the course', enum: CourseCategory })
   @IsEnum(CourseCategory)
+  @Expose()
   category: CourseCategory;
 
   @ApiProperty({ description: 'Level of the course', enum: CourseLevel })
   @IsEnum(CourseLevel)
+  @Expose()
   level: CourseLevel;
 
   @ApiProperty({
@@ -63,20 +71,25 @@ export class CourseEntity {
     enum: CourseFrequency,
   })
   @IsEnum(CourseFrequency)
+  @Expose()
   frequency: CourseFrequency;
 
   @ApiProperty({ description: 'Duration of each session in POSIX format' })
   @IsString()
+  @Expose()
   session_duration: string;
 
   @ApiProperty({
     description: 'Cost of the course (optional)',
     required: false,
+    type: 'number',
   })
+  @Transform(({ value }) => value)
+  @Type(() => Number)
   @IsOptional()
-  @IsNumber()
   @IsPositive()
-  cost?: number;
+  @Expose()
+  cost?: Prisma.Decimal;
 
   @ApiProperty({
     description: 'Discount for the course (optional)',
@@ -85,6 +98,7 @@ export class CourseEntity {
   @IsOptional()
   @IsInt()
   @IsPositive()
+  @Expose()
   discount?: number;
 
   @ApiProperty({
@@ -92,6 +106,7 @@ export class CourseEntity {
     enum: CourseAvailability,
   })
   @IsEnum(CourseAvailability)
+  @Expose()
   availability: CourseAvailability;
 
   @ApiProperty({
@@ -101,6 +116,7 @@ export class CourseEntity {
   @IsOptional()
   @IsInt()
   @IsPositive()
+  @Expose()
   highlighted_priority?: number;
 
   @ApiProperty({
@@ -110,16 +126,19 @@ export class CourseEntity {
   @IsOptional()
   @IsInt()
   @IsPositive()
+  @Expose()
   members_capacity?: number;
 
   @ApiProperty({ description: 'Number of registered members', default: 0 })
   @IsInt()
   @IsPositive()
+  @Expose()
   num_registered_members: number;
 
   @ApiProperty({ description: 'Tags associated with the course' })
   @IsArray()
   @IsString({ each: true })
+  @Expose()
   tags: string[];
 
   @ApiProperty({
@@ -128,19 +147,18 @@ export class CourseEntity {
   })
   @IsOptional()
   @IsString()
+  @Expose()
   thumbnail_path?: string;
 
   @IsDate()
+  @Expose()
   created_at: Date;
 
   @IsDate()
+  @Expose()
   updated_at: Date;
 
   constructor(partial: Partial<CourseEntity>) {
     Object.assign(this, partial);
-
-    if (Decimal.isDecimal(this.cost)) {
-      this.cost = this.cost.toNumber();
-    }
   }
 }

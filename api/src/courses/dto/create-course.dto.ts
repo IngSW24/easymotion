@@ -1,5 +1,5 @@
 import { OmitType } from '@nestjs/swagger';
-import { CourseEntity } from '../entities/course.entity';
+import { CourseEntity } from './course.dto';
 
 export class CreateCourseDto extends OmitType(CourseEntity, [
   'id',
