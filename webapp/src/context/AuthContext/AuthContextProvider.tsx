@@ -1,73 +1,69 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Api, AuthUserDto } from "../../client/Api";
 import { useApiClient } from "../../hooks/useApiClient";
 import { AuthContext } from "./AuthContext";
+import { useInitialRefresh } from "./useInitialRefresh";
 
 export interface AuthContextProviderProps {
   children: React.ReactNode;
 }
 
-const refreshApiInstance = new Api({
+// Initialize an instance of the API client specifically for the auth endpoints
+const apiInstance = new Api({
   baseUrl: import.meta.env.VITE_API_URL,
 }).auth;
 
+/**
+ * Defines the provider for the Auth Context
+ * @param props the context provider props
+ * @returns a react context provider
+ */
 export default function AuthContextProvider(props: AuthContextProviderProps) {
   const { children } = props;
 
   const { updateAccessToken, accessToken } = useApiClient();
+
+  // State to store the authenticated user's details
   const [user, setUser] = useState<AuthUserDto | null>(null);
-  const hasAttemptedInitialRefresh = useRef(false);
 
-  useEffect(() => {
-    if (hasAttemptedInitialRefresh.current) return;
-    hasAttemptedInitialRefresh.current = true;
+  // Automatically attempt to get an access token when the app loads
+  useInitialRefresh({
+    apiInstance: apiInstance,
+    updateAccessToken,
+    setUser,
+  });
 
-    const refresh = async () => {
-      try {
-        const response = await refreshApiInstance.authControllerRefresh({
-          credentials: "include",
-        });
-
-        if (response.ok) {
-          updateAccessToken(response.data.accessToken);
-          setUser(response.data);
-        }
-      } catch {
-        updateAccessToken(null);
-        setUser(null);
-      }
-    };
-
-    refresh();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
+  /**
+   * Handles user login by sending credentials to the server.
+   * If successful, updates the access token and user state.
+   *
+   * @param email - User's email
+   * @param password - User's password
+   */
   const login = async (email: string, password: string) => {
-    const response = await refreshApiInstance.authControllerLogin(
-      {
-        email,
-        password,
-      },
-      {
-        credentials: "include",
-      }
+    const response = await apiInstance.authControllerLogin(
+      { email, password },
+      { credentials: "include" } // Ensure cookies are sent for authentication
     );
 
-    if (response.ok) {
-      updateAccessToken(response.data.accessToken);
-      setUser(response.data);
-    } else {
-      throw new Error("Login failed");
-    }
+    // Update the token and user state with the server's response
+    updateAccessToken(response.data.accessToken);
+    setUser(response.data);
   };
 
+  /**
+   * Handles user logout by invalidating the session on the server.
+   * Clears the access token and user state locally.
+   */
   const logout = async () => {
-    await refreshApiInstance.authControllerLogout({
-      credentials: "include",
+    await apiInstance.authControllerLogout({
+      credentials: "include", // Ensure cookies are included for server-side session handling
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`, // Include the access token for authenticated logout
       },
     });
+
+    // Clear the token and user state after logout
     updateAccessToken(null);
     setUser(null);
   };
