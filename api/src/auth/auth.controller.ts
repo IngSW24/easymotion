@@ -33,6 +33,11 @@ import { UpdateAuthUserDto } from './dto/auth-user/update-auth-user.dto';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  /**
+   * Sets the refresh token as an HTTP-only cookie.
+   * @param res The response object.
+   * @param refreshToken The refresh token to set in the cookie.
+   */
   private setRefreshTokenCookie(res: any, refreshToken: string) {
     res.cookie('refreshToken', refreshToken, {
       expires: DateTime.now().plus({ days: 5 }).toJSDate(),
@@ -42,6 +47,19 @@ export class AuthController {
     });
   }
 
+  /**
+   * Clears the refresh token cookie.
+   * @param res The response object.
+   */
+  private clearRefreshTokenCookie(res: any) {
+    res.clearCookie('refreshToken');
+  }
+
+  /**
+   * Logs in a user and sets the refresh token cookie.
+   * @param req The request object, containing the authenticated user.
+   * @param res The response object.
+   */
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @ApiBody({ type: SignInDto })
@@ -58,9 +76,17 @@ export class AuthController {
     res.send(user);
   }
 
+  /**
+   * Refreshes the user's access token and sets a new refresh token cookie.
+   * @param req The request object, containing the user's ID.
+   * @param res The response object.
+   */
   @UseGuards(RefreshGuard)
   @Post('refresh')
-  @ApiResponse({ type: AccessTokenDto })
+  @ApiResponse({
+    status: 200,
+    type: IntersectionType(AccessTokenDto, AuthUserDto),
+  })
   async refresh(@Req() req, @Res() res) {
     const [user, refresh] = await this.authService.refresh(req.user.sub);
 
@@ -69,19 +95,32 @@ export class AuthController {
     res.send(user);
   }
 
+  /**
+   * Logs out the user by clearing the refresh token cookie.
+   * @param res The response object.
+   */
   @Post('logout')
   @UseAuth()
   async logout(@Res() res) {
-    res.clearCookie('refreshToken');
+    this.clearRefreshTokenCookie(res);
     res.sendStatus(200);
   }
 
+  /**
+   * Retrieves the profile of the currently authenticated user.
+   * @param req The request object, containing the user's ID.
+   */
   @UseAuth()
   @Get('profile')
   getUserProfile(@Req() req): Promise<AuthUserDto> {
     return this.authService.getUserProfile(req.user.sub);
   }
 
+  /**
+   * Updates the profile of the currently authenticated user.
+   * @param req The request object, containing the user's ID.
+   * @param updateProfileDto The data to update the user's profile.
+   */
   @UseAuth()
   @Put('profile')
   updateUserProfile(
@@ -91,29 +130,51 @@ export class AuthController {
     return this.authService.updateUserProfile(req.user.sub, updateProfileDto);
   }
 
+  /**
+   * Deletes the profile of the currently authenticated user.
+   * @param req The request object, containing the user's ID.
+   * @param res The response object.
+   */
   @UseAuth()
   @Delete('profile')
   async deleteUserProfile(@Req() req, @Res() res) {
-    res.clearCookie('refreshToken');
+    this.clearRefreshTokenCookie(res);
     await this.authService.deleteUserProfile(req.user.sub);
   }
 
+  /**
+   * Registers a new customer account.
+   * @param signUpDto The data for creating the new account.
+   */
   @HttpCode(HttpStatus.OK)
   @Post('signup/customer')
   signUp(@Body() signUpDto: SignUpDto) {
     return this.authService.customerSignup(signUpDto);
   }
 
+  /**
+   * Requests a password reset for a user.
+   * @param resetPasswordRequestDto The email of the user requesting a reset.
+   */
   @Post('password')
   requestPasswordReset(@Body() resetPasswordRequestDto: EmailDto) {
     return this.authService.requestResetPassword(resetPasswordRequestDto);
   }
 
+  /**
+   * Updates the password for a user.
+   * @param passwordUpdateDto The data to update the password.
+   */
   @Post('password/update')
   updatePassword(@Body() passwordUpdateDto: PasswordUpdateDto) {
     return this.authService.updatePassword(passwordUpdateDto);
   }
 
+  /**
+   * Changes the password for the currently authenticated user.
+   * @param req The request object, containing the user's ID.
+   * @param passwordChangeDto The data to change the password.
+   */
   @UseAuth()
   @Post('password/change')
   changePassword(@Req() req, @Body() passwordChangeDto: PasswordChangeDto) {
@@ -121,6 +182,11 @@ export class AuthController {
     return this.authService.changePassword(userId, passwordChangeDto);
   }
 
+  /**
+   * Enables or disables two-factor authentication for the user.
+   * @param req The request object, containing the user's ID.
+   * @param value The value to enable or disable two-factor authentication.
+   */
   @UseAuth()
   @Put('otp')
   switchOtp(@Req() req, @Query() value: string) {
@@ -130,11 +196,20 @@ export class AuthController {
     });
   }
 
+  /**
+   * Signs in a user using a one-time password (OTP).
+   * @param otpLoginDto The OTP login data.
+   */
   @Post('login/otp')
   signInOtp(@Body() otpLoginDto: OtpLoginDto) {
     return this.authService.signInOtp(otpLoginDto);
   }
 
+  /**
+   * Requests an email update for the currently authenticated user.
+   * @param req The request object, containing the user's ID.
+   * @param emailDto The new email address.
+   */
   @UseAuth()
   @Post('email')
   requestEmailUpdate(@Req() req, @Body() emailDto: EmailDto) {
@@ -142,10 +217,15 @@ export class AuthController {
     return this.authService.requestEmailUpdate(userId, emailDto);
   }
 
+  /**
+   * Confirms an email update for the user.
+   * @param emailConfirmDto The email confirmation data.
+   * @param res The response object.
+   */
   @Put('email')
   @ApiResponse({
     status: 200,
-    description: 'Successful login',
+    description: 'Email confirmation',
     type: IntersectionType(AccessTokenDto, AuthUserDto),
   })
   async confirmEmail(
