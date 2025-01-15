@@ -257,6 +257,7 @@
             "description": ""
           }
         },
+        "summary": "Logs in a user and sets the refresh token cookie.",
         "tags": [
           "Auth"
         ]
@@ -281,6 +282,7 @@
             "description": ""
           }
         },
+        "summary": "Refreshes the user's access token and sets a new refresh token cookie.",
         "tags": [
           "Auth"
         ]
@@ -300,6 +302,7 @@
             "bearer": []
           }
         ],
+        "summary": "Logs out the user by clearing the refresh token cookie.",
         "tags": [
           "Auth"
         ]
@@ -326,6 +329,7 @@
             "bearer": []
           }
         ],
+        "summary": "Retrieves the profile of the currently authenticated user.",
         "tags": [
           "Auth"
         ]
@@ -360,6 +364,7 @@
             "bearer": []
           }
         ],
+        "summary": "Updates the profile of the currently authenticated user.",
         "tags": [
           "Auth"
         ]
@@ -377,6 +382,7 @@
             "bearer": []
           }
         ],
+        "summary": "Deletes the profile of the currently authenticated user.",
         "tags": [
           "Auth"
         ]
@@ -401,6 +407,7 @@
             "description": ""
           }
         },
+        "summary": "Registers a new customer account.",
         "tags": [
           "Auth"
         ]
@@ -425,6 +432,7 @@
             "description": ""
           }
         },
+        "summary": "Requests a password reset for a user.",
         "tags": [
           "Auth"
         ]
@@ -449,6 +457,7 @@
             "description": ""
           }
         },
+        "summary": "Updates the password for a user.",
         "tags": [
           "Auth"
         ]
@@ -478,6 +487,7 @@
             "bearer": []
           }
         ],
+        "summary": "Changes the password for the currently authenticated user.",
         "tags": [
           "Auth"
         ]
@@ -504,6 +514,7 @@
             "bearer": []
           }
         ],
+        "summary": "Enables or disables two-factor authentication for the user.",
         "tags": [
           "Auth"
         ]
@@ -538,6 +549,7 @@
             }
           }
         },
+        "summary": "Signs in a user using a one-time password (OTP).",
         "tags": [
           "Auth"
         ]
@@ -567,6 +579,7 @@
             "bearer": []
           }
         ],
+        "summary": "Requests an email update for the currently authenticated user.",
         "tags": [
           "Auth"
         ]
@@ -586,7 +599,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful login",
+            "description": "Email confirmation",
             "content": {
               "application/json": {
                 "schema": {
@@ -596,6 +609,7 @@
             }
           }
         },
+        "summary": "Confirms an email update for the user.",
         "tags": [
           "Auth"
         ]
