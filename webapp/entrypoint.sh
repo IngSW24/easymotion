@@ -7,7 +7,7 @@ if [ ! -d "node_modules" ]; then
     npm ci;
 fi
 
-if [ ! -d "client" ]; then
+if [ ! -d "src/client" ]; then
     echo 'API client is missing.';
     echo 'Attempting to generate API client';
     npm run generate-client;

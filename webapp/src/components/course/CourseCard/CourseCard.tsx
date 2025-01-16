@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { Delete, Launch } from "@mui/icons-material";
 import { Link } from "react-router";
-import { CourseEntity } from "../../../../client/data-contracts";
+import { CourseEntity } from "../../../client/Api";
 import {
   courseCategories,
   courseLevels,

@@ -6,7 +6,6 @@ import {
   Box,
   Button,
   CssBaseline,
-  Divider,
   Drawer,
   IconButton,
   List,

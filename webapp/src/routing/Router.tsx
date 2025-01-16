@@ -4,7 +4,7 @@ import CourseDetailsPage from "../pages/CourseDetailsPage";
 import CourseCreatePage from "../pages/CourseCreatePage";
 import Layout, { MenuEntry } from "../components/Layout/Layout";
 
-import { Home, Login, Logout, Person } from "@mui/icons-material";
+import { Login, Logout, Person } from "@mui/icons-material";
 
 const notLoggedMenuEntries: Array<MenuEntry> = [
   {
