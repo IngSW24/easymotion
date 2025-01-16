@@ -3,6 +3,7 @@ import CourseListPage from "../pages/CourseListPage";
 import CourseDetailsPage from "../pages/CourseDetailsPage";
 import CourseCreatePage from "../pages/CourseCreatePage";
 import Layout from "../components/Layout/Layout";
+import LoginSignUpPage from "../pages/LoginSignUpPage";
 
 /**
  * Defines the router for the application.
@@ -14,10 +15,8 @@ const Router: React.FC = () => (
       <Route element={<Layout />}>
         <Route index element={<CourseListPage />} />
         <Route path="details/:id" element={<CourseDetailsPage />} />
-      </Route>
-      <Route path="physio" element={<Layout />}>
-        <Route index element={<CourseListPage canEdit />} />
-        <Route path="details/:id" element={<CourseDetailsPage canEdit />} />
+        <Route path="login" element={<LoginSignUpPage isLogin={true} />} />
+        <Route path="register" element={<LoginSignUpPage isSignup={true} />} />
         <Route path="new" element={<CourseCreatePage />} />
       </Route>
     </Routes>

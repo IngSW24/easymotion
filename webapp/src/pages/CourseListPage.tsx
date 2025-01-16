@@ -17,7 +17,8 @@ export default function CourseListPage(props: CourseListPageProps) {
     <>
       <HeroImage
         backgroundImage="/hero.jpg"
-        title="Trova il tuo prossimo corso"
+        //title="Trova il tuo prossimo corso"
+        title="Il tuo benessere inizia qui: fisioterapia d’eccellenza e allenamenti su misura, tutto in un unico posto!"
         fontWeight={400}
       />
       <Container maxWidth="xl" sx={{ p: 5 }}>
