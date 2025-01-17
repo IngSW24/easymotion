@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "generate-client": "swagger-typescript-api -p /workspace/webapp/api-schema/schema.json -o ./src/client",
     "preview": "vite preview",
-    "test": "vitest",
+    "test": "vitest run",
     "test:watch": "vitest --watch",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage"
