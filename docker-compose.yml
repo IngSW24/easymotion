@@ -6,6 +6,7 @@ services:
     restart: "no"
     environment:
       POLLING: ${POLLING:-false}
+      AUTO_INSTALL_DEPS: ${WEBAPP_AUTO_INSTALL_DEPS:-true}
       VITE_API_URL: ${WEBAPP_VITE_API_URL:-https://api.easymotion.devlocal}
     ports:
       # add variable in .env to change port
@@ -15,16 +16,12 @@ services:
     depends_on:
       api:
         condition: service_healthy
-        # condition: service_started
-    tty: true
-    entrypoint: sh /workspace/webapp/entrypoint.sh
     command: npm run dev
 
   api:
     build:
       context: api
       dockerfile: Dockerfile.dev
-    # restart: "no"
     ports:
       # add variable in .env to change port
       - "${API_DEV_PORT:-8081}:3000"
@@ -34,6 +31,7 @@ services:
       db:
         condition: service_started
     environment:
+      AUTO_INSTALL_DEPS: ${API_AUTO_INSTALL_DEPS:-true}
       DATABASE_URL: ${DATABASE_URL}
       SMTP_HOST: ${API_SMTP_HOST:-mailhog}
       SMTP_PORT: ${API_SMTP_PORT:-1025}
@@ -51,10 +49,7 @@ services:
       timeout: 5s
       retries: 100
       start_period: 5s
-    # tty: true
-    entrypoint: sh /workspace/api/entrypoint.sh
     command: npm run start:dev
-    # command: pm2-runtime start 'npm run start:dev' --name api-dev && sleep infinity
 
   db:
     image: postgres

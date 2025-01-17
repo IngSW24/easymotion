@@ -11,7 +11,15 @@ RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master
 
 RUN npm i -g @nestjs/cli
 
+COPY /entrypoint.sh entrypoint.sh
+RUN sed -i 's/\r$//g' /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 WORKDIR /workspace/api
 
 ENV NODE_ENV=development
 ENV SHELL=/bin/zsh
+ENV EDITOR=nvim
+ENV AUTO_INSTALL_DEPS=true
+
+ENTRYPOINT [ "sh", "/entrypoint.sh" ]
