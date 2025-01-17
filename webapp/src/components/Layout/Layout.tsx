@@ -18,25 +18,48 @@ import {
   Typography,
 } from "@mui/material";
 import { Link } from "react-router";
-import { physiotherapistTheme, userTheme } from "../../theme/theme";
+import { notLoggedTheme, userTheme } from "../../theme/theme";
+import { Login, Logout, Person } from "@mui/icons-material";
+import { useAuth } from "../../hooks/useAuth";
 
-export type MenuEntry = {
+type MenuEntry = {
   label: string;
   link: string;
   icon?: React.ReactNode;
 };
 
-export interface LayoutProps {
-  isPhysiotherapist?: boolean;
-  entries?: MenuEntry[];
-  homeLink?: string;
-}
+const notLoggedMenuEntries: Array<MenuEntry> = [
+  {
+    label: "Login",
+    link: "/login",
+    icon: <Login />,
+  },
+  {
+    label: "Register",
+    link: "/register",
+    icon: <Login />,
+  },
+];
+
+const userMenuEntries: Array<MenuEntry> = [
+  {
+    label: "Logout",
+    link: "/logout",
+    icon: <Logout />,
+  },
+  {
+    label: "Profile",
+    link: "/profile",
+    icon: <Person />,
+  },
+];
 
 const drawerWidth = 240;
 
-export default function Layout(props: LayoutProps) {
+export default function Layout() {
   const location = useLocation();
-  const { isPhysiotherapist = false, entries = [], homeLink = "/" } = props;
+  const auth = useAuth();
+  const entries = auth.isAuthenticated ? userMenuEntries : notLoggedMenuEntries;
 
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
@@ -67,12 +90,12 @@ export default function Layout(props: LayoutProps) {
   );
 
   return (
-    <ThemeProvider theme={isPhysiotherapist ? physiotherapistTheme : userTheme}>
+    <ThemeProvider theme={auth.isAuthenticated ? userTheme : notLoggedTheme}>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
         <AppBar component="nav" sx={{ backgroundColor: "primary.main" }}>
           <Toolbar>
-            <IconButton
+            <IconButton // mobile-only
               color="inherit"
               aria-label="open drawer"
               edge="start"
@@ -86,52 +109,18 @@ export default function Layout(props: LayoutProps) {
               component={Link}
               variant="h6"
               sx={{
-                mx: 2,
-                display: { sm: "none" },
                 color: "inherit",
                 textDecoration: "none",
-              }}
-              to={homeLink}
-            >
-              EasyMotion
-            </Typography>
-            {isPhysiotherapist && (
-              <Typography
-                component="span"
-                sx={{ ml: 3, display: { sm: "none" } }}
-              >
-                Fisioterapista
-              </Typography>
-            )}
-            <Typography
-              variant="h6"
-              component={Link}
-              sx={{
-                display: { xs: "none", sm: "block" },
-                color: "inherit",
-                textDecoration: "none",
-              }}
-              to={homeLink}
-            >
-              EasyMotion
-            </Typography>
-            {isPhysiotherapist && (
-              <Typography
-                component="span"
-                sx={{ ml: 3, display: { xs: "none", sm: "block" } }}
-                fontWeight={300}
-              >
-                Fisioterapista
-              </Typography>
-            )}
-
-            <Box
-              sx={{
                 flexGrow: 1,
               }}
-            />
+              to="/"
+            >
+              EasyMotion
+            </Typography>
 
-            <Box sx={{ display: { xs: "none", sm: "block" } }}>
+            <Box
+              sx={{ display: { xs: "none", sm: "block" } }} // desktop-only
+            >
               {entries.map((item) => (
                 <Button
                   component={Link}

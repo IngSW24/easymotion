@@ -10,8 +10,8 @@ export const userTheme = createTheme({
   },
 });
 
-// Theme for the physiotherapist inverts colors
-export const physiotherapistTheme = createTheme({
+// inverted colors
+export const notLoggedTheme = createTheme({
   palette: {
     primary: { main: "#404a86" },
     secondary: teal,
