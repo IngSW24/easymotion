@@ -17,6 +17,10 @@ const Router: React.FC = () => (
         <Route path="details/:id" element={<CourseDetailsPage />} />
         <Route path="login" element={<LoginSignUpPage isLogin={true} />} />
         <Route path="register" element={<LoginSignUpPage isSignup={true} />} />
+        <Route
+          path="personal_information"
+          element={<LoginSignUpPage isPersonal={true} />}
+        />
         <Route path="new" element={<CourseCreatePage />} />
       </Route>
     </Routes>
