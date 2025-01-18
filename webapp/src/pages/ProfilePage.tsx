@@ -3,6 +3,7 @@ import ProfileImage from "../components/ProfileImage/ProfileImageDefault.jpg";
 import TextBoxes from "../components/atoms/DescriptionBoxes/TextBoxes";
 import ModeEdit from "@mui/icons-material/ModeEdit";
 
+/*
 export interface ProfileProps {
   name: string;
   secondName: string;
@@ -14,9 +15,22 @@ export interface ProfileProps {
   specialization: string;
   publicPhoneNumber: string;
 }
+*/
 
-export default function ProfilePage(props: ProfileProps) {
-  const {
+//export default function ProfilePage(props: ProfileProps) {
+
+/**
+ *
+ * @param props string containing the "id" of the User that have the data that we want to show in this profile page
+ * @returns a page where we can see all the data of the user logged (plus a three buttons that permit the user to: change profile's data, logout, delete the profile)
+ */
+export default function ProfilePage(props: string) {
+  //props receive the "ID" of the User
+
+  const id: string = props; //We will use the "id" to GET the data of the User (from the database) and we will show the data in this page
+
+  /** Alternative: if the props pass ALL the user's data we will assign all of them to this interface "ProfileProps"
+   const {
     name,
     secondName,
     surname,
@@ -27,18 +41,31 @@ export default function ProfilePage(props: ProfileProps) {
     specialization,
     publicPhoneNumber,
   } = props;
+   */
 
   /*
+    Default values for test the page
+
+    TODO: give to every const the value obtained thanks to the "ID" passed as INPUT 
+  */
   const name: string = "Homer";
   const secondName: string = "J.";
   const surname: string = "Simpson";
   const userType: string = "Fisioterapista";
-  const phoneNumber: string = "";
+  const phoneNumber: string = "911";
   const email: string = "ti.ho@fregato.it";
-  const birthDate: = "21/12/2012";
+  const birthDate: string = "21/12/2012";
   const specialization: string = "Non esiste, non ha mai fatto l'università";
   const publicPhoneNumber: string = "912";
-    */
+
+  /*
+
+  TODO: create a function/exception for when the profile informations are not loaded due to an error
+
+  const showError = (e: ErrorType) => {
+
+  }
+  */
 
   return (
     <>
