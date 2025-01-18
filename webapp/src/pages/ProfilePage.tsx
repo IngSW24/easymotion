@@ -15,16 +15,30 @@ export interface ProfileProps {
   publicPhoneNumber: string;
 }
 
-export default function ProfilePage() {
+export default function ProfilePage(props: ProfileProps) {
+  const {
+    name,
+    secondName,
+    surname,
+    userType,
+    phoneNumber,
+    email,
+    birthDate,
+    specialization,
+    publicPhoneNumber,
+  } = props;
+
+  /*
   const name: string = "Homer";
   const secondName: string = "J.";
   const surname: string = "Simpson";
   const userType: string = "Fisioterapista";
   const phoneNumber: string = "";
   const email: string = "ti.ho@fregato.it";
-  //const birthDate: =;
+  const birthDate: = "21/12/2012";
   const specialization: string = "Non esiste, non ha mai fatto l'università";
   const publicPhoneNumber: string = "912";
+    */
 
   return (
     <>
@@ -75,7 +89,7 @@ export default function ProfilePage() {
 
             <TextBoxes
               descriptionTitle="Data di nascita"
-              description={userType}
+              description={birthDate}
             />
 
             {userType == "Fisioterapista" ? (
