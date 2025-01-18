@@ -1,49 +1,50 @@
-import FormComponent from "../components/ui/FormComponent/FormComponent";
+import FormComponent from "../components/FormComponent/FormComponent";
 import { useNavigate } from "react-router";
-//import { useAuth } from "../hooks/useAuth";
-//import { useSnack } from "../hooks/useSnack";
+import { useAuth } from "../hooks/useAuth";
+import { useSnack } from "../hooks/useSnack";
+import { useEffect } from "react";
 
-interface TypeofPage {
-  isLogin?: boolean;
-  isSignup?: boolean;
-  isPersonal?: boolean;
+interface LoginSignUpPageProps {
+  loginType: "login" | "logout" | "register" | "personal";
 }
 
-export default function LoginSignUpPage(prop: TypeofPage) {
-  const { isLogin = false, isSignup = false, isPersonal = false } = prop;
+export default function LoginSignUpPage(prop: LoginSignUpPageProps) {
+  const { loginType } = prop;
   const navigate = useNavigate();
+  const snack = useSnack();
+  const auth = useAuth();
 
-  //   const { apiClient, isAuthenticated, isPhysiotherapist, isFinalUser } = useAuth();
-  //   const snack = useSnack()
-  //   const navigation = useNavigate()
-  //   const onSave = () => {
-  //     const api = getn instance api client
-  //     try {
-  //       api.login(...,...,..)
-  //       navigation("/")
-  //     } catch (e) {
-  //       snack.showError(e)
-  //     }
-  //   }
+  useEffect(() => {
+    async function onLogout() {
+      try {
+        await auth.logout();
+        navigate("/");
+      } catch (e) {
+        snack.showError(e);
+      }
+    }
 
-  //   const { user, isAuthenticated = true, login } = useAuth();
-  //   const snack = useSnack()
+    if (loginType == "logout") {
+      onLogout();
+    }
+  }, [loginType, auth, navigate, snack]);
 
-  //   const handleSignupClick = () => {
-  //     navigate("/personal_information");
-  //     try {
-  //             login("","")
-  //         } catch (e) {
-  //             snack.showError(e)
-  //         }
-  //   };
+  async function onLoginClick(authInfo: Record<string, string>) {
+    try {
+      await auth.login(authInfo.email, authInfo.password); // Call the login function from useAuth.
+      navigate("/");
+    } catch (e) {
+      snack.showError(e); // Show the error as a snack message.
+    }
+  }
+
   const handleSignupClick = () => {
     navigate("/personal_information");
   };
 
   return (
     <>
-      {isLogin && (
+      {loginType == "login" && (
         <FormComponent
           title="Bentornato in EasyMotion"
           description="Inserisci i tuoi dati per accedere al sito"
@@ -52,9 +53,10 @@ export default function LoginSignUpPage(prop: TypeofPage) {
           buttonName="Accedi"
           fieldName={["email", "password"]}
           checkboxName={"Resta Connesso"}
+          onSubmit={onLoginClick}
         />
       )}
-      {isSignup && (
+      {loginType == "register" && (
         <FormComponent
           title="Benvenuto in EasyMotion"
           description="Ti chiediamo di inserire i dati che utilizzerai per accedere al nostro sito"
@@ -66,7 +68,7 @@ export default function LoginSignUpPage(prop: TypeofPage) {
           onSubmit={handleSignupClick}
         />
       )}
-      {isPersonal && (
+      {loginType == "personal" && (
         <FormComponent
           title="Benvenuto in EasyMotion"
           description="Bene, ora che hai completato la parte più sensibile, parlaci un po' di te ..."

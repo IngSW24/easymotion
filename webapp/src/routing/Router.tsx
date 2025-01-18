@@ -4,6 +4,7 @@ import CourseDetailsPage from "../pages/CourseDetailsPage";
 import CourseCreatePage from "../pages/CourseCreatePage";
 import Layout from "../components/Layout/Layout";
 import LoginSignUpPage from "../pages/LoginSignUpPage";
+import ProfilePage from "../pages/ProfilePage";
 
 /**
  * Defines the router for the application.
@@ -15,11 +16,16 @@ const Router: React.FC = () => (
       <Route element={<Layout />}>
         <Route index element={<CourseListPage />} />
         <Route path="details/:id" element={<CourseDetailsPage />} />
-        <Route path="login" element={<LoginSignUpPage isLogin={true} />} />
-        <Route path="register" element={<LoginSignUpPage isSignup={true} />} />
+        <Route path="login" element={<LoginSignUpPage loginType="login" />} />
+        <Route path="logout" element={<LoginSignUpPage loginType="logout" />} />
+        <Route
+          path="register"
+          element={<LoginSignUpPage loginType="register" />}
+        />
+        <Route path="profile" element={<ProfilePage />} />
         <Route
           path="personal_information"
-          element={<LoginSignUpPage isPersonal={true} />}
+          element={<LoginSignUpPage loginType="personal" />}
         />
         <Route path="new" element={<CourseCreatePage />} />
       </Route>

@@ -1,17 +1,15 @@
 import { Container } from "@mui/material";
 import CourseList from "../components/course/CourseList/CourseList";
 import HeroImage from "../components/HeroImage/HeroImage";
-
-interface CourseListPageProps {
-  canEdit?: boolean;
-}
+import CreateCourseButton from "../components/atoms/Button/CreateCourseButton";
+import { useAuth } from "../hooks/useAuth";
 
 /**
  * Defines the page to list all courses
  * @returns a react component
  */
-export default function CourseListPage(props: CourseListPageProps) {
-  const { canEdit } = props;
+export default function CourseListPage() {
+  const auth = useAuth();
 
   return (
     <>
@@ -22,7 +20,10 @@ export default function CourseListPage(props: CourseListPageProps) {
         fontWeight={400}
       />
       <Container maxWidth="xl" sx={{ p: 5 }}>
-        <CourseList canEdit={canEdit} />
+        <CourseList
+          canEdit={auth.isAuthenticated} // TODO: check user role
+        />
+        {auth.isAuthenticated && <CreateCourseButton />}
       </Container>
     </>
   );
