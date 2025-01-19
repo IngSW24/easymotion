@@ -1,4 +1,3 @@
-import * as React from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Outlet, useLocation } from "react-router";
 import {
@@ -13,14 +12,22 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Theme,
   ThemeProvider,
   Toolbar,
   Typography,
 } from "@mui/material";
 import { Link } from "react-router";
-import { notLoggedTheme, userTheme } from "../../theme/theme";
+import {
+  adminTheme,
+  notLoggedTheme,
+  physioTheme,
+  userTheme,
+} from "../../theme/theme";
 import { Login, Logout, Person } from "@mui/icons-material";
 import { useAuth } from "../../hooks/useAuth";
+import { useApiClient } from "../../hooks/useApiClient";
+import { useState, useEffect } from "react";
 
 type MenuEntry = {
   label: string;
@@ -57,15 +64,34 @@ const userMenuEntries: Array<MenuEntry> = [
 const drawerWidth = 240;
 
 export default function Layout() {
+  const { apiClient } = useApiClient();
   const location = useLocation();
   const auth = useAuth();
   const entries = auth.isAuthenticated ? userMenuEntries : notLoggedMenuEntries;
 
-  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [userRole, setUserRole] = useState<
+    "USER" | "ADMIN" | "PHYSIOTHERAPIST" | undefined
+  >(undefined);
+
+  let theme: Theme = notLoggedTheme;
+  if (userRole == "USER") {
+    theme = userTheme;
+  } else if (userRole == "ADMIN") {
+    theme = adminTheme;
+  } else if (userRole == "PHYSIOTHERAPIST") {
+    theme = physioTheme;
+  }
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
   };
+
+  useEffect(() => {
+    apiClient.auth.authControllerGetUserProfile().then((data) => {
+      setUserRole(data.data.role);
+    });
+  }, [apiClient.auth]); // TODO: recheck after logout
 
   const drawer = (
     <Box
@@ -90,7 +116,7 @@ export default function Layout() {
   );
 
   return (
-    <ThemeProvider theme={auth.isAuthenticated ? userTheme : notLoggedTheme}>
+    <ThemeProvider theme={theme}>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
         <AppBar component="nav" sx={{ backgroundColor: "primary.main" }}>

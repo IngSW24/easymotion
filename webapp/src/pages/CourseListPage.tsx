@@ -2,14 +2,25 @@ import { Container } from "@mui/material";
 import CourseList from "../components/course/CourseList/CourseList";
 import HeroImage from "../components/HeroImage/HeroImage";
 import CreateCourseButton from "../components/atoms/Button/CreateCourseButton";
-import { useAuth } from "../hooks/useAuth";
+import { useApiClient } from "../hooks/useApiClient";
+import { useEffect, useState } from "react";
 
 /**
  * Defines the page to list all courses
  * @returns a react component
  */
 export default function CourseListPage() {
-  const auth = useAuth();
+  const { apiClient } = useApiClient();
+
+  const [userRole, setUserRole] = useState<
+    "USER" | "ADMIN" | "PHYSIOTHERAPIST" | undefined
+  >(undefined);
+
+  useEffect(() => {
+    apiClient.auth.authControllerGetUserProfile().then((data) => {
+      setUserRole(data.data.role);
+    });
+  }, [apiClient.auth]);
 
   return (
     <>
@@ -21,9 +32,11 @@ export default function CourseListPage() {
       />
       <Container maxWidth="xl" sx={{ p: 5 }}>
         <CourseList
-          canEdit={auth.isAuthenticated} // TODO: check user role
+          canEdit={userRole == "ADMIN" || userRole == "PHYSIOTHERAPIST"}
         />
-        {auth.isAuthenticated && <CreateCourseButton />}
+        {(userRole == "ADMIN" || userRole == "PHYSIOTHERAPIST") && (
+          <CreateCourseButton />
+        )}
       </Container>
     </>
   );
