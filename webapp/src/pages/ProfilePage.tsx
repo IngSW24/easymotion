@@ -2,70 +2,37 @@ import { Button, Container } from "@mui/material";
 import ProfileImage from "../components/ProfileImage/ProfileImageDefault.jpg";
 import TextBoxes from "../components/atoms/DescriptionBoxes/TextBoxes";
 import ModeEdit from "@mui/icons-material/ModeEdit";
+import { useAuth } from "../hooks/useAuth";
 
-/*
-export interface ProfileProps {
-  name: string;
-  secondName: string;
-  surname: string;
-  userType: string;
-  phoneNumber: string;
-  email: string;
-  birthDate: string;
-  specialization: string;
-  publicPhoneNumber: string;
-}
-*/
-
-//export default function ProfilePage(props: ProfileProps) {
 
 /**
  *
- * @param props string containing the "id" of the User that have the data that we want to show in this profile page
  * @returns a page where we can see all the data of the user logged (plus a three buttons that permit the user to: change profile's data, logout, delete the profile)
  */
-export default function ProfilePage(props: string) {
-  //props receive the "ID" of the User
+export default function ProfilePage() {
 
-  const id: string = props; //We will use the "id" to GET the data of the User (from the database) and we will show the data in this page
 
-  /** Alternative: if the props pass ALL the user's data we will assign all of them to this interface "ProfileProps"
-   const {
-    name,
-    secondName,
-    surname,
-    userType,
-    phoneNumber,
-    email,
-    birthDate,
-    specialization,
-    publicPhoneNumber,
-  } = props;
-   */
+    const {user, isAuthenticated, logout} = useAuth();
 
-  /*
-    Default values for test the page
+    //const navigate = useNavigate();
 
-    TODO: give to every const the value obtained thanks to the "ID" passed as INPUT 
-  */
-  const name: string = "Homer";
-  const secondName: string = "J.";
-  const surname: string = "Simpson";
-  const userType: string = "Fisioterapista";
-  const phoneNumber: string = "911";
-  const email: string = "ti.ho@fregato.it";
-  const birthDate: string = "21/12/2012";
-  const specialization: string = "Non esiste, non ha mai fatto l'università";
-  const publicPhoneNumber: string = "912";
+    //Check if the user is authenticated (isAuthenticated==true) and if the user have data
+    if(!isAuthenticated || !user){
+        //navigate('/');
+        return <div>Non sei autorizzato a visualizzare questa pagina!</div>;
+    }
+    
 
-  /*
+  const name: string = user.firstName;
+  const secondName: string = user.middleName ?? "";     //if user.middleName is undefined return a ""
+  const surname: string = user.lastName;
+  const userType: string = user.role;
+  const phoneNumber: string = user.phoneNumber ?? "";     //if user.phoneNumber is undefined return a ""
+  const email: string = user.email;
+  const birthDate: string = user.birthDate ?? "";     //if user.birthDate is undefined return a ""
+  //const specialization: string = "Non esiste, non ha mai fatto l'università";
+  //const publicPhoneNumber: string = "912";
 
-  TODO: create a function/exception for when the profile informations are not loaded due to an error
-
-  const showError = (e: ErrorType) => {
-
-  }
-  */
 
   return (
     <>
@@ -119,7 +86,8 @@ export default function ProfilePage(props: string) {
               description={birthDate}
             />
 
-            {userType == "Fisioterapista" ? (
+
+            {/* {userType == "Fisioterapista" ? (
               <div>
                 <TextBoxes
                   descriptionTitle="Specializzazione"
@@ -137,7 +105,8 @@ export default function ProfilePage(props: string) {
               </div>
             ) : (
               <></>
-            )}
+            )} */}
+
           </div>
         </div>
 
@@ -155,14 +124,9 @@ export default function ProfilePage(props: string) {
           <Button
             variant="outlined"
             style={{ borderColor: "#8B0000", color: "#8B0000", padding: 10 }}
+            onClick={logout}
           >
             Esci dal profilo
-          </Button>
-          <Button
-            variant="outlined"
-            style={{ background: "#8B0000", color: "white", padding: 10 }}
-          >
-            Elimina profilo
           </Button>
         </div>
       </Container>
