@@ -4,7 +4,7 @@ import CourseDetail from "../components/course/CourseDetail/CourseDetail";
 import HeroImage from "../components/HeroImage/HeroImage";
 import { useCourses } from "../hooks/useCourses";
 import LoadingSpinner from "../components/LoadingSpinner/LoadingSpinner";
-import { CourseEntity, UpdateCoursesDto } from "../../client/data-contracts";
+import { CourseEntity, UpdateCoursesDto } from "../client/Api";
 
 export interface CourseDetailPageProps {
   canEdit?: boolean;

@@ -214,5 +214,107 @@
       "thumbnail_path": null,
       "schedule": ["Lunedì alle 19:00", "Giovedì alle 19:00"]
     }
+  ],
+  "applicationUsers": [
+    {
+      "id": "f7e8a4b0-1c74-4f1a-9d1a-1d8f7c01a4d0",
+      "email": "m.rossi@example.com",
+      "password": "securepassword1",
+      "username": "marco.rossi",
+      "firstName": "Marco",
+      "middleName": null,
+      "lastName": "Rossi",
+      "phoneNumber": "+393401234567",
+      "birthDate": "1990-05-15",
+      "role": "PHYSIOTHERAPIST",
+      "isEmailVerified": true,
+      "lastLogin": "2025-01-08T10:00:00.000Z",
+      "failedLoginAttempts": 0
+    },
+    {
+      "id": "1a2b3c4d-5678-9abc-def0-123456789abc",
+      "email": "anna.bianchi@example.com",
+      "password": "securepassword2",
+      "username": "anna.bianchi",
+      "firstName": "Anna",
+      "middleName": null,
+      "lastName": "Bianchi",
+      "phoneNumber": "+393498765432",
+      "birthDate": "1985-09-20",
+      "role": "USER",
+      "isEmailVerified": true,
+      "lastLogin": "2025-01-08T11:00:00.000Z",
+      "failedLoginAttempts": 0
+    },
+    {
+      "id": "3e2d1f4b-8c9a-7b6d-5e4f-2c1a0b9d8e7f",
+      "email": "giuseppe.verdi@example.com",
+      "password": "securepassword3",
+      "username": "giuseppe.verdi",
+      "firstName": "Giuseppe",
+      "middleName": null,
+      "lastName": "Verdi",
+      "phoneNumber": "+393496543210",
+      "birthDate": "1995-03-10",
+      "role": "PHYSIOTHERAPIST",
+      "isEmailVerified": false,
+      "lastLogin": null,
+      "failedLoginAttempts": 1
+    },
+    {
+      "id": "5f6g7h8i-9j0k-lmno-pqr1-2s3t4u5v6w7x",
+      "email": "silvia.rinaldi@example.com",
+      "password": "securepassword4",
+      "username": "silvia.rinaldi",
+      "firstName": "Silvia",
+      "middleName": "Maria",
+      "lastName": "Rinaldi",
+      "phoneNumber": "+393401112223",
+      "birthDate": "2000-07-12",
+      "role": "USER",
+      "isEmailVerified": false,
+      "lastLogin": null,
+      "failedLoginAttempts": 0
+    },
+    {
+      "id": "9z8y7x6w-5v4u-3t2s-1pqr-lmn0kj9ih8g7",
+      "email": "luca.mancini@example.com",
+      "password": "securepassword5",
+      "username": "luca.mancini",
+      "firstName": "Luca",
+      "middleName": null,
+      "lastName": "Mancini",
+      "phoneNumber": "+393407654321",
+      "birthDate": "1988-12-01",
+      "role": "PHYSIOTHERAPIST",
+      "isEmailVerified": true,
+      "lastLogin": "2025-01-08T09:00:00.000Z",
+      "failedLoginAttempts": 0
+    }
+  ],
+  "physiotherapists": [
+    {
+      "id": "f7e8a4b0-1c74-4f1a-9d1a-1d8f7c01a4d0",
+      "specialization": "Riabilitazione ortopedica",
+      "publicPhoneNumber": "+393401234567"
+    },
+    {
+      "id": "3e2d1f4b-8c9a-7b6d-5e4f-2c1a0b9d8e7f",
+      "specialization": "Massoterapia",
+      "publicPhoneNumber": "+393496543210"
+    },
+    {
+      "id": "9z8y7x6w-5v4u-3t2s-1pqr-lmn0kj9ih8g7",
+      "specialization": "Fisioterapia sportiva",
+      "publicPhoneNumber": "+393407654321"
+    }
+  ],
+  "finalUsers": [
+    {
+      "id": "1a2b3c4d-5678-9abc-def0-123456789abc"
+    },
+    {
+      "id": "5f6g7h8i-9j0k-lmno-pqr1-2s3t4u5v6w7x"
+    }
   ]
 }

@@ -1,6 +1,6 @@
 import { Container } from "@mui/material"; // Card, CardContent, Box
 import { useCourses } from "../hooks/useCourses.tsx";
-import { CourseEntity, CreateCourseDto } from "../../client/data-contracts.ts";
+import { CourseEntity, CreateCourseDto } from "../client/Api.tsx";
 import HeroImage from "../components/HeroImage/HeroImage.tsx";
 import CourseDetail from "../components/course/CourseDetail/CourseDetail.tsx";
 import { defaultCourse } from "../data/defaults.ts";

@@ -1,4 +1,4 @@
-import { CourseEntity } from "../../client/data-contracts";
+import { CourseEntity } from "../client/Api";
 
 export const courseCategories: LiteralUnionDescriptor<
   CourseEntity["category"]

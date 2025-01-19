@@ -11,10 +11,11 @@ import {
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCoursesDto } from './dto/update-course.dto';
-import { CourseEntity } from './entities/course.entity';
+import { CourseEntity } from './dto/course.dto';
 import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import { PaginationFilter } from 'src/common/dto/pagination-filter.dto';
 import { ApiPaginatedResponse } from 'src/common/decorators/api-paginated-response.decorator';
+import UseAuth from 'src/auth/decorators/auth-with-role.decorator';
 
 @Controller('courses')
 export class CoursesController {
@@ -26,6 +27,7 @@ export class CoursesController {
    * @returns the created course
    */
   @Post()
+  @UseAuth(['admin', 'physiotherapist'])
   @ApiCreatedResponse({ type: CourseEntity })
   create(@Body() createCourseDto: CreateCourseDto) {
     return this.coursesService.create(createCourseDto);
@@ -60,6 +62,7 @@ export class CoursesController {
    */
   @Put(':id')
   @ApiOkResponse({ type: CourseEntity })
+  @UseAuth(['admin', 'physiotherapist'])
   update(@Param('id') id: string, @Body() updateCoursesDto: UpdateCoursesDto) {
     return this.coursesService.update(id, updateCoursesDto);
   }
@@ -70,6 +73,7 @@ export class CoursesController {
    */
   @Delete(':id')
   @ApiOkResponse()
+  @UseAuth(['admin', 'physiotherapist'])
   remove(@Param('id') id: string) {
     return this.coursesService.remove(id);
   }

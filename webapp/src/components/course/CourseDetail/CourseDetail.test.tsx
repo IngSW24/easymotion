@@ -2,7 +2,7 @@ import CourseDetail from "./CourseDetail";
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-import { CourseEntity } from "../../../../client/data-contracts";
+import { CourseEntity } from "../../../client/Api";
 import {
   courseCategories,
   courseLevels,
