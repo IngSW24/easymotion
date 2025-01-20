@@ -21,7 +21,7 @@ export async function bootstrap() {
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
 
-  const corsOrigin = configService.get<string>('API_CORS_ORIGIN');
+  const corsOrigin = configService.get<string>('FRONTEND_URL');
 
   app.enableCors({
     origin: corsOrigin ?? 'https://easymotion.devlocal',

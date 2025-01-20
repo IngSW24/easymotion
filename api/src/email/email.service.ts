@@ -85,6 +85,20 @@ const generateEmailTemplate = (subject, content) => `
       color: #007bff;
       text-decoration: none;
     }
+    .url-button {
+      display: inline-block;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: bold;
+      color: white;
+      background-color: #007bff;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+    }
+    .url-button:hover {
+      background-color: #0056b3;
+    }
   </style>
 </head>
 <body>
