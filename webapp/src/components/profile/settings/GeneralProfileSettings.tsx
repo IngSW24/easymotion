@@ -19,6 +19,7 @@ import PasswordUpdate from "./PasswordUpdate";
 import PhoneNumberEditor from "../../editors/PhoneNumberEditor/PhoneNumberEditor";
 import { DateTime } from "luxon";
 import { DateField } from "@mui/x-date-pickers";
+import { useFormValidator } from "../../../hooks/useFormValidator";
 
 export interface GeneralProfileSettingsProps {
   user: AuthUserDto;
@@ -43,124 +44,58 @@ const mapUserRole = (role: AuthUserDto["role"]) => {
   }
 };
 
+interface FormData {
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  phoneNumber: string;
+  birthDate: string;
+  [key: string]: string;
+}
+
 export default function GeneralProfileSettings(
   props: GeneralProfileSettingsProps
 ) {
   const { user, onProfileSave } = props;
 
   const [hasPendingChanges, setHasPendingChanges] = useState(false);
-  const [userData, setUserData] = useState<AuthUserDto>(user);
 
-  const [errors, setErrors] = useState<{
-    firstName: { e: boolean; eText?: string };
-    lastName: { e: boolean; eText?: string };
-  }>({
-    firstName: { e: false },
-    lastName: { e: false },
-  });
+  const [formData, handleChange, { errors, validate }] =
+    useFormValidator<FormData>(
+      {
+        firstName: user.firstName,
+        middleName: user.middleName ? user.middleName : "",
+        lastName: user.lastName,
+        phoneNumber: user.phoneNumber ? user.phoneNumber : "",
+        birthDate: user.birthDate ? user.birthDate : "",
+      },
+      {
+        firstName: { required: true, minLength: 3, maxLength: 20 },
+        middleName: { maxLength: 20 },
+        lastName: { required: true, minLength: 3, maxLength: 20 },
+        phoneNumber: { maxLength: 13 },
+        birthDate: {
+          pattern: RegExp(
+            "^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$"
+          ),
+        },
+      }
+    );
 
   const parsedBirthDate = DateTime.fromFormat(
-    userData.birthDate ?? "",
+    formData.birthDate ?? "",
     "yyyy-MM-dd"
   );
 
-  const handleChange = <T extends keyof AuthUserDto>(
-    field: T,
-    value: AuthUserDto[T]
-  ) => {
-    setUserData((prev: AuthUserDto) => ({ ...prev, [field]: value }));
-    setHasPendingChanges(true);
-  };
-
-  const handleNameChange = <T extends keyof AuthUserDto>(
-    field: T,
-    value: AuthUserDto[T]
-  ) => {
-    setUserData((prev: AuthUserDto) => ({ ...prev, [field]: value }));
-    setHasPendingChanges(true);
-
-    const v: string = value as string;
-
-    if (v.length < 3) {
-      setErrors((prev) => ({
-        ...prev,
-        firstName: { e: true, eText: "Nome deve essere almeno di 3 lettere" },
-      }));
-    } else if (v.length > 20) {
-      setErrors((prev) => ({
-        ...prev,
-        firstName: {
-          e: true,
-          eText: "Nome deve essere al massimo di 20 lettere",
-        },
-      }));
-    } else if (!/^[a-zA-Z ]+$/.test(v)) {
-      setErrors((prev) => ({
-        ...prev,
-        firstName: {
-          e: true,
-          eText: "Nome deve contenere al massimo lettere e spazi",
-        },
-      }));
-    } else {
-      setErrors((prev) => ({
-        ...prev,
-        firstName: { e: false },
-      }));
-    }
-  };
-
-  const handleSurnameChange = <T extends keyof AuthUserDto>(
-    field: T,
-    value: AuthUserDto[T]
-  ) => {
-    setUserData((prev: AuthUserDto) => ({ ...prev, [field]: value }));
-    setHasPendingChanges(true);
-
-    const v: string = value as string;
-
-    if (v.length < 3) {
-      setErrors((prev) => ({
-        ...prev,
-        lastName: { e: true, eText: "Cognome deve essere almeno di 3 lettere" },
-      }));
-    } else if (v.length > 20) {
-      setErrors((prev) => ({
-        ...prev,
-        lastName: {
-          e: true,
-          eText: "Cognome deve essere al massimo di 20 lettere",
-        },
-      }));
-    } else if (!/^[a-zA-Z ]+$/.test(v)) {
-      setErrors((prev) => ({
-        ...prev,
-        lastName: {
-          e: true,
-          eText: "Cognome deve contenere al massimo lettere e spazi",
-        },
-      }));
-    } else {
-      setErrors((prev) => ({
-        ...prev,
-        lastName: { e: false },
-      }));
-    }
-  };
-
-  const isFormInvalid = () => {
-    return errors.firstName.e || errors.lastName.e;
-  };
-
   const handleSave = () => {
-    if (isFormInvalid()) {
+    if (!validate()) {
       console.log("Form is not valid");
       return;
     }
 
     console.log("Form is valid");
 
-    onProfileSave(userData);
+    onProfileSave(formData);
     setHasPendingChanges(false);
   };
 
@@ -252,12 +187,15 @@ export default function GeneralProfileSettings(
               </Typography>
               <TextField
                 fullWidth
-                value={userData.firstName || ""}
+                value={formData.firstName || ""}
                 size="small"
                 placeholder="Il tuo nome"
-                error={errors.firstName.e}
-                helperText={errors.firstName.e ? errors.firstName.eText : ""}
-                onChange={(e) => handleNameChange("firstName", e.target.value)}
+                error={errors.firstName?.e}
+                helperText={errors.firstName?.e ? errors.firstName?.eText : ""}
+                onChange={(e) => {
+                  handleChange("firstName", e.target.value);
+                  setHasPendingChanges(true);
+                }}
               />
             </Grid2>
             <Grid2 size={{ xs: 12, sm: 6 }}>
@@ -266,10 +204,17 @@ export default function GeneralProfileSettings(
               </Typography>
               <TextField
                 fullWidth
-                value={userData.middleName || ""}
+                value={formData.middleName || ""}
                 size="small"
                 placeholder="Il tuo secondo nome"
-                onChange={(e) => handleChange("middleName", e.target.value)}
+                error={errors.middleName?.e}
+                helperText={
+                  errors.middleName?.e ? errors.middleName?.eText : ""
+                }
+                onChange={(e) => {
+                  handleChange("middleName", e.target.value);
+                  setHasPendingChanges(true);
+                }}
               />
             </Grid2>
             <Grid2 size={{ xs: 12, sm: 6 }}>
@@ -278,14 +223,15 @@ export default function GeneralProfileSettings(
               </Typography>
               <TextField
                 fullWidth
-                value={userData.lastName || ""}
+                value={formData.lastName || ""}
                 size="small"
                 placeholder="Il tuo cognome"
-                error={errors.lastName.e}
-                helperText={errors.lastName.e ? errors.lastName.eText : ""}
-                onChange={(e) =>
-                  handleSurnameChange("lastName", e.target.value)
-                }
+                error={errors.lastName?.e}
+                helperText={errors.lastName?.e ? errors.lastName?.eText : ""}
+                onChange={(e) => {
+                  handleChange("lastName", e.target.value);
+                  setHasPendingChanges(true);
+                }}
               />
             </Grid2>
             <Grid2 size={{ xs: 12, sm: 6 }}>
@@ -293,8 +239,11 @@ export default function GeneralProfileSettings(
                 Numero di telefono
               </Typography>
               <PhoneNumberEditor
-                onChange={(v) => handleChange("phoneNumber", v)}
-                value={userData.phoneNumber ?? ""}
+                onChange={(v) => {
+                  handleChange("phoneNumber", v);
+                  setHasPendingChanges(true);
+                }}
+                value={formData.phoneNumber ?? ""}
               />
             </Grid2>
             <Grid2 size={{ xs: 12 }}>
@@ -305,12 +254,11 @@ export default function GeneralProfileSettings(
                 format="dd/MM/yyyy"
                 size="small"
                 value={parsedBirthDate}
-                onChange={(v) =>
-                  handleChange(
-                    "birthDate",
-                    !v ? null : v.toFormat("yyyy-MM-dd")
-                  )
-                }
+                helperText={errors.birthDate?.e ? errors.birthDate?.eText : ""}
+                onChange={(v) => {
+                  handleChange("birthDate", v ? v.toFormat("yyyy-MM-dd") : "");
+                  setHasPendingChanges(true);
+                }}
               />
             </Grid2>
           </Grid2>
