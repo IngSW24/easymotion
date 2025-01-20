@@ -31,6 +31,19 @@ const getInitials = (user: AuthUserDto | undefined) => {
   return `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`;
 };
 
+const mapUserRole = (role: AuthUserDto["role"]) => {
+  switch (role) {
+    case "USER":
+      return "Utente";
+    case "ADMIN":
+      return "Amministratore";
+    case "PHYSIOTHERAPIST":
+      return "Fisioterapista";
+    default:
+      return "Ruolo non definito";
+  }
+};
+
 export default function GeneralProfileSettings(
   props: GeneralProfileSettingsProps
 ) {
@@ -106,8 +119,12 @@ export default function GeneralProfileSettings(
                   </Alert>
                 )}
               </Box>
-              <Box sx={{ ml: 2 }}>
-                <Chip label={user?.role} icon={<Person />} variant="outlined" />
+              <Box sx={{ ml: 3 }}>
+                <Chip
+                  label={mapUserRole(user.role)}
+                  icon={<Person />}
+                  variant="outlined"
+                />
               </Box>
             </Box>
             <Button
