@@ -7,6 +7,7 @@ import Layout, { MenuEntry } from "../components/Layout/Layout";
 import { Login, Logout, Person } from "@mui/icons-material";
 import ProfilePage from "../pages/ProfilePage";
 import TestAuthPage from "../pages/testAuthPage";
+import ConfirmEmailPage from "../pages/ConfirmEmailPage";
 
 const notLoggedMenuEntries: Array<MenuEntry> = [
   {
@@ -59,6 +60,7 @@ const Router: React.FC = () => (
         <Route path="details/:id" element={<CourseDetailsPage />} />
         <Route path="profile" element={<ProfilePage />} />
         <Route path="auth" element={<TestAuthPage />} />
+        <Route path="confirm-email" element={<ConfirmEmailPage />} />
       </Route>
       <Route
         path="physio"

@@ -68,6 +68,25 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
     setUser(null);
   };
 
+  /**
+   * Updates the user's email address after confirming the email change.
+   * @param email the new email address
+   * @param userId the user's ID
+   * @param token the confirmation token
+   */
+  const updateEmail = async (email: string, userId: string, token: string) => {
+    const response = await apiInstance.authControllerConfirmEmail({
+      email,
+      userId,
+      token,
+    });
+
+    if (response.ok) {
+      updateAccessToken(response.data.accessToken);
+      setUser(response.data);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -75,6 +94,7 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
         user,
         login,
         logout,
+        updateEmail,
       }}
     >
       {children}
