@@ -13,7 +13,8 @@ interface FormProp {
   description: string;
   textFieldNumber: number;
   fieldName?: string[];
-  checkbox?: boolean;
+  errorMessage?: string;
+  checkboxRequired?: boolean;
   checkboxName?: string;
   buttonName: string;
   onSubmit?: (value: Record<string, string>) => void;
@@ -108,20 +109,12 @@ export default function FormComponent(prop: FormProp) {
           flex={1}
           display="flex"
           flexDirection="column"
-          justifyContent="center"
-          alignItems="center"
           sx={{
             padding: 4, // Adds padding inside the form
           }}
         >
           <form onSubmit={handleSubmit} style={{ width: "100%" }}>
-            <Box
-              display="flex"
-              flexDirection="column"
-              gap={3}
-              alignItems="center"
-              width="100%"
-            >
+            <Box display="flex" flexDirection="column" gap={3} width="100%">
               <Box display="flex" flexDirection="column" gap={2} width="100%">
                 {prop.fieldName && prop.fieldName.length > 0
                   ? prop.fieldName.map((name, index) => (
@@ -149,7 +142,11 @@ export default function FormComponent(prop: FormProp) {
                     ))}
               </Box>
 
-              {prop.checkbox && (
+              {prop.errorMessage && (
+                <Typography color="error">Error</Typography>
+              )}
+
+              {prop.checkboxName && (
                 <Box
                   display="flex"
                   flexDirection="row"
@@ -158,7 +155,9 @@ export default function FormComponent(prop: FormProp) {
                   width="100%"
                 >
                   <FormControlLabel
-                    control={<Checkbox name="terms" />}
+                    control={
+                      <Checkbox name="terms" required={prop.checkboxRequired} />
+                    }
                     label={prop.checkboxName}
                   />
                 </Box>
