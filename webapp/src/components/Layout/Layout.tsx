@@ -1,5 +1,5 @@
 import MenuIcon from "@mui/icons-material/Menu";
-import { Navigate, Outlet, useLocation, useNavigate } from "react-router";
+import { Outlet, useLocation } from "react-router";
 import {
   AppBar,
   Box,
@@ -43,7 +43,7 @@ const notLoggedMenuEntries: Array<MenuEntry> = [
   },
   {
     label: "Register",
-    link: "/register",
+    link: "/signup",
     icon: <Login />,
   },
 ];
@@ -60,7 +60,6 @@ const drawerWidth = 240;
 
 export default function Layout() {
   const location = useLocation();
-  const navigate = useNavigate();
   const snack = useSnack();
   const auth = useAuth();
   const entries = auth.isAuthenticated ? userMenuEntries : notLoggedMenuEntries;
