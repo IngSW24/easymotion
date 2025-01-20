@@ -5,19 +5,15 @@ import HeroImage from "../components/HeroImage/HeroImage";
 import { useCourses } from "../hooks/useCourses";
 import LoadingSpinner from "../components/LoadingSpinner/LoadingSpinner";
 import { CourseEntity, UpdateCoursesDto } from "../client/Api";
-
-export interface CourseDetailPageProps {
-  canEdit?: boolean;
-}
+import { useAuth } from "../hooks/useAuth";
 
 /**
  * Defines the page to view and edit details of a course
  * @returns a react component
  */
-export default function CourseDetailsPage({
-  canEdit = false,
-}: CourseDetailPageProps) {
+export default function CourseDetailsPage() {
   const { id } = useParams();
+  const auth = useAuth();
 
   const courseRepo = useCourses({ fetchId: id });
 
@@ -43,7 +39,9 @@ export default function CourseDetailsPage({
           <CourseDetail
             course={courseRepo.getSingle.data}
             onSave={handleSave}
-            canEdit={canEdit}
+            canEdit={
+              auth.user?.role == "ADMIN" || auth.user?.role == "PHYSIOTHERAPIST"
+            }
           />
         )}
       </Container>

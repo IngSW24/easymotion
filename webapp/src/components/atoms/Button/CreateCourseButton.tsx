@@ -18,7 +18,7 @@ export default function CreateCourseButton() {
             fontSize: 30, // Dimensione dell'icona
           },
         }}
-        to={"/physio/new"}
+        to={"/new"}
         aria-label="Add"
       >
         <AddIcon />
