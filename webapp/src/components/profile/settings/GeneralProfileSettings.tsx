@@ -9,11 +9,10 @@ import {
   Chip,
   Alert,
   Grid2,
+  TextField,
 } from "@mui/material";
 import { useState } from "react";
-import { useAuth } from "../../../hooks/useAuth";
-import { Clear, Edit, Logout, Person } from "@mui/icons-material";
-import EditableTextField from "../../editors/EditableTextField/EditableTextField";
+import { Person } from "@mui/icons-material";
 import { AuthUserDto, UpdateAuthUserDto } from "../../../client/Api";
 import EmailUpdate from "./EmailUpdate";
 import PasswordUpdate from "./PasswordUpdate";
@@ -48,9 +47,8 @@ export default function GeneralProfileSettings(
   props: GeneralProfileSettingsProps
 ) {
   const { user, onProfileSave } = props;
-  const { logout } = useAuth();
 
-  const [isEditing, setIsEditing] = useState(false);
+  const [hasPendingChanges, setHasPendingChanges] = useState(false);
   const [userData, setUserData] = useState<AuthUserDto>(user);
 
   const parsedBirthDate = DateTime.fromFormat(
@@ -63,11 +61,12 @@ export default function GeneralProfileSettings(
     value: AuthUserDto[T]
   ) => {
     setUserData((prev: AuthUserDto) => ({ ...prev, [field]: value }));
+    setHasPendingChanges(true);
   };
 
   const handleSave = () => {
     onProfileSave(userData);
-    setIsEditing(false);
+    setHasPendingChanges(false);
   };
 
   return (
@@ -93,33 +92,52 @@ export default function GeneralProfileSettings(
             }}
           >
             <Box
-              sx={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                flexWrap: "wrap",
+                width: "100%",
+              }}
             >
-              <Avatar
+              <Box
                 sx={{
-                  bgcolor: "primary.main",
-                  width: 80,
-                  height: 80,
-                  fontSize: 32,
-                  marginBottom: { xs: 2, sm: 0 },
+                  flexGrow: 1,
+                  display: "flex",
+                  alignItems: "center",
                 }}
               >
-                {getInitials(user)}
-              </Avatar>
-              <Box sx={{ marginLeft: 2 }}>
-                <Typography variant="h5" fontWeight="bold">
-                  {user.firstName || "Anonymous"}
-                </Typography>
-                <Typography color="text.secondary">
-                  {user.email || "No email provided"}
-                </Typography>
-                {!user.isEmailVerified && (
-                  <Alert severity="warning" sx={{ marginTop: 1 }}>
-                    Email not verified
-                  </Alert>
-                )}
+                <Avatar
+                  sx={{
+                    bgcolor: "primary.main",
+                    width: 80,
+                    height: 80,
+                    fontSize: 32,
+                    marginBottom: { xs: 2, sm: 0 },
+                  }}
+                >
+                  {getInitials(user)}
+                </Avatar>
+                <Box sx={{ marginLeft: 2 }}>
+                  <Typography variant="h5" fontWeight="bold">
+                    {user.firstName}
+                  </Typography>
+                  <Typography color="text.secondary">{user.email}</Typography>
+                  {!user.isEmailVerified && (
+                    <Alert severity="warning" sx={{ marginTop: 1 }}>
+                      Email non confermata
+                    </Alert>
+                  )}
+                </Box>
               </Box>
-              <Box sx={{ ml: 3 }}>
+              <Box
+                sx={{
+                  ml: 3,
+                  flexGrow: 0,
+                  display: "flex",
+                  width: { xs: "100%", sm: "auto" },
+                  justifyContent: "end",
+                }}
+              >
                 <Chip
                   label={mapUserRole(user.role)}
                   icon={<Person />}
@@ -127,15 +145,6 @@ export default function GeneralProfileSettings(
                 />
               </Box>
             </Box>
-            <Button
-              variant="contained"
-              color={isEditing ? "inherit" : "primary"}
-              startIcon={!isEditing ? <Edit /> : <Clear />}
-              onClick={() => setIsEditing(!isEditing)}
-              sx={{ marginTop: { xs: 2, sm: 0 } }}
-            >
-              {isEditing ? "Annulla" : "Modifica"}
-            </Button>
           </Box>
 
           <Divider sx={{ marginY: 2 }} />
@@ -143,75 +152,65 @@ export default function GeneralProfileSettings(
           {/* User Information */}
           <Grid2 container spacing={2}>
             <Grid2 size={{ xs: 12, sm: 6 }}>
-              <Typography variant="subtitle2" color="text.secondary">
+              <Typography variant="subtitle2" color="text.secondary" mb={1}>
                 Nome
               </Typography>
-              <EditableTextField
-                isEditing={isEditing}
-                showValue={user.firstName || "N/A"}
-                editValue={userData.firstName}
-                onChange={(v) => handleChange("firstName", v)}
+              <TextField
+                fullWidth
+                value={user.firstName || ""}
+                size="small"
+                placeholder="Il tuo nome"
+                onChange={(e) => handleChange("firstName", e.target.value)}
               />
             </Grid2>
             <Grid2 size={{ xs: 12, sm: 6 }}>
-              <Typography variant="subtitle2" color="text.secondary">
+              <Typography variant="subtitle2" color="text.secondary" mb={1}>
                 Secondo nome
               </Typography>
-              <EditableTextField
-                isEditing={isEditing}
-                showValue={user.middleName ?? ""}
-                editValue={userData.middleName ?? ""}
-                onChange={(v) => handleChange("middleName", v)}
+              <TextField
+                fullWidth
+                value={user.middleName || ""}
+                size="small"
+                placeholder="Il tuo secondo nome"
+                onChange={(e) => handleChange("middleName", e.target.value)}
               />
             </Grid2>
             <Grid2 size={{ xs: 12, sm: 6 }}>
-              <Typography variant="subtitle2" color="text.secondary">
+              <Typography variant="subtitle2" color="text.secondary" mb={1}>
                 Cognome
               </Typography>
-              <EditableTextField
-                isEditing={isEditing}
-                showValue={user.lastName || ""}
-                editValue={userData.lastName}
-                onChange={(v) => handleChange("lastName", v)}
+              <TextField
+                fullWidth
+                value={user.lastName || ""}
+                size="small"
+                placeholder="Il tuo cognome"
+                onChange={(e) => handleChange("lastName", e.target.value)}
               />
             </Grid2>
             <Grid2 size={{ xs: 12, sm: 6 }}>
-              <Typography variant="subtitle2" color="text.secondary">
+              <Typography variant="subtitle2" color="text.secondary" mb={1}>
                 Numero di telefono
               </Typography>
-              {isEditing ? (
-                <PhoneNumberEditor
-                  onChange={(v) => handleChange("phoneNumber", v)}
-                  value={user.phoneNumber ?? ""}
-                />
-              ) : (
-                <EditableTextField
-                  isEditing={isEditing}
-                  showValue={user.phoneNumber || "N/A"}
-                />
-              )}
+              <PhoneNumberEditor
+                onChange={(v) => handleChange("phoneNumber", v)}
+                value={user.phoneNumber ?? ""}
+              />
             </Grid2>
             <Grid2 size={{ xs: 12 }}>
-              <Typography variant="subtitle2" color="text.secondary">
+              <Typography variant="subtitle2" color="text.secondary" mb={1}>
                 Data di nascita
               </Typography>
-              {isEditing ? (
-                <DateField
-                  format="dd/MM/yyyy"
-                  value={parsedBirthDate}
-                  onChange={(v) =>
-                    handleChange(
-                      "birthDate",
-                      !v ? null : v.toFormat("yyyy-MM-dd")
-                    )
-                  }
-                />
-              ) : (
-                <EditableTextField
-                  showValue={parsedBirthDate.toFormat("dd/MM/yyyy")}
-                  isEditing={false}
-                />
-              )}
+              <DateField
+                format="dd/MM/yyyy"
+                size="small"
+                value={parsedBirthDate}
+                onChange={(v) =>
+                  handleChange(
+                    "birthDate",
+                    !v ? null : v.toFormat("yyyy-MM-dd")
+                  )
+                }
+              />
             </Grid2>
           </Grid2>
 
@@ -225,26 +224,15 @@ export default function GeneralProfileSettings(
               flexWrap: "wrap",
             }}
           >
-            {isEditing ? (
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSave}
-                sx={{ paddingX: 3, marginTop: { xs: 2, sm: 0 } }}
-              >
-                Salva
-              </Button>
-            ) : (
-              <Button
-                variant="outlined"
-                color="error"
-                startIcon={<Logout />}
-                onClick={logout}
-                sx={{ paddingX: 3, marginTop: { xs: 2, sm: 0 } }}
-              >
-                Esci
-              </Button>
-            )}
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={!hasPendingChanges}
+              onClick={handleSave}
+              sx={{ paddingX: 3, marginTop: { xs: 2, sm: 0 } }}
+            >
+              Salva
+            </Button>
           </Box>
         </CardContent>
       </Card>

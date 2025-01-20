@@ -21,7 +21,7 @@ export default function PhoneNumberEditor(props: PhoneNumberEditorProps) {
       placeholder="Il tuo numero di telefono"
       inputStyle={{
         width: "100%",
-        height: "56px",
+        height: "40px",
         borderRadius: "4px",
         borderColor: "#c4c4c4",
       }}
