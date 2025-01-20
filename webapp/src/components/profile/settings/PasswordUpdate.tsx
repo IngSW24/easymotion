@@ -86,7 +86,7 @@ export default function PasswordUpdate() {
 
         <Typography variant="body2" color="text.secondary" sx={{ my: 2 }}>
           Inserisci la tua password precedente e la nuova password per
-          aggiornare la tua password.
+          effettuare la modifica
         </Typography>
         <form onSubmit={onPasswordUpdate}>
           <Box sx={{ display: "flex", gap: 2, py: 1 }}>

@@ -18,6 +18,8 @@ import { AuthUserDto, UpdateAuthUserDto } from "../../../client/Api";
 import EmailUpdate from "./EmailUpdate";
 import PasswordUpdate from "./PasswordUpdate";
 import PhoneNumberEditor from "../../editors/PhoneNumberEditor/PhoneNumberEditor";
+import { DateTime } from "luxon";
+import { DateField } from "@mui/x-date-pickers";
 
 export interface GeneralProfileSettingsProps {
   user: AuthUserDto;
@@ -33,13 +35,20 @@ export default function GeneralProfileSettings(
   props: GeneralProfileSettingsProps
 ) {
   const { user, onProfileSave } = props;
+  const { logout } = useAuth();
 
   const [isEditing, setIsEditing] = useState(false);
   const [userData, setUserData] = useState<AuthUserDto>(user);
 
-  const { logout } = useAuth();
+  const parsedBirthDate = DateTime.fromFormat(
+    userData.birthDate ?? "",
+    "yyyy-MM-dd"
+  );
 
-  const handleChange = (field: string, value: string) => {
+  const handleChange = <T extends keyof AuthUserDto>(
+    field: T,
+    value: AuthUserDto[T]
+  ) => {
     setUserData((prev: AuthUserDto) => ({ ...prev, [field]: value }));
   };
 
@@ -135,7 +144,7 @@ export default function GeneralProfileSettings(
                 isEditing={isEditing}
                 showValue={user.middleName ?? ""}
                 editValue={userData.middleName ?? ""}
-                onChange={(v) => handleChange("middlename", v)}
+                onChange={(v) => handleChange("middleName", v)}
               />
             </Grid2>
             <Grid2 size={{ xs: 12, sm: 6 }}>
@@ -169,13 +178,23 @@ export default function GeneralProfileSettings(
               <Typography variant="subtitle2" color="text.secondary">
                 Data di nascita
               </Typography>
-              <EditableTextField
-                isEditing={isEditing}
-                showValue={user.birthDate ?? ""}
-                editValue={userData.birthDate ?? ""}
-                TextFieldProps={{ type: "date" }}
-                onChange={(v) => handleChange("birthDate", v)}
-              />
+              {isEditing ? (
+                <DateField
+                  format="dd/MM/yyyy"
+                  value={parsedBirthDate}
+                  onChange={(v) =>
+                    handleChange(
+                      "birthDate",
+                      !v ? null : v.toFormat("yyyy-MM-dd")
+                    )
+                  }
+                />
+              ) : (
+                <EditableTextField
+                  showValue={parsedBirthDate.toFormat("dd/MM/yyyy")}
+                  isEditing={false}
+                />
+              )}
             </Grid2>
           </Grid2>
 
