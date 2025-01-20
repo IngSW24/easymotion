@@ -51,6 +51,14 @@ export default function GeneralProfileSettings(
   const [hasPendingChanges, setHasPendingChanges] = useState(false);
   const [userData, setUserData] = useState<AuthUserDto>(user);
 
+  const [errors, setErrors] = useState<{
+    firstName: { e: boolean; eText?: string };
+    lastName: { e: boolean; eText?: string };
+  }>({
+    firstName: { e: false },
+    lastName: { e: false },
+  });
+
   const parsedBirthDate = DateTime.fromFormat(
     userData.birthDate ?? "",
     "yyyy-MM-dd"
@@ -64,7 +72,94 @@ export default function GeneralProfileSettings(
     setHasPendingChanges(true);
   };
 
+  const handleNameChange = <T extends keyof AuthUserDto>(
+    field: T,
+    value: AuthUserDto[T]
+  ) => {
+    setUserData((prev: AuthUserDto) => ({ ...prev, [field]: value }));
+    setHasPendingChanges(true);
+
+    const v: string = value as string;
+
+    if (v.length < 3) {
+      setErrors((prev) => ({
+        ...prev,
+        firstName: { e: true, eText: "Nome deve essere almeno di 3 lettere" },
+      }));
+    } else if (v.length > 20) {
+      setErrors((prev) => ({
+        ...prev,
+        firstName: {
+          e: true,
+          eText: "Nome deve essere al massimo di 20 lettere",
+        },
+      }));
+    } else if (!/^[a-zA-Z ]+$/.test(v)) {
+      setErrors((prev) => ({
+        ...prev,
+        firstName: {
+          e: true,
+          eText: "Nome deve contenere al massimo lettere e spazi",
+        },
+      }));
+    } else {
+      setErrors((prev) => ({
+        ...prev,
+        firstName: { e: false },
+      }));
+    }
+  };
+
+  const handleSurnameChange = <T extends keyof AuthUserDto>(
+    field: T,
+    value: AuthUserDto[T]
+  ) => {
+    setUserData((prev: AuthUserDto) => ({ ...prev, [field]: value }));
+    setHasPendingChanges(true);
+
+    const v: string = value as string;
+
+    if (v.length < 3) {
+      setErrors((prev) => ({
+        ...prev,
+        lastName: { e: true, eText: "Cognome deve essere almeno di 3 lettere" },
+      }));
+    } else if (v.length > 20) {
+      setErrors((prev) => ({
+        ...prev,
+        lastName: {
+          e: true,
+          eText: "Cognome deve essere al massimo di 20 lettere",
+        },
+      }));
+    } else if (!/^[a-zA-Z ]+$/.test(v)) {
+      setErrors((prev) => ({
+        ...prev,
+        lastName: {
+          e: true,
+          eText: "Cognome deve contenere al massimo lettere e spazi",
+        },
+      }));
+    } else {
+      setErrors((prev) => ({
+        ...prev,
+        lastName: { e: false },
+      }));
+    }
+  };
+
+  const isFormInvalid = () => {
+    return errors.firstName.e || errors.lastName.e;
+  };
+
   const handleSave = () => {
+    if (isFormInvalid()) {
+      console.log("Form is not valid");
+      return;
+    }
+
+    console.log("Form is valid");
+
     onProfileSave(userData);
     setHasPendingChanges(false);
   };
@@ -153,14 +248,16 @@ export default function GeneralProfileSettings(
           <Grid2 container spacing={2}>
             <Grid2 size={{ xs: 12, sm: 6 }}>
               <Typography variant="subtitle2" color="text.secondary" mb={1}>
-                Nome
+                Nome *
               </Typography>
               <TextField
                 fullWidth
-                value={user.firstName || ""}
+                value={userData.firstName || ""}
                 size="small"
                 placeholder="Il tuo nome"
-                onChange={(e) => handleChange("firstName", e.target.value)}
+                error={errors.firstName.e}
+                helperText={errors.firstName.e ? errors.firstName.eText : ""}
+                onChange={(e) => handleNameChange("firstName", e.target.value)}
               />
             </Grid2>
             <Grid2 size={{ xs: 12, sm: 6 }}>
@@ -169,7 +266,7 @@ export default function GeneralProfileSettings(
               </Typography>
               <TextField
                 fullWidth
-                value={user.middleName || ""}
+                value={userData.middleName || ""}
                 size="small"
                 placeholder="Il tuo secondo nome"
                 onChange={(e) => handleChange("middleName", e.target.value)}
@@ -177,14 +274,18 @@ export default function GeneralProfileSettings(
             </Grid2>
             <Grid2 size={{ xs: 12, sm: 6 }}>
               <Typography variant="subtitle2" color="text.secondary" mb={1}>
-                Cognome
+                Cognome *
               </Typography>
               <TextField
                 fullWidth
-                value={user.lastName || ""}
+                value={userData.lastName || ""}
                 size="small"
                 placeholder="Il tuo cognome"
-                onChange={(e) => handleChange("lastName", e.target.value)}
+                error={errors.lastName.e}
+                helperText={errors.lastName.e ? errors.lastName.eText : ""}
+                onChange={(e) =>
+                  handleSurnameChange("lastName", e.target.value)
+                }
               />
             </Grid2>
             <Grid2 size={{ xs: 12, sm: 6 }}>
@@ -193,12 +294,12 @@ export default function GeneralProfileSettings(
               </Typography>
               <PhoneNumberEditor
                 onChange={(v) => handleChange("phoneNumber", v)}
-                value={user.phoneNumber ?? ""}
+                value={userData.phoneNumber ?? ""}
               />
             </Grid2>
             <Grid2 size={{ xs: 12 }}>
               <Typography variant="subtitle2" color="text.secondary" mb={1}>
-                Data di nascita
+                Data di nascita *
               </Typography>
               <DateField
                 format="dd/MM/yyyy"
