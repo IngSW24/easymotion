@@ -26,8 +26,7 @@ import {
 } from "../../theme/theme";
 import { Login, Logout, Person } from "@mui/icons-material";
 import { useAuth } from "../../hooks/useAuth";
-import { useApiClient } from "../../hooks/useApiClient";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 type MenuEntry = {
   label: string;
@@ -64,34 +63,24 @@ const userMenuEntries: Array<MenuEntry> = [
 const drawerWidth = 240;
 
 export default function Layout() {
-  const { apiClient } = useApiClient();
   const location = useLocation();
   const auth = useAuth();
   const entries = auth.isAuthenticated ? userMenuEntries : notLoggedMenuEntries;
 
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [userRole, setUserRole] = useState<
-    "USER" | "ADMIN" | "PHYSIOTHERAPIST" | undefined
-  >(undefined);
 
   let theme: Theme = notLoggedTheme;
-  if (userRole == "USER") {
+  if (auth.user?.role == "USER") {
     theme = userTheme;
-  } else if (userRole == "ADMIN") {
+  } else if (auth.user?.role == "ADMIN") {
     theme = adminTheme;
-  } else if (userRole == "PHYSIOTHERAPIST") {
+  } else if (auth.user?.role == "PHYSIOTHERAPIST") {
     theme = physioTheme;
   }
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
   };
-
-  useEffect(() => {
-    apiClient.auth.authControllerGetUserProfile().then((data) => {
-      setUserRole(data.data.role);
-    });
-  }, [apiClient.auth]); // TODO: recheck after logout
 
   const drawer = (
     <Box
