@@ -158,7 +158,7 @@ export default function FormComponent(prop: FormProp) {
                   width="100%"
                 >
                   <FormControlLabel
-                    control={<Checkbox name="terms" required />}
+                    control={<Checkbox name="terms" />}
                     label={prop.checkboxName}
                   />
                 </Box>

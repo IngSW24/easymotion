@@ -2,10 +2,10 @@ import FormComponent from "../components/FormComponent/FormComponent";
 import { useNavigate } from "react-router";
 import { useAuth } from "../hooks/useAuth";
 import { useSnack } from "../hooks/useSnack";
-import { useEffect } from "react";
+import { useApiClient } from "../hooks/useApiClient";
 
 interface LoginSignUpPageProps {
-  loginType: "login" | "logout" | "register" | "personal";
+  loginType: "login" | "register" | "personal";
 }
 
 export default function LoginSignUpPage(prop: LoginSignUpPageProps) {
@@ -13,21 +13,7 @@ export default function LoginSignUpPage(prop: LoginSignUpPageProps) {
   const navigate = useNavigate();
   const snack = useSnack();
   const auth = useAuth();
-
-  useEffect(() => {
-    async function onLogout() {
-      try {
-        await auth.logout();
-        navigate("/");
-      } catch (e) {
-        snack.showError(e);
-      }
-    }
-
-    if (loginType == "logout") {
-      onLogout();
-    }
-  }, [loginType, auth, navigate, snack]);
+  const { apiClient } = useApiClient();
 
   async function onLoginClick(authInfo: Record<string, string>) {
     try {

@@ -21,7 +21,6 @@ const Router: React.FC = () => (
         <Route path="profile" element={<ProfilePage />} />
         <Route path="confirm-email" element={<ConfirmEmailPage />} />
         <Route path="login" element={<LoginSignUpPage loginType="login" />} />
-        <Route path="logout" element={<LoginSignUpPage loginType="logout" />} />
         <Route
           path="register"
           element={<LoginSignUpPage loginType="register" />}

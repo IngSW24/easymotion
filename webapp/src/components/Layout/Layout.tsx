@@ -1,5 +1,5 @@
 import MenuIcon from "@mui/icons-material/Menu";
-import { Outlet, useLocation } from "react-router";
+import { Navigate, Outlet, useLocation, useNavigate } from "react-router";
 import {
   AppBar,
   Box,
@@ -27,6 +27,7 @@ import {
 import { Login, Logout, Person } from "@mui/icons-material";
 import { useAuth } from "../../hooks/useAuth";
 import { useState } from "react";
+import { useSnack } from "../../hooks/useSnack";
 
 type MenuEntry = {
   label: string;
@@ -49,11 +50,6 @@ const notLoggedMenuEntries: Array<MenuEntry> = [
 
 const userMenuEntries: Array<MenuEntry> = [
   {
-    label: "Logout",
-    link: "/logout",
-    icon: <Logout />,
-  },
-  {
     label: "Profile",
     link: "/profile",
     icon: <Person />,
@@ -64,6 +60,8 @@ const drawerWidth = 240;
 
 export default function Layout() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const snack = useSnack();
   const auth = useAuth();
   const entries = auth.isAuthenticated ? userMenuEntries : notLoggedMenuEntries;
 
@@ -78,6 +76,12 @@ export default function Layout() {
     theme = physioTheme;
   }
 
+  const onLogoutClick = () => {
+    auth.logout().catch((e) => {
+      snack.showError(e);
+    });
+  };
+
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
   };
@@ -88,6 +92,19 @@ export default function Layout() {
       sx={{ textAlign: "center", width: drawerWidth }}
     >
       <List>
+        {auth.isAuthenticated && (
+          <ListItem disablePadding>
+            <ListItemButton
+              sx={{ textAlign: "center" }}
+              onClick={onLogoutClick}
+            >
+              <ListItemIcon>
+                <Logout />
+              </ListItemIcon>
+              <ListItemText primary="Logout" />
+            </ListItemButton>
+          </ListItem>
+        )}
         {entries?.map((item) => (
           <ListItem key={item.link} disablePadding>
             <ListItemButton
@@ -136,6 +153,15 @@ export default function Layout() {
             <Box
               sx={{ display: { xs: "none", sm: "block" } }} // desktop-only
             >
+              {auth.isAuthenticated && (
+                <Button
+                  sx={{ color: "#fff" }} // TODO: style
+                  startIcon={<Logout />}
+                  onClick={onLogoutClick}
+                >
+                  Logout
+                </Button>
+              )}
               {entries.map((item) => (
                 <Button
                   component={Link}
