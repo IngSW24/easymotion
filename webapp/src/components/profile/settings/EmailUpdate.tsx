@@ -4,6 +4,7 @@ import {
   Button,
   Card,
   CardContent,
+  Grid2,
   TextField,
   Typography,
 } from "@mui/material";
@@ -82,26 +83,31 @@ export default function EmailUpdate() {
           Ti invieremo un'email di conferma per completare l'aggiornamento.
         </Typography>
         <form onSubmit={handleEmailUpdate}>
-          <Box sx={{ display: "flex", gap: 2, py: 1 }}>
-            <TextField
-              fullWidth
-              label="Nuova email"
-              type="email"
-              value={newEmail}
-              size="small"
-              onChange={(e) => setNewEmail(e.target.value)}
-            />
-            <Button
-              variant="contained"
-              sx={{ minWidth: 120 }}
-              startIcon={<Save />}
-              disabled={!newEmail || !isValidEmail(newEmail)}
-              type="submit"
-              color="primary"
-            >
-              Modifica
-            </Button>
-          </Box>
+          <Grid2 container spacing={2} sx={{ py: 1 }}>
+            <Grid2 size={{ xs: 12, sm: 10 }}>
+              <TextField
+                label="Nuova email"
+                type="email"
+                fullWidth
+                value={newEmail}
+                size="small"
+                onChange={(e) => setNewEmail(e.target.value)}
+              />
+            </Grid2>
+            <Grid2 size={{ xs: 12, sm: 2 }}>
+              <Button
+                variant="contained"
+                sx={{ minWidth: 120 }}
+                startIcon={<Save />}
+                fullWidth
+                disabled={!newEmail || !isValidEmail(newEmail)}
+                type="submit"
+                color="primary"
+              >
+                Modifica
+              </Button>
+            </Grid2>
+          </Grid2>
         </form>
         <Box sx={{ mt: 2 }}>
           {message.text && (

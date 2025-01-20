@@ -4,6 +4,7 @@ import {
   Button,
   Card,
   CardContent,
+  Grid2,
   TextField,
   Typography,
 } from "@mui/material";
@@ -89,38 +90,47 @@ export default function PasswordUpdate() {
           effettuare la modifica
         </Typography>
         <form onSubmit={onPasswordUpdate}>
-          <Box sx={{ display: "flex", gap: 2, py: 1 }}>
-            <TextField
-              fullWidth
-              label="Password precedente"
-              type="password"
-              size="small"
-              value={password.old}
-              onChange={(e) =>
-                setPassword((prev) => ({ ...prev, old: e.target.value }))
-              }
-            />
-            <TextField
-              fullWidth
-              label="Nuova password"
-              type="password"
-              size="small"
-              value={password.new}
-              onChange={(e) =>
-                setPassword((prev) => ({ ...prev, new: e.target.value }))
-              }
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              disabled={!password.old || !password.new}
-              sx={{ minWidth: 120 }}
-              startIcon={<Save />}
-              type="submit"
-            >
-              Modifica
-            </Button>
-          </Box>
+          <Grid2 container spacing={2}>
+            <Grid2 size={{ xs: 12, sm: 5 }}>
+              <TextField
+                fullWidth
+                label="Password precedente"
+                type="password"
+                size="small"
+                value={password.old}
+                onChange={(e) =>
+                  setPassword((prev) => ({ ...prev, old: e.target.value }))
+                }
+              />
+            </Grid2>
+            <Grid2 size={{ xs: 12, sm: 5 }}>
+              <TextField
+                fullWidth
+                label="Nuova password"
+                type="password"
+                size="small"
+                value={password.new}
+                onChange={(e) =>
+                  setPassword((prev) => ({ ...prev, new: e.target.value }))
+                }
+              />
+            </Grid2>
+            <Grid2 size={{ xs: 12, sm: 2 }} sx={{ display: "flex" }}>
+              <Button
+                variant="contained"
+                color="primary"
+                disabled={!password.old || !password.new}
+                sx={{
+                  minWidth: 120,
+                }}
+                fullWidth
+                startIcon={<Save />}
+                type="submit"
+              >
+                Modifica
+              </Button>
+            </Grid2>
+          </Grid2>
         </form>
         <Box sx={{ mt: 2 }}>
           {message.text && (
