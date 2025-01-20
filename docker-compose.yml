@@ -32,6 +32,7 @@ services:
         condition: service_started
     environment:
       AUTO_INSTALL_DEPS: ${API_AUTO_INSTALL_DEPS:-true}
+      FRONTEND_URL: ${API_FRONTEND_URL:-https://easymotion.devlocal}
       DATABASE_URL: ${DATABASE_URL}
       SMTP_HOST: ${API_SMTP_HOST:-mailhog}
       SMTP_PORT: ${API_SMTP_PORT:-1025}
