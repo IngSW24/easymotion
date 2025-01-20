@@ -6,7 +6,8 @@ import Layout from "../components/Layout/Layout";
 
 import ProfilePage from "../pages/ProfilePage";
 import ConfirmEmailPage from "../pages/ConfirmEmailPage";
-import LoginSignUpPage from "../pages/LoginSignUpPage";
+import SignupPage from "../pages/SignUpPage";
+import LoginPage from "../pages/LoginPage";
 
 /**
  * Defines the router for the application.
@@ -20,16 +21,8 @@ const Router: React.FC = () => (
         <Route path="details/:id" element={<CourseDetailsPage />} />
         <Route path="profile" element={<ProfilePage />} />
         <Route path="confirm-email" element={<ConfirmEmailPage />} />
-        <Route path="login" element={<LoginSignUpPage loginType="login" />} />
-        <Route path="logout" element={<LoginSignUpPage loginType="logout" />} />
-        <Route
-          path="register"
-          element={<LoginSignUpPage loginType="register" />}
-        />
-        <Route
-          path="personal_information"
-          element={<LoginSignUpPage loginType="personal" />}
-        />
+        <Route path="login" element={<LoginPage />} />
+        <Route path="signup" element={<SignupPage />} />
         <Route path="new" element={<CourseCreatePage />} />
       </Route>
     </Routes>

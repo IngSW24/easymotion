@@ -25,6 +25,7 @@ services:
     ports:
       # add variable in .env to change port
       - "${API_DEV_PORT:-8081}:3000"
+      - "${API_PRISMA_STUDIO_PORT:-5555}:5555"
     volumes:
       - .:/workspace:cached
     depends_on:

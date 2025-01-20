@@ -47,6 +47,7 @@ export default function HeroImage(props: HeroImageProps) {
         >
           <Typography
             variant="h4"
+            component="div"
             sx={{
               fontWeight,
               color: "white",
@@ -62,9 +63,8 @@ export default function HeroImage(props: HeroImageProps) {
               wordBreak: "break-word", // Breaks long words
             }}
           >
-            <Typography
-                variant="h3">
-                EASYMOTION
+            <Typography variant="h3" component="div">
+              EASYMOTION
             </Typography>
             {title}
           </Typography>
@@ -78,8 +78,7 @@ export default function HeroImage(props: HeroImageProps) {
           display: "flex",
           justifyContent: "center", // Center-align horizontally
         }}
-      >
-      </Box>
+      ></Box>
     </Box>
   );
 }

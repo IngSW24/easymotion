@@ -8,18 +8,25 @@ import {
   FormControlLabel,
 } from "@mui/material";
 
-interface FormProp {
+export interface FieldProps<T> {
+  key: keyof T;
+  label: string;
+  type: string;
+}
+
+interface FormProps<T> {
   title: string;
   description: string;
   textFieldNumber: number;
-  fieldName?: string[];
-  checkbox?: boolean;
+  fieldName: FieldProps<T>[];
+  errorMessage?: string;
+  checkboxRequired?: boolean;
   checkboxName?: string;
   buttonName: string;
   onSubmit?: (value: Record<string, string>) => void;
 }
 
-export default function FormComponent(prop: FormProp) {
+export default function FormComponent<T extends object>(prop: FormProps<T>) {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -108,48 +115,30 @@ export default function FormComponent(prop: FormProp) {
           flex={1}
           display="flex"
           flexDirection="column"
-          justifyContent="center"
-          alignItems="center"
           sx={{
             padding: 4, // Adds padding inside the form
           }}
         >
           <form onSubmit={handleSubmit} style={{ width: "100%" }}>
-            <Box
-              display="flex"
-              flexDirection="column"
-              gap={3}
-              alignItems="center"
-              width="100%"
-            >
+            <Box display="flex" flexDirection="column" gap={3} width="100%">
               <Box display="flex" flexDirection="column" gap={2} width="100%">
-                {prop.fieldName && prop.fieldName.length > 0
-                  ? prop.fieldName.map((name, index) => (
-                      <TextField
-                        key={`field-${index}`}
-                        label={name}
-                        name={name}
-                        required
-                        fullWidth
-                        type={
-                          name.toLowerCase().includes("password")
-                            ? "password"
-                            : "text"
-                        }
-                      />
-                    ))
-                  : Array.from({ length: prop.textFieldNumber }, (_, index) => (
-                      <TextField
-                        key={`field-${index}`}
-                        label={`Field ${index + 1}`}
-                        name={`field-${index}`}
-                        required
-                        fullWidth
-                      />
-                    ))}
+                {prop.fieldName.map((data: FieldProps<T>, index: number) => (
+                  <TextField
+                    key={index}
+                    label={data.label}
+                    name={data.key.toString()}
+                    required
+                    fullWidth
+                    type={data.type}
+                  />
+                ))}
               </Box>
 
-              {prop.checkbox && (
+              {prop.errorMessage && (
+                <Typography color="error">Error</Typography>
+              )}
+
+              {prop.checkboxName && (
                 <Box
                   display="flex"
                   flexDirection="row"
@@ -158,7 +147,9 @@ export default function FormComponent(prop: FormProp) {
                   width="100%"
                 >
                   <FormControlLabel
-                    control={<Checkbox name="terms" required />}
+                    control={
+                      <Checkbox name="terms" required={prop.checkboxRequired} />
+                    }
                     label={prop.checkboxName}
                   />
                 </Box>
