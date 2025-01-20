@@ -20,6 +20,7 @@ export default function HeroImage(props: HeroImageProps) {
       sx={{
         width: "100%",
         height,
+        position: "relative", // Ensures children can be absolutely positioned
         backgroundPosition: "center",
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
@@ -39,14 +40,17 @@ export default function HeroImage(props: HeroImageProps) {
             background: "rgba(0, 0, 0, 0.7)",
             padding: "0 16px", // Add horizontal padding for safety
             boxSizing: "border-box", // Prevents overflow from padding
+            position: "absolute", // Allows positioning over the background
+            top: 0, // Align to the top
+            left: 0,
           }}
         >
           <Typography
-            variant="h3"
+            variant="h4"
             sx={{
               fontWeight,
               color: "white",
-              lineHeight: 1.2,
+              lineHeight: 2,
               textAlign: "center",
               letterSpacing: "1px",
               textShadow: "0px 4px 6px rgba(0,0,0,0.5)",
@@ -58,10 +62,24 @@ export default function HeroImage(props: HeroImageProps) {
               wordBreak: "break-word", // Breaks long words
             }}
           >
+            <Typography
+                variant="h3">
+                EASYMOTION
+            </Typography>
             {title}
           </Typography>
         </Box>
       )}
+      <Box
+        sx={{
+          position: "absolute", // Allows flexible positioning of the button
+          bottom: "16px", // Places the button near the bottom
+          width: "100%", // Center-align horizontally
+          display: "flex",
+          justifyContent: "center", // Center-align horizontally
+        }}
+      >
+      </Box>
     </Box>
   );
 }
