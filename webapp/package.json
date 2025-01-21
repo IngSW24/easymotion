@@ -22,6 +22,7 @@
     "@mui/material": "^6.3.1",
     "@mui/x-date-pickers": "^7.24.0",
     "@tanstack/react-query": "^5.63.0",
+    "framer-motion": "^12.0.0",
     "luxon": "^3.5.0",
     "notistack": "^3.0.1",
     "react": "^18.3.1",

@@ -12,99 +12,74 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Theme,
   ThemeProvider,
   Toolbar,
   Typography,
 } from "@mui/material";
 import { Link } from "react-router";
-import {
-  adminTheme,
-  notLoggedTheme,
-  physioTheme,
-  userTheme,
-} from "../../theme/theme";
-import { Login, Logout, Person } from "@mui/icons-material";
+import { theme } from "../../theme/theme";
+import { PersonAdd } from "@mui/icons-material";
 import { useAuth } from "../../hooks/useAuth";
 import { useState } from "react";
-import { useSnack } from "../../hooks/useSnack";
+import ProfileButton from "./ProfileButton";
+import AuthButtons from "./AuthButtons";
+import { AuthUserDto } from "../../client/Api";
 
-type MenuEntry = {
+export type MenuEntry = {
   label: string;
   link: string;
   icon?: React.ReactNode;
+  role?: AuthUserDto["role"];
+  showIn?: "drawer" | "appbar" | "both";
 };
 
-const notLoggedMenuEntries: Array<MenuEntry> = [
-  {
-    label: "Login",
-    link: "/login",
-    icon: <Login />,
-  },
-  {
-    label: "Register",
-    link: "/signup",
-    icon: <Login />,
-  },
-];
-
-const userMenuEntries: Array<MenuEntry> = [
-  {
-    label: "Profile",
-    link: "/profile",
-    icon: <Person />,
-  },
-];
+export interface LayoutProps {
+  entries: MenuEntry[];
+}
 
 const drawerWidth = 240;
 
-export default function Layout() {
-  const location = useLocation();
-  const snack = useSnack();
-  const auth = useAuth();
-  const entries = auth.isAuthenticated ? userMenuEntries : notLoggedMenuEntries;
+const getDrawerEntries = (
+  entries: MenuEntry[],
+  currentRole?: AuthUserDto["role"]
+) => {
+  return entries
+    .filter((x) => !x.role || x.role === currentRole)
+    .filter((x) => !x.showIn || x.showIn === "drawer" || x.showIn === "both");
+};
 
+const getAppbarEntries = (
+  entries: MenuEntry[],
+  currentRole?: AuthUserDto["role"]
+) => {
+  return entries
+    .filter((x) => !x.role || x.role === currentRole)
+    .filter((x) => !x.showIn || x.showIn === "appbar" || x.showIn === "both");
+};
+
+export default function Layout(props: LayoutProps) {
+  const { entries } = props;
+  const location = useLocation();
+  const auth = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  let theme: Theme = notLoggedTheme;
-  if (auth.user?.role == "USER") {
-    theme = userTheme;
-  } else if (auth.user?.role == "ADMIN") {
-    theme = adminTheme;
-  } else if (auth.user?.role == "PHYSIOTHERAPIST") {
-    theme = physioTheme;
-  }
+  const currentRole = auth.user?.role;
 
-  const onLogoutClick = () => {
-    auth.logout().catch((e) => {
-      snack.showError(e);
-    });
-  };
-
-  const handleDrawerToggle = () => {
-    setMobileOpen((prevState) => !prevState);
-  };
+  const handleDrawerToggle = () => setMobileOpen((prevState) => !prevState);
 
   const drawer = (
     <Box
       onClick={handleDrawerToggle}
-      sx={{ textAlign: "center", width: drawerWidth }}
+      sx={{
+        textAlign: "center",
+        width: drawerWidth,
+        display: "flex",
+        height: "100%",
+        flexDirection: "column",
+      }}
     >
       <List>
-        {auth.isAuthenticated && (
-          <ListItem disablePadding>
-            <ListItemButton
-              sx={{ textAlign: "center" }}
-              onClick={onLogoutClick}
-            >
-              <ListItemIcon>
-                <Logout />
-              </ListItemIcon>
-              <ListItemText primary="Logout" />
-            </ListItemButton>
-          </ListItem>
-        )}
-        {entries?.map((item) => (
+        {getDrawerEntries(entries, currentRole).map((item) => (
           <ListItem key={item.link} disablePadding>
             <ListItemButton
               component={Link}
@@ -116,6 +91,21 @@ export default function Layout() {
             </ListItemButton>
           </ListItem>
         ))}
+      </List>
+
+      <Box sx={{ flexGrow: 1 }} />
+
+      <List>
+        <ListItemButton
+          component={Link}
+          to="/signup"
+          sx={{ textAlign: "center" }}
+        >
+          <ListItemIcon>
+            <PersonAdd />
+          </ListItemIcon>
+          <ListItemText primary="Registrati" />
+        </ListItemButton>
       </List>
     </Box>
   );
@@ -139,40 +129,30 @@ export default function Layout() {
             <Typography
               component={Link}
               variant="h6"
-              sx={{
-                color: "inherit",
-                textDecoration: "none",
-                flexGrow: 1,
-              }}
+              sx={{ color: "inherit", textDecoration: "none" }}
               to="/"
             >
               EasyMotion
             </Typography>
 
-            <Box
-              sx={{ display: { xs: "none", sm: "block" } }} // desktop-only
-            >
-              {auth.isAuthenticated && (
-                <Button
-                  sx={{ color: "#fff" }} // TODO: style
-                  startIcon={<Logout />}
-                  onClick={onLogoutClick}
-                >
-                  Logout
-                </Button>
-              )}
-              {entries.map((item) => (
-                <Button
-                  component={Link}
-                  key={item.link}
-                  sx={{ color: "#fff" }}
-                  startIcon={item.icon}
-                  to={item.link}
-                >
-                  {item.label}
-                </Button>
-              ))}
+            <Box sx={{ display: { xs: "none", md: "block" }, ml: 4 }}>
+              {entries &&
+                getAppbarEntries(entries, currentRole).map((item) => (
+                  <Button
+                    component={Link}
+                    key={item.link}
+                    sx={{ color: "#fff" }}
+                    startIcon={item.icon}
+                    to={item.link}
+                  >
+                    {item.label}
+                  </Button>
+                ))}
             </Box>
+
+            <Box sx={{ flexGrow: 1 }} />
+
+            {auth.isAuthenticated ? <ProfileButton /> : <AuthButtons />}
           </Toolbar>
         </AppBar>
         <nav>

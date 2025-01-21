@@ -1,11 +1,11 @@
 import { useParams } from "react-router";
 import { Container } from "@mui/material";
 import CourseDetail from "../components/course/CourseDetail/CourseDetail";
-import HeroImage from "../components/HeroImage/HeroImage";
 import { useCourses } from "../hooks/useCourses";
 import LoadingSpinner from "../components/LoadingSpinner/LoadingSpinner";
 import { CourseEntity, UpdateCoursesDto } from "../client/Api";
 import { useAuth } from "../hooks/useAuth";
+import Hero from "../components/Hero/Hero";
 
 /**
  * Defines the page to view and edit details of a course
@@ -30,9 +30,10 @@ export default function CourseDetailsPage() {
 
   return (
     <>
-      <HeroImage
+      <Hero
         backgroundImage="/hero.jpg"
         title={courseRepo.getSingle.data?.name ?? ""}
+        showSignupButton={false}
       />
       <Container sx={{ mt: 5 }}>
         {courseRepo.getSingle.data && (

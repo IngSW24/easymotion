@@ -1,13 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "./useAuth";
 import { useApiClient } from "./useApiClient";
-import { UpdateAuthUserDto } from "../client/Api";
+import { AuthUserDto, UpdateAuthUserDto } from "../client/Api";
 import { useSnack } from "./useSnack";
 
 export const useProfile = () => {
   const queryClient = useQueryClient();
   const { apiClient } = useApiClient();
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();
   const snack = useSnack();
 
   const get = useQuery({
@@ -24,10 +24,11 @@ export const useProfile = () => {
         await apiClient.auth.authControllerUpdateUserProfile(data);
       return response.data;
     },
-    onSuccess: () => {
+    onSuccess: (d: AuthUserDto) => {
       queryClient.invalidateQueries({
         queryKey: ["profile", user?.id ?? ""],
       });
+      updateUser(d);
     },
     onError: (error) => snack.showError(error),
   });

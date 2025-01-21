@@ -1,8 +1,12 @@
 import { Container } from "@mui/material";
 import CourseList from "../components/course/CourseList/CourseList";
-import HeroImage from "../components/HeroImage/HeroImage";
 import CreateCourseButton from "../components/atoms/Button/CreateCourseButton";
 import { useAuth } from "../hooks/useAuth";
+import Hero from "../components/Hero/Hero";
+import { AuthUserDto } from "../client/Api";
+
+const checkCanEdit = (currentRole?: AuthUserDto["role"]) =>
+  ["ADMIN", "PHYSIOTHERAPIST"].includes(currentRole ?? "");
 
 /**
  * Defines the page to list all courses
@@ -11,22 +15,23 @@ import { useAuth } from "../hooks/useAuth";
 export default function CourseListPage() {
   const auth = useAuth();
 
+  const canEdit = checkCanEdit(auth.user?.role);
+
   return (
     <>
-      <HeroImage
+      <Hero
         backgroundImage="/hero.jpg"
-        //title="Trova il tuo prossimo corso"
-        title="Il tuo benessere inizia qui: fisioterapia d’eccellenza e allenamenti su misura, tutto in un unico posto!"
-        fontWeight={400}
+        title={
+          auth.isAuthenticated
+            ? `Bentornato, ${auth.user?.firstName}!`
+            : "EasyMotion"
+        }
+        subtitle="Il tuo benessere inizia qui: fisioterapia d’eccellenza e allenamenti su misura, tutto in un unico posto!"
+        showSignupButton={!auth.isAuthenticated}
       />
       <Container maxWidth="xl" sx={{ p: 5 }}>
-        <CourseList
-          canEdit={
-            auth.user?.role == "ADMIN" || auth.user?.role == "PHYSIOTHERAPIST"
-          }
-        />
-        {(auth.user?.role == "ADMIN" ||
-          auth.user?.role == "PHYSIOTHERAPIST") && <CreateCourseButton />}
+        <CourseList canEdit={canEdit} />
+        {canEdit && <CreateCourseButton />}
       </Container>
     </>
   );

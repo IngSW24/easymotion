@@ -2,12 +2,23 @@ import { BrowserRouter, Route, Routes } from "react-router";
 import CourseListPage from "../pages/CourseListPage";
 import CourseDetailsPage from "../pages/CourseDetailsPage";
 import CourseCreatePage from "../pages/CourseCreatePage";
-import Layout from "../components/Layout/Layout";
+import Layout, { MenuEntry } from "../components/Layout/Layout";
 
 import ProfilePage from "../pages/ProfilePage";
 import ConfirmEmailPage from "../pages/ConfirmEmailPage";
 import SignupPage from "../pages/SignUpPage";
 import LoginPage from "../pages/LoginPage";
+import { Home } from "@mui/icons-material";
+import AuthenticationWrapper from "./AuthenticationWrapper";
+
+const menuEntries: MenuEntry[] = [
+  {
+    label: "Home",
+    link: "/",
+    icon: <Home />,
+    showIn: "drawer",
+  },
+];
 
 /**
  * Defines the router for the application.
@@ -16,14 +27,27 @@ import LoginPage from "../pages/LoginPage";
 const Router: React.FC = () => (
   <BrowserRouter>
     <Routes>
-      <Route element={<Layout />}>
+      <Route element={<Layout entries={menuEntries} />}>
         <Route index element={<CourseListPage />} />
         <Route path="details/:id" element={<CourseDetailsPage />} />
-        <Route path="profile" element={<ProfilePage />} />
         <Route path="confirm-email" element={<ConfirmEmailPage />} />
-        <Route path="login" element={<LoginPage />} />
-        <Route path="signup" element={<SignupPage />} />
-        <Route path="new" element={<CourseCreatePage />} />
+        <Route element={<AuthenticationWrapper allowedFor="unauthenticated" />}>
+          <Route path="login" element={<LoginPage />} />
+          <Route path="signup" element={<SignupPage />} />
+        </Route>
+        <Route element={<AuthenticationWrapper allowedFor="authenticated" />}>
+          <Route path="profile" element={<ProfilePage />} />
+        </Route>
+        <Route
+          element={
+            <AuthenticationWrapper
+              allowedFor="authenticated"
+              roles={["ADMIN", "PHYSIOTHERAPIST"]}
+            />
+          }
+        >
+          <Route path="new" element={<CourseCreatePage />} />
+        </Route>
       </Route>
     </Routes>
   </BrowserRouter>

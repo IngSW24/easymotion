@@ -105,6 +105,7 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
         logout,
         updateEmail,
         signup,
+        updateUser: setUser,
       }}
     >
       {children}

@@ -88,12 +88,7 @@ export default function GeneralProfileSettings(
   );
 
   const handleSave = () => {
-    if (!validate()) {
-      console.log("Form is not valid");
-      return;
-    }
-
-    console.log("Form is valid");
+    if (!validate()) return;
 
     onProfileSave(formData);
     setHasPendingChanges(false);
