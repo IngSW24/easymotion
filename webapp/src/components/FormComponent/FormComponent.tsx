@@ -89,23 +89,11 @@ export default function FormComponent<T extends object>(prop: FormProps<T>) {
             color: theme.palette.primary.contrastText,
           }}
         >
-          <Typography
-            variant="h4"
-            sx={{
-              fontWeight: "bold",
-              fontFamily: "Roboto Slab, serif",
-            }}
-          >
+          <Typography variant="h4" sx={{ fontWeight: "bold" }}>
             {prop.title}
           </Typography>
 
-          <Typography
-            variant="body1"
-            sx={{
-              fontSize: "18px",
-              fontFamily: "Roboto, sans-serif",
-            }}
-          >
+          <Typography variant="body1" sx={{ fontSize: "18px" }}>
             {prop.description}
           </Typography>
         </Box>
