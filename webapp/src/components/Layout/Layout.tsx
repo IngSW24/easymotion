@@ -170,7 +170,7 @@ export default function Layout(props: LayoutProps) {
             {drawer}
           </Drawer>
         </nav>
-        <Box component="main" sx={{ width: "100%", mb: 3 }}>
+        <Box component="main" sx={{ width: "100%" }}>
           <Toolbar />
           <div className="fade" key={location.pathname}>
             <Outlet />

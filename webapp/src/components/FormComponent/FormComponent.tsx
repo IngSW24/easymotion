@@ -53,8 +53,7 @@ export default function FormComponent<T extends object>(prop: FormProps<T>) {
       justifyContent="center"
       alignItems="center"
       sx={{
-        padding: 4,
-        minHeight: "100vh",
+        minHeight: `calc(100vh - ${Number(theme.mixins.toolbar.minHeight) * 2}px)`,
         backgroundImage: `url(/hero.jpg)`,
         backgroundSize: "cover",
         backgroundPosition: "center",
