@@ -6,6 +6,8 @@ import {
   Typography,
   Checkbox,
   FormControlLabel,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 
 export interface FieldProps<T> {
@@ -27,6 +29,9 @@ interface FormProps<T> {
 }
 
 export default function FormComponent<T extends object>(prop: FormProps<T>) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -49,8 +54,8 @@ export default function FormComponent<T extends object>(prop: FormProps<T>) {
       alignItems="center"
       sx={{
         padding: 4,
-        minHeight: "90vh",
-        backgroundImage: `url(/hero.jpg)`, // Add background image to the general box
+        minHeight: "100vh",
+        backgroundImage: `url(/hero.jpg)`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
@@ -59,39 +64,36 @@ export default function FormComponent<T extends object>(prop: FormProps<T>) {
         elevation={3}
         sx={{
           display: "flex",
+          flexDirection: isMobile ? "column" : "row",
           width: "100%",
           maxWidth: 1200,
           borderRadius: 3,
           backdropFilter: "blur(10px)",
-          backgroundColor: "white",
-          overflow: "hidden", // Ensures the child boxes respect the borders of the paper
+          backgroundColor: "rgba(255, 255, 255, 0.85)",
+          overflow: "hidden",
+          boxShadow: theme.shadows[4],
         }}
       >
-        {/* Left section with background color/image */}
+        {/* Left Section */}
         <Box
           flex={1}
           display="flex"
           flexDirection="column"
           justifyContent="center"
           alignItems="center"
-          gap={3}
+          gap={2}
           sx={{
-            paddingTop: 4,
-            paddingBottom: 4,
-            color: "#fff",
+            padding: 4,
             textAlign: "center",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundColor: "primary.main",
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.primary.contrastText,
           }}
         >
           <Typography
-            variant="h3"
+            variant="h4"
             sx={{
-              fontSize: "37px",
               fontWeight: "bold",
-              fontFamily: "Roboto Slab",
-              color: "#fff",
+              fontFamily: "Roboto Slab, serif",
             }}
           >
             {prop.title}
@@ -100,77 +102,85 @@ export default function FormComponent<T extends object>(prop: FormProps<T>) {
           <Typography
             variant="body1"
             sx={{
-              fontSize: "22px",
-              marginBottom: 2,
-              fontFamily: "Roboto Slab",
-              color: "#fff",
+              fontSize: "18px",
+              fontFamily: "Roboto, sans-serif",
             }}
           >
             {prop.description}
           </Typography>
         </Box>
 
-        {/* Right section with form fields */}
+        {/* Right Section */}
         <Box
           flex={1}
           display="flex"
           flexDirection="column"
+          justifyContent="center"
           sx={{
-            padding: 4, // Adds padding inside the form
+            padding: 4,
           }}
         >
           <form onSubmit={handleSubmit} style={{ width: "100%" }}>
             <Box display="flex" flexDirection="column" gap={3} width="100%">
-              <Box display="flex" flexDirection="column" gap={2} width="100%">
-                {prop.fieldName.map((data: FieldProps<T>, index: number) => (
-                  <TextField
-                    key={index}
-                    label={data.label}
-                    name={data.key.toString()}
-                    required
-                    fullWidth
-                    type={data.type}
-                  />
-                ))}
-              </Box>
-
-              {prop.errorMessage && (
-                <Typography color="error">Error</Typography>
-              )}
-
-              {prop.checkboxName && (
-                <Box
-                  display="flex"
-                  flexDirection="row"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  width="100%"
-                >
-                  <FormControlLabel
-                    control={
-                      <Checkbox name="terms" required={prop.checkboxRequired} />
-                    }
-                    label={prop.checkboxName}
-                  />
-                </Box>
-              )}
-
-              <Box display="flex" flexDirection="column" gap={2} width="100%">
-                <Button
-                  type="submit"
-                  variant="contained"
-                  sx={{
-                    backgroundColor: "primary.main",
-                    color: "#fff",
-                    padding: "10px 20px",
-                    fontWeight: "bold",
-                    textTransform: "none",
-                    fontSize: "16px",
+              {/* Form Fields */}
+              {prop.fieldName.map((field, index) => (
+                <TextField
+                  key={index}
+                  label={field.label}
+                  name={field.key.toString()}
+                  required
+                  fullWidth
+                  type={field.type}
+                  variant="outlined"
+                  InputProps={{
+                    style: { fontSize: "16px" },
                   }}
-                >
-                  {prop.buttonName}
-                </Button>
-              </Box>
+                  InputLabelProps={{
+                    style: { fontSize: "14px" },
+                  }}
+                />
+              ))}
+
+              {/* Error Message */}
+              {prop.errorMessage && (
+                <Typography color="error" variant="body2">
+                  {prop.errorMessage}
+                </Typography>
+              )}
+
+              {/* Checkbox */}
+              {prop.checkboxName && (
+                <FormControlLabel
+                  control={
+                    <Checkbox name="terms" required={prop.checkboxRequired} />
+                  }
+                  label={prop.checkboxName}
+                  sx={{
+                    "& .MuiTypography-root": {
+                      fontSize: "14px",
+                    },
+                  }}
+                />
+              )}
+
+              {/* Submit Button */}
+              <Button
+                type="submit"
+                variant="contained"
+                sx={{
+                  backgroundColor: theme.palette.primary.main,
+                  color: theme.palette.primary.contrastText,
+                  padding: "12px 20px",
+                  fontWeight: "bold",
+                  textTransform: "none",
+                  fontSize: "16px",
+                  "&:hover": {
+                    backgroundColor: theme.palette.primary.dark,
+                  },
+                }}
+              >
+                {prop.buttonName}
+              </Button>
             </Box>
           </form>
         </Box>
