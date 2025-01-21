@@ -1,7 +1,7 @@
 import { Container } from "@mui/material";
 import { useProfile } from "../hooks/useProfile";
 import LoadingSpinner from "../components/LoadingSpinner/LoadingSpinner";
-import GeneralProfileSettings from "../components/profile/settings/GeneralProfileSettings";
+import GeneralProfileSettings from "../components/profile/Settings/GeneralProfileSettings";
 
 export default function ProfilePage() {
   const profile = useProfile();
