@@ -222,9 +222,14 @@ export class AuthService {
     );
 
     await this.emailService.sendEmail(
-      email,
-      'Finish sign up',
-      `Email verification token is ${emailToken}. User id is ${result.data.id}. Email is ${email}`,
+      result.data.email,
+      'Completa la registrazione in EasyMotion',
+      generateEmailConfirmMessage(
+        this.frontendConfigService.url,
+        emailToken,
+        result.data.id,
+        result.data.email,
+      ),
     );
   }
 
