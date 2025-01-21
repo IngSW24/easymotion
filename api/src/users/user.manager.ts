@@ -13,25 +13,23 @@ export class UserManager {
 
   /**
    * Creates a new user with the provided data and password.
-   * @param newUser - User data (email, username, etc.) for creation.
+   * @param newUser - User data (email, etc.) for creation.
    * @param password - The plain text password to be hashed and stored.
    * @returns A promise that resolves with a success Result containing the created user,
-   *          or an error Result if a user with the given email or username already exists.
+   *          or an error Result if a user with the given email already exists.
    */
   async createUser(
     newUser: Prisma.ApplicationUserCreateInput,
     password: string,
   ): ResultPromise<ApplicationUser> {
     const existingUser = await this.prisma.applicationUser.findFirst({
-      where: {
-        OR: [{ email: newUser.email }, { username: newUser.username }],
-      },
+      where: { email: newUser.email },
     });
 
     if (existingUser) {
       return {
         success: false,
-        errors: ['User with this email or username already exists'],
+        errors: ['User with this email already exists'],
         code: HttpStatus.CONFLICT,
       };
     }

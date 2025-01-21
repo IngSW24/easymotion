@@ -186,7 +186,6 @@ export class AuthService {
       email,
       password,
       repeatedPassword,
-      username,
       firstName,
       middleName,
       lastName,
@@ -196,7 +195,6 @@ export class AuthService {
 
     const newUser: Prisma.ApplicationUserCreateInput = {
       email,
-      username,
       firstName,
       middleName: middleName || null,
       lastName,

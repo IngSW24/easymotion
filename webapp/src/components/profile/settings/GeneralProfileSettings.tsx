@@ -44,15 +44,6 @@ const mapUserRole = (role: AuthUserDto["role"]) => {
   }
 };
 
-interface FormData {
-  firstName: string;
-  middleName: string;
-  lastName: string;
-  phoneNumber: string;
-  birthDate: string;
-  [key: string]: string;
-}
-
 export default function GeneralProfileSettings(
   props: GeneralProfileSettingsProps
 ) {
@@ -60,27 +51,28 @@ export default function GeneralProfileSettings(
 
   const [hasPendingChanges, setHasPendingChanges] = useState(false);
 
-  const [formData, handleChange, { errors, validate }] =
-    useFormValidator<FormData>(
-      {
-        firstName: user.firstName,
-        middleName: user.middleName ? user.middleName : "",
-        lastName: user.lastName,
-        phoneNumber: user.phoneNumber ? user.phoneNumber : "",
-        birthDate: user.birthDate ? user.birthDate : "",
+  const [formData, handleChange, { errors, validate }] = useFormValidator<
+    Partial<AuthUserDto>
+  >(
+    {
+      firstName: user.firstName,
+      middleName: user.middleName ? user.middleName : "",
+      lastName: user.lastName,
+      phoneNumber: user.phoneNumber ? user.phoneNumber : "",
+      birthDate: user.birthDate ? user.birthDate : "",
+    },
+    {
+      firstName: { required: true, minLength: 3, maxLength: 20 },
+      middleName: { maxLength: 20 },
+      lastName: { required: true, minLength: 3, maxLength: 20 },
+      phoneNumber: { maxLength: 13 },
+      birthDate: {
+        pattern: RegExp(
+          "^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$"
+        ),
       },
-      {
-        firstName: { required: true, minLength: 3, maxLength: 20 },
-        middleName: { maxLength: 20 },
-        lastName: { required: true, minLength: 3, maxLength: 20 },
-        phoneNumber: { maxLength: 13 },
-        birthDate: {
-          pattern: RegExp(
-            "^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$"
-          ),
-        },
-      }
-    );
+    }
+  );
 
   const parsedBirthDate = DateTime.fromFormat(
     formData.birthDate ?? "",
@@ -234,6 +226,7 @@ export default function GeneralProfileSettings(
                 Numero di telefono
               </Typography>
               <PhoneNumberEditor
+                height="40px"
                 onChange={(v) => {
                   handleChange("phoneNumber", v);
                   setHasPendingChanges(true);

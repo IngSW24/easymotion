@@ -84,7 +84,6 @@ model ApplicationUser {
   twoFactorCode                String?
   twoFactorExpiry              DateTime?
   twoFactorEnabled             Boolean             @default(false)
-  username                     String              @unique
   firstName                    String
   middleName                   String?
   lastName                     String

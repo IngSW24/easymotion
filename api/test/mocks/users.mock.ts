@@ -4,7 +4,6 @@ import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 
 export const createUserDtoMock = (): CreateUserDto => ({
   email: 'test@example.com',
-  username: 'testuser',
   password: 'securepassword123',
   firstName: 'testname',
   lastName: 'lastname',
@@ -16,7 +15,6 @@ export const createUserDtoMock = (): CreateUserDto => ({
 
 export const updateUserDtoMock = (): UpdateUserDto => ({
   email: 'newemail@example.com',
-  username: 'newusername',
   firstName: 'newname',
   lastName: 'newlastname',
 });
@@ -24,7 +22,6 @@ export const updateUserDtoMock = (): UpdateUserDto => ({
 export const mappedUserPlainToInstanceMock = () => ({
   id: undefined,
   email: 'test@example.com',
-  username: 'testuser',
   firstName: 'testname',
   middleName: 'middlename',
   lastName: 'lastname',
@@ -40,7 +37,6 @@ export const mappedUserPlainToInstanceMock = () => ({
 export const applicationUserDtoMock = (): ApplicationUserDto => ({
   id: '2aa48862-4f03-409d-b0db-499de5715b26',
   email: 'test@example.com',
-  username: 'testuser',
   passwordHash: 'securepassword123',
   firstName: 'testname',
   lastName: 'lastname',
@@ -66,11 +62,9 @@ export const applicationUsersList = () => [
   {
     id: '27b10d39-b26f-4786-874b-ee53556e6bdd',
     email: 'user1@example.com',
-    username: 'user1',
   },
   {
     id: '58dbaf7f-ab07-4e77-a77d-c47851ba1be7',
     email: 'user2@example.com',
-    username: 'user2',
   },
 ];

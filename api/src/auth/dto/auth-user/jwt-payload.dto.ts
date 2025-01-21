@@ -2,7 +2,6 @@ import { AuthUserDto } from './auth-user.dto';
 
 export class JwtPayloadDto {
   sub: string;
-  username: string;
   email: string;
   role: string;
 
@@ -17,7 +16,6 @@ export class JwtPayloadDto {
   static fromUser(authUserDto: AuthUserDto): JwtPayloadDto {
     return new JwtPayloadDto({
       sub: authUserDto.id,
-      username: authUserDto.username,
       email: authUserDto.email,
       role: authUserDto.role,
     });
@@ -26,7 +24,6 @@ export class JwtPayloadDto {
   toObject() {
     return {
       sub: this.sub,
-      username: this.username,
       email: this.email,
       role: this.role,
     };

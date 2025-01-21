@@ -2,72 +2,73 @@ import FormComponent from "../components/FormComponent/FormComponent";
 import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { SignUpDto } from "../client/Api";
+import SignupFormCredentials from "../components/profile/SignupForm/SignupFormCredentials";
+import { useSnack } from "../hooks/useSnack";
+import SignupFormInformation from "../components/profile/SignupForm/SignupFormInformation";
+import { Box, Typography } from "@mui/material";
 
-/**
-email*	[...]
-password*	[...]
-repeatedPassword*	[...]
-username*	[...]
-firstName*	[...]
-middleName	[...]
-lastName*	[...]
-phoneNumber	[...]
-birthDate	[...]
-}
- */
+type Phase = "credentials" | "info" | "final" | "error";
+type ProgressiveSignup = Partial<SignUpDto> | null;
+
+const getPhaseMessage = (phase: Phase) => {
+  switch (phase) {
+    case "credentials":
+      return "Ti chiediamo di inserire i dati che utilizzerai per accedere al nostro sito";
+    case "info":
+      return "Bene, ora che hai completato la parte più sensibile, parlaci un po' di te ...";
+    case "final":
+      return "Completa la registrazione";
+    case "error":
+      return "Errore";
+  }
+};
 
 export default function SignupPage() {
   const auth = useAuth();
-  const [initialInfo, setinitialInfo] = useState<Record<string, string>>({});
-  const [phase, setPhase] = useState<"initial" | "info" | "final" | "error">(
-    "initial"
-  );
+  const snack = useSnack();
+  const [credentials, setCredentials] = useState<ProgressiveSignup>(null);
+  const [phase, setPhase] = useState<Phase>("credentials");
 
-  const handleSignup = (v: Record<string, string>) => {
-    auth.signup({ ...initialInfo, ...v } as unknown as SignUpDto);
+  const handlePhase = (v: NonNullable<ProgressiveSignup>) => {
+    switch (phase) {
+      case "credentials":
+        setCredentials(v);
+        setPhase("info");
+        break;
+      case "info":
+        auth
+          .signup({ ...credentials, ...v } as SignUpDto)
+          .then(() => setPhase("final"))
+          .catch(() => {
+            snack.showError(
+              "Errore durante la registrazione, si prega di riprovare."
+            );
+            setPhase("credentials");
+          });
+    }
   };
 
   return (
     <>
-      {phase == "initial" && (
-        <FormComponent<SignUpDto>
-          title="Benvenuto in EasyMotion"
-          description="Ti chiediamo di inserire i dati che utilizzerai per accedere al nostro sito"
-          textFieldNumber={3}
-          buttonName="Registrati"
-          fieldName={[
-            { key: "email", label: "Email", type: "email" },
-            { key: "password", label: "Password", type: "password" },
-            {
-              key: "repeatedPassword",
-              label: "Ripeti Password",
-              type: "password",
-            },
-          ]}
-          checkboxName="Accetto i termini e le condizioni"
-          onSubmit={(v) => {
-            setinitialInfo(v);
-            setPhase("info");
-          }}
-        />
-      )}
-      {phase == "info" && (
-        <FormComponent
-          title="Benvenuto in EasyMotion"
-          description="Bene, ora che hai completato la parte più sensibile, parlaci un po' di te ..."
-          textFieldNumber={8}
-          buttonName="Completa la registrazione"
-          onSubmit={handleSignup}
-          fieldName={[
-            { key: "username", label: "Username", type: "text" },
-            { key: "firstName", label: "Nome", type: "text" },
-            { key: "middleName", label: "Secondo Nome", type: "text" },
-            { key: "lastName", label: "Cognome", type: "text" },
-            { key: "phoneNumber", label: "Telefono", type: "text" },
-            { key: "birthDate", label: "Data di Nascita", type: "date" },
-          ]}
-        ></FormComponent>
-      )}
+      <FormComponent
+        title="Benvenuto in EasyMotion"
+        text={getPhaseMessage(phase)}
+      >
+        {phase == "credentials" && (
+          <SignupFormCredentials onSubmit={handlePhase} />
+        )}
+        {phase == "info" && <SignupFormInformation onSubmit={handlePhase} />}
+        {phase == "final" && (
+          <Box>
+            <Typography variant="h6">Registrazione completata</Typography>
+            <Typography>
+              Ti abbiamo inviato una email per confermare la tua registrazione.
+              Controlla la tua casella di posta elettronica e conferma il tuo
+              indirizzo mail per poter accedere al tuo account.
+            </Typography>
+          </Box>
+        )}
+      </FormComponent>
     </>
   );
 }

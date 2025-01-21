@@ -1313,11 +1313,6 @@
             "description": "Email address of the user",
             "example": "user@example.com"
           },
-          "username": {
-            "type": "string",
-            "description": "Unique username for the user",
-            "example": "john_doe"
-          },
           "firstName": {
             "type": "string",
             "description": "User first name",
@@ -1367,7 +1362,6 @@
           "accessToken",
           "id",
           "email",
-          "username",
           "firstName",
           "lastName",
           "role",
@@ -1387,11 +1381,6 @@
             "format": "email",
             "description": "Email address of the user",
             "example": "user@example.com"
-          },
-          "username": {
-            "type": "string",
-            "description": "Unique username for the user",
-            "example": "john_doe"
           },
           "firstName": {
             "type": "string",
@@ -1441,7 +1430,6 @@
         "required": [
           "id",
           "email",
-          "username",
           "firstName",
           "lastName",
           "role",
@@ -1451,11 +1439,6 @@
       "UpdateAuthUserDto": {
         "type": "object",
         "properties": {
-          "username": {
-            "type": "string",
-            "description": "Unique username for the user",
-            "example": "john_doe"
-          },
           "firstName": {
             "type": "string",
             "description": "User first name",
@@ -1505,11 +1488,6 @@
             "description": "Repeated password of the user",
             "example": "password"
           },
-          "username": {
-            "type": "string",
-            "description": "Unique username for the new user",
-            "example": "john_doe"
-          },
           "firstName": {
             "type": "string",
             "description": "First name of the new user",
@@ -1540,7 +1518,6 @@
           "email",
           "password",
           "repeatedPassword",
-          "username",
           "firstName",
           "lastName"
         ]
@@ -1668,11 +1645,6 @@
             "description": "Plain-text password for the new user (will be hashed)",
             "example": "MyStrongP@ssw0rd!"
           },
-          "username": {
-            "type": "string",
-            "description": "Unique username for the new user",
-            "example": "john_doe"
-          },
           "firstName": {
             "type": "string",
             "description": "First name of the new user",
@@ -1712,7 +1684,6 @@
         "required": [
           "email",
           "password",
-          "username",
           "firstName",
           "lastName"
         ]
@@ -1730,11 +1701,6 @@
             "format": "email",
             "description": "Email address of the user",
             "example": "user@example.com"
-          },
-          "username": {
-            "type": "string",
-            "description": "Unique username for the user",
-            "example": "john_doe"
           },
           "firstName": {
             "type": "string",
@@ -1802,7 +1768,6 @@
         "required": [
           "id",
           "email",
-          "username",
           "firstName",
           "lastName",
           "role",
@@ -1826,11 +1791,6 @@
             "minLength": 6,
             "description": "Plain-text password for the new user (will be hashed)",
             "example": "MyStrongP@ssw0rd!"
-          },
-          "username": {
-            "type": "string",
-            "description": "Unique username for the new user",
-            "example": "john_doe"
           },
           "firstName": {
             "type": "string",

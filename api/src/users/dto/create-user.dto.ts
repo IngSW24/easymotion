@@ -30,14 +30,6 @@ export class CreateUserDto {
   password: string;
 
   @ApiProperty({
-    description: 'Unique username for the new user',
-    example: 'john_doe',
-  })
-  @IsString()
-  @Expose()
-  username: string;
-
-  @ApiProperty({
     description: 'First name of the new user',
     example: 'John',
   })

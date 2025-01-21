@@ -29,7 +29,7 @@ export class UsersService
 
   /**
    * Creates a new user.
-   * @param newUser - The DTO containing new user data (email, username, etc.) and password.
+   * @param newUser - The DTO containing new user data (email, etc.) and password.
    * @returns A promise that resolves to an ApplicationUserDto representing the created user.
    * @throws HttpException (mapped from Result) if user creation fails, e.g., if the user already exists.
    */

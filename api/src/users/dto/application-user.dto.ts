@@ -33,14 +33,6 @@ export class ApplicationUserDto implements Readonly<ApplicationUser> {
   email: string;
 
   @ApiProperty({
-    description: 'Unique username for the user',
-    example: 'john_doe',
-  })
-  @IsString()
-  @Expose()
-  username: string;
-
-  @ApiProperty({
     description: 'User first name',
     example: 'John',
   })

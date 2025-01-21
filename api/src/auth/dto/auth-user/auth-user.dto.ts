@@ -10,7 +10,6 @@ export class AuthUserDto extends PickType(ApplicationUserDto, [
   'lastName',
   'phoneNumber',
   'role',
-  'username',
   'isEmailVerified',
   'twoFactorEnabled',
 ] as const) {}
