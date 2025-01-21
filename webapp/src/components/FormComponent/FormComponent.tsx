@@ -22,6 +22,7 @@ export default function FormComponent(props: FormComponentProps) {
       justifyContent="center"
       alignItems="center"
       sx={{
+        // Subtracting the toolbar height
         minHeight: `calc(100vh - ${Number(theme.mixins.toolbar.minHeight) * 2}px)`,
         backgroundImage: `url(/hero.jpg)`,
         backgroundSize: "cover",
@@ -29,15 +30,15 @@ export default function FormComponent(props: FormComponentProps) {
       }}
     >
       <Paper
-        elevation={3}
+        elevation={10}
         sx={{
           display: "flex",
           flexDirection: isMobile ? "column" : "row",
           maxWidth: "80rem",
+          minHeight: "20rem",
+          zIndex: 1,
           borderRadius: 3,
-          backdropFilter: "blur(10px)",
-          backgroundColor: "rgba(255, 255, 255, 0.85)",
-          overflow: "hidden",
+          backgroundColor: "rgba(255, 255, 255)",
           boxShadow: theme.shadows[4],
         }}
       >

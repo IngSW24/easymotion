@@ -27,7 +27,7 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
   const [user, setUser] = useState<AuthUserDto | null>(null);
 
   // Automatically attempt to get an access token when the app loads
-  useInitialRefresh({
+  const initialized = useInitialRefresh({
     apiInstance: apiInstance,
     updateAccessToken,
     setUser,
@@ -75,10 +75,10 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
    * @param token the confirmation token
    */
   const updateEmail = async (email: string, userId: string, token: string) => {
-    const response = await apiInstance.authControllerConfirmEmail({
-      email,
-      userId,
-      token,
+    const payload = { email, userId, token };
+
+    const response = await apiInstance.authControllerConfirmEmail(payload, {
+      credentials: "include",
     });
 
     if (response.ok) {
@@ -106,6 +106,7 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
         updateEmail,
         signup,
         updateUser: setUser,
+        initialized,
       }}
     >
       {children}

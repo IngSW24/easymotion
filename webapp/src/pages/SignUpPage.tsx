@@ -5,7 +5,8 @@ import { SignUpDto } from "../client/Api";
 import SignupFormCredentials from "../components/profile/SignupForm/SignupFormCredentials";
 import { useSnack } from "../hooks/useSnack";
 import SignupFormInformation from "../components/profile/SignupForm/SignupFormInformation";
-import { Box, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
+import { CheckCircle } from "@mui/icons-material";
 
 type Phase = "credentials" | "info" | "final" | "error";
 type ProgressiveSignup = Partial<SignUpDto> | null;
@@ -59,13 +60,19 @@ export default function SignupPage() {
         )}
         {phase == "info" && <SignupFormInformation onSubmit={handlePhase} />}
         {phase == "final" && (
-          <Box>
-            <Typography variant="h6">Registrazione completata</Typography>
-            <Typography>
-              Ti abbiamo inviato una email per confermare la tua registrazione.
-              Controlla la tua casella di posta elettronica e conferma il tuo
-              indirizzo mail per poter accedere al tuo account.
-            </Typography>
+          <Box sx={{ textAlign: "center", p: 4 }}>
+            <Stack alignItems="center" spacing={2}>
+              <CheckCircle sx={{ fontSize: "4rem", color: "#4caf50" }} />
+              <Typography variant="h4" fontWeight="bold">
+                Registrazione completata
+              </Typography>
+              <Typography variant="body1" sx={{ mt: 2 }}>
+                Ti abbiamo inviato una email per confermare la tua
+                registrazione. Controlla la tua casella di posta elettronica e
+                conferma il tuo indirizzo mail per poter accedere al tuo
+                account.
+              </Typography>
+            </Stack>
           </Box>
         )}
       </FormComponent>

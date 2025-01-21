@@ -9,6 +9,7 @@ export interface AuthContextProps {
   signup: (signupInfo: SignUpDto) => Promise<boolean>;
   updateEmail: (email: string, userId: string, token: string) => void;
   updateUser: (user: AuthUserDto) => void;
+  initialized: boolean;
 }
 
 export const AuthContext = createContext<AuthContextProps>(

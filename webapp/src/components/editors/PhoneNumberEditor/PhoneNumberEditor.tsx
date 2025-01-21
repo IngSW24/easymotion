@@ -20,6 +20,9 @@ export default function PhoneNumberEditor(props: PhoneNumberEditorProps) {
         required: true,
         autoFocus: true,
       }}
+      dropdownStyle={{
+        zIndex: 1000,
+      }}
       placeholder="Il tuo numero di telefono"
       inputStyle={{
         width: "100%",
@@ -27,7 +30,6 @@ export default function PhoneNumberEditor(props: PhoneNumberEditorProps) {
         borderRadius: "4px",
         borderColor: "#c4c4c4",
       }}
-      containerStyle={{ marginBottom: "16px" }}
     />
   );
 }

@@ -75,6 +75,13 @@ export default function Hero(props: HeroProps) {
                   size="large"
                   startIcon={<PersonAdd />}
                   onClick={handleRegisterClick}
+                  sx={{
+                    color: "white",
+                    fontSize: "large",
+                    px: 4,
+                    py: 1.2,
+                    borderRadius: "20px",
+                  }}
                 >
                   Iscriviti
                 </Button>

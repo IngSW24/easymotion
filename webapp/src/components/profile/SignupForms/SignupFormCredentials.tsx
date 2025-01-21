@@ -5,6 +5,7 @@ import {
   ensurePasswordConstraints,
   isValidEmail,
 } from "../../../data/validators";
+import { Link } from "react-router";
 
 export interface SignupFormCredentialsProps {
   onSubmit: (data: Partial<SignUpDto>) => void;
@@ -50,13 +51,13 @@ export default function SignupFormCredentials(
       isValid = false;
     }
 
-    if (isValid) {
-      props.onSubmit({
-        email,
-        password,
-        repeatedPassword: confirmPassword,
-      });
-    }
+    if (!isValid) return;
+
+    props.onSubmit({
+      email,
+      password,
+      repeatedPassword: confirmPassword,
+    });
   };
 
   return (
@@ -105,13 +106,21 @@ export default function SignupFormCredentials(
             onChange={(e) => setTermsAndConditions(e.target.checked)}
           />
         }
-        label="Accetto i termini e le condizioni"
+        label={
+          <span>
+            Accetto i{" "}
+            <Link to="/terms" target="_blank">
+              Termini e condizioni
+            </Link>
+          </span>
+        }
       />
       <Button
         fullWidth
         type="submit"
         variant="contained"
         color="primary"
+        size="large"
         sx={{ marginTop: "20px" }}
       >
         Procedi

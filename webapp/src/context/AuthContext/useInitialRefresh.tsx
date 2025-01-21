@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Api, AuthUserDto } from "../../client/Api";
 
 export interface UseInitialRefreshProps {
@@ -13,6 +13,7 @@ export interface UseInitialRefreshProps {
  * @param props the hook props
  */
 export const useInitialRefresh = (props: UseInitialRefreshProps) => {
+  const [isInitialized, setIsInitialized] = useState(false);
   const hasAttemptedInitialRefresh = useRef(false);
 
   useEffect(() => {
@@ -35,7 +36,9 @@ export const useInitialRefresh = (props: UseInitialRefreshProps) => {
       }
     };
 
-    refresh();
+    refresh().finally(() => setIsInitialized(true));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  return isInitialized;
 };

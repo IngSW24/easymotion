@@ -13,7 +13,7 @@ export default function PersonalInfoForm(props: SignupFormInformationProps) {
   const [name, setName] = useState("");
   const [middleName, setMiddleName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [birthDate, setBirthDate] = useState("");
+  const [birthDate, setBirthDate] = useState<string | null>(null);
   const [phoneNumber, setPhoneNumber] = useState("");
 
   const [nameError, setNameError] = useState("");
@@ -39,16 +39,15 @@ export default function PersonalInfoForm(props: SignupFormInformationProps) {
       isValid = false;
     }
 
-    if (isValid) {
-      // Proceed with form submission logic
-      props.onSubmit({
-        firstName: name,
-        middleName,
-        lastName,
-        birthDate,
-        phoneNumber,
-      });
-    }
+    if (!isValid) return;
+
+    props.onSubmit({
+      firstName: name,
+      middleName,
+      lastName,
+      birthDate: birthDate || undefined,
+      phoneNumber,
+    });
   };
 
   return (
@@ -92,7 +91,9 @@ export default function PersonalInfoForm(props: SignupFormInformationProps) {
           <DateField
             format="dd/MM/yyyy"
             label="Data di nascita"
-            value={DateTime.fromFormat(birthDate, "yyyy-MM-dd")}
+            value={
+              !birthDate ? null : DateTime.fromFormat(birthDate, "yyyy-MM-dd")
+            }
             onChange={(d) => d && setBirthDate(d.toFormat("yyyy-MM-dd"))}
           />
         </Grid2>
@@ -108,10 +109,11 @@ export default function PersonalInfoForm(props: SignupFormInformationProps) {
         fullWidth
         type="submit"
         variant="contained"
+        size="large"
         color="primary"
         sx={{ marginTop: "20px" }}
       >
-        Registrarti
+        Registrati
       </Button>
     </form>
   );

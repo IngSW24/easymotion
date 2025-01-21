@@ -1,4 +1,4 @@
-import { Button, TextField } from "@mui/material";
+import { Button, Checkbox, FormControlLabel, TextField } from "@mui/material";
 import { useState } from "react";
 import {
   isValidEmail,
@@ -75,6 +75,7 @@ export default function LoginForm(props: LoginFormProps) {
         helperText={passwordError}
         required
       />
+      <FormControlLabel control={<Checkbox />} label="Ricordami" />
       <Button
         fullWidth
         type="submit"

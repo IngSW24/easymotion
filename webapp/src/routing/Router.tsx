@@ -9,7 +9,11 @@ import ConfirmEmailPage from "../pages/ConfirmEmailPage";
 import SignupPage from "../pages/SignUpPage";
 import LoginPage from "../pages/LoginPage";
 import { Home } from "@mui/icons-material";
-import AuthenticationWrapper from "./AuthenticationWrapper";
+import AuthenticationWrapper from "./AuthenticatedRoute";
+import AuthenticatedRoute from "./AuthenticatedRoute";
+import TermsOfServicePage from "../pages/TermsOfServicePage";
+import UnauthenticatedRoute from "./UnauthenticatedRoute";
+import { useAuth } from "../hooks/useAuth";
 
 const menuEntries: MenuEntry[] = [
   {
@@ -24,33 +28,43 @@ const menuEntries: MenuEntry[] = [
  * Defines the router for the application.
  * @returns a router component.
  */
-const Router: React.FC = () => (
-  <BrowserRouter>
-    <Routes>
-      <Route element={<Layout entries={menuEntries} />}>
-        <Route index element={<CourseListPage />} />
-        <Route path="details/:id" element={<CourseDetailsPage />} />
-        <Route path="confirm-email" element={<ConfirmEmailPage />} />
-        <Route element={<AuthenticationWrapper allowedFor="unauthenticated" />}>
-          <Route path="login" element={<LoginPage />} />
-          <Route path="signup" element={<SignupPage />} />
-        </Route>
-        <Route element={<AuthenticationWrapper allowedFor="authenticated" />}>
-          <Route path="profile" element={<ProfilePage />} />
-        </Route>
-        <Route
-          element={
-            <AuthenticationWrapper
-              allowedFor="authenticated"
-              roles={["ADMIN", "PHYSIOTHERAPIST"]}
-            />
-          }
-        >
-          <Route path="new" element={<CourseCreatePage />} />
-        </Route>
-      </Route>
-    </Routes>
-  </BrowserRouter>
-);
+export default function Router() {
+  const { initialized } = useAuth();
 
-export default Router;
+  // ensure authentication has been initalized before rendering routes
+  if (!initialized) return <></>;
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route element={<Layout entries={menuEntries} />}>
+          {/* Always accessible routes*/}
+          <Route index element={<CourseListPage />} />
+          <Route path="details/:id" element={<CourseDetailsPage />} />
+          <Route path="confirm-email" element={<ConfirmEmailPage />} />
+          <Route path="terms" element={<TermsOfServicePage />} />
+
+          {/* Accessible only by non authenticated users */}
+          <Route element={<UnauthenticatedRoute />}>
+            <Route path="login" element={<LoginPage />} />
+            <Route path="signup" element={<SignupPage />} />
+          </Route>
+
+          {/* Accessible only all the authenticated users */}
+          <Route element={<AuthenticatedRoute />}>
+            <Route path="profile" element={<ProfilePage />} />
+          </Route>
+
+          {/* Accessible only by admins and physhiotherapists */}
+          <Route
+            element={
+              <AuthenticationWrapper roles={["ADMIN", "PHYSIOTHERAPIST"]} />
+            }
+          >
+            <Route path="new" element={<CourseCreatePage />} />
+          </Route>
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
+}
