@@ -20,7 +20,7 @@ export default function CourseCreatePage() {
 
     await promise;
 
-    navigate("/physio");
+    navigate("/");
 
     return promise;
   };
