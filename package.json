@@ -9,18 +9,15 @@
     "services:up": "docker compose up -d",
     "services:down": "docker compose -f docker-compose.yml -f docker-compose.dev.yml down",
     "env:bootstrap": "cp webapp/.env.example webapp/.env && cp api/.env.example api/.env",
-    "clean": "rm -rf node_modules && rm -rf api/node_modules && rm -rf webapp/node_modules",
+    "clean": "rm -rf node_modules && pnpm -r clean",
     "webapp:client": "swagger-typescript-api -p openapi/schema.json -o webapp/src/client",
     "api:schema": "pnpm --filter api swagger:generate -- ../openapi/schema.json",
     "api:migrate": "pnpm --filter api prisma:migrate-dev",
     "api:client": "pnpm --filter api prisma:gen-client",
     "api:seed": "pnpm --filter api seed"
   },
-  "dependencies": {
-    "concurrently": "^9.1.2",
-    "swagger-typescript-api": "^13.0.23"
-  },
   "devDependencies": {
+    "concurrently": "^9.1.2",
     "prettier": "^3.4.2"
   },
   "engines": {

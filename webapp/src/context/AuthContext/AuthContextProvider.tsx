@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Api, AuthUserDto, SignUpDto } from "../../client/Api";
 import { useApiClient } from "../../hooks/useApiClient";
 import { AuthContext } from "./AuthContext";
 import { useInitialRefresh } from "./useInitialRefresh";
+import { Api, AuthUserDto, SignUpDto } from "@easymotion/openapi";
 
 export interface AuthContextProviderProps {
   children: React.ReactNode;

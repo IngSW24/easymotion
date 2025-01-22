@@ -2,5 +2,6 @@ node_modules
 dist
 build
 .cache
-openapi
+openapi/schema.json
 webapp/src/client
+pnpm-lock.yaml

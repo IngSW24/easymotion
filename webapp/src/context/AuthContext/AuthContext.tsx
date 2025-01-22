@@ -1,5 +1,5 @@
+import { AuthUserDto, SignUpDto } from "@easymotion/openapi";
 import { createContext } from "react";
-import { AuthUserDto, SignUpDto } from "../../client/Api";
 
 export interface AuthContextProps {
   user: AuthUserDto | null;

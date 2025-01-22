@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from "react-router";
 import { useAuth } from "../hooks/useAuth";
-import { AuthUserDto } from "../client/Api";
+import { AuthUserDto } from "@easymotion/openapi";
 
 export interface AuthenticatedRouteProps {
   roles?: AuthUserDto["role"][];

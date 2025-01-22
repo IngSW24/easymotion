@@ -2,7 +2,7 @@ export const generateEmailConfirmMessage = (
   frontendUrl: string,
   token: string,
   userId: string,
-  email: string,
+  email: string
 ) => {
   return `
   <div style="text-align: center;">

@@ -3,7 +3,7 @@ import { Container } from "@mui/material";
 import CourseDetail from "../components/course/CourseDetail/CourseDetail";
 import { useCourses } from "../hooks/useCourses";
 import LoadingSpinner from "../components/LoadingSpinner/LoadingSpinner";
-import { CourseEntity, UpdateCoursesDto } from "../client/Api";
+import { CourseEntity, UpdateCoursesDto } from "@easymotion/openapi";
 import { useAuth } from "../hooks/useAuth";
 import Hero from "../components/Hero/Hero";
 

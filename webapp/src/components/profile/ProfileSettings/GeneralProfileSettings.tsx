@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { Person } from "@mui/icons-material";
-import { AuthUserDto, UpdateAuthUserDto } from "../../../client/Api";
+import { AuthUserDto, UpdateAuthUserDto } from "@easymotion/openapi";
 import EmailUpdate from "./EmailUpdate";
 import PasswordUpdate from "./PasswordUpdate";
 import PhoneNumberEditor from "../../editors/PhoneNumberEditor/PhoneNumberEditor";

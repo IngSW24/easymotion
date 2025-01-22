@@ -1,4 +1,4 @@
-import { Api } from "../../client/Api";
+import { Api } from "@easymotion/openapi";
 
 /**
  * Custom fetch function with automatic token refresh support.

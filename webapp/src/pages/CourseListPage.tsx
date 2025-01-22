@@ -3,7 +3,7 @@ import CourseList from "../components/course/CourseList/CourseList";
 import CreateCourseButton from "../components/atoms/Button/CreateCourseButton";
 import { useAuth } from "../hooks/useAuth";
 import Hero from "../components/Hero/Hero";
-import { AuthUserDto } from "../client/Api";
+import { AuthUserDto } from "@easymotion/openapi";
 
 const checkCanEdit = (currentRole?: AuthUserDto["role"]) =>
   ["ADMIN", "PHYSIOTHERAPIST"].includes(currentRole ?? "");

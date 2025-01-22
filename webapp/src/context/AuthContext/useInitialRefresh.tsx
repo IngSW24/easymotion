@@ -1,5 +1,5 @@
+import { Api, AuthUserDto } from "@easymotion/openapi";
 import { useEffect, useRef, useState } from "react";
-import { Api, AuthUserDto } from "../../client/Api";
 
 export interface UseInitialRefreshProps {
   apiInstance: typeof Api.prototype.auth;

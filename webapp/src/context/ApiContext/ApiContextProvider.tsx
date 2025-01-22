@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
-import { Api } from "../../client/Api";
 import { ApiContext } from "./ApiContext";
 import customFetch from "./custom-fetch";
+import { Api } from "@easymotion/openapi";
 
 export interface ApiContextProviderProps {
   children: React.ReactNode;

@@ -24,7 +24,9 @@
     "prisma:gen-client": "prisma generate client",
     "swagger:generate": "nest start --entryFile src/generate-schema",
     "generate-initial-user": "nest start --entryFile src/generate-initial-user",
-    "prod:generate-initial-user": "node dist/src/generate-initial-user"
+    "prod:generate-initial-user": "node dist/src/generate-initial-user",
+    "clean": "rm -rf dist && rm -rf coverage && rm -rf node_modules",
+    "prepare": "pnpm prisma:gen-client"
   },
   "dependencies": {
     "@nestjs/common": "^10.4.15",

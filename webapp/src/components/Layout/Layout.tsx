@@ -23,7 +23,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { useState } from "react";
 import ProfileButton from "./ProfileButton";
 import AuthButtons from "./AuthButtons";
-import { AuthUserDto } from "../../client/Api";
+import { AuthUserDto } from "@easymotion/openapi";
 
 export type MenuEntry = {
   label: string;

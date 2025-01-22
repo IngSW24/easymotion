@@ -4,6 +4,8 @@ services:
       context: .
       dockerfile: Dockerfile.dev
     restart: "no"
+    environment:
+      - DEVCONTAINER_DB_HOST=db
     volumes:
       - .:/workspace:cached
     command: sleep infinity

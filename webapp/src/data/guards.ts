@@ -1,4 +1,4 @@
-import { HttpResponse } from "../client/Api";
+import { HttpResponse } from "@easymotion/openapi";
 
 /**
  * Type guard to check if an error is an HttpResponseError

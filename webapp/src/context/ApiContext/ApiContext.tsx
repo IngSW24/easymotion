@@ -1,5 +1,5 @@
+import { Api } from "@easymotion/openapi";
 import { createContext } from "react";
-import { Api } from "../../client/Api";
 
 export interface ApiContextProps {
   apiClient: Api<unknown>;

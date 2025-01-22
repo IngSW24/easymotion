@@ -11,7 +11,8 @@
     "test": "vitest run",
     "test:watch": "vitest --watch",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+    "clean": "rm -rf dist && rm -rf node_modules"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -28,10 +29,10 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-phone-input-2": "^2.15.1",
-    "react-router": "^7.1.1",
-    "swagger-typescript-api": "^13.0.23"
+    "react-router": "^7.1.1"
   },
   "devDependencies": {
+    "@easymotion/openapi": "workspace:../openapi",
     "@eslint/js": "^9.15.0",
     "@tanstack/react-query-devtools": "^5.63.0",
     "@testing-library/react": "^16.1.0",
