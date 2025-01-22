@@ -1,11 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CreateCourseDto, UpdateCoursesDto, Api } from "../client/Api";
+import { CreateCourseDto, UpdateCoursesDto } from "../client/Api";
 import { CourseFilters } from "../components/course/FilterBlock/types";
 import { useSnack } from "./useSnack";
-
-const api = new Api({
-  baseUrl: import.meta.env.VITE_API_URL,
-});
+import { useApiClient } from "./useApiClient";
 
 type UseCoursesProps = {
   fetchId?: string;
@@ -33,6 +30,7 @@ export const useCourses = (props: UseCoursesProps = {}) => {
     fetchAll = fetchId === "",
     filters,
   } = props;
+  const { apiClient: api } = useApiClient();
   const snack = useSnack();
   const queryClient = useQueryClient();
 
