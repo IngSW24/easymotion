@@ -6,6 +6,7 @@ import {
   IsDateString,
   IsEnum,
   Length,
+  IsBoolean,
 } from 'class-validator';
 import { Role } from '@prisma/client';
 import { Expose } from 'class-transformer';
@@ -28,6 +29,14 @@ export class CreateUserDto {
   @Length(6)
   @Expose()
   password: string;
+
+  @ApiProperty({
+    description: 'Flag indicating if the email address has been verified',
+    example: true,
+  })
+  @IsBoolean()
+  @Expose()
+  isEmailVerified: boolean;
 
   @ApiProperty({
     description: 'First name of the new user',

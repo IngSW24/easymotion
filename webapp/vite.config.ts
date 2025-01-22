@@ -24,6 +24,7 @@ export default defineConfig({
     environment: "jsdom",
   },
   server: {
+    allowedHosts: ["easymotion.devlocal"],
     watch: usePolling
       ? {
           usePolling: true,
