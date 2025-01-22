@@ -5,6 +5,7 @@ import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 export const createUserDtoMock = (): CreateUserDto => ({
   email: 'test@example.com',
   password: 'securepassword123',
+  isEmailVerified: false,
   firstName: 'testname',
   lastName: 'lastname',
   middleName: 'middlename',
