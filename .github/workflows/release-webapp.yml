@@ -1,9 +1,9 @@
 name: Build and Push WebApp Docker Image
 
 on:
-  pull_request:
-    types:
-      - closed
+  push:
+    branches:
+      - main
 
 jobs:
   build-webapp:
