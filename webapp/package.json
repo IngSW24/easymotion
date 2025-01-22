@@ -7,7 +7,7 @@
     "dev": "vite --host 0.0.0.0 --clearScreen false",
     "build": "npm run generate-client && tsc -b && vite build",
     "lint": "eslint .",
-    "generate-client": "swagger-typescript-api -p /workspace/webapp/api-schema/schema.json -o ./src/client",
+    "generate-client": "swagger-typescript-api -p ./api-schema/schema.json -o ./src/client",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest --watch",
