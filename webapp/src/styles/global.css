@@ -3,8 +3,12 @@
   padding: 0;
 }
 
-html {
-  overflow-y: scroll; /* Ensures scrollbar is always visible */
+html,
+body,
+#root {
+  top: 0;
+  left: 0;
+  height: 100%;
 }
 
 @keyframes fadeIn {
@@ -18,31 +22,4 @@ html {
 
 .fade {
   animation: fadeIn 0.5s;
-}
-
-html,
-body,
-#root {
-  top: 0;
-  left: 0;
-  height: 100%;
-}
-
-.typewriter {
-  display: inline-block;
-  overflow: hidden;
-  white-space: nowrap;
-  animation:
-    typing 1.3s steps(60, end),
-    blink-caret 0.75s step-end infinite;
-}
-
-/* Typing animation */
-@keyframes typing {
-  from {
-    width: 0;
-  }
-  to {
-    width: 100%;
-  }
 }

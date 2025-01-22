@@ -4,44 +4,23 @@ import CourseDetailsPage from "../pages/CourseDetailsPage";
 import CourseCreatePage from "../pages/CourseCreatePage";
 import Layout, { MenuEntry } from "../components/Layout/Layout";
 
-import { Login, Logout, Person } from "@mui/icons-material";
+import ProfilePage from "../pages/ProfilePage";
+import ConfirmEmailPage from "../pages/ConfirmEmailPage";
+import SignupPage from "../pages/SignUpPage";
+import LoginPage from "../pages/LoginPage";
+import { Home } from "@mui/icons-material";
+import AuthenticationWrapper from "./AuthenticatedRoute";
+import AuthenticatedRoute from "./AuthenticatedRoute";
+import TermsOfServicePage from "../pages/TermsOfServicePage";
+import UnauthenticatedRoute from "./UnauthenticatedRoute";
+import { useAuth } from "../hooks/useAuth";
 
-const notLoggedMenuEntries: Array<MenuEntry> = [
+const menuEntries: MenuEntry[] = [
   {
-    label: "Login",
-    link: "/login",
-    icon: <Login />,
-  },
-  {
-    label: "Register",
-    link: "/register",
-    icon: <Login />,
-  },
-];
-
-const userMenuEntries: Array<MenuEntry> = [
-  {
-    label: "Logout",
-    link: "/logout",
-    icon: <Logout />,
-  },
-  {
-    label: "Profile",
-    link: "/profile",
-    icon: <Person />,
-  },
-];
-
-const physiotherapistMenuEntries: Array<MenuEntry> = [
-  {
-    label: "Logout",
-    link: "/logout",
-    icon: <Logout />,
-  },
-  {
-    label: "Profile",
-    link: "/profile",
-    icon: <Person />,
+    label: "Home",
+    link: "/",
+    icon: <Home />,
+    showIn: "drawer",
   },
 ];
 
@@ -49,29 +28,43 @@ const physiotherapistMenuEntries: Array<MenuEntry> = [
  * Defines the router for the application.
  * @returns a router component.
  */
-const Router: React.FC = () => (
-  <BrowserRouter>
-    <Routes>
-      <Route element={<Layout entries={userMenuEntries} />}>
-        <Route index element={<CourseListPage />} />
-        <Route path="details/:id" element={<CourseDetailsPage />} />
-      </Route>
-      <Route
-        path="physio"
-        element={
-          <Layout
-            isPhysiotherapist
-            homeLink="/physio"
-            entries={physiotherapistMenuEntries}
-          />
-        }
-      >
-        <Route index element={<CourseListPage canEdit />} />
-        <Route path="details/:id" element={<CourseDetailsPage canEdit />} />
-        <Route path="new" element={<CourseCreatePage />} />
-      </Route>
-    </Routes>
-  </BrowserRouter>
-);
+export default function Router() {
+  const { initialized } = useAuth();
 
-export default Router;
+  // ensure authentication has been initalized before rendering routes
+  if (!initialized) return <></>;
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route element={<Layout entries={menuEntries} />}>
+          {/* Always accessible routes*/}
+          <Route index element={<CourseListPage />} />
+          <Route path="details/:id" element={<CourseDetailsPage />} />
+          <Route path="confirm-email" element={<ConfirmEmailPage />} />
+          <Route path="terms" element={<TermsOfServicePage />} />
+
+          {/* Accessible only by non authenticated users */}
+          <Route element={<UnauthenticatedRoute />}>
+            <Route path="login" element={<LoginPage />} />
+            <Route path="signup" element={<SignupPage />} />
+          </Route>
+
+          {/* Accessible only all the authenticated users */}
+          <Route element={<AuthenticatedRoute />}>
+            <Route path="profile" element={<ProfilePage />} />
+          </Route>
+
+          {/* Accessible only by admins and physhiotherapists */}
+          <Route
+            element={
+              <AuthenticationWrapper roles={["ADMIN", "PHYSIOTHERAPIST"]} />
+            }
+          >
+            <Route path="new" element={<CourseCreatePage />} />
+          </Route>
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
+}

@@ -7,3 +7,5 @@ type LiteralUnionDescriptor<T extends string> = {
   value: T;
   label: string;
 }[];
+
+declare module "*.md";

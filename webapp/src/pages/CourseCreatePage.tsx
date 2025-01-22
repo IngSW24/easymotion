@@ -1,7 +1,7 @@
 import { Container } from "@mui/material"; // Card, CardContent, Box
 import { useCourses } from "../hooks/useCourses.tsx";
 import { CourseEntity, CreateCourseDto } from "../client/Api.tsx";
-import HeroImage from "../components/HeroImage/HeroImage.tsx";
+import HeroImage from "../components/Hero/Hero.tsx";
 import CourseDetail from "../components/course/CourseDetail/CourseDetail.tsx";
 import { defaultCourse } from "../data/defaults.ts";
 import { useNavigate } from "react-router";

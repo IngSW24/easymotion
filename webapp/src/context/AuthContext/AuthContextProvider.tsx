@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Api, AuthUserDto } from "../../client/Api";
+import { Api, AuthUserDto, SignUpDto } from "../../client/Api";
 import { useApiClient } from "../../hooks/useApiClient";
 import { AuthContext } from "./AuthContext";
 import { useInitialRefresh } from "./useInitialRefresh";
@@ -27,7 +27,7 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
   const [user, setUser] = useState<AuthUserDto | null>(null);
 
   // Automatically attempt to get an access token when the app loads
-  useInitialRefresh({
+  const initialized = useInitialRefresh({
     apiInstance: apiInstance,
     updateAccessToken,
     setUser,
@@ -68,6 +68,34 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
     setUser(null);
   };
 
+  /**
+   * Updates the user's email address after confirming the email change.
+   * @param email the new email address
+   * @param userId the user's ID
+   * @param token the confirmation token
+   */
+  const updateEmail = async (email: string, userId: string, token: string) => {
+    const payload = { email, userId, token };
+
+    const response = await apiInstance.authControllerConfirmEmail(payload, {
+      credentials: "include",
+    });
+
+    if (response.ok) {
+      updateAccessToken(response.data.accessToken);
+      setUser(response.data);
+    }
+  };
+
+  /**
+   * Handles user signup by sending the signup information to the server.
+   * @param signupInfo - User's signup information
+   */
+  const signup = async (signupInfo: SignUpDto): Promise<boolean> => {
+    const response = await apiInstance.authControllerSignUp(signupInfo);
+    return response.ok;
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -75,6 +103,10 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
         user,
         login,
         logout,
+        updateEmail,
+        signup,
+        updateUser: setUser,
+        initialized,
       }}
     >
       {children}

@@ -20,11 +20,15 @@
     "@fontsource/roboto": "^5.1.1",
     "@mui/icons-material": "^6.3.1",
     "@mui/material": "^6.3.1",
+    "@mui/x-date-pickers": "^7.24.0",
     "@tanstack/react-query": "^5.63.0",
+    "framer-motion": "^12.0.0",
     "luxon": "^3.5.0",
+    "marked": "^15.0.6",
     "notistack": "^3.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-phone-input-2": "^2.15.1",
     "react-router": "^7.1.1",
     "swagger-typescript-api": "^13.0.23"
   },
@@ -46,7 +50,7 @@
     "prettier": "^3.4.2",
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.19.1",
-    "vite": "^6.0.7",
+    "vite": "^6.0.9",
     "vitest": "^2.1.8"
   },
   "prettier": {

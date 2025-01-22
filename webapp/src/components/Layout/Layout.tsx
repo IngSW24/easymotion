@@ -1,4 +1,3 @@
-import * as React from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Outlet, useLocation } from "react-router";
 import {
@@ -18,39 +17,69 @@ import {
   Typography,
 } from "@mui/material";
 import { Link } from "react-router";
-import { physiotherapistTheme, userTheme } from "../../theme/theme";
+import { theme } from "../../theme/theme";
+import { PersonAdd } from "@mui/icons-material";
+import { useAuth } from "../../hooks/useAuth";
+import { useState } from "react";
+import ProfileButton from "./ProfileButton";
+import AuthButtons from "./AuthButtons";
+import { AuthUserDto } from "../../client/Api";
 
 export type MenuEntry = {
   label: string;
   link: string;
   icon?: React.ReactNode;
+  role?: AuthUserDto["role"];
+  showIn?: "drawer" | "appbar" | "both";
 };
 
 export interface LayoutProps {
-  isPhysiotherapist?: boolean;
-  entries?: MenuEntry[];
-  homeLink?: string;
+  entries: MenuEntry[];
 }
 
 const drawerWidth = 240;
 
+const getDrawerEntries = (
+  entries: MenuEntry[],
+  currentRole?: AuthUserDto["role"]
+) => {
+  return entries
+    .filter((x) => !x.role || x.role === currentRole)
+    .filter((x) => !x.showIn || x.showIn === "drawer" || x.showIn === "both");
+};
+
+const getAppbarEntries = (
+  entries: MenuEntry[],
+  currentRole?: AuthUserDto["role"]
+) => {
+  return entries
+    .filter((x) => !x.role || x.role === currentRole)
+    .filter((x) => !x.showIn || x.showIn === "appbar" || x.showIn === "both");
+};
+
 export default function Layout(props: LayoutProps) {
+  const { entries } = props;
   const location = useLocation();
-  const { isPhysiotherapist = false, entries = [], homeLink = "/" } = props;
+  const auth = useAuth();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const currentRole = auth.user?.role;
 
-  const handleDrawerToggle = () => {
-    setMobileOpen((prevState) => !prevState);
-  };
+  const handleDrawerToggle = () => setMobileOpen((prevState) => !prevState);
 
   const drawer = (
     <Box
       onClick={handleDrawerToggle}
-      sx={{ textAlign: "center", width: drawerWidth }}
+      sx={{
+        textAlign: "center",
+        width: drawerWidth,
+        display: "flex",
+        height: "100%",
+        flexDirection: "column",
+      }}
     >
       <List>
-        {entries?.map((item) => (
+        {getDrawerEntries(entries, currentRole).map((item) => (
           <ListItem key={item.link} disablePadding>
             <ListItemButton
               component={Link}
@@ -63,16 +92,31 @@ export default function Layout(props: LayoutProps) {
           </ListItem>
         ))}
       </List>
+
+      <Box sx={{ flexGrow: 1 }} />
+
+      <List>
+        <ListItemButton
+          component={Link}
+          to="/signup"
+          sx={{ textAlign: "center" }}
+        >
+          <ListItemIcon>
+            <PersonAdd />
+          </ListItemIcon>
+          <ListItemText primary="Registrati" />
+        </ListItemButton>
+      </List>
     </Box>
   );
 
   return (
-    <ThemeProvider theme={isPhysiotherapist ? physiotherapistTheme : userTheme}>
+    <ThemeProvider theme={theme}>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
         <AppBar component="nav" sx={{ backgroundColor: "primary.main" }}>
           <Toolbar>
-            <IconButton
+            <IconButton // mobile-only
               color="inherit"
               aria-label="open drawer"
               edge="start"
@@ -85,65 +129,30 @@ export default function Layout(props: LayoutProps) {
             <Typography
               component={Link}
               variant="h6"
-              sx={{
-                mx: 2,
-                display: { sm: "none" },
-                color: "inherit",
-                textDecoration: "none",
-              }}
-              to={homeLink}
+              sx={{ color: "inherit", textDecoration: "none" }}
+              to="/"
             >
               EasyMotion
             </Typography>
-            {isPhysiotherapist && (
-              <Typography
-                component="span"
-                sx={{ ml: 3, display: { sm: "none" } }}
-              >
-                Fisioterapista
-              </Typography>
-            )}
-            <Typography
-              variant="h6"
-              component={Link}
-              sx={{
-                display: { xs: "none", sm: "block" },
-                color: "inherit",
-                textDecoration: "none",
-              }}
-              to={homeLink}
-            >
-              EasyMotion
-            </Typography>
-            {isPhysiotherapist && (
-              <Typography
-                component="span"
-                sx={{ ml: 3, display: { xs: "none", sm: "block" } }}
-                fontWeight={300}
-              >
-                Fisioterapista
-              </Typography>
-            )}
 
-            <Box
-              sx={{
-                flexGrow: 1,
-              }}
-            />
-
-            <Box sx={{ display: { xs: "none", sm: "block" } }}>
-              {entries.map((item) => (
-                <Button
-                  component={Link}
-                  key={item.link}
-                  sx={{ color: "#fff" }}
-                  startIcon={item.icon}
-                  to={item.link}
-                >
-                  {item.label}
-                </Button>
-              ))}
+            <Box sx={{ display: { xs: "none", md: "block" }, ml: 4 }}>
+              {entries &&
+                getAppbarEntries(entries, currentRole).map((item) => (
+                  <Button
+                    component={Link}
+                    key={item.link}
+                    sx={{ color: "#fff" }}
+                    startIcon={item.icon}
+                    to={item.link}
+                  >
+                    {item.label}
+                  </Button>
+                ))}
             </Box>
+
+            <Box sx={{ flexGrow: 1 }} />
+
+            {auth.isAuthenticated ? <ProfileButton /> : <AuthButtons />}
           </Toolbar>
         </AppBar>
         <nav>
@@ -161,7 +170,7 @@ export default function Layout(props: LayoutProps) {
             {drawer}
           </Drawer>
         </nav>
-        <Box component="main" sx={{ width: "100%", mb: 3 }}>
+        <Box component="main" sx={{ width: "100%" }}>
           <Toolbar />
           <div className="fade" key={location.pathname}>
             <Outlet />

@@ -21,6 +21,8 @@ import { ConfigType } from '@nestjs/config';
 import jwtConfig from 'src/config/jwt.config';
 import { JwtPayloadDto } from './dto/auth-user/jwt-payload.dto';
 import { UpdateAuthUserDto } from './dto/auth-user/update-auth-user.dto';
+import { generateEmailConfirmMessage } from './email-messages/email-confirm.message';
+import frontendConfig from 'src/config/frontend.config';
 
 @Injectable()
 export class AuthService {
@@ -30,6 +32,8 @@ export class AuthService {
     private readonly emailService: EmailService,
     @Inject(jwtConfig.KEY)
     private readonly configService: ConfigType<typeof jwtConfig>,
+    @Inject(frontendConfig.KEY)
+    private readonly frontendConfigService: ConfigType<typeof frontendConfig>,
   ) {}
 
   /**
@@ -182,7 +186,6 @@ export class AuthService {
       email,
       password,
       repeatedPassword,
-      username,
       firstName,
       middleName,
       lastName,
@@ -192,7 +195,6 @@ export class AuthService {
 
     const newUser: Prisma.ApplicationUserCreateInput = {
       email,
-      username,
       firstName,
       middleName: middleName || null,
       lastName,
@@ -218,9 +220,14 @@ export class AuthService {
     );
 
     await this.emailService.sendEmail(
-      email,
-      'Finish sign up',
-      `Email verification token is ${emailToken}. User id is ${result.data.id}. Email is ${email}`,
+      result.data.email,
+      'Completa la registrazione in EasyMotion',
+      generateEmailConfirmMessage(
+        this.frontendConfigService.url,
+        emailToken,
+        result.data.id,
+        result.data.email,
+      ),
     );
   }
 
@@ -354,8 +361,13 @@ export class AuthService {
 
     await this.emailService.sendEmail(
       emailDto.email,
-      'Email verification',
-      `Email verification token is ${token}.\nUser id is ${user.id}\nEmail is ${emailDto.email}`,
+      'Conferma la tua mail di EasyMotion',
+      generateEmailConfirmMessage(
+        this.frontendConfigService.url,
+        token,
+        user.id,
+        emailDto.email,
+      ),
     );
   }
 

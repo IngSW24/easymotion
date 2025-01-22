@@ -97,7 +97,7 @@ describe('UsersService', () => {
 
     const errorResult = {
       success: false,
-      errors: ['User with this email or username already exists'],
+      errors: ['User with this email already exists'],
       code: HttpStatus.CONFLICT,
     };
 

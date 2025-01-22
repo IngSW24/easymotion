@@ -9,12 +9,23 @@ export class EmailService {
 
   constructor(
     @Inject(smtpConfig.KEY)
-    smtpConfiguration: ConfigType<typeof smtpConfig>,
+    private readonly smtpConfiguration: ConfigType<typeof smtpConfig>,
   ) {
     this.transporter = nodemailer.createTransport({
-      host: smtpConfiguration.host, // MailHog host
-      port: smtpConfiguration.port, // MailHog SMTP port
-      secure: smtpConfiguration.secure, // MailHog doesn't use TLS/SSL
+      host: smtpConfiguration.host,
+      port: smtpConfiguration.port,
+      secure: smtpConfiguration.secure,
+      auth:
+        smtpConfiguration.user && smtpConfiguration.pass
+          ? {
+              user: smtpConfiguration.user || '',
+              pass: smtpConfiguration.pass || '',
+            }
+          : undefined,
+      tls: {
+        minVersion: 'TLSv1',
+        ciphers: 'HIGH:MEDIUM:!aNULL:!eNULL:@STRENGTH:!DH:!kEDH',
+      },
     });
   }
 
@@ -26,7 +37,7 @@ export class EmailService {
    */
   async sendEmail(to: string, subject: string, body: string): Promise<void> {
     const mailOptions = {
-      from: '"EasyMotion" <noreply@easymotion.dev>',
+      from: this.smtpConfiguration.user || 'EasyMotion <info@easymotion.dev>',
       to,
       subject,
       text: body,
@@ -84,6 +95,20 @@ const generateEmailTemplate = (subject, content) => `
     .email-footer a {
       color: #007bff;
       text-decoration: none;
+    }
+    .url-button {
+      display: inline-block;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: bold;
+      color: white;
+      background-color: #007bff;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+    }
+    .url-button:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>

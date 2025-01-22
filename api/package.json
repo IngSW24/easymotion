@@ -23,7 +23,8 @@
     "prisma:migrate-dev": "prisma migrate dev",
     "prisma:migrate-prod": "prisma migrate deploy",
     "prisma:gen-client": "prisma generate client",
-    "swagger:generate": "nest start --entryFile src/generate-schema"
+    "swagger:generate": "nest start --entryFile src/generate-schema",
+    "generate-initial-user": "nest start --entryFile src/generate-initial-user"
   },
   "dependencies": {
     "@nestjs/common": "^10.4.15",
