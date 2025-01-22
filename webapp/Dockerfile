@@ -1,48 +1,26 @@
-# Setup dev image
-
-FROM node:20-alpine as dev 
+FROM node:20-alpine AS build
 
 WORKDIR /app
 
-ENV NODE_ENV development
+ARG VITE_API_URL ${VITE_API_URL}
+ENV VITE_API_URL ${VITE_API_URL}
 
-RUN addgroup --system --gid 1001 node || true
-RUN adduser --system --uid 1001 node || true
+COPY . .
 
-COPY --chown=node:node . .
-
-USER node
-
-# Build the app
-
-FROM node:20-alpine as build
-
-WORKDIR /app
-
-ARG VITE_API_BASE ${VITE_API_BASE}
-ENV VITE_API_BASE ${VITE_API_BASE}
-
-ENV NODE_ENV production
-
-RUN addgroup --system --gid 1001 node || true
-RUN adduser --system --uid 1001 node || true
-
-COPY --chown=node:node . .
+RUN npm install
 
 RUN npm run build
-
-RUN npm install --production && npm cache clean --force
 
 USER node
 
 # Prepare production image
 
-FROM node:20-alpine as prod
+FROM node:20-alpine AS prod
 
 WORKDIR /app
 RUN apk add --no-cache libc6-compat
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
 
 RUN addgroup --system --gid 1001 node || true
 RUN adduser --system --uid 1001 node || true

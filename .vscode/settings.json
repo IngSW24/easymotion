@@ -1,0 +1,7 @@
+{
+  "editor.formatOnSave": true,
+  "typescript.tsserver.experimental.enableProjectDiagnostics": true,
+  "editor.detectIndentation": false,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.tabSize": 2
+}

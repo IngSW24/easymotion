@@ -1,0 +1,12 @@
+{
+  "name": "Easymotion API",
+  "dockerComposeFile": ["../../docker-compose.yml"],
+  "service": "api",
+  "shutdownAction": "none",
+  "workspaceFolder": "/workspace/api",
+  "customizations": {
+    "vscode": {
+      "extensions": ["Orta.vscode-jest", "Prisma.prisma", "esbenp.prettier-vscode", "dbaeumer.vscode-eslint"]
+    }
+  }
+}

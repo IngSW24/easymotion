@@ -6,9 +6,114 @@
 
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum CourseCategory {
+  ACQUAGYM
+  CROSSFIT
+  PILATES
+  ZUMBA_FITNESS
+  POSTURAL_TRAINING
+  BODYWEIGHT_WORKOUT
+}
+
+enum CourseLevel {
+  BASIC
+  MEDIUM
+  ADVANCED
+}
+
+enum CourseFrequency {
+  SINGLE_SESSION
+  WEEKLY
+  MONTHLY
+}
+
+enum CourseAvailability {
+  ACTIVE
+  COMING_SOON
+  NO_LONGER_AVAILABLE
+}
+
+// TODO: Align Course model to use camelCase instead of snake_case for field names
+model Course {
+  id                        String              @id @default(uuid())
+  name                      String
+  description               String
+  short_description         String
+  location                  String?
+  schedule                  String[]
+  instructors               String[]            // will be a user id
+  category                  CourseCategory
+  level                     CourseLevel
+  frequency                 CourseFrequency
+  session_duration          String              // In POSIX format. Eg: P2H30M -> 2h and 30M
+  cost                      Decimal?
+  discount                  Int?
+  availability              CourseAvailability
+  highlighted_priority      Int?
+  members_capacity          Int?
+  num_registered_members    Int?
+  tags                      String[]
+  thumbnail_path            String?
+  created_at                DateTime            @default(now()) @db.Timestamptz(3)
+  updated_at                DateTime            @updatedAt @db.Timestamptz(3)
+}
+
+enum Role {
+  USER
+  ADMIN
+  PHYSIOTHERAPIST
+}
+
+model ApplicationUser {
+  id                           String              @id @default(uuid())
+  email                        String              @unique
+  isEmailVerified              Boolean             @default(false)
+  emailConfirmationToken       String?
+  emailConfirmationTokenExpiry DateTime?
+  passwordHash                 String              @default("")
+  passwordResetToken           String?
+  passwordResetTokenExpiry     DateTime?
+  twoFactorCode                String?
+  twoFactorExpiry              DateTime?
+  twoFactorEnabled             Boolean             @default(false)
+  firstName                    String
+  middleName                   String?
+  lastName                     String
+  phoneNumber                  String?
+  birthDate                    String?
+  role                         Role                @default(USER)
+  lastLogin                    DateTime?
+  failedLoginAttempts          Int                 @default(0)
+  createdAt                    DateTime            @default(now()) @db.Timestamptz(3)
+  updatedAt                    DateTime            @updatedAt @db.Timestamptz(3)
+  physiotherapistData          Physiotherapist?
+  finalUserData                FinalUser?
+}
+
+model Physiotherapist {
+  applicationUserId         String              @id
+  applicationUser           ApplicationUser     @relation(fields: [applicationUserId], references: [id])
+
+  specialization            String
+  publicPhoneNumber         String?
+}
+
+model FinalUser {
+  applicationUserId         String              @id
+  applicationUser           ApplicationUser     @relation(fields: [applicationUserId], references: [id])
+
+  // TODO: Specify body measurements
+  // bodyWeight                Decimal?
+  // bodyHeight                Decimal?
+  // bodyFatPercentage         Decimal?
+  // bodyMassIndex             Decimal?
+  // bodyWaterPercentage       Decimal?
 }
