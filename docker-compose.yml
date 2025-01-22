@@ -38,6 +38,8 @@ services:
       SMTP_HOST: ${API_SMTP_HOST:-mailhog}
       SMTP_PORT: ${API_SMTP_PORT:-1025}
       SMTP_SECURE: ${API_SMTP_SECURE:-false}
+      SMTP_USER: ${API_SMTP_USER:-}
+      SMTP_PASSWORD: ${API_SMTP_PASSWORD:-}
       JWT_SECRET: ${API_JWT_SECRET:-jwtsecretkey}
       JWT_AUDIENCE: ${API_JWT_AUDIENCE:-easymotion.dev}
       JWT_ISSUER: ${API_JWT_ISSUER:-api.easymotion.devlocal}

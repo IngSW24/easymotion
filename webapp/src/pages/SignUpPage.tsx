@@ -2,9 +2,9 @@ import FormComponent from "../components/FormComponent/FormComponent";
 import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { SignUpDto } from "../client/Api";
-import SignupFormCredentials from "../components/profile/SignupForm/SignupFormCredentials";
+import SignupFormCredentials from "../components/profile/SignupForms/SignupFormCredentials";
 import { useSnack } from "../hooks/useSnack";
-import SignupFormInformation from "../components/profile/SignupForm/SignupFormInformation";
+import SignupFormInformation from "../components/profile/SignupForms/SignupFormInformation";
 import { Box, Stack, Typography } from "@mui/material";
 import { CheckCircle } from "@mui/icons-material";
 

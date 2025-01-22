@@ -9,12 +9,23 @@ export class EmailService {
 
   constructor(
     @Inject(smtpConfig.KEY)
-    smtpConfiguration: ConfigType<typeof smtpConfig>,
+    private readonly smtpConfiguration: ConfigType<typeof smtpConfig>,
   ) {
     this.transporter = nodemailer.createTransport({
-      host: smtpConfiguration.host, // MailHog host
-      port: smtpConfiguration.port, // MailHog SMTP port
-      secure: smtpConfiguration.secure, // MailHog doesn't use TLS/SSL
+      host: smtpConfiguration.host,
+      port: smtpConfiguration.port,
+      secure: smtpConfiguration.secure,
+      auth:
+        smtpConfiguration.user && smtpConfiguration.pass
+          ? {
+              user: smtpConfiguration.user || '',
+              pass: smtpConfiguration.pass || '',
+            }
+          : undefined,
+      tls: {
+        minVersion: 'TLSv1',
+        ciphers: 'HIGH:MEDIUM:!aNULL:!eNULL:@STRENGTH:!DH:!kEDH',
+      },
     });
   }
 
@@ -26,7 +37,7 @@ export class EmailService {
    */
   async sendEmail(to: string, subject: string, body: string): Promise<void> {
     const mailOptions = {
-      from: '"EasyMotion" <noreply@easymotion.dev>',
+      from: this.smtpConfiguration.user || 'EasyMotion <info@easymotion.dev>',
       to,
       subject,
       text: body,
