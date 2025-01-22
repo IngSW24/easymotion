@@ -7,7 +7,6 @@
     "dev": "vite --host 0.0.0.0 --clearScreen false",
     "build": "npm run generate-client && tsc -b && vite build",
     "lint": "eslint .",
-    "generate-client": "swagger-typescript-api -p ./api-schema/schema.json -o ./src/client",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest --watch",
@@ -52,31 +51,5 @@
     "typescript-eslint": "^8.19.1",
     "vite": "^6.0.9",
     "vitest": "^2.1.8"
-  },
-  "prettier": {
-    "semi": true,
-    "singleQuote": false,
-    "jsxSingleQuote": false,
-    "trailingComma": "es5",
-    "printWidth": 80,
-    "tabWidth": 2,
-    "useTabs": false,
-    "bracketSpacing": true,
-    "arrowParens": "always",
-    "endOfLine": "lf",
-    "proseWrap": "preserve",
-    "overrides": [
-      {
-        "files": [
-          "*.json",
-          "*.yml",
-          "*.yaml"
-        ],
-        "options": {
-          "printWidth": 120,
-          "tabWidth": 2
-        }
-      }
-    ]
   }
 }

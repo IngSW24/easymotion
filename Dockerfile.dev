@@ -1,24 +1,20 @@
 FROM node:20-alpine
 
+RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache openssl
+RUN apk add --no-cache openssh
 RUN apk add --no-cache curl
 RUN apk add --no-cache git
 RUN apk add --no-cache zsh
-RUN apk add --no-cache openssh
 RUN apk add --no-cache neovim
 
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 RUN npm i -g @nestjs/cli
+RUN npm i -g pnpm
 
-COPY /entrypoint.sh entrypoint.sh
-RUN sed -i 's/\r$//g' /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
-WORKDIR /workspace/webapp
+WORKDIR /workspace
 
 ENV NODE_ENV=development
-ENV SHELL=zsh
+ENV SHELL=/bin/zsh
 ENV EDITOR=nvim
-ENV AUTO_INSTALL_DEPS=true
-
-ENTRYPOINT [ "sh", "/entrypoint.sh" ]

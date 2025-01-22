@@ -1,0 +1,13 @@
+services:
+  devcontainer:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    restart: "no"
+    volumes:
+      - .:/workspace:cached
+    command: sleep infinity
+
+  nginx:
+    volumes:
+      - "./nginx/dev.docker.conf:/etc/nginx/conf.d/default.conf"
