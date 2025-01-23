@@ -9,13 +9,14 @@
     "build": "tsc",
     "client": "swagger-typescript-api -p ./schema.json -o ./src",
     "generate": "pnpm client && pnpm build",
-    "prepare": "pnpm generate",
+    "postinstall": "pnpm generate",
     "clean": "rm -rf dist && rm -rf node_modules && rm -rf src"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "swagger-typescript-api": "^13.0.23"
+    "swagger-typescript-api": "^13.0.23",
+    "typescript": "^5.7.3"
   }
 }
