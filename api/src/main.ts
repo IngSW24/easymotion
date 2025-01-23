@@ -5,7 +5,7 @@ async function start() {
   if (process.env.NODE_ENV !== "production") {
     setupSwagger(app);
   }
-  await app.listen(3000);
+  await app.listen(3000, "0.0.0.0");
 }
 
 start();
