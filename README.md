@@ -9,7 +9,7 @@ You must edit your /etc/hosts file adding an entry that binds the domain `easymo
 - On MacOS and Linux, the file will be located at `/etc/hosts`
 - On Windows, the file will be located at `C:\Windows\System32\Drivers\etc\hosts`
 
-You need to add the following line to the bottom of the file.
+You need to add the following lines to the bottom of the file.
 
 ```
 127.0.0.1 easymotion.devlocal
@@ -17,46 +17,54 @@ You need to add the following line to the bottom of the file.
 127.0.0.1 mail.easymotion.devlocal
 ```
 
-Then you can save and quit. Note that this application requires sudo/administration priviledges.
+Note that this application requires sudo/administration priviledges.
+
+### Install pnpm
+
+This repository uses **pnpm workspaces** for monorepo management. You can install pnpm via npm by running:
+
+```bash
+npm i -g pnpm
+```
+
+Other installation methods for pnpm are described on its [documentation](https://pnpm.io/installation).
 
 ### Clone the repository
 
-- https:
-
-  ```bash
-  git clone https://github.com/ingsw24/easymotion
-  ```
-
-- ssh:
-
-  ```bash
-  git clone git@github.com:IngSW24/easymotion.git
-  ```
-
-### Create environment variables
-
-You can copy the example file to start with default variables.
-
-```
-pnpm env:boostrap
+```bash
+git clone https://github.com/ingsw24/easymotion  # https
+git clone git@github.com:IngSW24/easymotion.git  # ssh
 ```
 
 ### Spin up the dev environment
 
-- Run `pnpm install` to install dependencies
-- Run `pnpm services:up` to startup services
-- Run `pnpm api:migrate` to migrate the database
-- Run `pnpm api:seed` to seed the database
-- Run `pnpm webapp:client` to generate the webapp client
-- Run `pnpm all` to start the whole application
-- Visit
-  - **api** at [https://api.easymotion.devlocal/swagger](https://api.easymotion.devlocal/swagger)
-  - **webapp** at [https://easymotion.devlocal](https://easymotion.devlocal)
-  - **mailhog** at [https://mail.easymotion.devlocal](https://mail.easymotion.devlocal)
+Once you have cloned the repository you need to run a few commands in order to setup the environment
 
-> ⚠️ **HTTPs!** When you visit the https URIs, your browser will probably complain about connection being not private despite the certificate. This is ok since the development certificates are not signed by a real certification authority. Since it's a local connection, you should be able to proceed by clicking `Advanced > Proceed to website`. **You need to accept risks for both API and webapp to ensure communication between the two works**.
+- Run `pnpm env:bootstrap` to generate .env files with default variables
+- Run `pnpm install` to install dependencies
+- Run `pnpm services:up` to startup services (db, nginx, mailhog, ...)
+- Run `pnpm api:migrate` to apply database migrations
+- Run `pnpm api:seed` to seed the database
+- Run `pnpm all` to start all the applications
+- Visit
+  - **API Swagger** at [https://api.easymotion.devlocal/swagger](https://api.easymotion.devlocal/swagger)
+  - **Webapp** at [https://easymotion.devlocal](https://easymotion.devlocal)
+  - **MailHog** at [https://mail.easymotion.devlocal](https://mail.easymotion.devlocal)
+
+#### HTTPS and Certificates
+
+The nginx image will create some unsigned development certificates inside the gitignored `nginx/.ssl` folder. These certificates will allow https development but will required to be manually accepted by clicking `Advanced > Proceed to website` on both `api.easymotion.devlocal` and `easymotion.devlocal`. You will also need to skip validation when using tools such as Postman or CURL.
+
+In case you want to use trusted certificates for development, you can install [mkcert](https://github.com/FiloSottile/mkcert) and run
+
+```bash
+mkcert -install
+mkcert -key-file nginx/.ssl/dev.key -cert-file nginx/.ssl/dev.crt easymotion.devlocal *.easymotion.devlocal
+```
 
 ---
+
+### Useful commands
 
 #### Clean repository
 
@@ -71,7 +79,20 @@ pnpm clean
 pnpm test
 
 # Single project
-pnpm --filter [webapp|api] test
+pnpm --filter webapp test
+pnpm --filter api test
+```
+
+#### Apply DB migrations
+
+```bash
+pnpm api:migrate
+```
+
+#### Seed the DB
+
+```bash
+pnpm api:seed
 ```
 
 #### Regenerate prisma client
@@ -85,10 +106,10 @@ pnpm api:client
 #### Regenerate webapp client
 
 ```bash
-pnpm webapp:client
+pnpm openapi:generate
 ```
 
-#### Regenerate openapi schema
+#### Update openapi schema
 
 ```bash
 pnpm api:schema
@@ -123,7 +144,6 @@ docker compose logs -f [service-name]
 ```bash
 docker compose down # if services are running
 docker volume rm easymotion_pgdata
-docker volume rm easymotion_pgadmin_data
 ```
 
 #### Rebuild docker images
@@ -135,8 +155,20 @@ docker compose build
 #### Shutdown the services
 
 ```bash
-# add --remove-orphans if you get warnings about orphans containers
 pnpm services:down
+```
+
+---
+
+## DevContainers support
+
+The monorepo provides support for DevContainers. You can attach to the development container directly from VSCode or any other supported IDE and run the application from the container's shell as you would do for local development.
+
+If you develop on the container, ensure to reinstall dependencies from inside the devcontainer by running the following commands inside the container's shell:
+
+```bash
+pnpm clean
+pnpm install
 ```
 
 ---
