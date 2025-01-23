@@ -7,8 +7,9 @@
   "types": "./dist/Api.d.ts",
   "scripts": {
     "build": "tsc",
-    "generate": "swagger-typescript-api -p ./schema.json -o ./src",
-    "prepare": "pnpm generate && pnpm build",
+    "client": "swagger-typescript-api -p ./schema.json -o ./src",
+    "generate": "pnpm client && pnpm build",
+    "prepare": "pnpm generate",
     "clean": "rm -rf dist && rm -rf node_modules && rm -rf src"
   },
   "keywords": [],

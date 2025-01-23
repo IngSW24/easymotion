@@ -10,7 +10,7 @@
     "services:down": "docker compose -f docker-compose.yml -f docker-compose.dev.yml down",
     "env:bootstrap": "cp webapp/.env.example webapp/.env && cp api/.env.example api/.env",
     "clean": "rm -rf node_modules && pnpm -r clean",
-    "webapp:client": "swagger-typescript-api -p openapi/schema.json -o webapp/src/client",
+    "openapi:generate": "pnpm --filter openapi generate",
     "api:schema": "pnpm --filter api swagger:generate -- ../openapi/schema.json",
     "api:migrate": "pnpm --filter api prisma:migrate-dev",
     "api:client": "pnpm --filter api prisma:gen-client",
