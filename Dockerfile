@@ -1,12 +1,16 @@
 # Build the app
 
-FROM node:20-alpine AS base
+FROM node:20-slim AS base 
 
-RUN apk add --no-cache libc6-compat
-RUN npm i -g pnpm
+ARG VITE_API_URL ${VITE_API_URL}
+ENV VITE_API_URL=${VITE_API_URL}
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+
+RUN apt update
+RUN apt install -y openssl
 
 FROM base AS build
 
@@ -22,7 +26,6 @@ RUN mv webapp/dist /prod/webapp
 FROM build AS api
 
 ENV NODE_ENV=production
-RUN apk add --no-cache openssl
 
 COPY --from=build /prod/api /prod/api
 
@@ -31,7 +34,7 @@ EXPOSE 3000
 
 CMD ["npm", "run", "start:prod:migrate"]
 
-FROM build AS webapp
+FROM node:20-alpine AS webapp
 
 ENV NODE_ENV=production
 RUN npm i -g serve
