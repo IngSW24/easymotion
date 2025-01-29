@@ -6,10 +6,8 @@
   "main": "./dist/Api.js",
   "types": "./dist/Api.d.ts",
   "scripts": {
-    "build": "tsc",
-    "client": "swagger-typescript-api -p ./schema.json -o ./src",
-    "generate": "pnpm client && pnpm build",
-    "postinstall": "pnpm generate",
+    "build": "swagger-typescript-api -p ./schema.json -o ./src",
+    "postinstall": "pnpm build",
     "clean": "rm -rf dist && rm -rf node_modules && rm -rf src"
   },
   "keywords": [],
