@@ -6,7 +6,7 @@
   "main": "./dist/Api.js",
   "types": "./dist/Api.d.ts",
   "scripts": {
-    "build": "swagger-typescript-api -p ./schema.json -o ./src",
+    "build": "swagger-typescript-api -p ./schema.json -o ./src && tsc",
     "postinstall": "pnpm build",
     "clean": "rm -rf dist && rm -rf node_modules && rm -rf src"
   },
