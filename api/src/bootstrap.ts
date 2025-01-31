@@ -1,7 +1,11 @@
 import { HttpAdapterHost, NestFactory, Reflector } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import { ClassSerializerInterceptor, ValidationPipe } from "@nestjs/common";
+import {
+  ClassSerializerInterceptor,
+  INestApplication,
+  ValidationPipe,
+} from "@nestjs/common";
 import {
   API_DESCRIPTION,
   API_TITLE,
@@ -48,7 +52,7 @@ export async function bootstrap() {
   return app;
 }
 
-export function setupSwagger(app) {
+export function setupSwagger(app: INestApplication) {
   const config = new DocumentBuilder()
     .setTitle(API_TITLE)
     .setDescription(API_DESCRIPTION)
