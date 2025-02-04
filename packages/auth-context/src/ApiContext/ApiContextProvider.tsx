@@ -26,7 +26,7 @@ export default function ApiContextProvider(props: ApiContextProviderProps) {
       customFetch: (input, init) =>
         customFetch(props.apiBaseUrl, input, init, updateAccessToken),
     });
-  }, [accessToken]);
+  }, [accessToken, props.apiBaseUrl]);
 
   return (
     <ApiContext.Provider value={{ apiClient, updateAccessToken, accessToken }}>

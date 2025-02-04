@@ -9,7 +9,7 @@
     "services:up": "docker compose up -d",
     "services:down": "docker compose -f docker-compose.yml -f docker-compose.dev.yml down",
     "env:bootstrap": "cp webapp/.env.example webapp/.env && cp api/.env.example api/.env",
-    "clean": "rm -rf node_modules && pnpm -r clean",
+    "clean": "rm -rf node_modules && rm -rf .pnpm-store && pnpm -r clean",
     "openapi:generate": "pnpm --filter openapi build",
     "api:schema": "pnpm --filter api swagger:generate -- ../openapi/schema.json",
     "api:migrate": "pnpm --filter api prisma:migrate-dev",
