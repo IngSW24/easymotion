@@ -5,7 +5,8 @@
   "main": "index.js",
   "type": "module",
   "exports": {
-    "./react": "./react.js"
+    "./react": "./react.js",
+    "./nest": "./nest.js"
   },
   "scripts": {
     "clean": "rm -rf node_modules"
@@ -15,12 +16,16 @@
   "license": "ISC",
   "dependencies": {
     "@eslint/js": "^9.15.0",
+    "@typescript-eslint/eslint-plugin": "^8.23.0",
+    "@typescript-eslint/parser": "^8.23.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.16",
-    "typescript-eslint": "^8.19.1",
-    "globals": "^15.14.0"
+    "globals": "^15.14.0",
+    "typescript-eslint": "^8.19.1"
   },
   "peerDependencies": {
-    "eslint": "^9.17.0"
+    "eslint": "^9.0.0"
   }
 }
