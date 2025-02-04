@@ -13,6 +13,7 @@ import { Api } from "@easymotion/openapi";
  * @returns A `Promise<Response>` representing the fetch result, either the original response or the retried response.
  */
 const customFetch = async (
+  apiBaseUrl: string,
   input: RequestInfo | URL,
   init?: RequestInit,
   onAccessTokenUpdate?: (token: string) => void
@@ -30,7 +31,7 @@ const customFetch = async (
    * - This endpoint uses a refresh token (stored as an HTTP-only cookie) to obtain a new access token.
    */
   const api = new Api({
-    baseUrl: import.meta.env.VITE_API_URL,
+    baseUrl: apiBaseUrl,
     securityWorker: () => ({
       credentials: "include", // Ensures cookies are sent with the request to the refresh endpoint.
     }),

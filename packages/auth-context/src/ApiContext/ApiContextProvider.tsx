@@ -4,6 +4,7 @@ import customFetch from "./custom-fetch";
 import { Api } from "@easymotion/openapi";
 
 export interface ApiContextProviderProps {
+  apiBaseUrl: string;
   children: React.ReactNode;
 }
 
@@ -16,13 +17,14 @@ export default function ApiContextProvider(props: ApiContextProviderProps) {
 
   const apiClient = useMemo(() => {
     return new Api({
-      baseUrl: import.meta.env.VITE_API_URL,
+      baseUrl: props.apiBaseUrl,
       securityWorker: () => ({
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       }),
-      customFetch: (input, init) => customFetch(input, init, updateAccessToken),
+      customFetch: (input, init) =>
+        customFetch(props.apiBaseUrl, input, init, updateAccessToken),
     });
   }, [accessToken]);
 

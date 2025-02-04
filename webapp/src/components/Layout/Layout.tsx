@@ -19,7 +19,7 @@ import {
 import { Link } from "react-router";
 import { theme } from "../../theme/theme";
 import { PersonAdd } from "@mui/icons-material";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "@easymotion/auth-context";
 import { useState } from "react";
 import ProfileButton from "./ProfileButton";
 import AuthButtons from "./AuthButtons";

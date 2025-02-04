@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CreateCourseDto, UpdateCoursesDto } from "@easymotion/openapi";
 import { CourseFilters } from "../components/course/FilterBlock/types";
 import { useSnack } from "./useSnack";
-import { useApiClient } from "./useApiClient";
+import { useApiClient } from "@easymotion/auth-context";
 
 type UseCoursesProps = {
   fetchId?: string;

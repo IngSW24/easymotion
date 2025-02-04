@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from "react-router";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "@easymotion/auth-context";
 
 export default function UnauthenticatedRoute() {
   const { isAuthenticated } = useAuth();

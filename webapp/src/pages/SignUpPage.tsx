@@ -1,6 +1,6 @@
 import FormComponent from "../components/FormComponent/FormComponent";
 import { useState } from "react";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "@easymotion/auth-context";
 import { SignUpDto } from "@easymotion/openapi";
 import SignupFormCredentials from "../components/profile/SignupForms/SignupFormCredentials";
 import { useSnack } from "../hooks/useSnack";

@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from "react-router";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "@easymotion/auth-context";
 import { AuthUserDto } from "@easymotion/openapi";
 
 export interface AuthenticatedRouteProps {

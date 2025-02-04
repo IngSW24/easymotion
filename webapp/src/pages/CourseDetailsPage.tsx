@@ -4,7 +4,7 @@ import CourseDetail from "../components/course/CourseDetail/CourseDetail";
 import { useCourses } from "../hooks/useCourses";
 import LoadingSpinner from "../components/LoadingSpinner/LoadingSpinner";
 import { CourseEntity, UpdateCoursesDto } from "@easymotion/openapi";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "@easymotion/auth-context";
 import Hero from "../components/Hero/Hero";
 
 /**

@@ -2,3 +2,4 @@ packages:
   - webapp/
   - api/
   - openapi/
+  - packages/*

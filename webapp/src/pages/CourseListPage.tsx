@@ -1,7 +1,7 @@
 import { Container } from "@mui/material";
 import CourseList from "../components/course/CourseList/CourseList";
 import CreateCourseButton from "../components/atoms/Button/CreateCourseButton";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "@easymotion/auth-context";
 import Hero from "../components/Hero/Hero";
 import { AuthUserDto } from "@easymotion/openapi";
 

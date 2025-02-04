@@ -1,17 +1,15 @@
-import { useState } from "react";
-import { useApiClient } from "../../hooks/useApiClient";
+import { useMemo, useState } from "react";
+import { useApiClient } from "../hooks/useApiClient";
 import { AuthContext } from "./AuthContext";
 import { useInitialRefresh } from "./useInitialRefresh";
 import { Api, AuthUserDto, SignUpDto } from "@easymotion/openapi";
 
 export interface AuthContextProviderProps {
   children: React.ReactNode;
+  apiBaseUrl: string;
 }
 
 // Initialize an instance of the API client specifically for the auth endpoints
-const apiInstance = new Api({
-  baseUrl: import.meta.env.VITE_API_URL,
-}).auth;
 
 /**
  * Defines the provider for the Auth Context
@@ -22,6 +20,15 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
   const { children } = props;
 
   const { updateAccessToken, accessToken } = useApiClient();
+
+  const apiInstance = useMemo(
+    () =>
+      new Api({
+        baseUrl: props.apiBaseUrl,
+      }).auth,
+
+    [props.apiBaseUrl]
+  );
 
   // State to store the authenticated user's details
   const [user, setUser] = useState<AuthUserDto | null>(null);
