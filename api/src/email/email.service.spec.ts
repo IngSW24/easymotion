@@ -1,7 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { EmailService } from './email.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { EmailService } from "./email.service";
 
-describe('EmailService', () => {
+describe("EmailService", () => {
   let service: EmailService;
 
   beforeEach(async () => {
@@ -9,13 +9,13 @@ describe('EmailService', () => {
       providers: [
         EmailService,
         {
-          provide: 'CONFIGURATION(smtp)',
+          provide: "CONFIGURATION(smtp)",
           useValue: {
-            host: 'test-host',
-            port: '2525',
-            secure: 'true',
-            user: 'test-user',
-            pass: 'test-pass',
+            host: "test-host",
+            port: "2525",
+            secure: "true",
+            user: "test-user",
+            pass: "test-pass",
           },
         },
       ],
@@ -24,7 +24,7 @@ describe('EmailService', () => {
     service = module.get<EmailService>(EmailService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 });

@@ -1,6 +1,6 @@
-import { PrismaClient } from '@prisma/client';
-import courses from './seed-data/courses';
-import getUsers from './seed-data/users';
+import { PrismaClient } from "@prisma/client";
+import courses from "./seed-data/courses";
+import getUsers from "./seed-data/users";
 
 const prisma = new PrismaClient();
 
@@ -19,7 +19,7 @@ async function main() {
         where: { id: e.id },
         update: {},
         create: { ...e },
-      }),
+      })
   );
 }
 

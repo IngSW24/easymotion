@@ -1,0 +1,9 @@
+.git
+node_modules
+.env*
+dist
+node_modules
+nginx
+.vscode
+.devcontainer
+.github

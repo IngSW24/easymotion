@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "outDir": "dist", // Compiled files go here
+    "module": "ESNext", // For ESM
+    "target": "ESNext", // Modern JavaScript
+    "moduleResolution": "bundler",
+    "declaration": true, // Generates .d.ts files for type declarations
+    "strict": true, // Optional, but ensures strict TypeScript checks
+    "esModuleInterop": true, // For compatibility with CommonJS imports
+    "skipLibCheck": true // Speeds up compilation
+  },
+  "include": ["src/**/*.ts"]
+}

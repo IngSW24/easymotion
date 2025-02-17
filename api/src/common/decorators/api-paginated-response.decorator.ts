@@ -1,8 +1,8 @@
-import { Type, applyDecorators } from '@nestjs/common';
-import { ApiExtraModels, ApiOkResponse, getSchemaPath } from '@nestjs/swagger';
+import { Type, applyDecorators } from "@nestjs/common";
+import { ApiExtraModels, ApiOkResponse, getSchemaPath } from "@nestjs/swagger";
 
 export const ApiPaginatedResponse = <TModel extends Type<any>>(
-  model: TModel,
+  model: TModel
 ) => {
   return applyDecorators(
     ApiExtraModels(model),
@@ -13,36 +13,36 @@ export const ApiPaginatedResponse = <TModel extends Type<any>>(
           {
             properties: {
               data: {
-                type: 'array',
+                type: "array",
                 items: { $ref: getSchemaPath(model) },
               },
             },
-            required: ['data'],
+            required: ["data"],
           },
           {
             properties: {
               meta: {
-                type: 'object',
+                type: "object",
                 properties: {
-                  items: { type: 'number' },
-                  hasNextPage: { type: 'boolean' },
-                  currentPage: { type: 'number' },
-                  totalItems: { type: 'number' },
-                  totalPages: { type: 'number' },
+                  items: { type: "number" },
+                  hasNextPage: { type: "boolean" },
+                  currentPage: { type: "number" },
+                  totalItems: { type: "number" },
+                  totalPages: { type: "number" },
                 },
                 required: [
-                  'items',
-                  'hasNextPage',
-                  'currentPage',
-                  'totalItems',
-                  'totalPages',
+                  "items",
+                  "hasNextPage",
+                  "currentPage",
+                  "totalItems",
+                  "totalPages",
                 ],
               },
             },
-            required: ['meta'],
+            required: ["meta"],
           },
         ],
       },
-    }),
+    })
   );
 };

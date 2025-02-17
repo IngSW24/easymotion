@@ -13,7 +13,7 @@ import AuthenticationWrapper from "./AuthenticatedRoute";
 import AuthenticatedRoute from "./AuthenticatedRoute";
 import TermsOfServicePage from "../pages/TermsOfServicePage";
 import UnauthenticatedRoute from "./UnauthenticatedRoute";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "@easymotion/auth-context";
 
 const menuEntries: MenuEntry[] = [
   {

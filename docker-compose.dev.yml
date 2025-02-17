@@ -1,0 +1,16 @@
+services:
+  devcontainer:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    restart: "no"
+    environment:
+      - DEVCONTAINER_DB_HOST=db
+    volumes:
+      - .:/workspace:cached
+    command: sleep infinity
+    stop_grace_period: 1s
+
+  nginx:
+    volumes:
+      - "./nginx/dev.docker.conf:/etc/nginx/conf.d/default.conf"

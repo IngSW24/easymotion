@@ -7,17 +7,17 @@ import {
   Delete,
   Put,
   Query,
-} from '@nestjs/common';
-import { CoursesService } from './courses.service';
-import { CreateCourseDto } from './dto/create-course.dto';
-import { UpdateCoursesDto } from './dto/update-course.dto';
-import { CourseEntity } from './dto/course.dto';
-import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
-import { PaginationFilter } from 'src/common/dto/pagination-filter.dto';
-import { ApiPaginatedResponse } from 'src/common/decorators/api-paginated-response.decorator';
-import UseAuth from 'src/auth/decorators/auth-with-role.decorator';
+} from "@nestjs/common";
+import { CoursesService } from "./courses.service";
+import { CreateCourseDto } from "./dto/create-course.dto";
+import { UpdateCoursesDto } from "./dto/update-course.dto";
+import { CourseEntity } from "./dto/course.dto";
+import { ApiCreatedResponse, ApiOkResponse } from "@nestjs/swagger";
+import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
+import { ApiPaginatedResponse } from "src/common/decorators/api-paginated-response.decorator";
+import UseAuth from "src/auth/decorators/auth-with-role.decorator";
 
-@Controller('courses')
+@Controller("courses")
 export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
 
@@ -27,7 +27,7 @@ export class CoursesController {
    * @returns the created course
    */
   @Post()
-  @UseAuth(['admin', 'physiotherapist'])
+  @UseAuth(["admin", "physiotherapist"])
   @ApiCreatedResponse({ type: CourseEntity })
   create(@Body() createCourseDto: CreateCourseDto) {
     return this.coursesService.create(createCourseDto);
@@ -48,9 +48,9 @@ export class CoursesController {
    * @param id the course uuid
    * @returns the course with the given id
    */
-  @Get(':id')
+  @Get(":id")
   @ApiOkResponse({ type: CourseEntity })
-  findOne(@Param('id') id: string) {
+  findOne(@Param("id") id: string) {
     return this.coursesService.findOne(id);
   }
 
@@ -60,10 +60,10 @@ export class CoursesController {
    * @param updateCoursesDto fields to update
    * @returns the updated course
    */
-  @Put(':id')
+  @Put(":id")
   @ApiOkResponse({ type: CourseEntity })
-  @UseAuth(['admin', 'physiotherapist'])
-  update(@Param('id') id: string, @Body() updateCoursesDto: UpdateCoursesDto) {
+  @UseAuth(["admin", "physiotherapist"])
+  update(@Param("id") id: string, @Body() updateCoursesDto: UpdateCoursesDto) {
     return this.coursesService.update(id, updateCoursesDto);
   }
 
@@ -71,10 +71,10 @@ export class CoursesController {
    * Delete a course by its id
    * @param id the course uuid
    */
-  @Delete(':id')
+  @Delete(":id")
   @ApiOkResponse()
-  @UseAuth(['admin', 'physiotherapist'])
-  remove(@Param('id') id: string) {
+  @UseAuth(["admin", "physiotherapist"])
+  remove(@Param("id") id: string) {
     return this.coursesService.remove(id);
   }
 }

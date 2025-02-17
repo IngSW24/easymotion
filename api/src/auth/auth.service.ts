@@ -1,28 +1,28 @@
-import { BadRequestException, Inject } from '@nestjs/common';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { BadRequestException, Inject } from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
 import {
   isSuccessResult,
   resultToHttpException,
-} from 'src/common/types/result';
-import { UserManager } from 'src/users/user.manager';
-import { SignUpDto } from './dto/actions/sign-up.dto';
-import { Prisma } from '@prisma/client';
-import { EmailDto } from './dto/actions/email.dto';
-import { PasswordUpdateDto } from './dto/actions/password-update.dto';
-import { PasswordChangeDto } from './dto/actions/password-change.dto';
-import { OtpSwitchDto } from './dto/actions/otp-switch.dto';
-import { OtpLoginDto } from './dto/actions/otp-login.dto';
-import { EmailService } from 'src/email/email.service';
-import { EmailConfirmDto } from './dto/actions/email-confirm.dto';
-import { plainToInstance } from 'class-transformer';
-import { AuthUserDto } from './dto/auth-user/auth-user.dto';
-import { ConfigType } from '@nestjs/config';
-import jwtConfig from 'src/config/jwt.config';
-import { JwtPayloadDto } from './dto/auth-user/jwt-payload.dto';
-import { UpdateAuthUserDto } from './dto/auth-user/update-auth-user.dto';
-import { generateEmailConfirmMessage } from './email-messages/email-confirm.message';
-import frontendConfig from 'src/config/frontend.config';
+} from "src/common/types/result";
+import { UserManager } from "src/users/user.manager";
+import { SignUpDto } from "./dto/actions/sign-up.dto";
+import { Prisma } from "@prisma/client";
+import { EmailDto } from "./dto/actions/email.dto";
+import { PasswordUpdateDto } from "./dto/actions/password-update.dto";
+import { PasswordChangeDto } from "./dto/actions/password-change.dto";
+import { OtpSwitchDto } from "./dto/actions/otp-switch.dto";
+import { OtpLoginDto } from "./dto/actions/otp-login.dto";
+import { EmailService } from "src/email/email.service";
+import { EmailConfirmDto } from "./dto/actions/email-confirm.dto";
+import { plainToInstance } from "class-transformer";
+import { AuthUserDto } from "./dto/auth-user/auth-user.dto";
+import { ConfigType } from "@nestjs/config";
+import jwtConfig from "src/config/jwt.config";
+import { JwtPayloadDto } from "./dto/auth-user/jwt-payload.dto";
+import { UpdateAuthUserDto } from "./dto/auth-user/update-auth-user.dto";
+import { generateEmailConfirmMessage } from "./email-messages/email-confirm.message";
+import frontendConfig from "src/config/frontend.config";
 
 @Injectable()
 export class AuthService {
@@ -33,7 +33,7 @@ export class AuthService {
     @Inject(jwtConfig.KEY)
     private readonly configService: ConfigType<typeof jwtConfig>,
     @Inject(frontendConfig.KEY)
-    private readonly frontendConfigService: ConfigType<typeof frontendConfig>,
+    private readonly frontendConfigService: ConfigType<typeof frontendConfig>
   ) {}
 
   /**
@@ -57,7 +57,7 @@ export class AuthService {
 
     const isValidPwd = await this.userManager.verifyPassword(
       user.passwordHash,
-      password,
+      password
     );
 
     if (!isValidPwd) {
@@ -100,7 +100,7 @@ export class AuthService {
           { sub: user.id },
           {
             expiresIn: this.configService.refreshExpiresIn,
-          },
+          }
         ),
       },
     ];
@@ -149,7 +149,7 @@ export class AuthService {
    */
   async updateUserProfile(
     userId: string,
-    updateAuthUserDto: UpdateAuthUserDto,
+    updateAuthUserDto: UpdateAuthUserDto
   ) {
     const result = await this.userManager.updateUser(userId, updateAuthUserDto);
 
@@ -200,12 +200,12 @@ export class AuthService {
       lastName,
       phoneNumber: phoneNumber || null,
       birthDate: birthDate || null,
-      role: 'USER',
+      role: "USER",
     };
 
     if (password !== repeatedPassword) {
       throw new BadRequestException(
-        "Password and repeated password don't correspond",
+        "Password and repeated password don't correspond"
       );
     }
 
@@ -216,18 +216,18 @@ export class AuthService {
     }
 
     const emailToken = await this.userManager.generateEmailConfirmationToken(
-      result.data.id,
+      result.data.id
     );
 
     await this.emailService.sendEmail(
       result.data.email,
-      'Completa la registrazione in EasyMotion',
+      "Completa la registrazione in EasyMotion",
       generateEmailConfirmMessage(
         this.frontendConfigService.url,
         emailToken,
         result.data.id,
-        result.data.email,
-      ),
+        result.data.email
+      )
     );
   }
 
@@ -243,7 +243,7 @@ export class AuthService {
    */
   async changePassword(
     userId: string,
-    passwordChangeDto: PasswordChangeDto,
+    passwordChangeDto: PasswordChangeDto
   ): Promise<void> {
     const user = await this.getUserByIdOrThrow(userId);
 
@@ -252,7 +252,7 @@ export class AuthService {
     const result = await this.userManager.changePassword(
       user.id,
       oldPassword,
-      newPassword,
+      newPassword
     );
 
     if (!isSuccessResult(result)) {
@@ -275,13 +275,13 @@ export class AuthService {
     }
 
     const resetToken = await this.userManager.generatePasswordResetToken(
-      user.data.id,
+      user.data.id
     );
 
     await this.emailService.sendEmail(
       user.data.email,
-      'Email reset token',
-      `Reset token is ${resetToken}`,
+      "Email reset token",
+      `Reset token is ${resetToken}`
     );
   }
 
@@ -302,7 +302,7 @@ export class AuthService {
     const result = await this.userManager.resetPassword(
       user.id,
       token,
-      newPassword,
+      newPassword
     );
 
     if (!isSuccessResult(result)) {
@@ -318,11 +318,11 @@ export class AuthService {
    */
   async switchTwoFactorEnabled(
     userId: string,
-    otpSwitchDto: OtpSwitchDto,
+    otpSwitchDto: OtpSwitchDto
   ): Promise<OtpSwitchDto> {
     const currentStatus = await this.userManager.setTwoFactorEnabled(
       userId,
-      otpSwitchDto.enabled,
+      otpSwitchDto.enabled
     );
 
     return { enabled: currentStatus };
@@ -342,7 +342,7 @@ export class AuthService {
     const result = await this.userManager.validateTwoFactor(user.id, otp);
 
     if (!result) {
-      throw new UnauthorizedException('Invalid OTP');
+      throw new UnauthorizedException("Invalid OTP");
     }
 
     return this.getLoginResponse(user);
@@ -356,18 +356,18 @@ export class AuthService {
   async requestEmailUpdate(userId: string, emailDto: EmailDto) {
     const user = await this.getUserByIdOrThrow(userId);
     const token = await this.userManager.generateEmailConfirmationToken(
-      user.id,
+      user.id
     );
 
     await this.emailService.sendEmail(
       emailDto.email,
-      'Conferma la tua mail di EasyMotion',
+      "Conferma la tua mail di EasyMotion",
       generateEmailConfirmMessage(
         this.frontendConfigService.url,
         token,
         user.id,
-        emailDto.email,
-      ),
+        emailDto.email
+      )
     );
   }
 
@@ -382,19 +382,19 @@ export class AuthService {
     if (user.email === emailConfirmDto.email && user.isEmailVerified) {
       result = await this.userManager.confirmEmail(
         user.id,
-        emailConfirmDto.token,
+        emailConfirmDto.token
       );
     } else {
       result = await this.userManager.resetEmail(
         user.id,
         emailConfirmDto.token,
-        emailConfirmDto.email,
+        emailConfirmDto.email
       );
     }
 
     if (!isSuccessResult(result)) {
       throw new BadRequestException({
-        message: 'Data provided is not valid for email confirmation',
+        message: "Data provided is not valid for email confirmation",
       });
     }
 

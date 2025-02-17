@@ -1,12 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { CreateCourseDto } from './dto/create-course.dto';
-import { UpdateCoursesDto } from './dto/update-course.dto';
-import { CourseEntity } from './dto/course.dto';
-import { PrismaService } from 'nestjs-prisma';
-import { PaginatedOutput } from 'src/common/dto/paginated-output.dto';
-import { PaginationFilter } from 'src/common/dto/pagination-filter.dto';
-import { CrudService } from 'src/common/abstractions/crud-service.interface';
-import { plainToInstance } from 'class-transformer';
+import { Injectable } from "@nestjs/common";
+import { CreateCourseDto } from "./dto/create-course.dto";
+import { UpdateCoursesDto } from "./dto/update-course.dto";
+import { CourseEntity } from "./dto/course.dto";
+import { PrismaService } from "nestjs-prisma";
+import { PaginatedOutput } from "src/common/dto/paginated-output.dto";
+import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
+import { CrudService } from "src/common/abstractions/crud-service.interface";
+import { plainToInstance } from "class-transformer";
 
 @Injectable()
 /**
@@ -42,7 +42,7 @@ export class CoursesService
    * @returns A paginated output with course data and metadata.
    */
   async findAll(
-    pagination: PaginationFilter,
+    pagination: PaginationFilter
   ): Promise<PaginatedOutput<CourseEntity>> {
     const { page, perPage } = pagination;
 

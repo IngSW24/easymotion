@@ -1,6 +1,6 @@
 import { Button, Checkbox, FormControlLabel, TextField } from "@mui/material";
 import { useState } from "react";
-import { SignUpDto } from "../../../client/Api";
+import { SignUpDto } from "@easymotion/openapi";
 import {
   ensurePasswordConstraints,
   isValidEmail,

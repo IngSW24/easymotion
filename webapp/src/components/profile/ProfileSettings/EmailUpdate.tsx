@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import { useApiClient } from "../../../hooks/useApiClient";
+import { useApiClient } from "@easymotion/auth-context";
 import { isHttpResponseError } from "../../../data/guards";
 import { isValidEmail } from "../../../data/validators";
 

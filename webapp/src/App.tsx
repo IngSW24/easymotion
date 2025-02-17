@@ -4,8 +4,8 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { SnackbarProvider } from "notistack";
 import SnackbarCloseButton from "./components/Snackbar/SnackbarCloseButton";
 import DialogContextProvider from "./context/DialogContext/DialogContextProvider";
-import ApiContextProvider from "./context/ApiContext/ApiContextProvider";
-import AuthContextProvider from "./context/AuthContext/AuthContextProvider";
+import { ApiContextProvider } from "@easymotion/auth-context";
+import { AuthContextProvider } from "@easymotion/auth-context";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
 
@@ -26,8 +26,8 @@ const queryClient = new QueryClient({
 export default function App() {
   return (
     <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <ApiContextProvider>
-        <AuthContextProvider>
+      <ApiContextProvider apiBaseUrl={import.meta.env.VITE_API_URL}>
+        <AuthContextProvider apiBaseUrl={import.meta.env.VITE_API_URL}>
           <QueryClientProvider client={queryClient}>
             <DialogContextProvider>
               <SnackbarProvider

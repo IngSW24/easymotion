@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "@easymotion/auth-context";
 import { Logout, Settings } from "@mui/icons-material";
 
 export default function ProfileButton() {

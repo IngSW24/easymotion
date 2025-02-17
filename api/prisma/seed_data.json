@@ -40,11 +40,7 @@
       "num_registered_members": 10,
       "tags": ["Intenso", "Potenza", "Avanzato", "Serale"],
       "thumbnail_path": null,
-      "schedule": [
-        "Lunedì alle 18:00",
-        "Mercoledì alle 18:00",
-        "Venerdì alle 18:00"
-      ]
+      "schedule": ["Lunedì alle 18:00", "Mercoledì alle 18:00", "Venerdì alle 18:00"]
     },
     {
       "id": "3e3af945-973d-4851-8a69-d7e3f11acfc2",

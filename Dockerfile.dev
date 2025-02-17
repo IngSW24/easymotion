@@ -1,0 +1,14 @@
+FROM node:20-alpine
+
+RUN apk add --no-cache libc6-compat openssl openssh curl git zsh neovim
+
+RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+RUN npm i -g @nestjs/cli
+RUN npm i -g pnpm
+
+WORKDIR /workspace
+
+ENV NODE_ENV=development
+ENV SHELL=/bin/zsh
+ENV EDITOR=nvim

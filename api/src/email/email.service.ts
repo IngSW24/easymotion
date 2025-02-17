@@ -1,7 +1,7 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { ConfigType } from '@nestjs/config';
-import * as nodemailer from 'nodemailer';
-import smtpConfig from 'src/config/smtp.config';
+import { Inject, Injectable } from "@nestjs/common";
+import { ConfigType } from "@nestjs/config";
+import * as nodemailer from "nodemailer";
+import smtpConfig from "src/config/smtp.config";
 
 @Injectable()
 export class EmailService {
@@ -9,7 +9,7 @@ export class EmailService {
 
   constructor(
     @Inject(smtpConfig.KEY)
-    private readonly smtpConfiguration: ConfigType<typeof smtpConfig>,
+    private readonly smtpConfiguration: ConfigType<typeof smtpConfig>
   ) {
     this.transporter = nodemailer.createTransport({
       host: smtpConfiguration.host,
@@ -18,13 +18,13 @@ export class EmailService {
       auth:
         smtpConfiguration.user && smtpConfiguration.pass
           ? {
-              user: smtpConfiguration.user || '',
-              pass: smtpConfiguration.pass || '',
+              user: smtpConfiguration.user || "",
+              pass: smtpConfiguration.pass || "",
             }
           : undefined,
       tls: {
-        minVersion: 'TLSv1',
-        ciphers: 'HIGH:MEDIUM:!aNULL:!eNULL:@STRENGTH:!DH:!kEDH',
+        minVersion: "TLSv1",
+        ciphers: "HIGH:MEDIUM:!aNULL:!eNULL:@STRENGTH:!DH:!kEDH",
       },
     });
   }
@@ -37,7 +37,7 @@ export class EmailService {
    */
   async sendEmail(to: string, subject: string, body: string): Promise<void> {
     const mailOptions = {
-      from: this.smtpConfiguration.user || 'EasyMotion <info@easymotion.dev>',
+      from: this.smtpConfiguration.user || "EasyMotion <info@easymotion.dev>",
       to,
       subject,
       text: body,

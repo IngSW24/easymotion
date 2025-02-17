@@ -11,25 +11,25 @@ import {
   Req,
   Res,
   UseGuards,
-} from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { SignUpDto } from './dto/actions/sign-up.dto';
-import { EmailDto } from './dto/actions/email.dto';
-import { PasswordUpdateDto } from './dto/actions/password-update.dto';
-import { PasswordChangeDto } from './dto/actions/password-change.dto';
-import { OtpLoginDto } from './dto/actions/otp-login.dto';
-import { EmailConfirmDto } from './dto/actions/email-confirm.dto';
-import { LocalAuthGuard } from './guards/local-auth.guard';
-import { ApiBody, ApiResponse, IntersectionType } from '@nestjs/swagger';
-import { SignInDto } from './dto/actions/sign-in.dto';
-import { DateTime } from 'luxon';
-import { RefreshGuard } from './guards/refresh.guard';
-import { AuthUserDto } from './dto/auth-user/auth-user.dto';
-import { AccessTokenDto } from './dto/actions/access-token.dto';
-import UseAuth from './decorators/auth-with-role.decorator';
-import { UpdateAuthUserDto } from './dto/auth-user/update-auth-user.dto';
+} from "@nestjs/common";
+import { AuthService } from "./auth.service";
+import { SignUpDto } from "./dto/actions/sign-up.dto";
+import { EmailDto } from "./dto/actions/email.dto";
+import { PasswordUpdateDto } from "./dto/actions/password-update.dto";
+import { PasswordChangeDto } from "./dto/actions/password-change.dto";
+import { OtpLoginDto } from "./dto/actions/otp-login.dto";
+import { EmailConfirmDto } from "./dto/actions/email-confirm.dto";
+import { LocalAuthGuard } from "./guards/local-auth.guard";
+import { ApiBody, ApiResponse, IntersectionType } from "@nestjs/swagger";
+import { SignInDto } from "./dto/actions/sign-in.dto";
+import { DateTime } from "luxon";
+import { RefreshGuard } from "./guards/refresh.guard";
+import { AuthUserDto } from "./dto/auth-user/auth-user.dto";
+import { AccessTokenDto } from "./dto/actions/access-token.dto";
+import UseAuth from "./decorators/auth-with-role.decorator";
+import { UpdateAuthUserDto } from "./dto/auth-user/update-auth-user.dto";
 
-@Controller('auth')
+@Controller("auth")
 export class AuthController {
   constructor(private authService: AuthService) {}
 
@@ -39,11 +39,11 @@ export class AuthController {
    * @param refreshToken The refresh token to set in the cookie.
    */
   private setRefreshTokenCookie(res: any, refreshToken: string) {
-    res.cookie('refreshToken', refreshToken, {
+    res.cookie("refreshToken", refreshToken, {
       expires: DateTime.now().plus({ days: 5 }).toJSDate(),
       httpOnly: true,
-      sameSite: 'strict',
-      secure: process.env.NODE_ENV === 'production',
+      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
     });
   }
 
@@ -52,7 +52,7 @@ export class AuthController {
    * @param res The response object.
    */
   private clearRefreshTokenCookie(res: any) {
-    res.clearCookie('refreshToken');
+    res.clearCookie("refreshToken");
   }
 
   /**
@@ -61,11 +61,11 @@ export class AuthController {
    * @param res The response object.
    */
   @UseGuards(LocalAuthGuard)
-  @Post('login')
+  @Post("login")
   @ApiBody({ type: SignInDto })
   @ApiResponse({
     status: 200,
-    description: 'Successful login',
+    description: "Successful login",
     type: IntersectionType(AccessTokenDto, AuthUserDto),
   })
   async login(@Req() req, @Res() res): Promise<void> {
@@ -82,7 +82,7 @@ export class AuthController {
    * @param res The response object.
    */
   @UseGuards(RefreshGuard)
-  @Post('refresh')
+  @Post("refresh")
   @ApiResponse({
     status: 200,
     type: IntersectionType(AccessTokenDto, AuthUserDto),
@@ -99,7 +99,7 @@ export class AuthController {
    * Logs out the user by clearing the refresh token cookie.
    * @param res The response object.
    */
-  @Post('logout')
+  @Post("logout")
   @UseAuth()
   async logout(@Res() res) {
     this.clearRefreshTokenCookie(res);
@@ -111,7 +111,7 @@ export class AuthController {
    * @param req The request object, containing the user's ID.
    */
   @UseAuth()
-  @Get('profile')
+  @Get("profile")
   getUserProfile(@Req() req): Promise<AuthUserDto> {
     return this.authService.getUserProfile(req.user.sub);
   }
@@ -122,10 +122,10 @@ export class AuthController {
    * @param updateProfileDto The data to update the user's profile.
    */
   @UseAuth()
-  @Put('profile')
+  @Put("profile")
   updateUserProfile(
     @Req() req,
-    @Body() updateProfileDto: UpdateAuthUserDto,
+    @Body() updateProfileDto: UpdateAuthUserDto
   ): Promise<AuthUserDto> {
     return this.authService.updateUserProfile(req.user.sub, updateProfileDto);
   }
@@ -136,7 +136,7 @@ export class AuthController {
    * @param res The response object.
    */
   @UseAuth()
-  @Delete('profile')
+  @Delete("profile")
   async deleteUserProfile(@Req() req, @Res() res) {
     this.clearRefreshTokenCookie(res);
     await this.authService.deleteUserProfile(req.user.sub);
@@ -147,7 +147,7 @@ export class AuthController {
    * @param signUpDto The data for creating the new account.
    */
   @HttpCode(HttpStatus.OK)
-  @Post('signup/customer')
+  @Post("signup/customer")
   signUp(@Body() signUpDto: SignUpDto) {
     return this.authService.customerSignup(signUpDto);
   }
@@ -156,7 +156,7 @@ export class AuthController {
    * Requests a password reset for a user.
    * @param resetPasswordRequestDto The email of the user requesting a reset.
    */
-  @Post('password')
+  @Post("password")
   requestPasswordReset(@Body() resetPasswordRequestDto: EmailDto) {
     return this.authService.requestResetPassword(resetPasswordRequestDto);
   }
@@ -165,7 +165,7 @@ export class AuthController {
    * Updates the password for a user.
    * @param passwordUpdateDto The data to update the password.
    */
-  @Post('password/update')
+  @Post("password/update")
   updatePassword(@Body() passwordUpdateDto: PasswordUpdateDto) {
     return this.authService.updatePassword(passwordUpdateDto);
   }
@@ -176,7 +176,7 @@ export class AuthController {
    * @param passwordChangeDto The data to change the password.
    */
   @UseAuth()
-  @Post('password/change')
+  @Post("password/change")
   changePassword(@Req() req, @Body() passwordChangeDto: PasswordChangeDto) {
     const userId = req.user.sub;
     return this.authService.changePassword(userId, passwordChangeDto);
@@ -188,11 +188,11 @@ export class AuthController {
    * @param value The value to enable or disable two-factor authentication.
    */
   @UseAuth()
-  @Put('otp')
+  @Put("otp")
   switchOtp(@Req() req, @Query() value: string) {
     const userId = req.user.sub;
     return this.authService.switchTwoFactorEnabled(userId, {
-      enabled: value === 'true',
+      enabled: value === "true",
     });
   }
 
@@ -200,7 +200,7 @@ export class AuthController {
    * Signs in a user using a one-time password (OTP).
    * @param otpLoginDto The OTP login data.
    */
-  @Post('login/otp')
+  @Post("login/otp")
   signInOtp(@Body() otpLoginDto: OtpLoginDto) {
     return this.authService.signInOtp(otpLoginDto);
   }
@@ -211,7 +211,7 @@ export class AuthController {
    * @param emailDto The new email address.
    */
   @UseAuth()
-  @Post('email')
+  @Post("email")
   requestEmailUpdate(@Req() req, @Body() emailDto: EmailDto) {
     const userId = req.user.sub;
     return this.authService.requestEmailUpdate(userId, emailDto);
@@ -222,15 +222,15 @@ export class AuthController {
    * @param emailConfirmDto The email confirmation data.
    * @param res The response object.
    */
-  @Put('email')
+  @Put("email")
   @ApiResponse({
     status: 200,
-    description: 'Email confirmation',
+    description: "Email confirmation",
     type: IntersectionType(AccessTokenDto, AuthUserDto),
   })
   async confirmEmail(
     @Body() emailConfirmDto: EmailConfirmDto,
-    @Res() res,
+    @Res() res
   ): Promise<void> {
     const [user, refresh] =
       await this.authService.confirmEmail(emailConfirmDto);

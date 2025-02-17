@@ -1,21 +1,21 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { UsersService } from './users.service';
-import { PrismaService } from 'nestjs-prisma';
-import { UserManager } from './user.manager';
-import { CreateUserDto } from './dto/create-user.dto';
-import { ApplicationUserDto } from './dto/application-user.dto';
-import { plainToInstance } from 'class-transformer';
-import { HttpException, HttpStatus } from '@nestjs/common';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { Test, TestingModule } from "@nestjs/testing";
+import { UsersService } from "./users.service";
+import { PrismaService } from "nestjs-prisma";
+import { UserManager } from "./user.manager";
+import { CreateUserDto } from "./dto/create-user.dto";
+import { ApplicationUserDto } from "./dto/application-user.dto";
+import { plainToInstance } from "class-transformer";
+import { HttpException, HttpStatus } from "@nestjs/common";
+import { UpdateUserDto } from "./dto/update-user.dto";
 import {
   applicationUserDtoMock,
   createUserDtoMock,
   applicationUsersList,
   mappedUserPlainToInstanceMock,
   updateUserDtoMock,
-} from 'test/mocks/users.mock';
+} from "test/mocks/users.mock";
 
-describe('UsersService', () => {
+describe("UsersService", () => {
   let service: UsersService;
 
   // Mock PrismaService
@@ -60,13 +60,13 @@ describe('UsersService', () => {
     jest.clearAllMocks();
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 
   // #region Create method test
 
-  it('should create a new user successfully', async () => {
+  it("should create a new user successfully", async () => {
     const newUserInputData: CreateUserDto = createUserDtoMock();
     const mappedUserPlainToInstance = mappedUserPlainToInstanceMock();
 
@@ -78,38 +78,38 @@ describe('UsersService', () => {
     expect(userManagerMock.createUser).toHaveBeenCalledWith(
       {
         ...mappedUserPlainToInstance,
-        passwordHash: '',
+        passwordHash: "",
       },
-      newUserInputData.password,
+      newUserInputData.password
     );
 
     expect(output).toEqual(mappedUserPlainToInstance);
   });
 
-  it('should throw an HttpException if user creation fails', async () => {
+  it("should throw an HttpException if user creation fails", async () => {
     const newUserInputData: CreateUserDto = createUserDtoMock();
 
     const mappedUser = plainToInstance(ApplicationUserDto, newUserInputData, {
       excludeExtraneousValues: true,
     });
 
-    const createUserInput = { ...mappedUser, passwordHash: '' };
+    const createUserInput = { ...mappedUser, passwordHash: "" };
 
     const errorResult = {
       success: false,
-      errors: ['User with this email already exists'],
+      errors: ["User with this email already exists"],
       code: HttpStatus.CONFLICT,
     };
 
     userManagerMock.createUser.mockResolvedValue(errorResult);
 
     await expect(service.create(newUserInputData)).rejects.toThrow(
-      HttpException,
+      HttpException
     );
 
     expect(userManagerMock.createUser).toHaveBeenCalledWith(
       createUserInput,
-      newUserInputData.password,
+      newUserInputData.password
     );
   });
 
@@ -118,7 +118,7 @@ describe('UsersService', () => {
   // #region FindAll method test
 
   // Successfull data return
-  it('should return paginated users with metadata', async () => {
+  it("should return paginated users with metadata", async () => {
     const users = applicationUsersList();
 
     const pagination = { page: 0, perPage: 5 };
@@ -150,7 +150,7 @@ describe('UsersService', () => {
   });
 
   // Successful empty list data return
-  it('should handle an empty list of users', async () => {
+  it("should handle an empty list of users", async () => {
     const pagination = { page: 1, perPage: 2 };
 
     // Mock Prisma results
@@ -182,7 +182,7 @@ describe('UsersService', () => {
   // #region FindOne method test
 
   // Successful data return
-  it('should return user data succesfully', async () => {
+  it("should return user data succesfully", async () => {
     const user: ApplicationUserDto = applicationUserDtoMock();
 
     const result = { success: true, data: user };
@@ -197,12 +197,12 @@ describe('UsersService', () => {
   });
 
   // User not found
-  it('should throw an HttpException if user is not found', async () => {
+  it("should throw an HttpException if user is not found", async () => {
     const user = applicationUsersList()[0];
 
     const result = {
       success: false,
-      errors: ['User not found'],
+      errors: ["User not found"],
       code: HttpStatus.NOT_FOUND,
     };
 
@@ -217,7 +217,7 @@ describe('UsersService', () => {
   // #region FindOneByEmail method test
 
   // Successful data return
-  it('should found and return user data succesfully by email', async () => {
+  it("should found and return user data succesfully by email", async () => {
     const user: ApplicationUserDto = applicationUserDtoMock();
 
     const result = { success: true, data: user };
@@ -232,19 +232,19 @@ describe('UsersService', () => {
   });
 
   // User not found
-  it('should throw an HttpException if user is not found', async () => {
+  it("should throw an HttpException if user is not found", async () => {
     const user = applicationUsersList()[0];
 
     const result = {
       success: false,
-      errors: ['User not found'],
+      errors: ["User not found"],
       code: HttpStatus.NOT_FOUND,
     };
 
     userManagerMock.getUserByEmail.mockResolvedValue(result);
 
     await expect(service.findOneByEmail(user.email)).rejects.toThrow(
-      HttpException,
+      HttpException
     );
 
     expect(userManagerMock.getUserByEmail).toHaveBeenCalledWith(user.email);
@@ -253,7 +253,7 @@ describe('UsersService', () => {
 
   // #region Update method test
 
-  it('should update an existing user successfully', async () => {
+  it("should update an existing user successfully", async () => {
     const user = applicationUsersList()[0];
     const dto: UpdateUserDto = updateUserDtoMock();
 
@@ -270,13 +270,13 @@ describe('UsersService', () => {
     expect(updatedUser).toEqual(new ApplicationUserDto(result.data));
   });
 
-  it('should throw an error if user does not exist', async () => {
+  it("should throw an error if user does not exist", async () => {
     const user = applicationUsersList()[0];
     const dto: UpdateUserDto = updateUserDtoMock();
 
     const result = {
       success: false,
-      errors: ['User not found'],
+      errors: ["User not found"],
       code: HttpStatus.NOT_FOUND,
     };
 
@@ -291,7 +291,7 @@ describe('UsersService', () => {
 
   // #region Remove method test
 
-  it('should remove a user successfully', async () => {
+  it("should remove a user successfully", async () => {
     const user = applicationUsersList()[0];
 
     const result = { success: true };
@@ -303,12 +303,12 @@ describe('UsersService', () => {
     expect(userManagerMock.deleteUser).toHaveBeenCalledWith(user.id);
   });
 
-  it('should throw an error if user removal fails', async () => {
+  it("should throw an error if user removal fails", async () => {
     const user = applicationUsersList()[0];
 
     const result = {
       success: false,
-      errors: ['User not found'],
+      errors: ["User not found"],
       code: HttpStatus.NOT_FOUND,
     };
 

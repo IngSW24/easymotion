@@ -4,7 +4,7 @@ import {
   isValidEmail,
   ensurePasswordConstraints,
 } from "../../../data/validators";
-import { SignInDto } from "../../../client/Api";
+import { SignInDto } from "@easymotion/openapi";
 
 export interface LoginFormProps {
   onSubmit: (data: SignInDto) => void;

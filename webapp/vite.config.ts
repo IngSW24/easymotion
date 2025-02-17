@@ -1,8 +1,6 @@
 import { defineConfig, UserConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-const usePolling = process.env.POLLING === "true";
-
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -25,11 +23,5 @@ export default defineConfig({
   },
   server: {
     allowedHosts: ["easymotion.devlocal"],
-    watch: usePolling
-      ? {
-          usePolling: true,
-          ignored: ["**/node_modules/**", "**/dist/**", "**/.git/**"],
-        }
-      : undefined,
   },
 } as UserConfig);

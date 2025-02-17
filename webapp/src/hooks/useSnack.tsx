@@ -1,7 +1,7 @@
 import { useSnackbar } from "notistack";
 import { useCallback } from "react";
 import { isHttpResponseError } from "../data/guards";
-import { HttpResponse } from "../client/Api";
+import { HttpResponse } from "@easymotion/openapi";
 
 type ErrorType = Error | string | HttpResponse<unknown, Error> | unknown;
 
