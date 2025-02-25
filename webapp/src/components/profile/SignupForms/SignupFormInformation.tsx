@@ -3,7 +3,7 @@ import { useState } from "react";
 import PhoneNumberEditor from "../../editors/PhoneNumberEditor/PhoneNumberEditor";
 import { DateField } from "@mui/x-date-pickers";
 import { DateTime } from "luxon";
-import { SignUpDto } from "../../../client/Api";
+import { SignUpDto } from "@easymotion/openapi";
 
 export interface SignupFormInformationProps {
   onSubmit: (d: Partial<SignUpDto>) => void;

@@ -1,4 +1,4 @@
-import { CourseEntity } from "../client/Api";
+import { CourseEntity } from "@easymotion/openapi";
 
 export const defaultCourse: CourseEntity = {
   description: "",

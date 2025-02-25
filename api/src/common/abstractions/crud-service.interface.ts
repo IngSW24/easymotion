@@ -1,5 +1,5 @@
-import { PaginatedOutput } from '../dto/paginated-output.dto';
-import { PaginationFilter } from '../dto/pagination-filter.dto';
+import { PaginatedOutput } from "../dto/paginated-output.dto";
+import { PaginationFilter } from "../dto/pagination-filter.dto";
 
 export interface CrudService<CreateDto, UpdateDto, Entity> {
   create(data: CreateDto): Promise<Entity>;

@@ -1,13 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { JwtService } from '@nestjs/jwt';
-import { UsersService } from 'src/users/users.service';
-import { UserManager } from 'src/users/user.manager';
-import { EmailService } from 'src/email/email.service';
-import { PrismaService } from 'nestjs-prisma';
+import { Test, TestingModule } from "@nestjs/testing";
+import { AuthController } from "./auth.controller";
+import { AuthService } from "./auth.service";
+import { JwtService } from "@nestjs/jwt";
+import { UsersService } from "src/users/users.service";
+import { UserManager } from "src/users/user.manager";
+import { EmailService } from "src/email/email.service";
+import { PrismaService } from "nestjs-prisma";
 
-describe('AuthController', () => {
+describe("AuthController", () => {
   let controller: AuthController;
   const mockPrismaClient = {
     user: {
@@ -32,13 +32,13 @@ describe('AuthController', () => {
           },
         },
         {
-          provide: 'CONFIGURATION(jwt)',
+          provide: "CONFIGURATION(jwt)",
           useValue: {
-            secret: 'test-secret',
-            expiresIn: '1h',
-            audience: 'test-audience',
-            issuer: 'test-issuer',
-            refreshExpiresIn: '7d',
+            secret: "test-secret",
+            expiresIn: "1h",
+            audience: "test-audience",
+            issuer: "test-issuer",
+            refreshExpiresIn: "7d",
           },
         },
         {
@@ -46,12 +46,12 @@ describe('AuthController', () => {
           useValue: mockPrismaClient, // Inject the mock implementation
         },
         {
-          provide: 'CONFIGURATION(jwt)',
+          provide: "CONFIGURATION(jwt)",
           useValue: {
-            secret: 'test-secret',
-            expiresIn: '1h',
-            audience: 'test-audience',
-            issuer: 'test-issuer',
+            secret: "test-secret",
+            expiresIn: "1h",
+            audience: "test-audience",
+            issuer: "test-issuer",
           },
         },
       ],
@@ -61,7 +61,7 @@ describe('AuthController', () => {
     controller = module.get<AuthController>(AuthController);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(controller).toBeDefined();
   });
 });

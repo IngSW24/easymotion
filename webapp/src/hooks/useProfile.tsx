@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "./useAuth";
-import { useApiClient } from "./useApiClient";
-import { AuthUserDto, UpdateAuthUserDto } from "../client/Api";
+import { useAuth } from "@easymotion/auth-context";
+import { useApiClient } from "@easymotion/auth-context";
+import { AuthUserDto, UpdateAuthUserDto } from "@easymotion/openapi";
 import { useSnack } from "./useSnack";
 
 export const useProfile = () => {

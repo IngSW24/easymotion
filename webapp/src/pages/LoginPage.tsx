@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router";
 import FormComponent from "../components/FormComponent/FormComponent";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "@easymotion/auth-context";
 import { useSnack } from "../hooks/useSnack";
 import LoginForm from "../components/profile/LoginForm/LoginForm";
-import { SignInDto } from "../client/Api";
+import { SignInDto } from "@easymotion/openapi";
 
 export default function LoginPage() {
   const auth = useAuth();
