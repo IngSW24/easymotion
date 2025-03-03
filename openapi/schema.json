@@ -263,6 +263,40 @@
         ]
       }
     },
+    "/auth/login/otp": {
+      "post": {
+        "operationId": "AuthController_loginOtp",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OtpLoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntersectionAccessTokenDtoAuthUserDto"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
     "/auth/refresh": {
       "post": {
         "operationId": "AuthController_refresh",
@@ -515,41 +549,6 @@
           }
         ],
         "summary": "Enables or disables two-factor authentication for the user.",
-        "tags": [
-          "Auth"
-        ]
-      }
-    },
-    "/auth/login/otp": {
-      "post": {
-        "operationId": "AuthController_signInOtp",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OtpLoginDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "summary": "Signs in a user using a one-time password (OTP).",
         "tags": [
           "Auth"
         ]
@@ -849,20 +848,6 @@
         "summary": "Delete a user by its unique ID.",
         "tags": [
           "Users"
-        ]
-      }
-    },
-    "/email/test": {
-      "post": {
-        "operationId": "EmailController_sendEmail",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Email"
         ]
       }
     }
@@ -1302,6 +1287,10 @@
             "type": "string",
             "description": "The access token"
           },
+          "requiresOtp": {
+            "type": "boolean",
+            "description": "Indicates if secondary OTP step is required"
+          },
           "id": {
             "type": "string",
             "description": "Unique user identifier (UUID)",
@@ -1356,16 +1345,41 @@
             "description": "Indicates if the user email has been verified",
             "default": false,
             "example": false
+          },
+          "twoFactorEnabled": {
+            "type": "boolean",
+            "description": "Indicates if two-factor authentication is enabled",
+            "default": false
           }
         },
         "required": [
           "accessToken",
+          "requiresOtp",
           "id",
           "email",
           "firstName",
           "lastName",
           "role",
-          "isEmailVerified"
+          "isEmailVerified",
+          "twoFactorEnabled"
+        ]
+      },
+      "OtpLoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User email used for first login step"
+          },
+          "otp": {
+            "type": "string",
+            "description": "One-time password"
+          }
+        },
+        "required": [
+          "email",
+          "otp"
         ]
       },
       "AuthUserDto": {
@@ -1425,6 +1439,11 @@
             "description": "Indicates if the user email has been verified",
             "default": false,
             "example": false
+          },
+          "twoFactorEnabled": {
+            "type": "boolean",
+            "description": "Indicates if two-factor authentication is enabled",
+            "default": false
           }
         },
         "required": [
@@ -1433,7 +1452,8 @@
           "firstName",
           "lastName",
           "role",
-          "isEmailVerified"
+          "isEmailVerified",
+          "twoFactorEnabled"
         ]
       },
       "UpdateAuthUserDto": {
@@ -1466,6 +1486,11 @@
             "nullable": true,
             "description": "User birth date",
             "example": "1990-01-01"
+          },
+          "twoFactorEnabled": {
+            "type": "boolean",
+            "description": "Indicates if two-factor authentication is enabled",
+            "default": false
           }
         }
       },
@@ -1587,23 +1612,6 @@
           "enabled"
         ]
       },
-      "OtpLoginDto": {
-        "type": "object",
-        "properties": {
-          "userId": {
-            "type": "string",
-            "description": "User ID of the user"
-          },
-          "otp": {
-            "type": "string",
-            "description": "One-time password"
-          }
-        },
-        "required": [
-          "userId",
-          "otp"
-        ]
-      },
       "EmailConfirmDto": {
         "type": "object",
         "properties": {
@@ -1645,6 +1653,11 @@
             "description": "Plain-text password for the new user (will be hashed)",
             "example": "MyStrongP@ssw0rd!"
           },
+          "isEmailVerified": {
+            "type": "boolean",
+            "description": "Flag indicating if the email address has been verified",
+            "example": true
+          },
           "firstName": {
             "type": "string",
             "description": "First name of the new user",
@@ -1684,6 +1697,7 @@
         "required": [
           "email",
           "password",
+          "isEmailVerified",
           "firstName",
           "lastName"
         ]
@@ -1763,6 +1777,11 @@
             "type": "string",
             "description": "Timestamp of the user last update",
             "example": "2025-01-10T10:00:00.000Z"
+          },
+          "twoFactorEnabled": {
+            "type": "boolean",
+            "description": "Indicates if two-factor authentication is enabled",
+            "default": false
           }
         },
         "required": [
@@ -1774,7 +1793,8 @@
           "isEmailVerified",
           "lastLogin",
           "createdAt",
-          "updatedAt"
+          "updatedAt",
+          "twoFactorEnabled"
         ]
       },
       "UpdateUserDto": {
@@ -1791,6 +1811,11 @@
             "minLength": 6,
             "description": "Plain-text password for the new user (will be hashed)",
             "example": "MyStrongP@ssw0rd!"
+          },
+          "isEmailVerified": {
+            "type": "boolean",
+            "description": "Flag indicating if the email address has been verified",
+            "example": true
           },
           "firstName": {
             "type": "string",

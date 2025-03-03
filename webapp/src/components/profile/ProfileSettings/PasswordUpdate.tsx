@@ -5,11 +5,13 @@ import {
   Card,
   CardContent,
   Grid2,
+  Stack,
+  Switch,
   TextField,
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import { useApiClient } from "@easymotion/auth-context";
+import { useApiClient, useAuth } from "@easymotion/auth-context";
 import { ensurePasswordConstraints } from "../../../data/validators";
 
 type Message = {
@@ -19,6 +21,7 @@ type Message = {
 
 export default function PasswordUpdate() {
   const { apiClient } = useApiClient();
+  const auth = useAuth();
   const [password, setPassword] = useState({
     old: "",
     new: "",
@@ -55,6 +58,10 @@ export default function PasswordUpdate() {
         text: "Password errata",
       });
     }
+  };
+
+  const onOtpUpdate = async (newStatus: boolean) => {
+    await auth.updateOtpStatus(newStatus);
   };
 
   return (
@@ -132,6 +139,19 @@ export default function PasswordUpdate() {
             </Grid2>
           </Grid2>
         </form>
+        <Stack
+          spacing={2}
+          sx={{ mt: 5, display: "flex", alignItems: "center" }}
+          direction="row"
+        >
+          <Typography component="div" fontWeight={500} gutterBottom>
+            <span>Autenticazione a due fattori</span>
+          </Typography>
+          <Switch
+            onChange={(e) => onOtpUpdate(e.target.checked)}
+            checked={auth.user?.twoFactorEnabled ?? false}
+          />
+        </Stack>
         <Box sx={{ mt: 2 }}>
           {message.text && (
             <Typography color={message.type}>{message.text}</Typography>

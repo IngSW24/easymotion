@@ -23,6 +23,7 @@ import { JwtPayloadDto } from "./dto/auth-user/jwt-payload.dto";
 import { UpdateAuthUserDto } from "./dto/auth-user/update-auth-user.dto";
 import { generateEmailConfirmMessage } from "./email-messages/email-confirm.message";
 import frontendConfig from "src/config/frontend.config";
+import { LoginResponse, TwoFactorDiscriminator } from "./types";
 
 @Injectable()
 export class AuthService {
@@ -75,10 +76,24 @@ export class AuthService {
    * @param user the user to log in
    * @returns a tuple containing the user (with access token) and the refresh token
    */
-  async login(user: AuthUserDto) {
-    await this.userManager.setLastLogin(user.id);
-    await this.userManager.clearFailedLoginAttempts(user.id);
-    return this.getLoginResponse(user);
+  async login(user: AuthUserDto): Promise<TwoFactorDiscriminator> {
+    if (user.twoFactorEnabled) {
+      const code = await this.userManager.generateOtpCode(user.id);
+      await this.emailService.sendEmail(
+        user.email,
+        "Effettua il login in EasyMotion",
+        `Il tuo codice di verifica per accedere ad EasyMotion è ${code}`
+      );
+      return { requiresOtp: true };
+    }
+
+    const loginResponse = await this.getLoginResponse(user);
+
+    return {
+      requiresOtp: false,
+      user: loginResponse.user,
+      refreshToken: loginResponse.refreshToken,
+    };
   }
 
   /**
@@ -87,23 +102,23 @@ export class AuthService {
    * @param user the user to create the response for
    * @returns a tuple containing the user and the refresh token
    */
-  private async getLoginResponse(user: AuthUserDto) {
+  private async getLoginResponse(user: AuthUserDto): Promise<LoginResponse> {
+    await this.userManager.setLastLogin(user.id);
+    await this.userManager.clearFailedLoginAttempts(user.id);
     const payload = JwtPayloadDto.fromUser(user).toObject();
 
-    return [
-      {
+    return {
+      user: {
         accessToken: this.jwtService.sign(payload),
         ...user,
       },
-      {
-        refreshToken: this.jwtService.sign(
-          { sub: user.id },
-          {
-            expiresIn: this.configService.refreshExpiresIn,
-          }
-        ),
-      },
-    ];
+      refreshToken: this.jwtService.sign(
+        { sub: user.id },
+        {
+          expiresIn: this.configService.refreshExpiresIn,
+        }
+      ),
+    };
   }
 
   /**
@@ -334,18 +349,25 @@ export class AuthService {
    * @param otpLoginDto - The data transfer object containing the user's OTP.
    * @returns A promise that resolves with the user and the refresh token.
    */
-  async signInOtp(otpLoginDto: OtpLoginDto) {
-    const { userId, otp } = otpLoginDto;
+  async loginOtp(otpLoginDto: OtpLoginDto) {
+    const { email, otp } = otpLoginDto;
 
-    const user = await this.getUserByIdOrThrow(userId);
+    const result = await this.userManager.getUserByEmail(email);
 
-    const result = await this.userManager.validateTwoFactor(user.id, otp);
+    if (!isSuccessResult(result)) {
+      throw resultToHttpException(result);
+    }
 
-    if (!result) {
+    const validationResult = await this.userManager.validateTwoFactor(
+      result.data.id,
+      otp
+    );
+
+    if (!validationResult) {
       throw new UnauthorizedException("Invalid OTP");
     }
 
-    return this.getLoginResponse(user);
+    return this.getLoginResponse(result.data);
   }
 
   /**
