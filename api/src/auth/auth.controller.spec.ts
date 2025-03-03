@@ -54,6 +54,10 @@ describe("AuthController", () => {
             issuer: "test-issuer",
           },
         },
+        {
+          provide: "CONFIGURATION(frontend)",
+          useValue: {},
+        },
       ],
       controllers: [AuthController],
     }).compile();

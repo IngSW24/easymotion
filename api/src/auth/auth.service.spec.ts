@@ -55,6 +55,10 @@ describe("AuthService", () => {
             issuer: "test-issuer",
           },
         },
+        {
+          provide: "CONFIGURATION(frontend)",
+          useValue: {},
+        },
       ],
     }).compile();
 

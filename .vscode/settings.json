@@ -7,7 +7,7 @@
   "jest.virtualFolders": [
     {
       "name": "api-tests",
-      "jestCommandLine": "pnpm --filter api test --",
+      "jestCommandLine": "pnpm --filter api test:watch",
       "runMode": "watch"
     }
   ]
