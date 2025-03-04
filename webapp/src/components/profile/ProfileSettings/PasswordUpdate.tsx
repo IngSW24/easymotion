@@ -152,6 +152,12 @@ export default function PasswordUpdate() {
             checked={auth.user?.twoFactorEnabled ?? false}
           />
         </Stack>
+
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+          Se abilitata, verrà richiesto un codice OTP inviato alla tua mail per
+          effettuare il login.
+        </Typography>
+
         <Box sx={{ mt: 2 }}>
           {message.text && (
             <Typography color={message.type}>{message.text}</Typography>
