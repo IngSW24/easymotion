@@ -21,7 +21,10 @@ import { ConfigType } from "@nestjs/config";
 import jwtConfig from "src/config/jwt.config";
 import { JwtPayloadDto } from "./dto/auth-user/jwt-payload.dto";
 import { UpdateAuthUserDto } from "./dto/auth-user/update-auth-user.dto";
-import { generateEmailConfirmMessage } from "./email-messages/email-confirm.message";
+import {
+  generateEmailConfirmMessage,
+  generatePasswordResetMessage,
+} from "./email-messages/email-confirm.message";
 import frontendConfig from "src/config/frontend.config";
 import { LoginResponse, TwoFactorDiscriminator } from "./types";
 
@@ -295,8 +298,12 @@ export class AuthService {
 
     await this.emailService.sendEmail(
       user.data.email,
-      "Email reset token",
-      `Reset token is ${resetToken}`
+      "Modifica la tua password di EasyMotion",
+      generatePasswordResetMessage(
+        this.frontendConfigService.url,
+        resetToken,
+        user.data.id
+      )
     );
   }
 

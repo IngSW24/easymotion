@@ -65,6 +65,12 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
     return { needsOtp: false };
   };
 
+  /**
+   * Handles user login with OTP by sending the OTP to the server.
+   * If successful, updates the access token and user state.
+   *
+   * @param otp - The OTP to verify
+   */
   const loginOtp = async (otp: string) => {
     if (!otpStatus.needsOtp) {
       throw new Error("No OTP required");
@@ -81,6 +87,10 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
     setOtpStatus({ needsOtp: false, email: "" });
   };
 
+  /**
+   * Updates the user's OTP status.
+   * @param status true to enable OTP, false to disable
+   */
   const updateOtpStatus = async (status: boolean) => {
     console.log("Updating otp to status", status);
     const response = await apiInstance.authControllerUpdateUserProfile(
