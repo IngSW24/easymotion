@@ -3,7 +3,7 @@ name: Build and Push API Docker Image
 on:
   push:
     branches:
-      - main
+      - ci/EAS-129
 
 jobs:
   build-api:
@@ -23,6 +23,5 @@ jobs:
       - name: Build and push API Docker image
         run: |
           IMAGE_NAME=ghcr.io/ingsw24/easymotion-api
-          cd api/
-          docker build . --tag $IMAGE_NAME:latest
-          docker push $IMAGE_NAME:latest
+          docker build . --target api --tag $IMAGE_NAME:latest
+          echo "DONE: Pushing $IMAGE_NAME:latest"

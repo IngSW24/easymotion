@@ -3,7 +3,7 @@ name: Build and Push WebApp Docker Image
 on:
   push:
     branches:
-      - main
+      - ci/EAS-129
 
 jobs:
   build-webapp:
@@ -26,6 +26,5 @@ jobs:
       - name: Build and push WebApp Docker image
         run: |
           IMAGE_NAME=ghcr.io/ingsw24/easymotion-webapp
-          cd webapp/
-          docker build --build-arg VITE_API_URL=$VITE_API_URL . --tag $IMAGE_NAME:latest
+          docker build --build-arg VITE_API_URL=$VITE_API_URL . --target webapp --tag $IMAGE_NAME:latest
           docker push $IMAGE_NAME:latest
