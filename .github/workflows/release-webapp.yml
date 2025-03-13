@@ -52,5 +52,5 @@ jobs:
             --tag $IMAGE_NAME:$LATEST_TAG
 
           # Push both tags
-          docker push $IMAGE_NAME:$TAG
+          docker push $IMAGE_NAME:$VERSION
           docker push $IMAGE_NAME:$LATEST_TAG
