@@ -14,6 +14,7 @@ import AuthenticatedRoute from "./AuthenticatedRoute";
 import TermsOfServicePage from "../pages/TermsOfServicePage";
 import UnauthenticatedRoute from "./UnauthenticatedRoute";
 import { useAuth } from "@easymotion/auth-context";
+import RestorePasswordPage from "../pages/RestorePasswordPage";
 
 const menuEntries: MenuEntry[] = [
   {
@@ -48,6 +49,7 @@ export default function Router() {
           <Route element={<UnauthenticatedRoute />}>
             <Route path="login" element={<LoginPage />} />
             <Route path="signup" element={<SignupPage />} />
+            <Route path="password-restore" element={<RestorePasswordPage />} />
           </Route>
 
           {/* Accessible only all the authenticated users */}

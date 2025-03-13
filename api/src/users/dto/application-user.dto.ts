@@ -120,6 +120,14 @@ export class ApplicationUserDto implements Readonly<ApplicationUser> {
   @Expose()
   updatedAt: Date;
 
+  @ApiProperty({
+    description: "Indicates if two-factor authentication is enabled",
+    default: false,
+  })
+  @IsBoolean()
+  @Expose()
+  twoFactorEnabled: boolean;
+
   @ApiHideProperty()
   emailConfirmationToken: string;
 
@@ -140,9 +148,6 @@ export class ApplicationUserDto implements Readonly<ApplicationUser> {
 
   @ApiHideProperty()
   twoFactorExpiry: Date;
-
-  @ApiHideProperty()
-  twoFactorEnabled: boolean;
 
   @ApiHideProperty()
   failedLoginAttempts: number;

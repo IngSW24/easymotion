@@ -9,8 +9,6 @@ export interface AuthContextProviderProps {
   apiBaseUrl: string;
 }
 
-// Initialize an instance of the API client specifically for the auth endpoints
-
 /**
  * Defines the provider for the Auth Context
  * @param props the context provider props
@@ -20,6 +18,10 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
   const { children } = props;
 
   const { updateAccessToken, accessToken } = useApiClient();
+  const [otpStatus, setOtpStatus] = useState({
+    needsOtp: false,
+    email: "",
+  });
 
   const apiInstance = useMemo(
     () =>
@@ -53,8 +55,54 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
       { credentials: "include" } // Ensure cookies are sent for authentication
     );
 
+    if (response.data.requiresOtp) {
+      setOtpStatus({ needsOtp: true, email });
+      return { needsOtp: true };
+    }
     // Update the token and user state with the server's response
     updateAccessToken(response.data.accessToken);
+    setUser(response.data);
+    return { needsOtp: false };
+  };
+
+  /**
+   * Handles user login with OTP by sending the OTP to the server.
+   * If successful, updates the access token and user state.
+   *
+   * @param otp - The OTP to verify
+   */
+  const loginOtp = async (otp: string) => {
+    if (!otpStatus.needsOtp) {
+      throw new Error("No OTP required");
+    }
+
+    const response = await apiInstance.authControllerLoginOtp(
+      { email: otpStatus.email, otp },
+      { credentials: "include" }
+    );
+
+    // Update the token and user state with the server's response
+    updateAccessToken(response.data.accessToken);
+    setUser(response.data);
+    setOtpStatus({ needsOtp: false, email: "" });
+  };
+
+  /**
+   * Updates the user's OTP status.
+   * @param status true to enable OTP, false to disable
+   */
+  const updateOtpStatus = async (status: boolean) => {
+    console.log("Updating otp to status", status);
+    const response = await apiInstance.authControllerUpdateUserProfile(
+      { twoFactorEnabled: status },
+      {
+        credentials: "include",
+        headers: {
+          Authorization: `Bearer ${accessToken}`, // Include the access token for authenticated logout
+        },
+      }
+    );
+
     setUser(response.data);
   };
 
@@ -110,6 +158,8 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
         user,
         login,
         logout,
+        loginOtp,
+        updateOtpStatus,
         updateEmail,
         signup,
         updateUser: setUser,

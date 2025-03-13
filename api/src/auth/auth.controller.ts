@@ -69,11 +69,28 @@ export class AuthController {
     type: IntersectionType(AccessTokenDto, AuthUserDto),
   })
   async login(@Req() req, @Res() res): Promise<void> {
-    const [user, refresh] = await this.authService.login(req.user);
+    const twoFactorDiscriminator = await this.authService.login(req.user);
 
-    this.setRefreshTokenCookie(res, refresh.refreshToken);
+    // needs === false for correct type insertion
+    if (twoFactorDiscriminator.requiresOtp === false) {
+      this.setRefreshTokenCookie(res, twoFactorDiscriminator.refreshToken);
+      res.send(twoFactorDiscriminator.user);
+    } else {
+      res.send({ requiresOtp: true });
+    }
+  }
 
-    res.send(user);
+  @Post("login/otp")
+  @ApiResponse({
+    status: 200,
+    description: "Successful login",
+    type: IntersectionType(AccessTokenDto, AuthUserDto),
+  })
+  async loginOtp(@Body() otpLoginDto: OtpLoginDto, @Res() res) {
+    const response = await this.authService.loginOtp(otpLoginDto);
+
+    this.setRefreshTokenCookie(res, response.refreshToken);
+    res.send(response.user);
   }
 
   /**
@@ -88,11 +105,11 @@ export class AuthController {
     type: IntersectionType(AccessTokenDto, AuthUserDto),
   })
   async refresh(@Req() req, @Res() res) {
-    const [user, refresh] = await this.authService.refresh(req.user.sub);
+    const response = await this.authService.refresh(req.user.sub);
 
-    this.setRefreshTokenCookie(res, refresh.refreshToken);
+    this.setRefreshTokenCookie(res, response.refreshToken);
 
-    res.send(user);
+    res.send(response.user);
   }
 
   /**
@@ -197,15 +214,6 @@ export class AuthController {
   }
 
   /**
-   * Signs in a user using a one-time password (OTP).
-   * @param otpLoginDto The OTP login data.
-   */
-  @Post("login/otp")
-  signInOtp(@Body() otpLoginDto: OtpLoginDto) {
-    return this.authService.signInOtp(otpLoginDto);
-  }
-
-  /**
    * Requests an email update for the currently authenticated user.
    * @param req The request object, containing the user's ID.
    * @param emailDto The new email address.
@@ -232,11 +240,10 @@ export class AuthController {
     @Body() emailConfirmDto: EmailConfirmDto,
     @Res() res
   ): Promise<void> {
-    const [user, refresh] =
-      await this.authService.confirmEmail(emailConfirmDto);
+    const response = await this.authService.confirmEmail(emailConfirmDto);
 
-    this.setRefreshTokenCookie(res, refresh.refreshToken);
+    this.setRefreshTokenCookie(res, response.refreshToken);
 
-    res.send(user);
+    res.send(response.user);
   }
 }
