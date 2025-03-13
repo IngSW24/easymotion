@@ -3,7 +3,7 @@ name: Build and Push API Docker Image
 on:
   push:
     branches:
-      - ci/EAS-129
+      - main
 
 jobs:
   build-api:
