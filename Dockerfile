@@ -1,6 +1,6 @@
 # Build the app
 
-FROM node:20-slim AS base 
+FROM node:22-slim AS base 
 
 ARG VITE_API_URL ${VITE_API_URL}
 ENV VITE_API_URL=${VITE_API_URL}
@@ -34,7 +34,7 @@ EXPOSE 3000
 
 CMD ["npm", "run", "start:prod:migrate"]
 
-FROM node:20-alpine AS webapp
+FROM node:22-alpine AS webapp
 
 ENV NODE_ENV=production
 RUN npm i -g serve
