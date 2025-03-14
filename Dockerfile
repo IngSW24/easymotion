@@ -37,6 +37,10 @@ COPY --from=deps /usr/src/app/pnpm-lock.yaml ./pnpm-lock.yaml
 # Do install to create node_modules
 RUN pnpm install
 
+# Set the API URL for webapp
+ARG VITE_API_URL ${VITE_API_URL}
+ENV VITE_API_URL ${VITE_API_URL}
+
 # Build steps
 RUN pnpm -r build
 
