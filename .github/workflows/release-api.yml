@@ -7,7 +7,7 @@ on:
       - "api-v*"
 
 jobs:
-  build-webapp:
+  build-api:
     runs-on: ubuntu-latest
 
     steps:
@@ -33,7 +33,7 @@ jobs:
             echo "LATEST_TAG=latest" >> $GITHUB_ENV
           fi
 
-      - name: Build and push WebApp Docker image
+      - name: Build and push API Docker image
         run: |
           IMAGE_NAME=ghcr.io/ingsw24/easymotion-api
 
