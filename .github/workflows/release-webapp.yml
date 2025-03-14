@@ -56,3 +56,15 @@ jobs:
           # Push both tags
           docker push $IMAGE_NAME:$VERSION
           docker push $IMAGE_NAME:$LATEST_TAG
+
+      - name: Notify Discord of new release
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          curl -H "Content-Type: application/json" \
+          -X POST \
+          -d "{
+                \"username\": \"Github Release\",
+                \"content\": \"🚀 New WEBAPP release: **v${VERSION}** by ${{ github.actor }}! Check it out 👉 ${{ github.event.repository.html_url }}/releases/tag/${{ github.ref_name }}\"
+              }" \
+          $DISCORD_WEBHOOK
