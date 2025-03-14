@@ -1,9 +1,10 @@
-name: Unit Test
+name: Unit Test, Lint, Build
 
 on:
   push:
     branches:
       - develop
+      - ci/EAS-129
   pull_request:
     branches:
       - develop
@@ -27,5 +28,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Run tests
-        run: pnpm run test
+      - name: Ensure unit tests pass
+        run: pnpm test
+
+      - name: Ensure proper linting
+        run: pnpm lint
+
+      - name: Ensure the application builds
+        run: pnpm build
