@@ -2,8 +2,9 @@ name: Build and Push WebApp Docker Image
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - "v*"
+      - "webapp-v*"
 
 jobs:
   build-webapp:
@@ -11,6 +12,7 @@ jobs:
 
     env:
       VITE_API_URL: "${{ vars.VITE_API_URL }}"
+      VITE_STAGING_API_URL: "${{ vars.VITE_STAGING_API_URL }}"
 
     steps:
       - name: Checkout repository
@@ -23,9 +25,46 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Determine environment
+        id: determine_env
+        run: |
+          version=$(echo $GITHUB_REF_NAME | grep -o [0-9]\.*)
+          echo "VERSION=${version}" >> $GITHUB_ENV
+
+          if [[ "$version" == *"-beta" ]]; then
+            echo "API_URL=${{ env.VITE_STAGING_API_URL }}" >> $GITHUB_ENV
+            echo "LATEST_TAG=latest-beta" >> $GITHUB_ENV
+          else
+            echo "API_URL=${{ env.VITE_API_URL }}" >> $GITHUB_ENV
+            echo "LATEST_TAG=latest" >> $GITHUB_ENV
+          fi
+
       - name: Build and push WebApp Docker image
         run: |
           IMAGE_NAME=ghcr.io/ingsw24/easymotion-webapp
-          cd webapp/
-          docker build --build-arg VITE_API_URL=$VITE_API_URL . --tag $IMAGE_NAME:latest
-          docker push $IMAGE_NAME:latest
+
+          echo "Building webapp image for api at $API_URL"
+
+          # Build the image (version tag first)
+          docker build \
+            --build-arg VITE_API_URL=$API_URL \
+            . \
+            --target webapp \
+            --tag $IMAGE_NAME:$VERSION \
+            --tag $IMAGE_NAME:$LATEST_TAG
+
+          # Push both tags
+          docker push $IMAGE_NAME:$VERSION
+          docker push $IMAGE_NAME:$LATEST_TAG
+
+      - name: Notify Discord of new release
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          curl -H "Content-Type: application/json" \
+          -X POST \
+          -d "{
+                \"username\": \"Github Release\",
+                \"content\": \"🚀 New WEBAPP release: **v${VERSION}** by ${{ github.actor }}! Check it out 👉 ${{ github.event.repository.html_url }}/releases/tag/${{ github.ref_name }}\"
+              }" \
+          $DISCORD_WEBHOOK

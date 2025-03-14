@@ -1,0 +1,37 @@
+name: Unit Test, Lint, Build
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Ensure unit tests pass
+        run: pnpm test
+
+      - name: Ensure proper linting
+        run: pnpm lint
+
+      - name: Ensure the application builds
+        run: pnpm -r build
