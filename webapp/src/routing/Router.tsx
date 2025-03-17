@@ -9,7 +9,6 @@ import ConfirmEmailPage from "../pages/ConfirmEmailPage";
 import SignupPage from "../pages/SignUpPage";
 import LoginPage from "../pages/LoginPage";
 import { Home } from "@mui/icons-material";
-import AuthenticationWrapper from "./AuthenticatedRoute";
 import AuthenticatedRoute from "./AuthenticatedRoute";
 import TermsOfServicePage from "../pages/TermsOfServicePage";
 import UnauthenticatedRoute from "./UnauthenticatedRoute";
@@ -60,7 +59,7 @@ export default function Router() {
           {/* Accessible only by admins and physhiotherapists */}
           <Route
             element={
-              <AuthenticationWrapper roles={["ADMIN", "PHYSIOTHERAPIST"]} />
+              <AuthenticatedRoute roles={["ADMIN", "PHYSIOTHERAPIST"]} />
             }
           >
             <Route path="new" element={<CourseCreatePage />} />

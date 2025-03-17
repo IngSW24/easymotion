@@ -42,7 +42,7 @@ const getUsers = async (): Promise<Prisma.ApplicationUserCreateInput[]> => {
       phoneNumber: "+393401234567",
       birthDate: "1990-05-15",
       role: "PHYSIOTHERAPIST",
-      isEmailVerified: false,
+      isEmailVerified: true,
       lastLogin: "2025-01-08T10:00:00.000Z",
       failedLoginAttempts: 0,
     },
