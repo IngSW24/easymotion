@@ -14,6 +14,7 @@ import TermsOfServicePage from "../pages/TermsOfServicePage";
 import UnauthenticatedRoute from "./UnauthenticatedRoute";
 import { useAuth } from "@easymotion/auth-context";
 import RestorePasswordPage from "../pages/RestorePasswordPage";
+import Dashboard from "../pages/physiotherapist/Dashboard";
 
 const menuEntries: MenuEntry[] = [
   {
@@ -62,6 +63,7 @@ export default function Router() {
               <AuthenticatedRoute roles={["ADMIN", "PHYSIOTHERAPIST"]} />
             }
           >
+            <Route path="dashboard" element={<Dashboard />} />
             <Route path="new" element={<CourseCreatePage />} />
           </Route>
         </Route>
