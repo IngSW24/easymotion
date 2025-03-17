@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable } from "@nestjs/common";
-import { ApplicationUser, Prisma } from "@prisma/client";
+import { ApplicationUser, Prisma, Role } from "@prisma/client";
 import { ResultPromise, isSuccessResult } from "src/common/types/result";
 import * as argon2 from "argon2";
 import { DateTime } from "luxon";
@@ -36,11 +36,36 @@ export class UserManager {
 
     const hashedPassword = await this.hashPassword(password);
 
-    const createdUser = await this.prisma.applicationUser.create({
-      data: {
-        ...newUser,
-        passwordHash: hashedPassword,
-      },
+    const createdUser = await this.prisma.$transaction(async (tx) => {
+      const createdUser = await this.prisma.applicationUser.create({
+        data: {
+          ...newUser,
+          passwordHash: hashedPassword,
+        },
+      });
+
+      switch (createdUser.role) {
+        case Role.PHYSIOTHERAPIST:
+          await tx.physiotherapist.create({
+            data: {
+              applicationUser: {
+                connect: { id: createdUser.id },
+              },
+            },
+          });
+          break;
+        case Role.USER:
+          await tx.finalUser.create({
+            data: {
+              applicationUser: { connect: { id: createdUser.id } },
+            },
+          });
+          break;
+        default:
+          break;
+      }
+
+      return createdUser;
     });
 
     return { success: true, data: createdUser };

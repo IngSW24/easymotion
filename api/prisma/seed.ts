@@ -15,19 +15,37 @@ async function main() {
 
   (await getUsers()).forEach(
     async (e) =>
-      await prisma.applicationUser.upsert({
-        where: { id: e.id },
-        update: {},
-        create: { ...e },
+      await prisma.$transaction(async (tx) => {
+        await tx.applicationUser.upsert({
+          where: { id: e.id },
+          update: {},
+          create: { ...e },
+        });
+
+        if (e.role === "USER") {
+          await tx.finalUser.upsert({
+            where: { applicationUserId: e.id },
+            update: {},
+            create: {
+              applicationUserId: e.id,
+            },
+          });
+        }
+
+        if (e.role === "PHYSIOTHERAPIST") {
+          await tx.physiotherapist.upsert({
+            where: { applicationUserId: e.id },
+            update: {},
+            create: {
+              applicationUserId: e.id,
+            },
+          });
+        }
       })
   );
 }
 
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

@@ -7,6 +7,7 @@ import {
   Delete,
   Put,
   Query,
+  Req,
 } from "@nestjs/common";
 import { CoursesService } from "./courses.service";
 import { CreateCourseDto } from "./dto/create-course.dto";
@@ -16,6 +17,7 @@ import { ApiCreatedResponse, ApiOkResponse } from "@nestjs/swagger";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { ApiPaginatedResponse } from "src/common/decorators/api-paginated-response.decorator";
 import UseAuth from "src/auth/decorators/auth-with-role.decorator";
+import { CourseSubcriberDto } from "./dto/course-subcriber.dto";
 
 @Controller("courses")
 export class CoursesController {
@@ -76,5 +78,41 @@ export class CoursesController {
   @UseAuth(["admin", "physiotherapist"])
   remove(@Param("id") id: string) {
     return this.coursesService.remove(id);
+  }
+
+  /**
+   * Subscribe the current final user to a course
+   * @param courseId the course uuid
+   */
+  @Put(":courseId/subscribe")
+  @ApiOkResponse()
+  @UseAuth(["user"])
+  subscribe(@Param("courseId") courseId: string, @Req() req) {
+    return this.coursesService.subscribeFinalUser(req.user.sub, courseId);
+  }
+
+  /**
+   * Unsubscribe the current final user from a course
+   * @param courseId the course uuid
+   */
+  @Put(":courseId/unsubscribe")
+  @ApiOkResponse()
+  @UseAuth(["user"])
+  unsubscribe(@Param("courseId") courseId: string, @Req() req) {
+    return this.coursesService.unsubscribeFinalUser(req.user.sub, courseId);
+  }
+
+  /**
+   * Gets all subscribers of a course
+   * @param courseId the course uuid
+   */
+  @Get(":courseId/subscribers")
+  @ApiPaginatedResponse(CourseSubcriberDto)
+  @UseAuth()
+  getSubscribers(
+    @Param("courseId") courseId: string,
+    @Query() pagination: PaginationFilter
+  ) {
+    return this.coursesService.getCourseSubscriptions(courseId, pagination);
   }
 }

@@ -7,6 +7,8 @@ import { PaginatedOutput } from "src/common/dto/paginated-output.dto";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { CrudService } from "src/common/abstractions/crud-service.interface";
 import { plainToInstance } from "class-transformer";
+import { CourseSubcriberDto } from "./dto/course-subcriber.dto";
+import { toPaginatedOutput } from "src/common/utils/pagination";
 
 @Injectable()
 /**
@@ -53,16 +55,84 @@ export class CoursesService
       take: perPage,
     });
 
-    return {
-      data: courses.map((x) => plainToInstance(CourseEntity, x)), // Array of mapped courses
-      meta: {
-        currentPage: page,
-        items: courses.length,
-        hasNextPage: (page + 1) * perPage < count,
-        totalItems: count,
-        totalPages: Math.ceil(count / perPage),
+    return toPaginatedOutput(
+      courses.map((x) => plainToInstance(CourseEntity, x)),
+      count,
+      pagination
+    );
+  }
+
+  /**
+   * Subscribes a final user to a course.
+   * @param finalUserId Unique identifier of the final user.
+   * @param courseId Unique identifier of the course.
+   */
+  async subscribeFinalUser(finalUserId: string, courseId: string) {
+    const user = await this.prismaService.finalUser.findUnique({
+      where: { applicationUserId: finalUserId },
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const course = await this.prismaService.course.findUniqueOrThrow({
+      where: { id: courseId },
+    });
+
+    if (!course) {
+      throw new Error("Course not found");
+    }
+
+    await this.prismaService.courseFinalUser.create({
+      data: {
+        course_id: course.id,
+        final_user_id: finalUserId,
       },
-    };
+    });
+  }
+
+  /**
+   * Unsubscribes a final user from a course.
+   * @param finalUserId Unique identifier of the final user.
+   * @param courseId Unique identifier of the course.
+   */
+  async unsubscribeFinalUser(finalUserId: string, courseId: string) {
+    await this.prismaService.courseFinalUser.deleteMany({
+      where: { course_id: courseId, final_user_id: finalUserId },
+    });
+  }
+
+  /**
+   * Retrieves all subscribers to a course with pagination.
+   * @param courseId Unique identifier of the course.
+   * @param pagination Pagination filter containing the page and perPage parameters.
+   * @returns A paginated output with subscriber data and metadata.
+   */
+  async getCourseSubscriptions(courseId: string, pagination: PaginationFilter) {
+    const count = await this.prismaService.courseFinalUser.count({
+      where: { course_id: courseId },
+    });
+
+    const paginatedSubscribers =
+      await this.prismaService.courseFinalUser.findMany({
+        where: { course_id: courseId },
+        include: {
+          final_user: {
+            include: { applicationUser: true },
+          },
+        },
+        skip: pagination.page * pagination.perPage,
+        take: pagination.perPage,
+      });
+
+    return toPaginatedOutput(
+      paginatedSubscribers.map((x) =>
+        plainToInstance(CourseSubcriberDto, x.final_user.applicationUser)
+      ),
+      count,
+      pagination
+    );
   }
 
   /**

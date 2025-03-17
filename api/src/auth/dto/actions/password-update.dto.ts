@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Expose } from "class-transformer";
-import { IsString, IsStrongPassword, IsUUID } from "class-validator";
+import { IsString, IsUUID } from "class-validator";
+import CheckPasswordConstraints from "src/auth/decorators/strong-password.decorator";
 
 export class PasswordUpdateDto {
   @ApiProperty({
@@ -23,14 +24,7 @@ export class PasswordUpdateDto {
     name: "newPassword",
     description: "New password for the user",
   })
-  // TODO use configuration
-  @IsStrongPassword({
-    minLength: 4,
-    minLowercase: 0,
-    minNumbers: 0,
-    minSymbols: 0,
-    minUppercase: 0,
-  })
+  @CheckPasswordConstraints()
   @Expose()
   newPassword: string;
 }
