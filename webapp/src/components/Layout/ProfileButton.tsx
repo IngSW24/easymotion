@@ -10,8 +10,9 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "@easymotion/auth-context";
+import MenuIcon from "@mui/icons-material/Menu";
 import { Logout, Settings, SpaceDashboard } from "@mui/icons-material";
-import { AuthUserDto } from "../../client/Api";
+import { AuthUserDto } from "@easymotion/openapi";
 
 type ProfileButtonActionProps = {
   label: string;
@@ -39,6 +40,12 @@ export default function ProfileButton() {
       icon: <SpaceDashboard />,
       action: () => navigate("/physiotherapist/dashboard"),
       targetRoles: ["PHYSIOTHERAPIST"],
+    },
+    {
+      label: "I miei corsi",
+      icon: <MenuIcon />,
+      action: () => navigate("/user"),
+      targetRoles: ["USER"],
     },
     {
       label: "Impostazioni",
