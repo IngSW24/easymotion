@@ -1,11 +1,29 @@
-import { Typography } from "@mui/material";
+import { Box, Stack } from "@mui/material";
+import SideMenu from "../../components/dashboard/SideMenu";
+import DashboardBreadCrumbs from "../../components/dashboard/DashboardBreadCrumbs";
 
 export default function Dashboard() {
   return (
-    <>
-      <Typography variant="h4" color="primary.dark" fontWeight="bold">
-        Hello world
-      </Typography>
-    </>
+    <Box sx={{ display: "flex" }}>
+      <SideMenu />
+      {/* Main content */}
+      <Box component="main" flexGrow="1" overflow="auto">
+        <Stack
+          spacing={2}
+          sx={{
+            alignItems: "center",
+            mx: 3,
+            pb: 5,
+            mt: { xs: 8, md: 0 },
+          }}
+        >
+          {/* <Header />
+            <MainGrid /> */}
+          <Box>
+            <DashboardBreadCrumbs />
+          </Box>
+        </Stack>
+      </Box>
+    </Box>
   );
 }
