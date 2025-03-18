@@ -1,6 +1,7 @@
 import { Box, Stack } from "@mui/material";
 import SideMenu from "../../components/dashboard/SideMenu";
-import DashboardBreadCrumbs from "../../components/dashboard/DashboardBreadCrumbs";
+import DashboardHeader from "../../components/dashboard/DashboardHeader";
+import DashboardHome from "./Home";
 
 export default function Dashboard() {
   return (
@@ -17,11 +18,8 @@ export default function Dashboard() {
             mt: { xs: 8, md: 0 },
           }}
         >
-          {/* <Header />
-            <MainGrid /> */}
-          <Box>
-            <DashboardBreadCrumbs />
-          </Box>
+          <DashboardHeader />
+          <DashboardHome />
         </Stack>
       </Box>
     </Box>

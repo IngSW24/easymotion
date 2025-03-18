@@ -24,7 +24,7 @@ import { useState } from "react";
 import ProfileButton from "./ProfileButton";
 import AuthButtons from "./AuthButtons";
 import { AuthUserDto } from "@easymotion/openapi";
-import PhysiotherapistHeader from "./headers/PhysiotherapistHeaders";
+import PhysiotherapistAppBar from "./headers/PhysiotherapistAppBar";
 import UserHeader from "./headers/UserHeaders";
 
 export type MenuEntry = {
@@ -122,7 +122,7 @@ export default function Layout(props: LayoutProps) {
         <AppBar component="nav" sx={{ backgroundColor: "primary.main" }}>
           {/* Conditional headers rendering. */}
           {isPhysiotherapistArea ? (
-            <PhysiotherapistHeader />
+            <PhysiotherapistAppBar />
           ) : isUserArea ? (
             <UserHeader />
           ) : (
