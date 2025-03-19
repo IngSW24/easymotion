@@ -5,6 +5,7 @@ import { PrismaModule } from "nestjs-prisma";
 import { AuthModule } from "./auth/auth.module";
 import { UsersModule } from "./users/users.module";
 import { EmailModule } from "./email/email.module";
+import { CustomerModule } from "./customer/customer.module";
 import configurations from "./config";
 
 @Module({
@@ -34,6 +35,7 @@ import configurations from "./config";
     AuthModule,
     UsersModule,
     EmailModule,
+    CustomerModule,
   ],
 })
 export class AppModule {}

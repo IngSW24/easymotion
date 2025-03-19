@@ -1,4 +1,6 @@
-import { PickType } from "@nestjs/swagger";
+import { ApiProperty, PickType } from "@nestjs/swagger";
+import { Expose } from "class-transformer";
+import { IsDate } from "class-validator";
 import { ApplicationUserDto } from "src/users/dto/application-user.dto";
 
 export class CourseSubcriberDto extends PickType(ApplicationUserDto, [
@@ -7,4 +9,9 @@ export class CourseSubcriberDto extends PickType(ApplicationUserDto, [
   "firstName",
   "lastName",
   "middleName",
-]) {}
+]) {
+  @ApiProperty({ description: "Date of subscription to the course" })
+  @IsDate()
+  @Expose()
+  subscriptionDate: Date;
+}

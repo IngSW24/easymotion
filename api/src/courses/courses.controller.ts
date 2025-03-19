@@ -18,6 +18,7 @@ import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { ApiPaginatedResponse } from "src/common/decorators/api-paginated-response.decorator";
 import UseAuth from "src/auth/decorators/auth-with-role.decorator";
 import { CourseSubcriberDto } from "./dto/course-subcriber.dto";
+import { UserIdDto } from "src/common/dto/user-id.dto";
 
 @Controller("courses")
 export class CoursesController {
@@ -92,6 +93,20 @@ export class CoursesController {
   }
 
   /**
+   * Subscribe the given final user to a course (only for physiotherapist and admin)
+   * @param courseId the course uuid
+   */
+  @Put(":courseId/subscribe-user")
+  @ApiOkResponse()
+  @UseAuth(["physiotherapist", "admin"])
+  subscribeUser(
+    @Param("courseId") courseId: string,
+    @Body() userIdDto: UserIdDto
+  ) {
+    return this.coursesService.subscribeFinalUser(userIdDto.userId, courseId);
+  }
+
+  /**
    * Unsubscribe the current final user from a course
    * @param courseId the course uuid
    */
@@ -100,6 +115,20 @@ export class CoursesController {
   @UseAuth(["user"])
   unsubscribe(@Param("courseId") courseId: string, @Req() req) {
     return this.coursesService.unsubscribeFinalUser(req.user.sub, courseId);
+  }
+
+  /**
+   * Unsubscribe the given final user from a course (only for physiotherapists and admins)
+   * @param courseId the course uuid
+   */
+  @Put(":courseId/unsubscribe-user")
+  @ApiOkResponse()
+  @UseAuth(["physiotherapist", "admin"])
+  unsubscribeUser(
+    @Param("courseId") courseId: string,
+    @Body() userIdDto: UserIdDto
+  ) {
+    return this.coursesService.unsubscribeFinalUser(userIdDto.userId, courseId);
   }
 
   /**

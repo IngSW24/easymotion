@@ -127,9 +127,12 @@ export class CoursesService
       });
 
     return toPaginatedOutput(
-      paginatedSubscribers.map((x) =>
-        plainToInstance(CourseSubcriberDto, x.final_user.applicationUser)
-      ),
+      paginatedSubscribers.map((x) => ({
+        ...plainToInstance(CourseSubcriberDto, x.final_user.applicationUser, {
+          excludeExtraneousValues: true,
+        }),
+        subscriptionDate: x.created_at,
+      })),
       count,
       pagination
     );
