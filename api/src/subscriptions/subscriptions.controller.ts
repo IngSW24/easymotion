@@ -20,7 +20,7 @@ export class SubscriptionsController {
   @Get("current")
   getSubscriptions(@Req() req, @Query() pagination: PaginationFilter) {
     return this.subscriptionsService.getCustomerSubscriptions(
-      req.user.id,
+      req.user.sub,
       pagination
     );
   }
