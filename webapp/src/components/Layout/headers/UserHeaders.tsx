@@ -1,16 +1,23 @@
-import { AppBar, Box, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, Toolbar, Typography, Button } from "@mui/material";
 import ProfileButton from "../ProfileButton";
+import { useNavigate } from "react-router";
 
 export default function UserHeader() {
+  const navigate = useNavigate();
+
   return (
-    <AppBar position="fixed" sx={{ backgroundColor: "cyan" }}>
+    <AppBar position="fixed" sx={{ backgroundColor: "primary" }}>
       <Toolbar>
-        {/* Your dashboard-specific header content */}
         <Typography variant="h6" noWrap component="div">
-          User Header
+          Easymotion
         </Typography>
         <Box sx={{ flexGrow: 1 }} />
-        <ProfileButton /> {/* Assuming you always want this in dashboards */}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <Button color="inherit" onClick={() => navigate("/")}>
+            Cerca Corsi
+          </Button>
+          <ProfileButton />
+        </Box>
       </Toolbar>
     </AppBar>
   );
