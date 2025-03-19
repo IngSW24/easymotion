@@ -850,6 +850,352 @@
           "Users"
         ]
       }
+    },
+    "/subscriptions/current": {
+      "get": {
+        "operationId": "SubscriptionsController_getSubscriptions",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "PaginatedResponseOfCourseEntity",
+                  "allOf": [
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/CourseEntity"
+                          }
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ]
+                    },
+                    {
+                      "properties": {
+                        "meta": {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "number"
+                            },
+                            "hasNextPage": {
+                              "type": "boolean"
+                            },
+                            "currentPage": {
+                              "type": "number"
+                            },
+                            "totalItems": {
+                              "type": "number"
+                            },
+                            "totalPages": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "items",
+                            "hasNextPage",
+                            "currentPage",
+                            "totalItems",
+                            "totalPages"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "meta"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get the current subscriptions for the final user logged in",
+        "tags": [
+          "Subscriptions"
+        ]
+      }
+    },
+    "/subscriptions/subscribe/{courseId}": {
+      "put": {
+        "operationId": "SubscriptionsController_subscribe",
+        "parameters": [
+          {
+            "name": "courseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Subscribe the logged in final user to a course",
+        "tags": [
+          "Subscriptions"
+        ]
+      }
+    },
+    "/subscriptions/subscribe-user/{courseId}": {
+      "put": {
+        "operationId": "SubscriptionsController_subscribeUser",
+        "parameters": [
+          {
+            "name": "courseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserIdDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Subscribe the given final user id to a course (only for physiotherapist and admin)",
+        "tags": [
+          "Subscriptions"
+        ]
+      }
+    },
+    "/subscriptions/unsubscribe/{courseId}": {
+      "put": {
+        "operationId": "SubscriptionsController_unsubscribe",
+        "parameters": [
+          {
+            "name": "courseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Unsubscribe the logged in final user from a course",
+        "tags": [
+          "Subscriptions"
+        ]
+      }
+    },
+    "/subscriptions/unsubscribe-user/{courseId}": {
+      "put": {
+        "operationId": "SubscriptionsController_unsubscribeUser",
+        "parameters": [
+          {
+            "name": "courseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserIdDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Unsubscribe the given final user id from a course (only for physiotherapists and admins)",
+        "tags": [
+          "Subscriptions"
+        ]
+      }
+    },
+    "/subscriptions/subscribers/{courseId}": {
+      "get": {
+        "operationId": "SubscriptionsController_getSubscribers",
+        "parameters": [
+          {
+            "name": "courseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "PaginatedResponseOfCourseSubcriberDto",
+                  "allOf": [
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/CourseSubcriberDto"
+                          }
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ]
+                    },
+                    {
+                      "properties": {
+                        "meta": {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "number"
+                            },
+                            "hasNextPage": {
+                              "type": "boolean"
+                            },
+                            "currentPage": {
+                              "type": "number"
+                            },
+                            "totalItems": {
+                              "type": "number"
+                            },
+                            "totalPages": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "items",
+                            "hasNextPage",
+                            "currentPage",
+                            "totalItems",
+                            "totalPages"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "meta"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Gets all subscribers of a course",
+        "tags": [
+          "Subscriptions"
+        ]
+      }
     }
   },
   "info": {
@@ -1853,6 +2199,62 @@
             "default": "USER"
           }
         }
+      },
+      "UserIdDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "The user ID"
+          }
+        },
+        "required": [
+          "userId"
+        ]
+      },
+      "CourseSubcriberDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique user identifier (UUID)",
+            "example": "b3bf4d18-8dd0-43a1-b1da-fd3f7b9553a1"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the user",
+            "example": "user@example.com"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "User first name",
+            "example": "John"
+          },
+          "middleName": {
+            "type": "string",
+            "nullable": true,
+            "description": "User middle name",
+            "example": "Alexander"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "User last name",
+            "example": "Doe"
+          },
+          "subscriptionDate": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Date of subscription to the course"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "firstName",
+          "lastName",
+          "subscriptionDate"
+        ]
       }
     }
   },
