@@ -3,8 +3,9 @@ import { plainToInstance } from "class-transformer";
 import { PrismaService } from "nestjs-prisma";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { toPaginatedOutput } from "src/common/utils/pagination";
-import { CourseEntity } from "src/courses/dto/course.dto";
-import { CourseSubcriberDto } from "./dto/course-subcriber.dto";
+import { SubscriptionCreateDto } from "./dto/subscription-create.dto";
+import { SubscriptionDeleteDto } from "./dto/subscription-delete.dto";
+import { SubscriptionDto, UserSubscriptionDto } from "./dto/subscription.dto";
 
 @Injectable()
 export class SubscriptionsService {
@@ -26,7 +27,16 @@ export class SubscriptionsService {
     });
 
     return toPaginatedOutput(
-      courses.map((x) => plainToInstance(CourseEntity, x.course)),
+      courses.map((x) =>
+        plainToInstance(
+          SubscriptionDto,
+          {
+            course: x.course,
+            subscriptionDate: x.created_at,
+          },
+          { excludeExtraneousValues: true }
+        )
+      ),
       count,
       pagination
     );
@@ -37,7 +47,10 @@ export class SubscriptionsService {
    * @param finalUserId Unique identifier of the final user.
    * @param courseId Unique identifier of the course.
    */
-  async subscribeFinalUser(finalUserId: string, courseId: string) {
+  async subscribeFinalUser(
+    finalUserId: string,
+    subscriptionCreateDto: SubscriptionCreateDto
+  ) {
     const user = await this.prismaService.finalUser.findUnique({
       where: { applicationUserId: finalUserId },
     });
@@ -47,7 +60,7 @@ export class SubscriptionsService {
     }
 
     const course = await this.prismaService.course.findUniqueOrThrow({
-      where: { id: courseId },
+      where: { id: subscriptionCreateDto.courseId },
     });
 
     if (!course) {
@@ -67,9 +80,15 @@ export class SubscriptionsService {
    * @param finalUserId Unique identifier of the final user.
    * @param courseId Unique identifier of the course.
    */
-  async unsubscribeFinalUser(finalUserId: string, courseId: string) {
+  async unsubscribeFinalUser(
+    finalUserId: string,
+    subscriptionDeleteDto: SubscriptionDeleteDto
+  ) {
     await this.prismaService.courseFinalUser.deleteMany({
-      where: { course_id: courseId, final_user_id: finalUserId },
+      where: {
+        course_id: subscriptionDeleteDto.courseId,
+        final_user_id: finalUserId,
+      },
     });
   }
 
@@ -91,18 +110,24 @@ export class SubscriptionsService {
           final_user: {
             include: { applicationUser: true },
           },
+          course: { select: { id: true, name: true } },
         },
         skip: pagination.page * pagination.perPage,
         take: pagination.perPage,
       });
 
     return toPaginatedOutput(
-      paginatedSubscribers.map((x) => ({
-        ...plainToInstance(CourseSubcriberDto, x.final_user.applicationUser, {
-          excludeExtraneousValues: true,
-        }),
-        subscriptionDate: x.created_at,
-      })),
+      paginatedSubscribers.map((x) =>
+        plainToInstance(
+          UserSubscriptionDto,
+          {
+            course: x.course,
+            user: x.final_user.applicationUser,
+            subscriptionDate: x.created_at,
+          },
+          { excludeExtraneousValues: true }
+        )
+      ),
       count,
       pagination
     );

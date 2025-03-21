@@ -1,26 +1,55 @@
-import { Body, Controller, Get, Param, Put, Query, Req } from "@nestjs/common";
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+  Req,
+} from "@nestjs/common";
 import UseAuth from "src/auth/decorators/auth-with-role.decorator";
 import { SubscriptionsService } from "./subscriptions.service";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { ApiPaginatedResponse } from "src/common/decorators/api-paginated-response.decorator";
-import { CourseEntity } from "src/courses/dto/course.dto";
 import { ApiOkResponse } from "@nestjs/swagger";
-import { UserIdDto } from "src/common/dto/user-id.dto";
-import { CourseSubcriberDto } from "./dto/course-subcriber.dto";
+import { SubscriptionCreateDto } from "./dto/subscription-create.dto";
+import { SubscriptionDeleteDto } from "./dto/subscription-delete.dto";
+import { SubscriptionDto, UserSubscriptionDto } from "./dto/subscription.dto";
+import { Role } from "@prisma/client";
 
 @Controller("subscriptions")
-@UseAuth(["user"])
+@UseAuth()
 export class SubscriptionsController {
   constructor(private readonly subscriptionsService: SubscriptionsService) {}
 
   /**
-   * Get the current subscriptions for the final user logged in
+   * Get the current subscriptions for the logged user
    */
-  @ApiPaginatedResponse(CourseEntity)
-  @Get("current")
-  getSubscriptions(@Req() req, @Query() pagination: PaginationFilter) {
+  @ApiPaginatedResponse(SubscriptionDto)
+  @Get()
+  getSubscriptionsForLoggedUser(
+    @Query() pagination: PaginationFilter,
+    @Req() req
+  ) {
     return this.subscriptionsService.getCustomerSubscriptions(
       req.user.sub,
+      pagination
+    );
+  }
+
+  /**
+   * Get the current subscriptions for the given user
+   */
+  @ApiPaginatedResponse(SubscriptionDto)
+  @Get(":userId")
+  getSubscriptionsForGivenUser(
+    @Param("userId") userId: string,
+    @Query() pagination: PaginationFilter
+  ) {
+    return this.subscriptionsService.getCustomerSubscriptions(
+      userId,
       pagination
     );
   }
@@ -29,26 +58,26 @@ export class SubscriptionsController {
    * Subscribe the logged in final user to a course
    * @param courseId the course uuid
    */
-  @Put("subscribe/:courseId")
+  @Post()
   @ApiOkResponse()
-  subscribe(@Param("courseId") courseId: string, @Req() req) {
-    return this.subscriptionsService.subscribeFinalUser(req.user.sub, courseId);
-  }
+  subscribe(@Body() subscriptionCreateDto: SubscriptionCreateDto, @Req() req) {
+    const role = req.user.role;
 
-  /**
-   * Subscribe the given final user id to a course (only for physiotherapist and admin)
-   * @param courseId the course uuid
-   */
-  @Put("subscribe-user/:courseId")
-  @ApiOkResponse()
-  @UseAuth(["physiotherapist", "admin"])
-  subscribeUser(
-    @Param("courseId") courseId: string,
-    @Body() userIdDto: UserIdDto
-  ) {
+    if (role === Role.USER) {
+      return this.subscriptionsService.subscribeFinalUser(
+        req.user.sub,
+        subscriptionCreateDto
+      );
+    }
+
+    if (!subscriptionCreateDto.userId)
+      throw new BadRequestException(
+        "userId is required for physiotherapists and admins"
+      );
+
     return this.subscriptionsService.subscribeFinalUser(
-      userIdDto.userId,
-      courseId
+      subscriptionCreateDto.userId,
+      subscriptionCreateDto
     );
   }
 
@@ -56,30 +85,29 @@ export class SubscriptionsController {
    * Unsubscribe the logged in final user from a course
    * @param courseId the course uuid
    */
-  @Put("unsubscribe/:courseId")
+  @Delete()
   @ApiOkResponse()
-  @UseAuth(["user"])
-  unsubscribe(@Param("courseId") courseId: string, @Req() req) {
-    return this.subscriptionsService.unsubscribeFinalUser(
-      req.user.sub,
-      courseId
-    );
-  }
-
-  /**
-   * Unsubscribe the given final user id from a course (only for physiotherapists and admins)
-   * @param courseId the course uuid
-   */
-  @Put("unsubscribe-user/:courseId")
-  @ApiOkResponse()
-  @UseAuth(["physiotherapist", "admin"])
-  unsubscribeUser(
-    @Param("courseId") courseId: string,
-    @Body() userIdDto: UserIdDto
+  unsubscribe(
+    @Body() subscriptionDeleteDto: SubscriptionDeleteDto,
+    @Req() req
   ) {
+    const role = req.user.role;
+
+    if (role === Role.USER) {
+      return this.subscriptionsService.unsubscribeFinalUser(
+        req.user.sub,
+        subscriptionDeleteDto
+      );
+    }
+
+    if (!subscriptionDeleteDto.userId)
+      throw new BadRequestException(
+        "userId is required for physiotherapists and admins"
+      );
+
     return this.subscriptionsService.unsubscribeFinalUser(
-      userIdDto.userId,
-      courseId
+      subscriptionDeleteDto.userId,
+      subscriptionDeleteDto
     );
   }
 
@@ -87,9 +115,8 @@ export class SubscriptionsController {
    * Gets all subscribers of a course
    * @param courseId the course uuid
    */
-  @Get("subscribers/:courseId")
-  @ApiPaginatedResponse(CourseSubcriberDto)
-  @UseAuth()
+  @Get("course/:courseId")
+  @ApiPaginatedResponse(UserSubscriptionDto)
   getSubscribers(
     @Param("courseId") courseId: string,
     @Query() pagination: PaginationFilter

@@ -1,13 +1,13 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { SubscriptionsService } from "./subscriptions.service";
 import { PrismaService } from "nestjs-prisma";
-import { CourseEntity } from "src/courses/dto/course.dto";
 import { toPaginatedOutput } from "src/common/utils/pagination";
 import { Course, Prisma } from "@prisma/client";
 import { randomUUID } from "crypto";
 import { plainToInstance } from "class-transformer";
 import { NotFoundException } from "@nestjs/common";
 import { applicationUserDtoMock } from "test/mocks/users.mock";
+import { SubscriptionDto } from "./dto/subscription.dto";
 
 describe("SubsriptionsService", () => {
   let service: SubscriptionsService;
@@ -116,7 +116,13 @@ describe("SubsriptionsService", () => {
     });
 
     const expectedResult = toPaginatedOutput(
-      courseSubscribers.map((x) => plainToInstance(CourseEntity, x.course)),
+      courseSubscribers.map((x) =>
+        plainToInstance(
+          SubscriptionDto,
+          { course: x.course, subscriptionDate: x.created_at },
+          { excludeExtraneousValues: true }
+        )
+      ),
       2,
       pagination
     );
@@ -139,7 +145,7 @@ describe("SubsriptionsService", () => {
     prismaMock.finalUser.findUnique.mockResolvedValue(user);
     prismaMock.course.findUniqueOrThrow.mockResolvedValue(course);
 
-    await service.subscribeFinalUser(userId, courseId);
+    await service.subscribeFinalUser(userId, { courseId });
 
     expect(prismaMock.finalUser.findUnique).toHaveBeenCalledWith({
       where: { applicationUserId: userId },
@@ -165,7 +171,7 @@ describe("SubsriptionsService", () => {
       throw new NotFoundException("User not found");
     });
 
-    expect(service.subscribeFinalUser(userId, courseId)).rejects.toThrow(
+    expect(service.subscribeFinalUser(userId, { courseId })).rejects.toThrow(
       NotFoundException
     );
 
@@ -182,7 +188,7 @@ describe("SubsriptionsService", () => {
       throw new NotFoundException("Course not found");
     });
 
-    expect(service.subscribeFinalUser(userId, courseId)).rejects.toThrow(
+    expect(service.subscribeFinalUser(userId, { courseId })).rejects.toThrow(
       NotFoundException
     );
   });
@@ -191,7 +197,7 @@ describe("SubsriptionsService", () => {
     const userId = "1";
     const courseId = "2";
 
-    await service.unsubscribeFinalUser(userId, courseId);
+    await service.unsubscribeFinalUser(userId, { courseId });
 
     expect(prismaMock.courseFinalUser.deleteMany).toHaveBeenCalledWith({
       where: { course_id: courseId, final_user_id: userId },
@@ -218,6 +224,10 @@ describe("SubsriptionsService", () => {
             ...userMock,
           },
         },
+        course: {
+          id: courseId,
+          name: "",
+        },
       },
     ]);
 
@@ -229,7 +239,10 @@ describe("SubsriptionsService", () => {
 
     expect(prismaMock.courseFinalUser.findMany).toHaveBeenCalledWith({
       where: { course_id: courseId },
-      include: { final_user: { include: { applicationUser: true } } },
+      include: {
+        final_user: { include: { applicationUser: true } },
+        course: { select: { id: true, name: true } },
+      },
       skip: pagination.page * pagination.perPage,
       take: pagination.perPage,
     });
@@ -237,11 +250,18 @@ describe("SubsriptionsService", () => {
     const expectedResult = toPaginatedOutput(
       [
         {
-          id: userMock.id,
-          email: userMock.email,
-          firstName: userMock.firstName,
-          lastName: userMock.lastName,
-          middleName: userMock.middleName,
+          user: {
+            id: userMock.id,
+            email: userMock.email,
+            firstName: userMock.firstName,
+            lastName: userMock.lastName,
+            middleName: userMock.middleName,
+          },
+          course: {
+            id: courseId,
+            name: "",
+          },
+
           subscriptionDate: created_at,
         },
       ],
