@@ -99,4 +99,28 @@ export class CoursesService
       where: { id },
     });
   }
+
+  /**
+   * Find courses to which the given userId is subscribed
+   * @param userId the id of the logged in user
+   * @param pagination the pagination filter
+   */
+  async findSubscribedCourses(userId: string, pagination: PaginationFilter) {
+    const count = await this.prismaService.courseFinalUser.count({
+      where: { final_user_id: userId },
+    });
+
+    const courses = await this.prismaService.courseFinalUser.findMany({
+      where: { final_user_id: userId },
+      include: { course: true },
+      skip: pagination.page * pagination.perPage,
+      take: pagination.perPage,
+    });
+
+    return toPaginatedOutput(
+      courses.map((x) => plainToInstance(CourseEntity, x.course)),
+      count,
+      pagination
+    );
+  }
 }

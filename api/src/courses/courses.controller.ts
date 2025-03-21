@@ -7,6 +7,7 @@ import {
   Delete,
   Put,
   Query,
+  Req,
 } from "@nestjs/common";
 import { CoursesService } from "./courses.service";
 import { CreateCourseDto } from "./dto/create-course.dto";
@@ -41,6 +42,31 @@ export class CoursesController {
   @ApiPaginatedResponse(CourseEntity)
   findAll(@Query() pagination: PaginationFilter) {
     return this.coursesService.findAll(pagination);
+  }
+
+  /**
+   * Find all courses to which the logged user is subscribed
+   * @returns all courses
+   */
+  @Get("/subscribed")
+  @UseAuth()
+  @ApiPaginatedResponse(CourseEntity)
+  findSubscribedCourses(@Query() pagination: PaginationFilter, @Req() req) {
+    return this.coursesService.findSubscribedCourses(req.user.sub, pagination);
+  }
+
+  /**
+   * Find all courses to which the given user is subscribed
+   * @returns all courses
+   */
+  @Get("/subscribed/:userId")
+  @UseAuth()
+  @ApiPaginatedResponse(CourseEntity)
+  findSubscribedCoursesForUserId(
+    @Query() pagination: PaginationFilter,
+    @Param("userId") userId: string
+  ) {
+    return this.coursesService.findSubscribedCourses(userId, pagination);
   }
 
   /**
