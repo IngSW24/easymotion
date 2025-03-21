@@ -3,10 +3,10 @@ import { SubscriptionsController } from "./subscriptions.controller";
 import { SubscriptionsService } from "./subscriptions.service";
 import { PrismaService } from "nestjs-prisma";
 import { BadRequestException, NotFoundException } from "@nestjs/common";
-import { CourseSubcriberDto } from "./dto/course-subcriber.dto";
 import { toPaginatedOutput } from "src/common/utils/pagination";
 import { randomUUID } from "crypto";
 import { Role } from "@prisma/client";
+import { UserSubscriptionDto } from "./dto/subscription.dto";
 
 describe("SubscriptionsController", () => {
   let controller: SubscriptionsController;
@@ -241,13 +241,17 @@ describe("SubscriptionsController", () => {
   });
 
   it("should get the list of subscriptions for a course", async () => {
-    const subscribers: CourseSubcriberDto[] = [
+    const subscribers: UserSubscriptionDto[] = [
       {
-        id: "1",
-        email: "email@email.email",
-        firstName: "a",
-        lastName: "b",
-        middleName: "c",
+        course: null,
+        user: {
+          id: "1",
+          email: "email@email.email",
+          firstName: "a",
+          lastName: "b",
+          middleName: "c",
+        },
+
         subscriptionDate: new Date(),
       },
     ];
