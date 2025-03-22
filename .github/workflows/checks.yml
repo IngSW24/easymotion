@@ -11,6 +11,7 @@ on:
 jobs:
   # Shared setup you can reuse if you want (optional)
   setup:
+    name: 🛠️ Setup dependencies
     runs-on: ubuntu-latest
     outputs:
       cache-hit: ${{ steps.pnpm-cache.outputs.cache-hit }}
@@ -30,6 +31,7 @@ jobs:
         run: pnpm install
 
   test:
+    name: 🧪 Run Unit Tests
     runs-on: ubuntu-latest
     needs: setup
     env:
@@ -53,6 +55,7 @@ jobs:
         run: pnpm test
 
   lint:
+    name: 🧹 Check linting
     runs-on: ubuntu-latest
     needs: setup
     env:
@@ -76,6 +79,7 @@ jobs:
         run: pnpm lint
 
   build:
+    name: 🏗️ Check build
     runs-on: ubuntu-latest
     needs: setup
     env:

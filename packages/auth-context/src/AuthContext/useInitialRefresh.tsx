@@ -22,10 +22,13 @@ export const useInitialRefresh = (props: UseInitialRefreshProps) => {
 
     const refresh = async () => {
       try {
-        const response = await props.apiInstance.authControllerRefresh(null, {
-          credentials: "include",
-          headers: { "x-auth-flow": "web" },
-        });
+        const response = await props.apiInstance.authControllerRefresh(
+          undefined,
+          {
+            credentials: "include",
+            headers: { "x-auth-flow": "web" },
+          }
+        );
 
         if (response.ok) {
           props.updateAccessToken(response.data.accessToken);
