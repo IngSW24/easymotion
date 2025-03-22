@@ -3,6 +3,7 @@
   "typescript.tsserver.experimental.enableProjectDiagnostics": true,
   "editor.detectIndentation": false,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "files.eol": "\n",
   "editor.tabSize": 2,
   "jest.virtualFolders": [
     {

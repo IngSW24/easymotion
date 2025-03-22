@@ -7,6 +7,7 @@ import { PaginatedOutput } from "src/common/dto/paginated-output.dto";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { CrudService } from "src/common/abstractions/crud-service.interface";
 import { plainToInstance } from "class-transformer";
+import { toPaginatedOutput } from "src/common/utils/pagination";
 
 @Injectable()
 /**
@@ -53,16 +54,11 @@ export class CoursesService
       take: perPage,
     });
 
-    return {
-      data: courses.map((x) => plainToInstance(CourseEntity, x)), // Array of mapped courses
-      meta: {
-        currentPage: page,
-        items: courses.length,
-        hasNextPage: (page + 1) * perPage < count,
-        totalItems: count,
-        totalPages: Math.ceil(count / perPage),
-      },
-    };
+    return toPaginatedOutput(
+      courses.map((x) => plainToInstance(CourseEntity, x)),
+      count,
+      pagination
+    );
   }
 
   /**
@@ -102,5 +98,29 @@ export class CoursesService
     await this.prismaService.course.delete({
       where: { id },
     });
+  }
+
+  /**
+   * Find courses to which the given userId is subscribed
+   * @param userId the id of the logged in user
+   * @param pagination the pagination filter
+   */
+  async findSubscribedCourses(userId: string, pagination: PaginationFilter) {
+    const count = await this.prismaService.courseFinalUser.count({
+      where: { final_user_id: userId },
+    });
+
+    const courses = await this.prismaService.courseFinalUser.findMany({
+      where: { final_user_id: userId },
+      include: { course: true },
+      skip: pagination.page * pagination.perPage,
+      take: pagination.perPage,
+    });
+
+    return toPaginatedOutput(
+      courses.map((x) => plainToInstance(CourseEntity, x.course)),
+      count,
+      pagination
+    );
   }
 }
