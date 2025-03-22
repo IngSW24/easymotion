@@ -1,4 +1,3 @@
-import { Search } from "@mui/icons-material";
 import { Stack } from "@mui/material";
 import DashboardBreadCrumbs from "./DashboardBreadCrumbs";
 
@@ -7,7 +6,7 @@ export default function DashboardHeader() {
     <Stack
       direction="row"
       sx={{
-        display: { xs: "none", md: "flex" },
+        display: { xs: "flex", md: "flex" },
         width: "100%",
         alignItems: { xs: "flex-start", md: "center" },
         justifyContent: "space-between",
@@ -18,7 +17,6 @@ export default function DashboardHeader() {
     >
       <DashboardBreadCrumbs />
       <Stack direction="row" sx={{ gap: 1 }}>
-        <Search />
         {/* <CustomDatePicker /> */}
         {/* <MenuButton showBadge aria-label="Open notifications">
           <NotificationsRoundedIcon />
