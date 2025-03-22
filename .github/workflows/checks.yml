@@ -1,4 +1,4 @@
-name: Unit Test, Lint, Build
+name: 🩺 Code Health Checkup
 
 on:
   push:
