@@ -30,6 +30,7 @@ import UseAuth from "./decorators/auth-with-role.decorator";
 import { UpdateAuthUserDto } from "./dto/auth-user/update-auth-user.dto";
 import AuthFlowHeader from "./decorators/authflow-header.decorator";
 import { CustomRequest } from "src/common/types/custom-request";
+import { RefreshTokenDto } from "./dto/actions/refresh-token.dto";
 
 @Controller("auth")
 export class AuthController {
@@ -127,6 +128,7 @@ export class AuthController {
     status: 200,
     type: IntersectionType(AccessTokenDto, AuthUserDto),
   })
+  @ApiBody({ type: RefreshTokenDto, required: false })
   async refresh(@Req() req: CustomRequest, @Res() res) {
     const response = await this.authService.refresh(req.user.sub);
 
