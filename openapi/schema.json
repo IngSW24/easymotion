@@ -850,6 +850,366 @@
           "Users"
         ]
       }
+    },
+    "/subscriptions": {
+      "get": {
+        "operationId": "SubscriptionsController_getSubscriptionsForLoggedUser",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "PaginatedResponseOfSubscriptionDto",
+                  "allOf": [
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/SubscriptionDto"
+                          }
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ]
+                    },
+                    {
+                      "properties": {
+                        "meta": {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "number"
+                            },
+                            "hasNextPage": {
+                              "type": "boolean"
+                            },
+                            "currentPage": {
+                              "type": "number"
+                            },
+                            "totalItems": {
+                              "type": "number"
+                            },
+                            "totalPages": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "items",
+                            "hasNextPage",
+                            "currentPage",
+                            "totalItems",
+                            "totalPages"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "meta"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get the current subscriptions for the logged user",
+        "tags": [
+          "Subscriptions"
+        ]
+      },
+      "post": {
+        "operationId": "SubscriptionsController_subscribe",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubscriptionCreateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Subscribe the logged in final user to a course",
+        "tags": [
+          "Subscriptions"
+        ]
+      },
+      "delete": {
+        "operationId": "SubscriptionsController_unsubscribe",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubscriptionDeleteDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Unsubscribe the logged in final user from a course",
+        "tags": [
+          "Subscriptions"
+        ]
+      }
+    },
+    "/subscriptions/{userId}": {
+      "get": {
+        "operationId": "SubscriptionsController_getSubscriptionsForGivenUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "PaginatedResponseOfSubscriptionDto",
+                  "allOf": [
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/SubscriptionDto"
+                          }
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ]
+                    },
+                    {
+                      "properties": {
+                        "meta": {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "number"
+                            },
+                            "hasNextPage": {
+                              "type": "boolean"
+                            },
+                            "currentPage": {
+                              "type": "number"
+                            },
+                            "totalItems": {
+                              "type": "number"
+                            },
+                            "totalPages": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "items",
+                            "hasNextPage",
+                            "currentPage",
+                            "totalItems",
+                            "totalPages"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "meta"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get the current subscriptions for the given user",
+        "tags": [
+          "Subscriptions"
+        ]
+      }
+    },
+    "/subscriptions/course/{courseId}": {
+      "get": {
+        "operationId": "SubscriptionsController_getSubscribers",
+        "parameters": [
+          {
+            "name": "courseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "PaginatedResponseOfUserSubscriptionDto",
+                  "allOf": [
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/UserSubscriptionDto"
+                          }
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ]
+                    },
+                    {
+                      "properties": {
+                        "meta": {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "number"
+                            },
+                            "hasNextPage": {
+                              "type": "boolean"
+                            },
+                            "currentPage": {
+                              "type": "number"
+                            },
+                            "totalItems": {
+                              "type": "number"
+                            },
+                            "totalPages": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "items",
+                            "hasNextPage",
+                            "currentPage",
+                            "totalItems",
+                            "totalPages"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "meta"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Gets all subscribers of a course",
+        "tags": [
+          "Subscriptions"
+        ]
+      }
     }
   },
   "info": {
@@ -1853,6 +2213,151 @@
             "default": "USER"
           }
         }
+      },
+      "SubscriptionCourseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the course"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the course"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "SubscriptionDto": {
+        "type": "object",
+        "properties": {
+          "course": {
+            "description": "Course to which the user is subscribed",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SubscriptionCourseDto"
+              }
+            ]
+          },
+          "subscriptionDate": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Date of subscription to the course"
+          }
+        },
+        "required": [
+          "course",
+          "subscriptionDate"
+        ]
+      },
+      "SubscriptionCreateDto": {
+        "type": "object",
+        "properties": {
+          "subscriptionDate": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Date of subscription to the course"
+          },
+          "courseId": {
+            "type": "string",
+            "description": "Subscribed course id"
+          },
+          "userId": {
+            "type": "string",
+            "description": "Id of the user to subscribe (only for admins)"
+          }
+        },
+        "required": [
+          "courseId"
+        ]
+      },
+      "SubscriptionDeleteDto": {
+        "type": "object",
+        "properties": {
+          "courseId": {
+            "type": "string",
+            "description": "Subscribed course id"
+          },
+          "userId": {
+            "type": "string",
+            "description": "Id of the user to subscribe (only for admins)"
+          }
+        },
+        "required": [
+          "courseId"
+        ]
+      },
+      "SubscriptionUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique user identifier (UUID)",
+            "example": "b3bf4d18-8dd0-43a1-b1da-fd3f7b9553a1"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the user",
+            "example": "user@example.com"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "User first name",
+            "example": "John"
+          },
+          "middleName": {
+            "type": "string",
+            "nullable": true,
+            "description": "User middle name",
+            "example": "Alexander"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "User last name",
+            "example": "Doe"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "firstName",
+          "lastName"
+        ]
+      },
+      "UserSubscriptionDto": {
+        "type": "object",
+        "properties": {
+          "course": {
+            "description": "Course to which the user is subscribed",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SubscriptionCourseDto"
+              }
+            ]
+          },
+          "subscriptionDate": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Date of subscription to the course"
+          },
+          "user": {
+            "description": "Subscribed user",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SubscriptionUserDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "course",
+          "subscriptionDate",
+          "user"
+        ]
       }
     }
   },

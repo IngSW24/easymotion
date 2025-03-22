@@ -1,12 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Expose } from "class-transformer";
-import {
-  IsDateString,
-  IsEmail,
-  IsOptional,
-  IsString,
-  IsStrongPassword,
-} from "class-validator";
+import { IsDateString, IsEmail, IsOptional, IsString } from "class-validator";
+import CheckPasswordConstraints from "src/auth/decorators/strong-password.decorator";
 
 export class SignUpDto {
   @ApiProperty({
@@ -21,14 +16,7 @@ export class SignUpDto {
     description: "Password of the user",
     example: "password",
   })
-  // TODO: Change with NestJS Config
-  @IsStrongPassword({
-    minLength: 4,
-    minLowercase: 0,
-    minNumbers: 0,
-    minSymbols: 0,
-    minUppercase: 0,
-  })
+  @CheckPasswordConstraints()
   @Expose()
   password: string;
 

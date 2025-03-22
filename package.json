@@ -14,10 +14,12 @@
     "api:schema": "pnpm --filter api swagger:generate -- ../openapi/schema.json",
     "api:migrate": "pnpm --filter api prisma:migrate-dev",
     "api:client": "pnpm --filter api prisma:gen-client",
-    "api:seed": "pnpm --filter api seed"
+    "api:seed": "pnpm --filter api seed",
+    "prepare": "husky || true"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",
+    "husky": "^9.1.7",
     "prettier": "^3.4.2"
   },
   "engines": {
