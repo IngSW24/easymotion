@@ -24,6 +24,7 @@ export const useInitialRefresh = (props: UseInitialRefreshProps) => {
       try {
         const response = await props.apiInstance.authControllerRefresh({
           credentials: "include",
+          headers: { "x-auth-flow": "web" },
         });
 
         if (response.ok) {
