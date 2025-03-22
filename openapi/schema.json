@@ -529,6 +529,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "",
@@ -1979,6 +1989,15 @@
           "email",
           "otp"
         ]
+      },
+      "RefreshTokenDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "description": "The refresh token (no need to specify in case of a web auth flow)"
+          }
+        }
       },
       "AuthUserDto": {
         "type": "object",
