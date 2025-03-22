@@ -10,6 +10,7 @@ import {
 } from "class-validator";
 import { Role } from "@prisma/client";
 import { Expose } from "class-transformer";
+import CheckPasswordConstraints from "src/auth/decorators/strong-password.decorator";
 
 export class CreateUserDto {
   @ApiProperty({
@@ -28,6 +29,7 @@ export class CreateUserDto {
   @IsString()
   @Length(6)
   @Expose()
+  @CheckPasswordConstraints()
   password: string;
 
   @ApiProperty({
