@@ -33,6 +33,7 @@ const customFetch = async (
   const api = new Api({
     baseUrl: apiBaseUrl,
     securityWorker: () => ({
+      "x-auth-flow": "web",
       credentials: "include", // Ensures cookies are sent with the request to the refresh endpoint.
     }),
   });

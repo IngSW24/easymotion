@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { MiddlewareConsumer, Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { CourseModule } from "./courses/courses.module";
 import { PrismaModule } from "nestjs-prisma";
@@ -7,6 +7,8 @@ import { UsersModule } from "./users/users.module";
 import { EmailModule } from "./email/email.module";
 import { SubscriptionsModule } from "./subscriptions/subscriptions.module";
 import configurations from "./config";
+import { RequestMiddleware } from "./middlewares/request.middleware";
+import { AuthController } from "./auth/auth.controller";
 
 @Module({
   imports: [
@@ -38,4 +40,8 @@ import configurations from "./config";
     SubscriptionsModule,
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RequestMiddleware).forRoutes(AuthController);
+  }
+}

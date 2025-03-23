@@ -20,6 +20,7 @@ export default function ApiContextProvider(props: ApiContextProviderProps) {
       baseUrl: props.apiBaseUrl,
       securityWorker: () => ({
         headers: {
+          "x-auth-flow": "web",
           Authorization: `Bearer ${accessToken}`,
         },
       }),

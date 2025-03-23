@@ -95,7 +95,6 @@ export class AuthService {
     return {
       requiresOtp: false,
       user: loginResponse.user,
-      refreshToken: loginResponse.refreshToken,
     };
   }
 
@@ -113,14 +112,14 @@ export class AuthService {
     return {
       user: {
         accessToken: this.jwtService.sign(payload),
+        refreshToken: this.jwtService.sign(
+          { sub: user.id },
+          {
+            expiresIn: this.configService.refreshExpiresIn,
+          }
+        ),
         ...user,
       },
-      refreshToken: this.jwtService.sign(
-        { sub: user.id },
-        {
-          expiresIn: this.configService.refreshExpiresIn,
-        }
-      ),
     };
   }
 
