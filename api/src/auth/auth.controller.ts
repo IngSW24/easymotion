@@ -28,6 +28,9 @@ import { AuthUserDto } from "./dto/auth-user/auth-user.dto";
 import { AccessTokenDto } from "./dto/actions/access-token.dto";
 import UseAuth from "./decorators/auth-with-role.decorator";
 import { UpdateAuthUserDto } from "./dto/auth-user/update-auth-user.dto";
+import AuthFlowHeader from "./decorators/authflow-header.decorator";
+import { CustomRequest } from "src/common/types/custom-request";
+import { RefreshTokenDto } from "./dto/actions/refresh-token.dto";
 
 @Controller("auth")
 export class AuthController {
@@ -63,33 +66,53 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post("login")
   @ApiBody({ type: SignInDto })
+  @AuthFlowHeader()
   @ApiResponse({
     status: 200,
     description: "Successful login",
     type: IntersectionType(AccessTokenDto, AuthUserDto),
   })
-  async login(@Req() req, @Res() res): Promise<void> {
+  async login(@Req() req: CustomRequest, @Res() res): Promise<void> {
     const twoFactorDiscriminator = await this.authService.login(req.user);
 
     // needs === false for correct type insertion
-    if (twoFactorDiscriminator.requiresOtp === false) {
-      this.setRefreshTokenCookie(res, twoFactorDiscriminator.refreshToken);
-      res.send(twoFactorDiscriminator.user);
-    } else {
+    if (twoFactorDiscriminator.requiresOtp === true) {
       res.send({ requiresOtp: true });
+      return;
     }
+
+    if (req.isWebAuth) {
+      // send refresh token as http only cookie
+      this.setRefreshTokenCookie(res, twoFactorDiscriminator.user.refreshToken);
+      twoFactorDiscriminator.user.refreshToken = undefined;
+      res.send(twoFactorDiscriminator.user);
+      return;
+    }
+
+    res.send(twoFactorDiscriminator.user);
   }
 
   @Post("login/otp")
+  @AuthFlowHeader()
   @ApiResponse({
     status: 200,
     description: "Successful login",
     type: IntersectionType(AccessTokenDto, AuthUserDto),
   })
-  async loginOtp(@Body() otpLoginDto: OtpLoginDto, @Res() res) {
+  async loginOtp(
+    @Body() otpLoginDto: OtpLoginDto,
+    @Req() req: CustomRequest,
+    @Res() res
+  ) {
     const response = await this.authService.loginOtp(otpLoginDto);
 
-    this.setRefreshTokenCookie(res, response.refreshToken);
+    if (req.isWebAuth) {
+      this.setRefreshTokenCookie(res, response.user.refreshToken);
+      response.user.refreshToken = undefined;
+      res.send(response.user);
+      return;
+    }
+
     res.send(response.user);
   }
 
@@ -99,15 +122,22 @@ export class AuthController {
    * @param res The response object.
    */
   @UseGuards(RefreshGuard)
+  @AuthFlowHeader()
   @Post("refresh")
   @ApiResponse({
     status: 200,
     type: IntersectionType(AccessTokenDto, AuthUserDto),
   })
-  async refresh(@Req() req, @Res() res) {
+  @ApiBody({ type: RefreshTokenDto, required: false })
+  async refresh(@Req() req: CustomRequest, @Res() res) {
     const response = await this.authService.refresh(req.user.sub);
 
-    this.setRefreshTokenCookie(res, response.refreshToken);
+    if (req.isWebAuth) {
+      this.setRefreshTokenCookie(res, response.user.refreshToken);
+      response.user.refreshToken = undefined;
+      res.send(response.user);
+      return;
+    }
 
     res.send(response.user);
   }
@@ -231,6 +261,7 @@ export class AuthController {
    * @param res The response object.
    */
   @Put("email")
+  @AuthFlowHeader()
   @ApiResponse({
     status: 200,
     description: "Email confirmation",
@@ -238,11 +269,17 @@ export class AuthController {
   })
   async confirmEmail(
     @Body() emailConfirmDto: EmailConfirmDto,
+    @Req() req: CustomRequest,
     @Res() res
   ): Promise<void> {
     const response = await this.authService.confirmEmail(emailConfirmDto);
 
-    this.setRefreshTokenCookie(res, response.refreshToken);
+    if (req.isWebAuth) {
+      this.setRefreshTokenCookie(res, response.user.refreshToken);
+      response.user.refreshToken = undefined;
+      res.send(response.user);
+      return;
+    }
 
     res.send(response.user);
   }

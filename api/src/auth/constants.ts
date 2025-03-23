@@ -1,0 +1,4 @@
+export const AuthFlowHeaderName = "x-auth-flow";
+export const WebAuthFlowName = "web";
+export const RefreshStrategyName = "refresh-jwt";
+export const JwtStrategyName = "jwt";
