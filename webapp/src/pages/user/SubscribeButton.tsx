@@ -1,25 +1,68 @@
 import { Delete } from "@mui/icons-material";
 import { Button, CardActions } from "@mui/material";
 import DoneIcon from "@mui/icons-material/Done";
+import { useParams } from "react-router";
+import { useState, useEffect } from "react";
 
-export interface CourseCardProps {
-  submitted: boolean;
-  onSubscribe?: (id: string, submitted?: boolean) => void;
-  onUnsubscribe?: (id: string, submitted?: boolean) => void;
-}
+import { useAuth } from "@easymotion/auth-context";
+import useSubscriptions from "../../hooks/useSubscription";
 
-export default function SubscribeButton(props: CourseCardProps) {
-  const { submitted = false, onSubscribe, onUnsubscribe } = props;
+export default function SubscribeButton() {
+  const [subscribed, setSubscribed] = useState(false);
+  const { id: courseId } = useParams();
+  const { user } = useAuth();
+  const userId = user?.id;
+  const { subscribe, unSubscribe, getUserSubscriptions } = useSubscriptions({
+    userId,
+    courseId,
+  });
+
+  useEffect(() => {
+    if (!courseId) return;
+
+    const subsData = getUserSubscriptions.data;
+    if (!subsData) return;
+
+    const alreadySubscribed = subsData.data.some(
+      (sub) => sub.course.id === courseId
+    );
+
+    setSubscribed(alreadySubscribed);
+  }, [getUserSubscriptions.data, courseId]);
+
+  const handleSubscribe = () => {
+    if (!courseId) return;
+    subscribe.mutate(
+      { courseId },
+      {
+        onSuccess: () => {
+          setSubscribed(true);
+        },
+      }
+    );
+  };
+
+  const handleUnsubscribe = () => {
+    if (!courseId) return;
+    unSubscribe.mutate(
+      { courseId },
+      {
+        onSuccess: () => {
+          setSubscribed(false);
+        },
+      }
+    );
+  };
 
   return (
     <CardActions sx={{ justifyContent: "right", paddingX: 2, fontSize: 20 }}>
-      {submitted ? (
+      {subscribed ? (
         <Button
           startIcon={<Delete />}
           variant="contained"
           color="error"
           sx={{ fontSize: 15 }}
-          //onClick={() => onUnsubscribe("", false)}
+          onClick={handleUnsubscribe}
         >
           Annulla iscrizione
         </Button>
@@ -28,7 +71,7 @@ export default function SubscribeButton(props: CourseCardProps) {
           startIcon={<DoneIcon />}
           variant="contained"
           sx={{ fontSize: 20 }}
-          //onClick={() => onSubscribe("", true)}
+          onClick={handleSubscribe}
         >
           Iscriviti
         </Button>
