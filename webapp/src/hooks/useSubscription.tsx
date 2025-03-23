@@ -5,12 +5,15 @@ import {
   SubscriptionCreateDto,
   SubscriptionDeleteDto,
 } from "@easymotion/openapi";
+import { CourseFilters } from "../components/course/FilterBlock/types";
 
 export interface UseSubscriptionsProps {
   userId?: string;
   courseId?: string;
   page?: number;
   perPage?: number;
+  filters?: CourseFilters;
+  fetchAll?: boolean;
 }
 
 /**
@@ -27,7 +30,14 @@ export interface UseSubscriptionsProps {
  *  - **unsubscribe** (useMutation): unsubscribes a user from a course
  */
 export default function useSubscriptions(props: UseSubscriptionsProps) {
-  const { userId, courseId, page = 0, perPage = 10 } = props;
+  const {
+    userId = "",
+    courseId = "",
+    page = 0,
+    perPage = 10,
+    fetchAll = courseId === "",
+    filters,
+  } = props;
 
   const { apiClient: api } = useApiClient();
   const snack = useSnack();
@@ -119,5 +129,76 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
     onError: (error) => snack.showError(error),
   });
 
-  return { getUserSubscriptions, getCourseSubscribers, subscribe, unSubscribe };
+  const getSubscription = useQuery({
+    queryKey: ["courses", { page, perPage }, { filters }],
+    queryFn: async () => {
+      const response = await api.courses.coursesControllerFindSubscribedCourses(
+        {
+          page,
+          perPage,
+        }
+      );
+      const fullData = response.data.data;
+
+      if (!filters) return fullData;
+
+      const filteredData = fullData.filter((course) => {
+        if (
+          filters.searchText &&
+          !course.name.toLowerCase().includes(filters.searchText.toLowerCase())
+        )
+          return false;
+
+        if (
+          filters.advanced.categories.length > 0 &&
+          !filters.advanced.categories.includes(course.category)
+        )
+          return false;
+
+        if (
+          filters.advanced.levels.length > 0 &&
+          !filters.advanced.levels.includes(course.level)
+        )
+          return false;
+
+        if (
+          filters.advanced.frequencies.length > 0 &&
+          !filters.advanced.frequencies.includes(course.frequency)
+        )
+          return false;
+
+        if (
+          filters.advanced.availabilities.length > 0 &&
+          !filters.advanced.availabilities.includes(course.availability)
+        )
+          return false;
+
+        return true;
+      });
+
+      return filteredData;
+    },
+    enabled: fetchAll,
+  });
+
+  const getSingleSubscription = useQuery({
+    queryKey: ["courses", { courseId }],
+    queryFn: async () => {
+      const response =
+        await api.courses.coursesControllerFindSubscribedCoursesForUserId(
+          userId
+        );
+      return response.data;
+    },
+    enabled: courseId !== "",
+  });
+
+  return {
+    getUserSubscriptions,
+    getCourseSubscribers,
+    subscribe,
+    unSubscribe,
+    getSubscription,
+    getSingleSubscription,
+  };
 }
