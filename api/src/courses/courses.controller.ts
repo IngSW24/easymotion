@@ -17,6 +17,7 @@ import { ApiCreatedResponse, ApiOkResponse } from "@nestjs/swagger";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { ApiPaginatedResponse } from "src/common/decorators/api-paginated-response.decorator";
 import UseAuth from "src/auth/decorators/auth-with-role.decorator";
+import { Role } from "@prisma/client";
 
 @Controller("courses")
 export class CoursesController {
@@ -28,7 +29,7 @@ export class CoursesController {
    * @returns the created course
    */
   @Post()
-  @UseAuth(["admin", "physiotherapist"])
+  @UseAuth([Role.PHYSIOTHERAPIST])
   @ApiCreatedResponse({ type: CourseEntity })
   create(@Body() createCourseDto: CreateCourseDto) {
     return this.coursesService.create(createCourseDto);
@@ -49,7 +50,7 @@ export class CoursesController {
    * @returns all courses
    */
   @Get("/subscribed")
-  @UseAuth()
+  @UseAuth([Role.USER])
   @ApiPaginatedResponse(CourseEntity)
   findSubscribedCourses(@Query() pagination: PaginationFilter, @Req() req) {
     return this.coursesService.findSubscribedCourses(req.user.sub, pagination);
@@ -88,7 +89,7 @@ export class CoursesController {
    */
   @Put(":id")
   @ApiOkResponse({ type: CourseEntity })
-  @UseAuth(["admin", "physiotherapist"])
+  @UseAuth([Role.PHYSIOTHERAPIST])
   update(@Param("id") id: string, @Body() updateCoursesDto: UpdateCoursesDto) {
     return this.coursesService.update(id, updateCoursesDto);
   }
@@ -99,7 +100,7 @@ export class CoursesController {
    */
   @Delete(":id")
   @ApiOkResponse()
-  @UseAuth(["admin", "physiotherapist"])
+  @UseAuth([Role.PHYSIOTHERAPIST, Role.ADMIN])
   remove(@Param("id") id: string) {
     return this.coursesService.remove(id);
   }

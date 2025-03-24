@@ -180,6 +180,19 @@ describe("SubsriptionsService", () => {
     });
   });
 
+  it("should throw not found exception if attempting to subscribe a physiotherapist", async () => {
+    const userId = "1";
+    const courseId = "2";
+
+    prismaMock.finalUser.findUnique.mockRejectedValue(() => {
+      throw new NotFoundException("User not found");
+    });
+
+    expect(service.subscribeFinalUser(userId, { courseId })).rejects.toThrow(
+      NotFoundException
+    );
+  });
+
   it("should throw not found exception if course does not exist", async () => {
     const userId = "1";
     const courseId = "2";

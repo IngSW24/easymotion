@@ -120,7 +120,7 @@ describe("SubscriptionsController", () => {
     const subscriptionDate = new Date();
     const subscribeDto = { courseId, userId: "ignored", subscriptionDate };
 
-    const result = await controller.subscribe(subscribeDto, req);
+    const result = await controller.subscribeLoggedUser(subscribeDto, req);
 
     subscriptionServiceMockup.subscribeFinalUser.mockReturnValue(undefined);
 
@@ -133,24 +133,30 @@ describe("SubscriptionsController", () => {
   });
 
   it("should throw bad request is admin attemps subscribe without userId", async () => {
-    const req = { user: { sub: "1", role: Role.ADMIN } };
     const courseId = randomUUID();
     const subscriptionDate = new Date();
     const subscribeDto = { courseId, subscriptionDate };
 
+    subscriptionServiceMockup.subscribeFinalUser.mockRejectedValue(() => {
+      throw new BadRequestException("User not found");
+    });
+
     expect(async () => {
-      await controller.subscribe(subscribeDto, req);
+      await controller.subscribeGivenUser(subscribeDto);
     }).rejects.toThrow(BadRequestException);
   });
 
-  it("should throw bad request is physiotherapist attemps subscribe without userId", async () => {
-    const req = { user: { sub: "1", role: Role.PHYSIOTHERAPIST } };
+  it("should throw bad request is high level priviledged user attempts to subscribe an non customer", async () => {
     const courseId = randomUUID();
     const subscriptionDate = new Date();
     const subscribeDto = { courseId, subscriptionDate };
 
+    subscriptionServiceMockup.subscribeFinalUser.mockRejectedValue(() => {
+      throw new BadRequestException("User not found");
+    });
+
     expect(async () => {
-      await controller.subscribe(subscribeDto, req);
+      await controller.subscribeGivenUser(subscribeDto);
     }).rejects.toThrow(BadRequestException);
   });
 
@@ -163,7 +169,7 @@ describe("SubscriptionsController", () => {
       throw new NotFoundException("User not found");
     });
 
-    expect(controller.subscribe(subscribeDto, req)).rejects.toThrow(
+    expect(controller.subscribeLoggedUser(subscribeDto, req)).rejects.toThrow(
       NotFoundException
     );
   });
@@ -172,7 +178,7 @@ describe("SubscriptionsController", () => {
     const req = { user: { sub: "1", role: Role.USER } };
     const deleteDto = { courseId: "1", userId: "ignored" };
 
-    const result = await controller.unsubscribe(deleteDto, req);
+    const result = await controller.unsubscribeLoggedUser(deleteDto, req);
 
     subscriptionServiceMockup.unsubscribeFinalUser.mockReturnValue(undefined);
 
@@ -185,11 +191,10 @@ describe("SubscriptionsController", () => {
   });
 
   it("should unsubscribe the given final user from a course if admin", async () => {
-    const req = { user: { sub: "1", role: Role.ADMIN } };
     const userId = randomUUID();
     const deleteDto = { courseId: "1", userId };
 
-    const result = await controller.unsubscribe(deleteDto, req);
+    const result = await controller.unsubscribeGivenUser(deleteDto);
 
     subscriptionServiceMockup.unsubscribeFinalUser.mockReturnValue(undefined);
 
@@ -202,11 +207,10 @@ describe("SubscriptionsController", () => {
   });
 
   it("should unsubscribe the given final user from a course if physiotherapist", async () => {
-    const req = { user: { sub: "1", role: Role.PHYSIOTHERAPIST } };
     const userId = randomUUID();
     const deleteDto = { courseId: "1", userId };
 
-    const result = await controller.unsubscribe(deleteDto, req);
+    const result = await controller.unsubscribeGivenUser(deleteDto);
 
     subscriptionServiceMockup.unsubscribeFinalUser.mockReturnValue(undefined);
 
@@ -218,24 +222,26 @@ describe("SubscriptionsController", () => {
     expect(result).toBeUndefined();
   });
 
-  it("should throw bad request if admin attempts to unsubscribe without userId", async () => {
-    const req = { user: { sub: "1", role: Role.PHYSIOTHERAPIST } };
+  it("should throw exception if admin attempts to unsubscribe without userId", async () => {
     const deleteDto = { courseId: "1" };
 
+    subscriptionServiceMockup.unsubscribeFinalUser.mockRejectedValue(() => {
+      throw new NotFoundException("User not found");
+    });
+
     expect(async () => {
-      await controller.unsubscribe(deleteDto, req);
-    }).rejects.toThrow(BadRequestException);
+      await controller.unsubscribeGivenUser(deleteDto);
+    }).rejects.toThrow(NotFoundException);
   });
 
   it("should throw not found exception when user is not found on unsubscribe", async () => {
-    const req = { user: { sub: "1", role: Role.ADMIN } };
     const deleteDto = { courseId: "1", userId: randomUUID() };
 
     subscriptionServiceMockup.unsubscribeFinalUser.mockRejectedValue(() => {
       throw new NotFoundException("User not found");
     });
 
-    expect(controller.unsubscribe(deleteDto, req)).rejects.toThrow(
+    expect(controller.unsubscribeGivenUser(deleteDto)).rejects.toThrow(
       NotFoundException
     );
   });
