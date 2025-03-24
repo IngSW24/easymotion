@@ -77,9 +77,12 @@ export class UserManager {
    * @returns A promise that resolves with a success Result if the user is found,
    *          or an error Result if not found.
    */
-  async getUserById(userId: string): ResultPromise<ApplicationUser> {
+  async getUserById(
+    userId: string,
+    roles: Role[] = undefined
+  ): ResultPromise<ApplicationUser> {
     const user = await this.prisma.applicationUser.findUnique({
-      where: { id: userId },
+      where: { id: userId, ...(roles && { role: { in: roles } }) },
     });
 
     if (!user) {
@@ -99,9 +102,12 @@ export class UserManager {
    * @returns A promise that resolves with a success Result if the user is found,
    *          or an error Result if not found.
    */
-  async getUserByEmail(email: string): ResultPromise<ApplicationUser> {
+  async getUserByEmail(
+    email: string,
+    roles: Role[] = undefined
+  ): ResultPromise<ApplicationUser> {
     const user = await this.prisma.applicationUser.findUnique({
-      where: { email },
+      where: { email, ...(roles && { role: { in: roles } }) },
     });
 
     if (!user) {

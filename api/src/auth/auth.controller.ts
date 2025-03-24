@@ -20,7 +20,6 @@ import { PasswordUpdateDto } from "./dto/actions/password-update.dto";
 import { PasswordChangeDto } from "./dto/actions/password-change.dto";
 import { OtpLoginDto } from "./dto/actions/otp-login.dto";
 import { EmailConfirmDto } from "./dto/actions/email-confirm.dto";
-import { LocalAuthGuard } from "./guards/local-auth.guard";
 import { ApiBody, ApiResponse, IntersectionType } from "@nestjs/swagger";
 import { SignInDto } from "./dto/actions/sign-in.dto";
 import { DateTime } from "luxon";
@@ -34,8 +33,12 @@ import { CustomRequest } from "src/common/types/custom-request";
 import { RefreshTokenDto } from "./dto/actions/refresh-token.dto";
 import { OtpGuard } from "./guards/otp.guard";
 import { LoginResponse } from "./types";
+import {
+  AdminLocalAuthGuard,
+  UserLocalAuthGuard,
+} from "./guards/local-auth.guard";
 
-// just to avoid having to bloat the code with multiple decorators
+// avoids having to bloat the code with the same multiple decorators
 const ApiLoginResponse = (description: string = "Successful login") =>
   applyDecorators(
     ApiResponse({
@@ -50,16 +53,7 @@ const ApiLoginResponse = (description: string = "Successful login") =>
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  /**
-   * Logs in a user and sets the refresh token cookie.
-   * @param req The request object, containing the authenticated user.
-   * @param res The response object.
-   */
-  @UseGuards(LocalAuthGuard)
-  @Post("login")
-  @ApiBody({ type: SignInDto })
-  @ApiLoginResponse()
-  async login(@Req() req: CustomRequest, @Res() res): Promise<void> {
+  private async login(req: CustomRequest, res: any) {
     if (req.user.requiresOtp) {
       res.send({ requiresOtp: true });
       return;
@@ -69,6 +63,37 @@ export class AuthController {
     this.sendAuthenticationTokens(req, res, loginResponse);
   }
 
+  /**
+   * Logs in a user and sets the refresh token cookie.
+   * @param req The request object, containing the authenticated user.
+   * @param res The response object.
+   */
+  @UseGuards(UserLocalAuthGuard)
+  @Post("login")
+  @ApiBody({ type: SignInDto })
+  @ApiLoginResponse()
+  async userLogin(@Req() req: CustomRequest, @Res() res): Promise<void> {
+    this.login(req, res);
+  }
+
+  /**
+   * Logs in an admin user and sets the refresh token cookie.
+   * @param req The request object, containing the authenticated user.
+   * @param res The response object.
+   */
+  @UseGuards(AdminLocalAuthGuard)
+  @Post("login/admin")
+  @ApiBody({ type: SignInDto })
+  @ApiLoginResponse()
+  async adminLogin(@Req() req: CustomRequest, @Res() res): Promise<void> {
+    this.login(req, res);
+  }
+
+  /**
+   * Executes the OTP login stage.
+   * @param req The request object.
+   * @param res The response object
+   */
   @UseGuards(OtpGuard)
   @Post("login/otp")
   @ApiLoginResponse()
@@ -232,7 +257,6 @@ export class AuthController {
    * @param req the request object
    * @param res the response object
    * @param loginResponse the login response obtained by the auth service
-   * @returns void
    */
   private sendAuthenticationTokens(
     req: CustomRequest,

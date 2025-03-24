@@ -7,7 +7,7 @@ import {
 } from "src/common/types/result";
 import { UserManager } from "src/users/user.manager";
 import { SignUpDto } from "./dto/actions/sign-up.dto";
-import { Prisma } from "@prisma/client";
+import { Prisma, Role } from "@prisma/client";
 import { EmailDto } from "./dto/actions/email.dto";
 import { PasswordUpdateDto } from "./dto/actions/password-update.dto";
 import { PasswordChangeDto } from "./dto/actions/password-change.dto";
@@ -45,8 +45,12 @@ export class AuthService {
    * @param password the password of the user
    * @returns the user if the credentials are valid, otherwise null
    */
-  async validateUser(email: string, password: string) {
-    const result = await this.userManager.getUserByEmail(email);
+  async validateUser(
+    email: string,
+    password: string,
+    roles: Role[] = undefined
+  ) {
+    const result = await this.userManager.getUserByEmail(email, roles);
 
     if (!isSuccessResult(result)) {
       return null;
