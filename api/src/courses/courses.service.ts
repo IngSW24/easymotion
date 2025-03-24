@@ -51,13 +51,15 @@ export class CoursesService {
     const courses = await this.prismaService.course.findMany({
       skip: page * perPage,
       take: perPage,
-      where: {
-        owner: {
-          applicationUser: {
-            id: filter.ownerId,
+      ...(filter?.ownerId && {
+        where: {
+          owner: {
+            applicationUser: {
+              id: filter.ownerId,
+            },
           },
         },
-      },
+      }),
       include: {
         owner: {
           include: {

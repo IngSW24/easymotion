@@ -11,6 +11,8 @@ import {
   CourseFrequency,
   CourseLevel,
 } from "@prisma/client";
+import { plainToInstance } from "class-transformer";
+import { randomUUID } from "crypto";
 
 describe("CoursesService", () => {
   let service: CoursesService;
@@ -67,13 +69,13 @@ describe("CoursesService", () => {
     const result = await service.create(dto, "1");
 
     expect(prismaMock.course.create).toHaveBeenCalledWith({
-      data: { ...dto },
+      data: { ...dto, owner_id: "1" },
     });
-    expect(result).toEqual(
-      new CourseEntity({
+    expect(result).toEqual({
+      ...new CourseEntity({
         ...dto,
-      })
-    );
+      }),
+    });
   });
 
   // FindAll Method Test
@@ -97,8 +99,8 @@ describe("CoursesService", () => {
         created_at: new Date(),
         updated_at: new Date(),
         owner: {
-          id: "",
-          email: "",
+          id: randomUUID(),
+          email: "test@mail.com",
           firstName: "",
           lastName: "",
           middleName: "",
@@ -121,8 +123,8 @@ describe("CoursesService", () => {
         created_at: new Date(),
         updated_at: new Date(),
         owner: {
-          id: "",
-          email: "",
+          id: randomUUID(),
+          email: "test@mail.com",
           firstName: "",
           lastName: "",
           middleName: "",
@@ -137,14 +139,27 @@ describe("CoursesService", () => {
     const result = await service.findAll(pagination, undefined);
 
     expect(prismaMock.course.findMany).toHaveBeenCalledWith({
+      include: {
+        owner: {
+          include: {
+            applicationUser: true,
+          },
+        },
+      },
+      orderBy: {
+        created_at: "desc",
+      },
       skip: pagination.page * pagination.perPage,
       take: pagination.perPage,
     });
     expect(prismaMock.course.count).toHaveBeenCalled();
 
     expect(result).toEqual({
-      data: mockCourses.map(
-        (course) => new CourseEntity({ ...course, cost: course.cost })
+      data: mockCourses.map((course) =>
+        plainToInstance(CourseEntity, {
+          ...course,
+          owner: undefined,
+        })
       ),
       meta: {
         currentPage: pagination.page,
