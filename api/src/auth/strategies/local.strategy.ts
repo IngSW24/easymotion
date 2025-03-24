@@ -12,10 +12,15 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(email: string, password: string) {
-    const user = this.authService.validateUser(email, password);
+    const user = await this.authService.validateUser(email, password);
 
     if (!user) {
       throw new UnauthorizedException();
+    }
+
+    if (user.twoFactorEnabled) {
+      await this.authService.sendOtpCode(user.id, user.email);
+      return { requiresOtp: true };
     }
 
     return user;

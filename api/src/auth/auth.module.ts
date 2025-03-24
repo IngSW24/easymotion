@@ -8,6 +8,7 @@ import { EmailService } from "src/email/email.service";
 import { LocalStrategy } from "./strategies/local.strategy";
 import { JwtStrategy } from "./strategies/jwt.strategy";
 import { RefreshStrategy } from "./strategies/refresh.strategy";
+import { OtpStrategy } from "./strategies/otp.strategy";
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { RefreshStrategy } from "./strategies/refresh.strategy";
     AuthService,
     EmailService,
     LocalStrategy,
+    OtpStrategy,
     JwtStrategy,
     RefreshStrategy,
   ],
