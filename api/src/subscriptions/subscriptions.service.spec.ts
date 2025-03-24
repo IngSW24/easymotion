@@ -79,6 +79,7 @@ describe("SubsriptionsService", () => {
         thumbnail_path: "",
         created_at: undefined,
         updated_at: undefined,
+        owner_id: "1",
       },
     ];
 

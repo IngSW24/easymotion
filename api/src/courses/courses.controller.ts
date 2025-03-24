@@ -18,22 +18,11 @@ import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { ApiPaginatedResponse } from "src/common/decorators/api-paginated-response.decorator";
 import UseAuth from "src/auth/decorators/auth-with-role.decorator";
 import { Role } from "@prisma/client";
+import { CourseQueryFilter } from "./dto/filters/course-query-filter.dto";
 
 @Controller("courses")
 export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
-
-  /**
-   * Create a new course
-   * @param createCourseDto the course to create
-   * @returns the created course
-   */
-  @Post()
-  @UseAuth([Role.PHYSIOTHERAPIST])
-  @ApiCreatedResponse({ type: CourseEntity })
-  create(@Body() createCourseDto: CreateCourseDto) {
-    return this.coursesService.create(createCourseDto);
-  }
 
   /**
    * Find all courses
@@ -41,19 +30,11 @@ export class CoursesController {
    */
   @Get()
   @ApiPaginatedResponse(CourseEntity)
-  findAll(@Query() pagination: PaginationFilter) {
-    return this.coursesService.findAll(pagination);
-  }
-
-  /**
-   * Find all courses to which the logged user is subscribed
-   * @returns all courses
-   */
-  @Get("/subscribed")
-  @UseAuth([Role.USER])
-  @ApiPaginatedResponse(CourseEntity)
-  findSubscribedCourses(@Query() pagination: PaginationFilter, @Req() req) {
-    return this.coursesService.findSubscribedCourses(req.user.sub, pagination);
+  findAll(
+    @Query() pagination: PaginationFilter,
+    @Query() filters: CourseQueryFilter
+  ) {
+    return this.coursesService.findAll(pagination, filters);
   }
 
   /**
@@ -79,6 +60,18 @@ export class CoursesController {
   @ApiOkResponse({ type: CourseEntity })
   findOne(@Param("id") id: string) {
     return this.coursesService.findOne(id);
+  }
+
+  /**
+   * Create a new course
+   * @param createCourseDto the course to create
+   * @returns the created course
+   */
+  @Post()
+  @UseAuth([Role.PHYSIOTHERAPIST])
+  @ApiCreatedResponse({ type: CourseEntity })
+  create(@Body() createCourseDto: CreateCourseDto, @Req() req) {
+    return this.coursesService.create(createCourseDto, req.user.sub);
   }
 
   /**

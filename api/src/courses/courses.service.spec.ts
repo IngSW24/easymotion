@@ -64,7 +64,7 @@ describe("CoursesService", () => {
 
     prismaMock.course.create.mockResolvedValue(dto);
 
-    const result = await service.create(dto);
+    const result = await service.create(dto, "1");
 
     expect(prismaMock.course.create).toHaveBeenCalledWith({
       data: { ...dto },
@@ -96,6 +96,13 @@ describe("CoursesService", () => {
         tags: [],
         created_at: new Date(),
         updated_at: new Date(),
+        owner: {
+          id: "",
+          email: "",
+          firstName: "",
+          lastName: "",
+          middleName: "",
+        },
       },
       {
         id: "",
@@ -113,6 +120,13 @@ describe("CoursesService", () => {
         tags: [],
         created_at: new Date(),
         updated_at: new Date(),
+        owner: {
+          id: "",
+          email: "",
+          firstName: "",
+          lastName: "",
+          middleName: "",
+        },
       },
     ];
     const totalItems = 5;
@@ -120,7 +134,7 @@ describe("CoursesService", () => {
     prismaMock.course.findMany.mockResolvedValue(mockCourses);
     prismaMock.course.count.mockResolvedValue(totalItems);
 
-    const result = await service.findAll(pagination);
+    const result = await service.findAll(pagination, undefined);
 
     expect(prismaMock.course.findMany).toHaveBeenCalledWith({
       skip: pagination.page * pagination.perPage,
@@ -161,6 +175,13 @@ describe("CoursesService", () => {
       tags: [],
       created_at: new Date(),
       updated_at: new Date(),
+      owner: {
+        id: "",
+        email: "",
+        firstName: "",
+        lastName: "",
+        middleName: "",
+      },
     };
 
     prismaMock.course.findUniqueOrThrow.mockResolvedValue(mockCourse);

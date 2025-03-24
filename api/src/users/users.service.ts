@@ -8,7 +8,6 @@ import {
   isSuccessResult,
   resultToHttpException,
 } from "src/common/types/result";
-import { CrudService } from "src/common/abstractions/crud-service.interface";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { PaginatedOutput } from "src/common/dto/paginated-output.dto";
 import { plainToInstance } from "class-transformer";
@@ -19,9 +18,7 @@ import { plainToInstance } from "class-transformer";
  * interface using CreateUserDto, UpdateUserDto, and ApplicationUserDto.
  */
 @Injectable()
-export class UsersService
-  implements CrudService<CreateUserDto, UpdateUserDto, ApplicationUserDto>
-{
+export class UsersService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly userManager: UserManager
