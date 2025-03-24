@@ -1,21 +1,55 @@
-import { Box, Container, Grid2, Typography } from "@mui/material";
+import {
+  Box,
+  Container,
+  Grid2,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+} from "@mui/material";
+import { GridCheckCircleIcon } from "@mui/x-data-grid";
+
+const features = [
+  "Formatori professionisti certificati",
+  "Programmi di allenamento personalizzati",
+  "Consultazione online disponibile",
+];
 
 export default function LandingWhoWeAreSection() {
   return (
     <Box sx={{ py: 6, backgroundColor: "#CAE2FC" }}>
       <Container maxWidth="lg">
-        <Grid2 container spacing={3} alignItems="center">
-          <Grid2 columns={{ xs: 12, md: 6 }}>
-            <img
-              src="LandingWhoWheAre.png"
-              alt="Who We Are"
-              style={{ width: "50%", borderRadius: "8px" }}
-            />
+        <Grid2 container alignItems="center" justifyContent={"space-between"}>
+          {/* Image Column */}
+          <Grid2 size={{ xs: 12, md: 6 }}>
+            <Box
+              sx={{
+                px: { xs: 0, md: 0 },
+              }}
+            >
+              <img
+                src="who_we_are.png"
+                alt="Who We Are"
+                style={{
+                  width: "100%",
+                  maxWidth: "500px",
+                  borderRadius: "2px",
+                  height: "auto",
+                }}
+              />
+            </Box>
           </Grid2>
-          <Grid2 columns={{ xs: 12, md: 6 }}>
-            <Box>
+
+          {/* Text Column */}
+          <Grid2 size={{ xs: 12, md: 6 }}>
+            <Box
+              sx={{
+                textAlign: "left",
+              }}
+            >
               <Typography variant="h4" gutterBottom>
-                Who We Are
+                Chi siamo
               </Typography>
               <Typography>
                 EasyMotion ti mette in contatto con fisioterapisti certificati
@@ -25,6 +59,24 @@ export default function LandingWhoWeAreSection() {
                 per la tua routine di allenamento o il tuo percorso di
                 riabilitazione.
               </Typography>
+              <List sx={{ pt: 5 }}>
+                {features.map((feature, index) => (
+                  <ListItem key={index} sx={{ p: 0.5 }}>
+                    <ListItemIcon sx={{ minWidth: 36 }}>
+                      <GridCheckCircleIcon sx={{ color: "#0d6efd" }} />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={feature}
+                      sx={{
+                        "& .MuiTypography-root": {
+                          fontWeight: 500,
+                          color: "#444",
+                        },
+                      }}
+                    />
+                  </ListItem>
+                ))}
+              </List>
             </Box>
           </Grid2>
         </Grid2>

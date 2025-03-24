@@ -18,14 +18,14 @@ export default function LandingCourseCard(props: CourseCardProps) {
   return (
     <Card
       sx={{
-        borderRadius: 4,
+        borderRadius: 2,
         boxShadow: 3,
-        maxWidth: 380,
-        margin: "auto",
+        maxWidth: 350,
         height: "100%",
         display: "flex",
         flexDirection: "column",
         textAlign: "left",
+        aspectRatio: 1,
       }}
     >
       <CardMedia
@@ -33,9 +33,7 @@ export default function LandingCourseCard(props: CourseCardProps) {
         image={`/${course.category.toLowerCase()}.jpg`}
         alt={course.name}
         sx={{
-          height: 200,
-          borderTopLeftRadius: 16,
-          borderTopRightRadius: 16,
+          height: 150,
         }}
       />
 
