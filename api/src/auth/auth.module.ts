@@ -5,9 +5,13 @@ import { JwtModule } from "@nestjs/jwt";
 import { UsersModule } from "src/users/users.module";
 import { ConfigService } from "@nestjs/config";
 import { EmailService } from "src/email/email.service";
-import { LocalStrategy } from "./strategies/local.strategy";
+import {
+  AdminLocalStrategy,
+  UserLocalStrategy,
+} from "./strategies/local.strategy";
 import { JwtStrategy } from "./strategies/jwt.strategy";
 import { RefreshStrategy } from "./strategies/refresh.strategy";
+import { OtpStrategy } from "./strategies/otp.strategy";
 
 @Module({
   imports: [
@@ -28,7 +32,9 @@ import { RefreshStrategy } from "./strategies/refresh.strategy";
   providers: [
     AuthService,
     EmailService,
-    LocalStrategy,
+    AdminLocalStrategy,
+    UserLocalStrategy,
+    OtpStrategy,
     JwtStrategy,
     RefreshStrategy,
   ],

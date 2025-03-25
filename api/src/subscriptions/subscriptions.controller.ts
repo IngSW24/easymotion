@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -20,7 +19,6 @@ import { SubscriptionDto, UserSubscriptionDto } from "./dto/subscription.dto";
 import { Role } from "@prisma/client";
 
 @Controller("subscriptions")
-@UseAuth()
 export class SubscriptionsController {
   constructor(private readonly subscriptionsService: SubscriptionsService) {}
 
@@ -28,6 +26,7 @@ export class SubscriptionsController {
    * Get the current subscriptions for the logged user
    */
   @ApiPaginatedResponse(SubscriptionDto)
+  @UseAuth([Role.USER])
   @Get()
   getSubscriptionsForLoggedUser(
     @Query() pagination: PaginationFilter,
@@ -43,6 +42,7 @@ export class SubscriptionsController {
    * Get the current subscriptions for the given user
    */
   @ApiPaginatedResponse(SubscriptionDto)
+  @UseAuth()
   @Get(":userId")
   getSubscriptionsForGivenUser(
     @Param("userId") userId: string,
@@ -59,22 +59,26 @@ export class SubscriptionsController {
    * @param courseId the course uuid
    */
   @Post()
+  @UseAuth([Role.USER])
   @ApiOkResponse()
-  subscribe(@Body() subscriptionCreateDto: SubscriptionCreateDto, @Req() req) {
-    const role = req.user.role;
+  subscribeLoggedUser(
+    @Body() subscriptionCreateDto: SubscriptionCreateDto,
+    @Req() req
+  ) {
+    return this.subscriptionsService.subscribeFinalUser(
+      req.user.sub,
+      subscriptionCreateDto
+    );
+  }
 
-    if (role === Role.USER) {
-      return this.subscriptionsService.subscribeFinalUser(
-        req.user.sub,
-        subscriptionCreateDto
-      );
-    }
-
-    if (!subscriptionCreateDto.userId)
-      throw new BadRequestException(
-        "userId is required for physiotherapists and admins"
-      );
-
+  /**
+   * Subscribe the given final user to a course (for admins and physiotherapists)
+   * @param courseId the course uuid
+   */
+  @Post("user")
+  @UseAuth([Role.ADMIN, Role.PHYSIOTHERAPIST])
+  @ApiOkResponse()
+  subscribeGivenUser(@Body() subscriptionCreateDto: SubscriptionCreateDto) {
     return this.subscriptionsService.subscribeFinalUser(
       subscriptionCreateDto.userId,
       subscriptionCreateDto
@@ -87,24 +91,25 @@ export class SubscriptionsController {
    */
   @Delete()
   @ApiOkResponse()
-  unsubscribe(
+  @UseAuth([Role.USER])
+  unsubscribeLoggedUser(
     @Body() subscriptionDeleteDto: SubscriptionDeleteDto,
     @Req() req
   ) {
-    const role = req.user.role;
+    return this.subscriptionsService.unsubscribeFinalUser(
+      req.user.sub,
+      subscriptionDeleteDto
+    );
+  }
 
-    if (role === Role.USER) {
-      return this.subscriptionsService.unsubscribeFinalUser(
-        req.user.sub,
-        subscriptionDeleteDto
-      );
-    }
-
-    if (!subscriptionDeleteDto.userId)
-      throw new BadRequestException(
-        "userId is required for physiotherapists and admins"
-      );
-
+  /**
+   * Unsubscribe the given final user from a course (for admins and physiotherapists)
+   * @param courseId the course uuid
+   */
+  @Delete("user")
+  @ApiOkResponse()
+  @UseAuth([Role.ADMIN, Role.PHYSIOTHERAPIST])
+  unsubscribeGivenUser(@Body() subscriptionDeleteDto: SubscriptionDeleteDto) {
     return this.subscriptionsService.unsubscribeFinalUser(
       subscriptionDeleteDto.userId,
       subscriptionDeleteDto
@@ -116,6 +121,7 @@ export class SubscriptionsController {
    * @param courseId the course uuid
    */
   @Get("course/:courseId")
+  @UseAuth()
   @ApiPaginatedResponse(UserSubscriptionDto)
   getSubscribers(
     @Param("courseId") courseId: string,

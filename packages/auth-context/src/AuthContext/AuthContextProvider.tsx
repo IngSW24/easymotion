@@ -56,7 +56,10 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
    * @param password - User's password
    */
   const login = async (email: string, password: string) => {
-    const response = await apiInstance.authControllerLogin({ email, password });
+    const response = await apiInstance.authControllerUserLogin({
+      email,
+      password,
+    });
 
     if (response.data.requiresOtp) {
       setOtpStatus({ needsOtp: true, email });
