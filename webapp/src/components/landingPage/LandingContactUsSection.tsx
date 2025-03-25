@@ -21,16 +21,16 @@ import { Link } from "react-router";
 export default function LandingContactUsSection() {
   return (
     <Box sx={{ py: 6, backgroundColor: "#f7f9fc" }}>
-      <Container maxWidth="lg">
-        <Typography variant="h4" align="center" sx={{ mb: 4 }}>
-          Contatti
-        </Typography>
-        <Grid2 container justifyContent={"space-between"}>
+      <Container maxWidth="lg" sx={{ padding: 0, px: { xs: 0 } }}>
+        <Grid2 container alignItems="center" justifyContent={"space-between"}>
           <Grid2 size={{ xs: 12, md: 6 }}>
             <ContactUsForm />
           </Grid2>
           <Grid2 size={{ xs: 12, md: 6 }}>
-            <Box sx={{ px: 0 }}>
+            <Box sx={{ px: 5 }} pt={{ xs: 5, md: 0 }}>
+              <Typography variant="h4" color="primary" gutterBottom>
+                Contatti
+              </Typography>
               <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                 <LocationCity
                   sx={{ color: "#0a4b87", mr: 1.5, fontSize: 24 }}
@@ -58,6 +58,7 @@ export default function LandingContactUsSection() {
 
               {/* Follow Us */}
               <Typography
+                mt={10}
                 variant="h6"
                 sx={{
                   fontWeight: 500,

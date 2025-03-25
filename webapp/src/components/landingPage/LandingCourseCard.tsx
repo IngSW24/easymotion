@@ -20,12 +20,11 @@ export default function LandingCourseCard(props: CourseCardProps) {
       sx={{
         borderRadius: 2,
         boxShadow: 3,
-        maxWidth: 350,
-        height: "100%",
+        width: 350,
+        height: 375,
         display: "flex",
         flexDirection: "column",
         textAlign: "left",
-        aspectRatio: 1,
       }}
     >
       <CardMedia
@@ -41,28 +40,53 @@ export default function LandingCourseCard(props: CourseCardProps) {
         sx={{
           padding: 3,
           flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
         }}
       >
-        <Box sx={{ marginBottom: 2 }}>
-          <Typography variant="h6" color="primary" gutterBottom>
+        <Box>
+          <Typography
+            variant="h6"
+            color="primary"
+            gutterBottom
+            sx={{
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              height: 56,
+              mb: 1,
+            }}
+          >
             {course.name}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              height: 63,
+            }}
+          >
             {course.short_description}
           </Typography>
         </Box>
 
-        <MuiLink
-          href={"details/" + course.id}
-          underline="hover"
-          sx={{
-            color: "primary.main",
-            textDecoration: "none",
-            "&:hover": { textDecoration: "underline" },
-          }}
-        >
-          scopri di più →
-        </MuiLink>
+        <Box sx={{ mt: 2 }}>
+          <MuiLink
+            href={"details/" + course.id}
+            underline="hover"
+            sx={{
+              color: "primary.main",
+              textDecoration: "none",
+              "&:hover": { textDecoration: "underline" },
+              display: "block",
+            }}
+          >
+            scopri di più →
+          </MuiLink>
+        </Box>
       </CardContent>
     </Card>
   );

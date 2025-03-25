@@ -19,13 +19,12 @@ const features = [
 export default function LandingWhoWeAreSection() {
   return (
     <Box sx={{ py: 6, backgroundColor: "#CAE2FC" }}>
-      <Container maxWidth="lg">
-        <Grid2 container alignItems="center" justifyContent={"space-between"}>
-          {/* Image Column */}
+      <Container maxWidth="lg" sx={{ padding: 0, px: { xs: 0 } }}>
+        <Grid2 container alignItems="center" justifyContent={"center"}>
           <Grid2 size={{ xs: 12, md: 6 }}>
             <Box
               sx={{
-                px: { xs: 0, md: 0 },
+                px: { xs: 5 },
               }}
             >
               <img
@@ -41,14 +40,15 @@ export default function LandingWhoWeAreSection() {
             </Box>
           </Grid2>
 
-          {/* Text Column */}
           <Grid2 size={{ xs: 12, md: 6 }}>
             <Box
               sx={{
                 textAlign: "left",
+                px: { xs: 5 },
+                pt: { xs: 5, md: 0 },
               }}
             >
-              <Typography variant="h4" gutterBottom>
+              <Typography variant="h4" color="primary" gutterBottom>
                 Chi siamo
               </Typography>
               <Typography>

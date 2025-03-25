@@ -13,19 +13,19 @@ export default function LandingCoursesSection() {
 
   return (
     <Box
-      component="section"
+      id="courses"
       sx={{
-        py: { xs: 4, md: 6 },
+        py: 6,
         backgroundColor: "#f7f9fc",
       }}
-      aria-labelledby="courses-section-title"
     >
-      <Container maxWidth="lg">
+      <Container maxWidth="lg" sx={{ px: { xs: 0 } }}>
         <Typography
           id="courses-section-title"
           variant="h4"
           align="center"
           sx={{ mb: 4 }}
+          color="primary"
         >
           I nostri corsi
         </Typography>
@@ -46,15 +46,13 @@ export default function LandingCoursesSection() {
         ) : (
           <Grid2
             container
-            spacing={{ xs: 2, sm: 3 }}
+            spacing={{ xs: 2 }}
             columns={{ xs: 1, sm: 1, md: 2, lg: 3, xl: 3 }}
+            justifyContent={{ xs: "center", lg: "space-between" }}
           >
             {data &&
               data.slice(0, 3).map((course) => (
-                <Grid2
-                  key={course.id}
-                  size={{ xs: 0.9, sm: 0.9, md: 1, lg: 1, xl: 1 }}
-                >
+                <Grid2 key={course.id} sx={{ xs: 1 }}>
                   <LandingCourseCard course={course} />
                 </Grid2>
               ))}

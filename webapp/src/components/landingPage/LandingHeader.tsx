@@ -75,6 +75,11 @@ export default function LandingHeader() {
             px: 4,
             fontWeight: 600,
           }}
+          onClick={() => {
+            document
+              .getElementById("courses")!
+              .scrollIntoView({ behavior: "smooth" });
+          }}
         >
           Inizia qui
         </Button>

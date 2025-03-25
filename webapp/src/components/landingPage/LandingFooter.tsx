@@ -5,8 +5,13 @@ export default function LandingFooter() {
   return (
     <Box sx={{ py: 6, backgroundColor: "#042343" }}>
       <Container maxWidth="lg">
-        <Grid2 container spacing={6} alignItems="flex-start">
-          <Grid2 size={{ xs: 6, md: 4 }}>
+        <Grid2
+          container
+          spacing={6}
+          alignItems="flex-start"
+          justifyContent={"space-between"}
+        >
+          <Grid2 size={{ xs: 6, md: 3 }}>
             <img
               src="logo_monochromatic.png"
               alt="Logo monochromatic"
@@ -18,11 +23,18 @@ export default function LandingFooter() {
               }}
             />
             <Typography color="#f7f9fc">
-              Metterti in contatto con fisioterapisti professionisti per
+              Mettiti in contatto con fisioterapisti professionisti per
               migliorare la tua salute e la tua forma fisica.
             </Typography>
           </Grid2>
-          <Grid2 size={{ xs: 6, md: 4 }}>
+
+          <Grid2
+            size={{ xs: 6, md: 3 }}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
             <Typography variant="h6" sx={{ mb: 2 }} color="#ccc">
               Contact Info
             </Typography>
@@ -39,11 +51,24 @@ export default function LandingFooter() {
               Email: contact@easymotion.it
             </Typography>
           </Grid2>
-          <Grid2 size={{ xs: 6, md: 4 }}>
+
+          <Grid2
+            size={{ xs: 6, md: 3 }}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
             <Typography variant="h6" sx={{ mb: 2 }} color="#ccc">
               Quick Links
             </Typography>
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+              }}
+            >
               <Link to="#" style={{ color: "#ccc" }}>
                 Courses
               </Link>
