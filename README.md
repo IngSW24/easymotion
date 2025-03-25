@@ -139,10 +139,15 @@ docker compose ps
 docker compose logs -f [service-name]
 ```
 
-#### Erase DB data
+#### Reapply migrations from scratch (erasing DB data)
 
 ```bash
-docker compose down # if services are running
+pnpm api:migrate-reset
+```
+
+#### Remove docker volume for postgres
+
+```bash
 docker volume rm easymotion_pgdata
 ```
 

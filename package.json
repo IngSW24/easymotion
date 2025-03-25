@@ -15,6 +15,7 @@
     "api:migrate": "pnpm --filter api prisma:migrate-dev",
     "api:client": "pnpm --filter api prisma:gen-client",
     "api:seed": "pnpm --filter api seed",
+    "api:migrate-reset": "pnpm --filter api prisma:migrate-reset",
     "prepare": "husky || true"
   },
   "devDependencies": {
