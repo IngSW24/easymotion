@@ -27,6 +27,12 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
     () =>
       new Api({
         baseUrl: props.apiBaseUrl,
+        securityWorker: () => ({
+          credentials: "include",
+          headers: {
+            "x-auth-flow": "web",
+          },
+        }),
       }).auth,
 
     [props.apiBaseUrl]
@@ -50,10 +56,10 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
    * @param password - User's password
    */
   const login = async (email: string, password: string) => {
-    const response = await apiInstance.authControllerLogin(
-      { email, password },
-      { credentials: "include" } // Ensure cookies are sent for authentication
-    );
+    const response = await apiInstance.authControllerUserLogin({
+      email,
+      password,
+    });
 
     if (response.data.requiresOtp) {
       setOtpStatus({ needsOtp: true, email });
@@ -76,10 +82,10 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
       throw new Error("No OTP required");
     }
 
-    const response = await apiInstance.authControllerLoginOtp(
-      { email: otpStatus.email, otp },
-      { credentials: "include" }
-    );
+    const response = await apiInstance.authControllerLoginOtp({
+      email: otpStatus.email,
+      otp,
+    });
 
     // Update the token and user state with the server's response
     updateAccessToken(response.data.accessToken);
@@ -96,7 +102,6 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
     const response = await apiInstance.authControllerUpdateUserProfile(
       { twoFactorEnabled: status },
       {
-        credentials: "include",
         headers: {
           Authorization: `Bearer ${accessToken}`, // Include the access token for authenticated logout
         },
@@ -112,7 +117,6 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
    */
   const logout = async () => {
     await apiInstance.authControllerLogout({
-      credentials: "include", // Ensure cookies are included for server-side session handling
       headers: {
         Authorization: `Bearer ${accessToken}`, // Include the access token for authenticated logout
       },
@@ -132,9 +136,7 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
   const updateEmail = async (email: string, userId: string, token: string) => {
     const payload = { email, userId, token };
 
-    const response = await apiInstance.authControllerConfirmEmail(payload, {
-      credentials: "include",
-    });
+    const response = await apiInstance.authControllerConfirmEmail(payload);
 
     if (response.ok) {
       updateAccessToken(response.data.accessToken);

@@ -64,6 +64,8 @@ model Course {
   thumbnail_path         String?
   created_at             DateTime           @default(now()) @db.Timestamptz(3)
   updated_at             DateTime           @updatedAt @db.Timestamptz(3)
+  owner                  Physiotherapist    @relation(fields: [owner_id], references: [applicationUserId])
+  owner_id                String
   subscribers            CourseFinalUser[]
 }
 
@@ -116,6 +118,7 @@ model Physiotherapist {
 
   specialization    String?
   publicPhoneNumber String?
+  courses            Course[]
 }
 
 model FinalUser {

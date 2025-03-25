@@ -5,4 +5,5 @@ export class CreateCourseDto extends OmitType(CourseEntity, [
   "id",
   "created_at",
   "updated_at",
+  "owner",
 ]) {}

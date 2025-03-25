@@ -5,6 +5,5 @@ export type TwoFactorDiscriminator =
   | (LoginResponse & { requiresOtp: false });
 
 export type LoginResponse = {
-  user: AuthUserDto & { accessToken: string };
-  refreshToken: string;
+  user: AuthUserDto & { accessToken: string; refreshToken: string };
 };

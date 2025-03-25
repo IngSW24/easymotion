@@ -16,6 +16,7 @@ import {
   Prisma,
 } from "@prisma/client";
 import { Expose, Transform, Type } from "class-transformer";
+import { CourseOwnerDto } from "./course-owner.dto";
 
 export class CourseEntity {
   @ApiProperty({ description: "Unique identifier for the course" })
@@ -157,6 +158,11 @@ export class CourseEntity {
   @IsDate()
   @Expose()
   updated_at: Date;
+
+  @ApiProperty({ description: "Owner of the course" })
+  @Expose()
+  @Type(() => CourseOwnerDto)
+  owner: CourseOwnerDto;
 
   constructor(partial: Partial<CourseEntity>) {
     Object.assign(this, partial);

@@ -72,10 +72,10 @@ describe("CoursesController", () => {
 
     prismaMock.course.create.mockResolvedValue(createdCourse);
 
-    const result = await controller.create(dto);
+    const result = await controller.create(dto, { user: { sub: "1" } });
 
     expect(prismaMock.course.create).toHaveBeenCalledWith({
-      data: { ...dto },
+      data: { ...dto, owner_id: "1" },
     });
     expect(result).toEqual({
       ...createdCourse,
@@ -97,13 +97,27 @@ describe("CoursesController", () => {
         instructors: [],
         category: "ACQUAGYM",
         level: "BASIC",
+        discount: null,
         frequency: "SINGLE_SESSION",
+        cost: undefined,
+        location: null,
+        members_capacity: null,
+        highlighted_priority: null,
         session_duration: "",
         availability: "ACTIVE",
         num_registered_members: 0,
         tags: [],
         created_at: new Date(),
         updated_at: new Date(),
+        thumbnail_path: null,
+
+        owner: {
+          id: "",
+          email: "",
+          firstName: "",
+          lastName: "",
+          middleName: "",
+        },
       },
     ];
     const totalItems = 1;
@@ -111,16 +125,26 @@ describe("CoursesController", () => {
     prismaMock.course.findMany.mockResolvedValue(mockCourses);
     prismaMock.course.count.mockResolvedValue(totalItems);
 
-    const result = await controller.findAll(pagination);
+    const result = await controller.findAll(pagination, {});
 
     expect(prismaMock.course.findMany).toHaveBeenCalledWith({
+      include: {
+        owner: {
+          include: {
+            applicationUser: true,
+          },
+        },
+      },
+      orderBy: {
+        created_at: "desc",
+      },
       skip: pagination.page * pagination.perPage,
       take: pagination.perPage,
     });
     expect(prismaMock.course.count).toHaveBeenCalled();
 
     expect(result).toEqual({
-      data: mockCourses,
+      data: mockCourses.map((x) => ({ ...x, owner: undefined })),
       meta: {
         currentPage: pagination.page,
         items: 1,
@@ -150,6 +174,13 @@ describe("CoursesController", () => {
       name: "aaaaaaaaaa",
       created_at: new Date(),
       updated_at: new Date(),
+      owner: {
+        id: "",
+        email: "",
+        firstName: "",
+        lastName: "",
+        middleName: "",
+      },
     };
 
     prismaMock.course.findUniqueOrThrow.mockResolvedValue(mockCourse);
