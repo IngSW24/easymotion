@@ -114,15 +114,7 @@ export class AuthController {
   @ApiBody({ type: RefreshTokenDto, required: false })
   async refresh(@Req() req: CustomRequest, @Res() res) {
     const response = await this.authService.getJwtFromUserId(req.user.sub);
-
-    if (req.isWebAuth) {
-      this.setRefreshTokenCookie(res, response.user.refreshToken);
-      response.user.refreshToken = undefined;
-      res.send(response.user);
-      return;
-    }
-
-    res.send(response.user);
+    this.sendAuthenticationTokens(req, res, response);
   }
 
   /**
@@ -243,12 +235,8 @@ export class AuthController {
    */
   @Put("email")
   @ApiLoginResponse("Email confirmed successfully")
-  async confirmEmail(
-    @Body() emailConfirmDto: EmailConfirmDto,
-    @Req() req: CustomRequest,
-    @Res() res
-  ): Promise<void> {
-    const response = await this.authService.confirmEmail(emailConfirmDto);
+  async confirmEmail(@Req() req, @Res() res, @Body() confirm: EmailConfirmDto) {
+    const response = await this.authService.confirmEmail(confirm);
     this.sendAuthenticationTokens(req, res, response);
   }
 
