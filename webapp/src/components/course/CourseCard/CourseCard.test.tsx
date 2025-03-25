@@ -30,6 +30,7 @@ describe("CourseCard GUI test", () => {
     tags: ["sample_tag1", "sample_tag2"],
     created_at: "",
     updated_at: "",
+    owner: { id: "", email: "", firstName: "", lastName: "", middleName: "" },
   };
 
   it("Check if CourseCard shows the correct information", () => {

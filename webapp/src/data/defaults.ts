@@ -18,4 +18,5 @@ export const defaultCourse: CourseEntity = {
   tags: [],
   created_at: "",
   updated_at: "",
+  owner: { id: "", email: "", firstName: "", lastName: "", middleName: "" },
 };
