@@ -35,7 +35,7 @@ export default function CourseDetailsPage() {
         title={courseRepo.getSingle.data?.name ?? ""}
         showSignupButton={false}
       />
-      <Container sx={{ mt: 5 }}>
+      <Container sx={{ my: 5 }}>
         {courseRepo.getSingle.data && (
           <CourseDetail
             course={courseRepo.getSingle.data}
