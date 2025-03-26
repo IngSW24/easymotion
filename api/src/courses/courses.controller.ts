@@ -52,31 +52,6 @@ export class CoursesController {
   }
 
   /**
-   * Find all courses to which the logged user is subscribed
-   * @returns all courses
-   */
-  @Get("/subscribed")
-  @UseAuth()
-  @ApiPaginatedResponse(CourseEntity)
-  findSubscribedCourses(@Query() pagination: PaginationFilter, @Req() req) {
-    return this.coursesService.findSubscribedCourses(req.user.sub, pagination);
-  }
-
-  /**
-   * Find all courses to which the given user is subscribed
-   * @returns all courses
-   */
-  @Get("/subscribed/:userId")
-  @UseAuth()
-  @ApiPaginatedResponse(CourseEntity)
-  findSubscribedCoursesForUserId(
-    @Query() pagination: PaginationFilter,
-    @Param("userId") userId: string
-  ) {
-    return this.coursesService.findSubscribedCourses(userId, pagination);
-  }
-
-  /**
    * Find a course by its id
    * @param id the course uuid
    * @returns the course with the given id
