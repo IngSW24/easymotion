@@ -1,9 +1,9 @@
 import { Box, Grid2, Typography } from "@mui/material";
 import useSubscriptions from "../../hooks/useSubscription";
 import { CourseFilters } from "../../components/course/FilterBlock/types";
-import { useCallback } from "react";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import CourseCard from "../../components/course/CourseCard/CourseCard";
+import { useAuth } from "@easymotion/auth-context";
 
 export interface SubsProp {
   filters?: CourseFilters;
@@ -12,11 +12,11 @@ export interface SubsProp {
 export default function SubscriptionsPage(props: SubsProp) {
   const canEdit = false;
   const { filters } = props;
-  const subsRepo = useSubscriptions({ filters });
-
-  const handleCourseDelete = useCallback(async () => {
-    // NOOP
-  }, []);
+  const auth = useAuth();
+  const subsRepo = useSubscriptions({
+    ...filters,
+    userId: auth.user?.id ?? "",
+  });
 
   if (subsRepo.getSubscription.isError)
     return (
@@ -67,7 +67,7 @@ export default function SubscriptionsPage(props: SubsProp) {
                         <CourseCard
                           course={e}
                           canEdit={canEdit}
-                          onDelete={handleCourseDelete}
+                          onDelete={() => {}}
                         />
                       </Grid2>
                     ))}

@@ -94,7 +94,9 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
    */
   const subscribe = useMutation({
     mutationFn: async (dto: SubscriptionCreateDto) => {
-      return await api.subscriptions.subscriptionsControllerSubscribe(dto);
+      return await api.subscriptions.subscriptionsControllerSubscribeLoggedUser(
+        dto
+      );
     },
     onSuccess: () => {
       // Invalidate queries so that data is refreshed
@@ -115,7 +117,9 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
    */
   const unSubscribe = useMutation({
     mutationFn: async (dto: SubscriptionDeleteDto) => {
-      return await api.subscriptions.subscriptionsControllerUnsubscribe(dto);
+      return await api.subscriptions.subscriptionsControllerUnsubscribeLoggedUser(
+        dto
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -132,12 +136,14 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
   const getSubscription = useQuery({
     queryKey: ["courses", { page, perPage }, { filters }],
     queryFn: async () => {
-      const response = await api.courses.coursesControllerFindSubscribedCourses(
-        {
-          page,
-          perPage,
-        }
-      );
+      const response =
+        await api.courses.coursesControllerFindSubscribedCoursesForUserId(
+          userId,
+          {
+            page,
+            perPage,
+          }
+        );
       const fullData = response.data.data;
 
       if (!filters) return fullData;
@@ -181,24 +187,11 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
     enabled: fetchAll,
   });
 
-  const getSingleSubscription = useQuery({
-    queryKey: ["courses", { courseId }],
-    queryFn: async () => {
-      const response =
-        await api.courses.coursesControllerFindSubscribedCoursesForUserId(
-          userId
-        );
-      return response.data;
-    },
-    enabled: courseId !== "",
-  });
-
   return {
     getUserSubscriptions,
     getCourseSubscribers,
     subscribe,
     unSubscribe,
     getSubscription,
-    getSingleSubscription,
   };
 }
