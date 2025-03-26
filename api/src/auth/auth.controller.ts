@@ -1,4 +1,5 @@
 import {
+  applyDecorators,
   Body,
   Controller,
   Delete,
@@ -19,7 +20,6 @@ import { PasswordUpdateDto } from "./dto/actions/password-update.dto";
 import { PasswordChangeDto } from "./dto/actions/password-change.dto";
 import { OtpLoginDto } from "./dto/actions/otp-login.dto";
 import { EmailConfirmDto } from "./dto/actions/email-confirm.dto";
-import { LocalAuthGuard } from "./guards/local-auth.guard";
 import { ApiBody, ApiResponse, IntersectionType } from "@nestjs/swagger";
 import { SignInDto } from "./dto/actions/sign-in.dto";
 import { DateTime } from "luxon";
@@ -31,31 +31,36 @@ import { UpdateAuthUserDto } from "./dto/auth-user/update-auth-user.dto";
 import AuthFlowHeader from "./decorators/authflow-header.decorator";
 import { CustomRequest } from "src/common/types/custom-request";
 import { RefreshTokenDto } from "./dto/actions/refresh-token.dto";
+import { OtpGuard } from "./guards/otp.guard";
+import { LoginResponse } from "./types";
+import {
+  AdminLocalAuthGuard,
+  UserLocalAuthGuard,
+} from "./guards/local-auth.guard";
+
+// avoids having to bloat the code with the same multiple decorators
+const ApiLoginResponse = (description: string = "Successful login") =>
+  applyDecorators(
+    ApiResponse({
+      status: 200,
+      description,
+      type: IntersectionType(AccessTokenDto, AuthUserDto),
+    }),
+    AuthFlowHeader()
+  );
 
 @Controller("auth")
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  /**
-   * Sets the refresh token as an HTTP-only cookie.
-   * @param res The response object.
-   * @param refreshToken The refresh token to set in the cookie.
-   */
-  private setRefreshTokenCookie(res: any, refreshToken: string) {
-    res.cookie("refreshToken", refreshToken, {
-      expires: DateTime.now().plus({ days: 5 }).toJSDate(),
-      httpOnly: true,
-      sameSite: "strict",
-      secure: process.env.NODE_ENV === "production",
-    });
-  }
+  private async login(req: CustomRequest, res: any) {
+    if (req.user.requiresOtp) {
+      res.send({ requiresOtp: true });
+      return;
+    }
 
-  /**
-   * Clears the refresh token cookie.
-   * @param res The response object.
-   */
-  private clearRefreshTokenCookie(res: any) {
-    res.clearCookie("refreshToken");
+    const loginResponse = await this.authService.getJwtFromUserId(req.user.id);
+    this.sendAuthenticationTokens(req, res, loginResponse);
   }
 
   /**
@@ -63,57 +68,39 @@ export class AuthController {
    * @param req The request object, containing the authenticated user.
    * @param res The response object.
    */
-  @UseGuards(LocalAuthGuard)
+  @UseGuards(UserLocalAuthGuard)
   @Post("login")
   @ApiBody({ type: SignInDto })
-  @AuthFlowHeader()
-  @ApiResponse({
-    status: 200,
-    description: "Successful login",
-    type: IntersectionType(AccessTokenDto, AuthUserDto),
-  })
-  async login(@Req() req: CustomRequest, @Res() res): Promise<void> {
-    const twoFactorDiscriminator = await this.authService.login(req.user);
-
-    // needs === false for correct type insertion
-    if (twoFactorDiscriminator.requiresOtp === true) {
-      res.send({ requiresOtp: true });
-      return;
-    }
-
-    if (req.isWebAuth) {
-      // send refresh token as http only cookie
-      this.setRefreshTokenCookie(res, twoFactorDiscriminator.user.refreshToken);
-      twoFactorDiscriminator.user.refreshToken = undefined;
-      res.send(twoFactorDiscriminator.user);
-      return;
-    }
-
-    res.send(twoFactorDiscriminator.user);
+  @ApiLoginResponse()
+  async userLogin(@Req() req: CustomRequest, @Res() res): Promise<void> {
+    this.login(req, res);
   }
 
+  /**
+   * Logs in an admin user and sets the refresh token cookie.
+   * @param req The request object, containing the authenticated user.
+   * @param res The response object.
+   */
+  @UseGuards(AdminLocalAuthGuard)
+  @Post("login/admin")
+  @ApiBody({ type: SignInDto })
+  @ApiLoginResponse()
+  async adminLogin(@Req() req: CustomRequest, @Res() res): Promise<void> {
+    this.login(req, res);
+  }
+
+  /**
+   * Executes the OTP login stage.
+   * @param req The request object.
+   * @param res The response object
+   */
+  @UseGuards(OtpGuard)
   @Post("login/otp")
-  @AuthFlowHeader()
-  @ApiResponse({
-    status: 200,
-    description: "Successful login",
-    type: IntersectionType(AccessTokenDto, AuthUserDto),
-  })
-  async loginOtp(
-    @Body() otpLoginDto: OtpLoginDto,
-    @Req() req: CustomRequest,
-    @Res() res
-  ) {
-    const response = await this.authService.loginOtp(otpLoginDto);
-
-    if (req.isWebAuth) {
-      this.setRefreshTokenCookie(res, response.user.refreshToken);
-      response.user.refreshToken = undefined;
-      res.send(response.user);
-      return;
-    }
-
-    res.send(response.user);
+  @ApiLoginResponse()
+  @ApiBody({ type: OtpLoginDto })
+  async loginOtp(@Req() req: CustomRequest, @Res() res) {
+    const loginResponse = await this.authService.getJwtFromUserId(req.user.id);
+    this.sendAuthenticationTokens(req, res, loginResponse);
   }
 
   /**
@@ -124,22 +111,11 @@ export class AuthController {
   @UseGuards(RefreshGuard)
   @AuthFlowHeader()
   @Post("refresh")
-  @ApiResponse({
-    status: 200,
-    type: IntersectionType(AccessTokenDto, AuthUserDto),
-  })
+  @ApiLoginResponse("Token refreshed successfully")
   @ApiBody({ type: RefreshTokenDto, required: false })
   async refresh(@Req() req: CustomRequest, @Res() res) {
-    const response = await this.authService.refresh(req.user.sub);
-
-    if (req.isWebAuth) {
-      this.setRefreshTokenCookie(res, response.user.refreshToken);
-      response.user.refreshToken = undefined;
-      res.send(response.user);
-      return;
-    }
-
-    res.send(response.user);
+    const response = await this.authService.getJwtFromUserId(req.user.sub);
+    this.sendAuthenticationTokens(req, res, response);
   }
 
   /**
@@ -236,11 +212,9 @@ export class AuthController {
    */
   @UseAuth()
   @Put("otp")
-  switchOtp(@Req() req, @Query() value: string) {
+  switchOtp(@Req() req, @Query("value") value: string) {
     const userId = req.user.sub;
-    return this.authService.switchTwoFactorEnabled(userId, {
-      enabled: value === "true",
-    });
+    return this.authService.switchTwoFactorEnabled(userId, value === "true");
   }
 
   /**
@@ -261,26 +235,52 @@ export class AuthController {
    * @param res The response object.
    */
   @Put("email")
-  @AuthFlowHeader()
-  @ApiResponse({
-    status: 200,
-    description: "Email confirmation",
-    type: IntersectionType(AccessTokenDto, AuthUserDto),
-  })
-  async confirmEmail(
-    @Body() emailConfirmDto: EmailConfirmDto,
-    @Req() req: CustomRequest,
-    @Res() res
-  ): Promise<void> {
-    const response = await this.authService.confirmEmail(emailConfirmDto);
+  @ApiLoginResponse("Email confirmed successfully")
+  async confirmEmail(@Req() req, @Res() res, @Body() confirm: EmailConfirmDto) {
+    const response = await this.authService.confirmEmail(confirm);
+    this.sendAuthenticationTokens(req, res, response);
+  }
 
+  /**
+   * Sends the authentication tokens to the client.
+   * @param req the request object
+   * @param res the response object
+   * @param loginResponse the login response obtained by the auth service
+   */
+  private sendAuthenticationTokens(
+    req: CustomRequest,
+    res: { send(data: unknown): never },
+    loginResponse: LoginResponse
+  ) {
     if (req.isWebAuth) {
-      this.setRefreshTokenCookie(res, response.user.refreshToken);
-      response.user.refreshToken = undefined;
-      res.send(response.user);
+      this.setRefreshTokenCookie(res, loginResponse.user.refreshToken);
+      loginResponse.user.refreshToken = undefined;
+      res.send(loginResponse.user);
       return;
     }
 
-    res.send(response.user);
+    res.send(loginResponse.user);
+  }
+
+  /**
+   * Sets the refresh token as an HTTP-only cookie.
+   * @param res The response object.
+   * @param refreshToken The refresh token to set in the cookie.
+   */
+  private setRefreshTokenCookie(res: any, refreshToken: string) {
+    res.cookie("refreshToken", refreshToken, {
+      expires: DateTime.now().plus({ days: 5 }).toJSDate(),
+      httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+    });
+  }
+
+  /**
+   * Clears the refresh token cookie.
+   * @param res The response object.
+   */
+  private clearRefreshTokenCookie(res: any) {
+    res.clearCookie("refreshToken");
   }
 }

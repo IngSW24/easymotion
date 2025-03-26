@@ -2,41 +2,6 @@
   "openapi": "3.0.0",
   "paths": {
     "/courses": {
-      "post": {
-        "operationId": "CoursesController_create",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateCourseDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CourseEntity"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Create a new course",
-        "tags": [
-          "Courses"
-        ]
-      },
       "get": {
         "operationId": "CoursesController_findAll",
         "parameters": [
@@ -56,6 +21,14 @@
             "schema": {
               "default": 10,
               "type": "number"
+            }
+          },
+          {
+            "name": "ownerId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -121,6 +94,144 @@
           }
         },
         "summary": "Find all courses",
+        "tags": [
+          "Courses"
+        ]
+      },
+      "post": {
+        "operationId": "CoursesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCourseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseEntity"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new course",
+        "tags": [
+          "Courses"
+        ]
+      }
+    },
+    "/courses/subscribed/{userId}": {
+      "get": {
+        "operationId": "CoursesController_findSubscribedCoursesForUserId",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "PaginatedResponseOfCourseEntity",
+                  "allOf": [
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/CourseEntity"
+                          }
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ]
+                    },
+                    {
+                      "properties": {
+                        "meta": {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "number"
+                            },
+                            "hasNextPage": {
+                              "type": "boolean"
+                            },
+                            "currentPage": {
+                              "type": "number"
+                            },
+                            "totalItems": {
+                              "type": "number"
+                            },
+                            "totalPages": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "items",
+                            "hasNextPage",
+                            "currentPage",
+                            "totalItems",
+                            "totalPages"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "meta"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Find all courses to which the given user is subscribed",
         "tags": [
           "Courses"
         ]
@@ -428,7 +539,7 @@
     },
     "/auth/login": {
       "post": {
-        "operationId": "AuthController_login",
+        "operationId": "AuthController_userLogin",
         "parameters": [
           {
             "name": "x-auth-flow",
@@ -466,6 +577,51 @@
           }
         },
         "summary": "Logs in a user and sets the refresh token cookie.",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/login/admin": {
+      "post": {
+        "operationId": "AuthController_adminLogin",
+        "parameters": [
+          {
+            "name": "x-auth-flow",
+            "in": "header",
+            "description": "The authentication flow to use. 'web' should be specified for web applications",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignInDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntersectionAccessTokenDtoAuthUserDto"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Logs in an admin user and sets the refresh token cookie.",
         "tags": [
           "Auth"
         ]
@@ -510,6 +666,7 @@
             "description": ""
           }
         },
+        "summary": "Executes the OTP login stage.",
         "tags": [
           "Auth"
         ]
@@ -541,7 +698,7 @@
         },
         "responses": {
           "200": {
-            "description": "",
+            "description": "Token refreshed successfully",
             "content": {
               "application/json": {
                 "schema": {
@@ -768,17 +925,19 @@
     "/auth/otp": {
       "put": {
         "operationId": "AuthController_switchOtp",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "value",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OtpSwitchDto"
-                }
-              }
-            }
+            "description": ""
           }
         },
         "security": [
@@ -846,7 +1005,7 @@
         },
         "responses": {
           "200": {
-            "description": "Email confirmation",
+            "description": "Email confirmed successfully",
             "content": {
               "application/json": {
                 "schema": {
@@ -1194,7 +1353,7 @@
         ]
       },
       "post": {
-        "operationId": "SubscriptionsController_subscribe",
+        "operationId": "SubscriptionsController_subscribeLoggedUser",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1225,7 +1384,7 @@
         ]
       },
       "delete": {
-        "operationId": "SubscriptionsController_unsubscribe",
+        "operationId": "SubscriptionsController_unsubscribeLoggedUser",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1356,6 +1515,67 @@
         ]
       }
     },
+    "/subscriptions/user": {
+      "post": {
+        "operationId": "SubscriptionsController_subscribeGivenUser",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubscriptionCreateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Subscribe the given final user to a course (for admins and physiotherapists)",
+        "tags": [
+          "Subscriptions"
+        ]
+      },
+      "delete": {
+        "operationId": "SubscriptionsController_unsubscribeGivenUser",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubscriptionDeleteDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Unsubscribe the given final user from a course (for admins and physiotherapists)",
+        "tags": [
+          "Subscriptions"
+        ]
+      }
+    },
     "/subscriptions/course/{courseId}": {
       "get": {
         "operationId": "SubscriptionsController_getSubscribers",
@@ -1480,6 +1700,197 @@
       }
     },
     "schemas": {
+      "CourseOwnerDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique user identifier (UUID)",
+            "example": "b3bf4d18-8dd0-43a1-b1da-fd3f7b9553a1"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the user",
+            "example": "user@example.com"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "User first name",
+            "example": "John"
+          },
+          "middleName": {
+            "type": "string",
+            "nullable": true,
+            "description": "User middle name",
+            "example": "Alexander"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "User last name",
+            "example": "Doe"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "firstName",
+          "lastName"
+        ]
+      },
+      "CourseEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the course"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the course"
+          },
+          "description": {
+            "type": "string",
+            "description": "Full description of the course"
+          },
+          "short_description": {
+            "type": "string",
+            "description": "Short description of the course"
+          },
+          "location": {
+            "type": "string",
+            "description": "Location where the course is held (optional)"
+          },
+          "schedule": {
+            "description": "Schedule of course session days",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "instructors": {
+            "description": "Array of user IDs of instructors",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "category": {
+            "type": "string",
+            "description": "Category of the course",
+            "enum": [
+              "ACQUAGYM",
+              "CROSSFIT",
+              "PILATES",
+              "ZUMBA_FITNESS",
+              "POSTURAL_TRAINING",
+              "BODYWEIGHT_WORKOUT"
+            ]
+          },
+          "level": {
+            "type": "string",
+            "description": "Level of the course",
+            "enum": [
+              "BASIC",
+              "MEDIUM",
+              "ADVANCED"
+            ]
+          },
+          "frequency": {
+            "type": "string",
+            "description": "Frequency of the course",
+            "enum": [
+              "SINGLE_SESSION",
+              "WEEKLY",
+              "MONTHLY"
+            ]
+          },
+          "session_duration": {
+            "type": "string",
+            "description": "Duration of each session in POSIX format"
+          },
+          "cost": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Cost of the course (optional)"
+          },
+          "discount": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Discount for the course (optional)"
+          },
+          "availability": {
+            "type": "string",
+            "description": "Availability status of the course",
+            "enum": [
+              "ACTIVE",
+              "COMING_SOON",
+              "NO_LONGER_AVAILABLE"
+            ]
+          },
+          "highlighted_priority": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Priority level for highlighting the course (optional)"
+          },
+          "members_capacity": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Maximum capacity of course members (optional)"
+          },
+          "num_registered_members": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Number of registered members",
+            "default": 0
+          },
+          "tags": {
+            "description": "Tags associated with the course",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "thumbnail_path": {
+            "type": "string",
+            "description": "Path to the thumbnail image for the course (optional)"
+          },
+          "owner": {
+            "description": "Owner of the course",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CourseOwnerDto"
+              }
+            ]
+          },
+          "created_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "short_description",
+          "schedule",
+          "instructors",
+          "category",
+          "level",
+          "frequency",
+          "session_duration",
+          "availability",
+          "num_registered_members",
+          "tags",
+          "owner",
+          "created_at",
+          "updated_at"
+        ]
+      },
       "CreateCourseDto": {
         "type": "object",
         "properties": {
@@ -1607,150 +2018,6 @@
           "availability",
           "num_registered_members",
           "tags"
-        ]
-      },
-      "CourseEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Unique identifier for the course"
-          },
-          "name": {
-            "type": "string",
-            "description": "Name of the course"
-          },
-          "description": {
-            "type": "string",
-            "description": "Full description of the course"
-          },
-          "short_description": {
-            "type": "string",
-            "description": "Short description of the course"
-          },
-          "location": {
-            "type": "string",
-            "description": "Location where the course is held (optional)"
-          },
-          "schedule": {
-            "description": "Schedule of course session days",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "instructors": {
-            "description": "Array of user IDs of instructors",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "category": {
-            "type": "string",
-            "description": "Category of the course",
-            "enum": [
-              "ACQUAGYM",
-              "CROSSFIT",
-              "PILATES",
-              "ZUMBA_FITNESS",
-              "POSTURAL_TRAINING",
-              "BODYWEIGHT_WORKOUT"
-            ]
-          },
-          "level": {
-            "type": "string",
-            "description": "Level of the course",
-            "enum": [
-              "BASIC",
-              "MEDIUM",
-              "ADVANCED"
-            ]
-          },
-          "frequency": {
-            "type": "string",
-            "description": "Frequency of the course",
-            "enum": [
-              "SINGLE_SESSION",
-              "WEEKLY",
-              "MONTHLY"
-            ]
-          },
-          "session_duration": {
-            "type": "string",
-            "description": "Duration of each session in POSIX format"
-          },
-          "cost": {
-            "type": "number",
-            "minimum": 1,
-            "description": "Cost of the course (optional)"
-          },
-          "discount": {
-            "type": "number",
-            "minimum": 1,
-            "description": "Discount for the course (optional)"
-          },
-          "availability": {
-            "type": "string",
-            "description": "Availability status of the course",
-            "enum": [
-              "ACTIVE",
-              "COMING_SOON",
-              "NO_LONGER_AVAILABLE"
-            ]
-          },
-          "highlighted_priority": {
-            "type": "number",
-            "minimum": 1,
-            "description": "Priority level for highlighting the course (optional)"
-          },
-          "members_capacity": {
-            "type": "number",
-            "minimum": 1,
-            "description": "Maximum capacity of course members (optional)"
-          },
-          "num_registered_members": {
-            "type": "number",
-            "minimum": 1,
-            "description": "Number of registered members",
-            "default": 0
-          },
-          "tags": {
-            "description": "Tags associated with the course",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "thumbnail_path": {
-            "type": "string",
-            "description": "Path to the thumbnail image for the course (optional)"
-          },
-          "created_at": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "updated_at": {
-            "format": "date-time",
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "description",
-          "short_description",
-          "schedule",
-          "instructors",
-          "category",
-          "level",
-          "frequency",
-          "session_duration",
-          "availability",
-          "num_registered_members",
-          "tags",
-          "created_at",
-          "updated_at"
         ]
       },
       "UpdateCoursesDto": {
@@ -2215,18 +2482,6 @@
         "required": [
           "oldPassword",
           "newPassword"
-        ]
-      },
-      "OtpSwitchDto": {
-        "type": "object",
-        "properties": {
-          "enabled": {
-            "type": "boolean",
-            "description": "Indicates if the OTP is enabled"
-          }
-        },
-        "required": [
-          "enabled"
         ]
       },
       "EmailConfirmDto": {

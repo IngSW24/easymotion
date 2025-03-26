@@ -79,6 +79,7 @@ describe("SubsriptionsService", () => {
         thumbnail_path: "",
         created_at: undefined,
         updated_at: undefined,
+        owner_id: "1",
       },
     ];
 
@@ -178,6 +179,19 @@ describe("SubsriptionsService", () => {
     expect(prismaMock.finalUser.findUnique).toHaveBeenCalledWith({
       where: { applicationUserId: userId },
     });
+  });
+
+  it("should throw not found exception if attempting to subscribe a physiotherapist", async () => {
+    const userId = "1";
+    const courseId = "2";
+
+    prismaMock.finalUser.findUnique.mockRejectedValue(() => {
+      throw new NotFoundException("User not found");
+    });
+
+    expect(service.subscribeFinalUser(userId, { courseId })).rejects.toThrow(
+      NotFoundException
+    );
   });
 
   it("should throw not found exception if course does not exist", async () => {
