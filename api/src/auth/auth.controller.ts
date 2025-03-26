@@ -109,7 +109,6 @@ export class AuthController {
    * @param res The response object.
    */
   @UseGuards(RefreshGuard)
-  @AuthFlowHeader()
   @Post("refresh")
   @ApiLoginResponse("Token refreshed successfully")
   @ApiBody({ type: RefreshTokenDto, required: false })
