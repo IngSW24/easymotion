@@ -1,5 +1,14 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CreateCourseDto, UpdateCoursesDto } from "@easymotion/openapi";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import {
+  CourseEntity,
+  CreateCourseDto,
+  UpdateCoursesDto,
+} from "@easymotion/openapi";
 import { CourseFilters } from "../components/course/FilterBlock/types";
 import { useSnack } from "./useSnack";
 import { useApiClient } from "@easymotion/auth-context";
@@ -10,6 +19,7 @@ type UseCoursesProps = {
   perPage?: number;
   fetchAll?: boolean;
   filters?: CourseFilters;
+  ownerId?: string;
 };
 
 type UpdateMutationParams = {
@@ -29,59 +39,65 @@ export const useCourses = (props: UseCoursesProps = {}) => {
     perPage = 100,
     fetchAll = fetchId === "",
     filters,
+    ownerId,
   } = props;
   const { apiClient: api } = useApiClient();
   const snack = useSnack();
   const queryClient = useQueryClient();
 
-  const get = useQuery({
-    queryKey: ["courses", { page, perPage }, { filters }],
-    queryFn: async () => {
+  const get = useInfiniteQuery({
+    queryKey: ["courses", { ownerId, filters, perPage }],
+    initialPageParam: 0,
+    queryFn: async ({ pageParam = 0 }) => {
       const response = await api.courses.coursesControllerFindAll({
-        page,
+        page: pageParam,
         perPage,
-      });
-      const fullData = response.data.data;
-
-      if (!filters) return fullData;
-
-      const filteredData = fullData.filter((course) => {
-        if (
-          filters.searchText &&
-          !course.name.toLowerCase().includes(filters.searchText.toLowerCase())
-        )
-          return false;
-
-        if (
-          filters.advanced.categories.length > 0 &&
-          !filters.advanced.categories.includes(course.category)
-        )
-          return false;
-
-        if (
-          filters.advanced.levels.length > 0 &&
-          !filters.advanced.levels.includes(course.level)
-        )
-          return false;
-
-        if (
-          filters.advanced.frequencies.length > 0 &&
-          !filters.advanced.frequencies.includes(course.frequency)
-        )
-          return false;
-
-        if (
-          filters.advanced.availabilities.length > 0 &&
-          !filters.advanced.availabilities.includes(course.availability)
-        )
-          return false;
-
-        return true;
+        ownerId,
       });
 
-      return filteredData;
+      let data = response.data.data;
+      if (filters) {
+        data = data.filter((course: CourseEntity) => {
+          if (
+            filters.searchText &&
+            !course.name
+              .toLowerCase()
+              .includes(filters.searchText.toLowerCase())
+          )
+            return false;
+
+          if (
+            filters.advanced.categories.length > 0 &&
+            !filters.advanced.categories.includes(course.category)
+          )
+            return false;
+
+          if (
+            filters.advanced.levels.length > 0 &&
+            !filters.advanced.levels.includes(course.level)
+          )
+            return false;
+
+          if (
+            filters.advanced.frequencies.length > 0 &&
+            !filters.advanced.frequencies.includes(course.frequency)
+          )
+            return false;
+
+          if (
+            filters.advanced.availabilities.length > 0 &&
+            !filters.advanced.availabilities.includes(course.availability)
+          )
+            return false;
+
+          return true;
+        });
+      }
+
+      return { data, nextPage: pageParam + 1 };
     },
-    enabled: fetchAll,
+    getNextPageParam: (lastPage) =>
+      lastPage.data.length === 0 ? undefined : lastPage.nextPage,
   });
 
   const getSingle = useQuery({

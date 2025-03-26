@@ -1,86 +1,34 @@
+import { CourseEntity } from "@easymotion/openapi";
 import { Delete, Edit, Visibility } from "@mui/icons-material";
 import { IconButton, Stack, Tooltip } from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 
-const rows = [
-  {
-    id: 0,
-    courseName: "Corso 1",
-    category: "Crossfit",
-    capacity: "146/150",
-  },
-  {
-    id: 1,
-    courseName: "Corso 2",
-    category: "Crossfit",
-    capacity: "146/150",
-  },
-  {
-    id: 2,
-    courseName: "Corso 3",
-    category: "Crossfit",
-    capacity: "146/150",
-  },
-  {
-    id: 3,
-    courseName: "Corso 4",
-    category: "Crossfit",
-    capacity: "146/150",
-  },
-  {
-    id: 4,
-    courseName: "Corso 5",
-    category: "Crossfit",
-    capacity: "146/150",
-  },
-  {
-    id: 5,
-    courseName: "Corso 6",
-    category: "Crossfit",
-    capacity: "146/150",
-  },
-  {
-    id: 6,
-    courseName: "Corso 7",
-    category: "Crossfit",
-    capacity: "146/150",
-  },
-  {
-    id: 7,
-    courseName: "Corso 8",
-    category: "Crossfit",
-    capacity: "146/150",
-  },
-  {
-    id: 8,
-    courseName: "Corso 9",
-    category: "Crossfit",
-    capacity: "146/150",
-  },
-  {
-    id: 9,
-    courseName: "Corso 10",
-    category: "Crossfit",
-    capacity: "146/150",
-  },
-  {
-    id: 10,
-    courseName: "Corso 11",
-    category: "Crossfit",
-    capacity: "146/150",
-  },
-];
+type DashboardDataGridProps = {
+  courses: CourseEntity[];
+  nextPageAction: () => void;
+};
 
-export default function DashboardDataGrid() {
+export default function DashboardDataGrid(props: DashboardDataGridProps) {
+  const { courses, nextPageAction } = props;
+
+  const rows = courses.map((value, index) => {
+    return {
+      id: index,
+      courseName: value.name,
+      category: value.category,
+      capacity: value.members_capacity,
+    };
+  });
+
   const columns: GridColDef[] = [
-    { field: "id", headerName: "ID", flex: 1, minWidth: 70 },
-    { field: "courseName", headerName: "Nome corso", flex: 2, minWidth: 150 },
-    { field: "category", headerName: "Categoria", flex: 2, minWidth: 150 },
-    { field: "capacity", headerName: "Pazienti", flex: 1.5, minWidth: 120 },
+    { field: "id", headerName: "ID", flex: 1, minWidth: 10 },
+    { field: "courseName", headerName: "Nome corso", flex: 4, minWidth: 100 },
+    { field: "category", headerName: "Categoria", flex: 4, minWidth: 100 },
+    { field: "capacity", headerName: "Max Pazienti", flex: 2, minWidth: 50 },
     {
       field: "actions",
       headerName: "Azioni",
-      flex: 1,
+      flex: 2,
       minWidth: 70,
       sortable: false,
       filterable: false,
