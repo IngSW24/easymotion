@@ -9,12 +9,13 @@ import ConfirmEmailPage from "../pages/ConfirmEmailPage";
 import SignupPage from "../pages/SignUpPage";
 import LoginPage from "../pages/LoginPage";
 import { Home } from "@mui/icons-material";
-import AuthenticationWrapper from "./AuthenticatedRoute";
 import AuthenticatedRoute from "./AuthenticatedRoute";
 import TermsOfServicePage from "../pages/TermsOfServicePage";
 import UnauthenticatedRoute from "./UnauthenticatedRoute";
 import { useAuth } from "@easymotion/auth-context";
 import RestorePasswordPage from "../pages/RestorePasswordPage";
+import Dashboard from "../pages/physiotherapist/Dashboard";
+import UserArea from "../pages/user/UserArea";
 
 const menuEntries: MenuEntry[] = [
   {
@@ -57,13 +58,15 @@ export default function Router() {
             <Route path="profile" element={<ProfilePage />} />
           </Route>
 
-          {/* Accessible only by admins and physhiotherapists */}
-          <Route
-            element={
-              <AuthenticationWrapper roles={["ADMIN", "PHYSIOTHERAPIST"]} />
-            }
-          >
+          {/* Accessible only by physhiotherapists */}
+          <Route element={<AuthenticatedRoute roles={["PHYSIOTHERAPIST"]} />}>
+            <Route path="physiotherapist/dashboard" element={<Dashboard />} />
             <Route path="new" element={<CourseCreatePage />} />
+          </Route>
+
+          {/* Accessible only by user */}
+          <Route element={<AuthenticatedRoute roles={["USER"]} />}>
+            <Route path="my-courses" element={<UserArea />} />
           </Route>
         </Route>
       </Routes>

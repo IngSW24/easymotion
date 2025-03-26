@@ -7,6 +7,7 @@ import {
   courseCategories,
   courseLevels,
 } from "../../../data/courseEnumerations";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 async function onCourseDetailSave(course: CourseEntity): Promise<CourseEntity> {
   return Promise.resolve(course);
@@ -44,13 +45,16 @@ describe("CourseDetail GUI test", () => {
 
   it("Check if CourseDetail shows the correct information", () => {
     // Render CourseCard
+    const mockQueryClient = new QueryClient();
     render(
       <MemoryRouter>
-        <CourseDetail
-          course={testCourse}
-          canEdit={false}
-          onSave={onCourseDetailSave}
-        />
+        <QueryClientProvider client={mockQueryClient}>
+          <CourseDetail
+            course={testCourse}
+            canEdit={false}
+            onSave={onCourseDetailSave}
+          />
+        </QueryClientProvider>
       </MemoryRouter>
     );
 

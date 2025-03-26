@@ -4,6 +4,7 @@ import { createContext } from "react";
 export interface AuthContextProps {
   user: AuthUserDto | null;
   isAuthenticated: boolean;
+  isPhysiotherapist: boolean;
   login: (email: string, password: string) => Promise<{ needsOtp: boolean }>;
   loginOtp: (otp: string) => Promise<void>;
   logout: () => Promise<void>;

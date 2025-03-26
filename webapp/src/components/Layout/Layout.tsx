@@ -115,6 +115,7 @@ export default function Layout(props: LayoutProps) {
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
         <AppBar component="nav" sx={{ backgroundColor: "primary.main" }}>
+          {/* Conditional headers rendering. */}
           <Toolbar>
             <IconButton // mobile-only
               color="inherit"
