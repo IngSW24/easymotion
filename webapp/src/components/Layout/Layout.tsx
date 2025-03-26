@@ -24,8 +24,6 @@ import { useState } from "react";
 import ProfileButton from "./ProfileButton";
 import AuthButtons from "./AuthButtons";
 import { AuthUserDto } from "@easymotion/openapi";
-import PhysiotherapistHeader from "./headers/PhysiotherapistHeaders";
-import UserHeader from "./headers/UserHeaders";
 
 export type MenuEntry = {
   label: string;
@@ -68,9 +66,6 @@ export default function Layout(props: LayoutProps) {
   const currentRole = auth.user?.role;
 
   const handleDrawerToggle = () => setMobileOpen((prevState) => !prevState);
-
-  const isPhysiotherapistArea = location.pathname.match("/(physiotherapist)/");
-  const isUserArea = location.pathname.match("/(user)/");
 
   const drawer = (
     <Box
@@ -121,51 +116,45 @@ export default function Layout(props: LayoutProps) {
         <CssBaseline />
         <AppBar component="nav" sx={{ backgroundColor: "primary.main" }}>
           {/* Conditional headers rendering. */}
-          {isPhysiotherapistArea ? (
-            <PhysiotherapistHeader />
-          ) : isUserArea ? (
-            <UserHeader />
-          ) : (
-            <Toolbar>
-              <IconButton // mobile-only
-                color="inherit"
-                aria-label="open drawer"
-                edge="start"
-                onClick={handleDrawerToggle}
-                sx={{ mr: 2, display: { sm: "none" } }}
-              >
-                <MenuIcon />
-              </IconButton>
+          <Toolbar>
+            <IconButton // mobile-only
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ mr: 2, display: { sm: "none" } }}
+            >
+              <MenuIcon />
+            </IconButton>
 
-              <Typography
-                component={Link}
-                variant="h6"
-                sx={{ color: "inherit", textDecoration: "none" }}
-                to="/"
-              >
-                EasyMotion
-              </Typography>
+            <Typography
+              component={Link}
+              variant="h6"
+              sx={{ color: "inherit", textDecoration: "none" }}
+              to="/"
+            >
+              EasyMotion
+            </Typography>
 
-              <Box sx={{ display: { xs: "none", md: "block" }, ml: 4 }}>
-                {entries &&
-                  getAppbarEntries(entries, currentRole).map((item) => (
-                    <Button
-                      component={Link}
-                      key={item.link}
-                      sx={{ color: "#fff" }}
-                      startIcon={item.icon}
-                      to={item.link}
-                    >
-                      {item.label}
-                    </Button>
-                  ))}
-              </Box>
+            <Box sx={{ display: { xs: "none", md: "block" }, ml: 4 }}>
+              {entries &&
+                getAppbarEntries(entries, currentRole).map((item) => (
+                  <Button
+                    component={Link}
+                    key={item.link}
+                    sx={{ color: "#fff" }}
+                    startIcon={item.icon}
+                    to={item.link}
+                  >
+                    {item.label}
+                  </Button>
+                ))}
+            </Box>
 
-              <Box sx={{ flexGrow: 1 }} />
+            <Box sx={{ flexGrow: 1 }} />
 
-              {auth.isAuthenticated ? <ProfileButton /> : <AuthButtons />}
-            </Toolbar>
-          )}
+            {auth.isAuthenticated ? <ProfileButton /> : <AuthButtons />}
+          </Toolbar>
         </AppBar>
         <nav>
           <Drawer

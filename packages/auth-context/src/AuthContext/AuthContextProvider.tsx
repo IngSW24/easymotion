@@ -156,7 +156,7 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
   return (
     <AuthContext.Provider
       value={{
-        isPhysiotherapist: user.role === "PHYSIOTHERAPIST",
+        isPhysiotherapist: user?.role === "PHYSIOTHERAPIST",
         isAuthenticated: !!user,
         user,
         login,

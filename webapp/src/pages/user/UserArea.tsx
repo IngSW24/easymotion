@@ -1,5 +1,4 @@
 import { Container, Typography } from "@mui/material";
-import UserHeader from "../../components/Layout/headers/UserHeaders";
 import SubscriptionsPage from "./SubscriptionList";
 import FilterBlock from "../../components/course/FilterBlock/FilterBlock";
 import { CourseFilters } from "../../components/course/FilterBlock/types";
@@ -10,15 +9,14 @@ export default function UserArea() {
 
   return (
     <>
-      <UserHeader></UserHeader>
       <Container maxWidth="xl" sx={{ p: 5 }}>
         <Typography
-          variant="h1"
-          component="h1"
+          variant="h2"
+          component="h2"
           gutterBottom
           align="center"
           fontWeight="bold"
-          sx={{ marginBottom: 4, marginTop: 10 }}
+          sx={{ m: 5 }}
         >
           I miei corsi
         </Typography>
