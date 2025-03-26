@@ -321,7 +321,7 @@ export default function CourseDetail(props: CourseDetailProps) {
             size={12}
             sx={{ display: "flex", justifyContent: "flex-end", mt: 4 }}
           >
-            <SubscribeButton submitted={false} />
+            <SubscribeButton />
           </Grid2>
         </Grid2>
       </Grid2>

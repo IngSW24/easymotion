@@ -89,7 +89,7 @@ export default function CourseCard(props: CourseCardProps) {
           startIcon={<Launch />}
           component={Link}
           variant="contained"
-          to={"details/" + course.id}
+          to={"/details/" + course.id}
         >
           Scopri
         </Button>

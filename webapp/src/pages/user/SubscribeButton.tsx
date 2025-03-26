@@ -3,14 +3,13 @@ import { Button, CardActions } from "@mui/material";
 import DoneIcon from "@mui/icons-material/Done";
 import { useParams } from "react-router";
 import { useState, useEffect } from "react";
-
 import { useAuth } from "@easymotion/auth-context";
 import useSubscriptions from "../../hooks/useSubscription";
 
 export default function SubscribeButton() {
   const [subscribed, setSubscribed] = useState(false);
   const { id: courseId } = useParams();
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const userId = user?.id;
   const { subscribe, unSubscribe, getUserSubscriptions } = useSubscriptions({
     userId,
@@ -53,6 +52,8 @@ export default function SubscribeButton() {
       }
     );
   };
+
+  if (!isAuthenticated) return null;
 
   return (
     <CardActions sx={{ justifyContent: "right", paddingX: 2, fontSize: 20 }}>
