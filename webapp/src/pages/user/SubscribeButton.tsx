@@ -9,7 +9,7 @@ import useSubscriptions from "../../hooks/useSubscription";
 export default function SubscribeButton() {
   const [subscribed, setSubscribed] = useState(false);
   const { id: courseId } = useParams();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isPhysiotherapist } = useAuth();
   const userId = user?.id;
   const { subscribe, unSubscribe, getUserSubscriptions } = useSubscriptions({
     userId,
@@ -53,7 +53,7 @@ export default function SubscribeButton() {
     );
   };
 
-  if (!isAuthenticated) return null;
+  if (!isAuthenticated || isPhysiotherapist) return null;
 
   return (
     <CardActions sx={{ justifyContent: "right", paddingX: 2, fontSize: 20 }}>
