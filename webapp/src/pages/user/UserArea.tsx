@@ -1,4 +1,4 @@
-import { Container, Typography } from "@mui/material";
+import { Box, Container, Typography } from "@mui/material";
 import SubscriptionsPage from "./SubscriptionList";
 import FilterBlock from "../../components/course/FilterBlock/FilterBlock";
 import { CourseFilters } from "../../components/course/FilterBlock/types";
@@ -9,16 +9,23 @@ export default function UserArea() {
 
   return (
     <>
-      <Container maxWidth="xl" sx={{ p: 5 }}>
+      <Container maxWidth="xl">
         <Typography
-          variant="h2"
-          component="h2"
-          gutterBottom
-          align="center"
+          variant="h3"
+          component="h3"
+          align="left"
           fontWeight="bold"
-          sx={{ m: 5 }}
+          sx={{ paddingTop: 5, paddingLeft: 5 }}
         >
-          I miei corsi
+          I Miei Corsi
+        </Typography>
+        <Typography
+          variant="h5"
+          component="h5"
+          align="left"
+          sx={{ paddingTop: 2, paddingLeft: 5 }}
+        >
+          Visualizza e gestisci i corsi a cui sei iscritto
         </Typography>
         <FilterBlock
           filters={filters}
