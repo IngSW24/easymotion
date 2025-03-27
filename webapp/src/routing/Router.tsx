@@ -66,7 +66,7 @@ export default function Router() {
 
           {/* Accessible only by user */}
           <Route element={<AuthenticatedRoute roles={["USER"]} />}>
-            <Route path="my-courses" element={<UserArea />} />
+            <Route path="user/my-courses" element={<UserArea />} />
           </Route>
         </Route>
       </Routes>
