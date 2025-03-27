@@ -20,23 +20,22 @@ import { PasswordUpdateDto } from "./dto/actions/password-update.dto";
 import { PasswordChangeDto } from "./dto/actions/password-change.dto";
 import { OtpLoginDto } from "./dto/actions/otp-login.dto";
 import { EmailConfirmDto } from "./dto/actions/email-confirm.dto";
-import { ApiBody, ApiResponse, IntersectionType } from "@nestjs/swagger";
+import { ApiBody, ApiResponse } from "@nestjs/swagger";
 import { SignInDto } from "./dto/actions/sign-in.dto";
 import { DateTime } from "luxon";
 import { RefreshGuard } from "./guards/refresh.guard";
 import { AuthUserDto } from "./dto/auth-user/auth-user.dto";
-import { AccessTokenDto } from "./dto/actions/access-token.dto";
 import UseAuth from "./decorators/auth-with-role.decorator";
 import { UpdateAuthUserDto } from "./dto/auth-user/update-auth-user.dto";
 import AuthFlowHeader from "./decorators/authflow-header.decorator";
 import { CustomRequest } from "src/common/types/custom-request";
 import { RefreshTokenDto } from "./dto/actions/refresh-token.dto";
 import { OtpGuard } from "./guards/otp.guard";
-import { LoginResponse } from "./types";
 import {
   AdminLocalAuthGuard,
   UserLocalAuthGuard,
 } from "./guards/local-auth.guard";
+import { AuthResponseDto } from "./dto/auth-user/auth-response.dto";
 
 // avoids having to bloat the code with the same multiple decorators
 const ApiLoginResponse = (description: string = "Successful login") =>
@@ -44,7 +43,7 @@ const ApiLoginResponse = (description: string = "Successful login") =>
     ApiResponse({
       status: 200,
       description,
-      type: IntersectionType(AccessTokenDto, AuthUserDto),
+      type: AuthResponseDto,
     }),
     AuthFlowHeader()
   );
@@ -55,12 +54,20 @@ export class AuthController {
 
   private async login(req: CustomRequest, res: any) {
     if (req.user.requiresOtp) {
-      res.send({ requiresOtp: true });
+      res.send(
+        new AuthResponseDto({
+          user: null,
+          tokens: null,
+          requiresOtp: true,
+        })
+      );
       return;
     }
 
-    const loginResponse = await this.authService.getJwtFromUserId(req.user.id);
-    this.sendAuthenticationTokens(req, res, loginResponse);
+    const authResponse = await this.authService.getAuthResponseFromUserId(
+      req.user.id
+    );
+    this.sendAuthenticationTokens(req, res, authResponse);
   }
 
   /**
@@ -99,7 +106,9 @@ export class AuthController {
   @ApiLoginResponse()
   @ApiBody({ type: OtpLoginDto })
   async loginOtp(@Req() req: CustomRequest, @Res() res) {
-    const loginResponse = await this.authService.getJwtFromUserId(req.user.id);
+    const loginResponse = await this.authService.getAuthResponseFromUserId(
+      req.user.id
+    );
     this.sendAuthenticationTokens(req, res, loginResponse);
   }
 
@@ -113,7 +122,9 @@ export class AuthController {
   @ApiLoginResponse("Token refreshed successfully")
   @ApiBody({ type: RefreshTokenDto, required: false })
   async refresh(@Req() req: CustomRequest, @Res() res) {
-    const response = await this.authService.getJwtFromUserId(req.user.sub);
+    const response = await this.authService.getAuthResponseFromUserId(
+      req.user.sub
+    );
     this.sendAuthenticationTokens(req, res, response);
   }
 
@@ -249,16 +260,14 @@ export class AuthController {
   private sendAuthenticationTokens(
     req: CustomRequest,
     res: { send(data: unknown): never },
-    loginResponse: LoginResponse
+    authResponseDto: AuthResponseDto
   ) {
     if (req.isWebAuth) {
-      this.setRefreshTokenCookie(res, loginResponse.user.refreshToken);
-      loginResponse.user.refreshToken = undefined;
-      res.send(loginResponse.user);
-      return;
+      this.setRefreshTokenCookie(res, authResponseDto.tokens.refreshToken);
+      authResponseDto.tokens.refreshToken = null;
     }
 
-    res.send(loginResponse.user);
+    res.send(authResponseDto);
   }
 
   /**
