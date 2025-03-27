@@ -57,7 +57,7 @@ const customFetch = async (
       ...init,
       headers: {
         ...init?.headers,
-        Authorization: `Bearer ${tokens?.accessToken}`, // Set the new token in the headers.
+        Authorization: `Bearer ${tokens?.accessToken ?? ''}`, // Set the new token in the headers.
       },
     });
   }
