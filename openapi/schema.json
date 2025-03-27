@@ -369,7 +369,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IntersectionAccessTokenDtoAuthUserDto"
+                  "$ref": "#/components/schemas/AuthResponseDto"
                 }
               }
             }
@@ -414,7 +414,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IntersectionAccessTokenDtoAuthUserDto"
+                  "$ref": "#/components/schemas/AuthResponseDto"
                 }
               }
             }
@@ -459,7 +459,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IntersectionAccessTokenDtoAuthUserDto"
+                  "$ref": "#/components/schemas/AuthResponseDto"
                 }
               }
             }
@@ -504,7 +504,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IntersectionAccessTokenDtoAuthUserDto"
+                  "$ref": "#/components/schemas/AuthResponseDto"
                 }
               }
             }
@@ -811,7 +811,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IntersectionAccessTokenDtoAuthUserDto"
+                  "$ref": "#/components/schemas/AuthResponseDto"
                 }
               }
             }
@@ -1957,117 +1957,6 @@
           "password"
         ]
       },
-      "IntersectionAccessTokenDtoAuthUserDto": {
-        "type": "object",
-        "properties": {
-          "accessToken": {
-            "type": "string",
-            "description": "The access token"
-          },
-          "requiresOtp": {
-            "type": "boolean",
-            "description": "Indicates if secondary OTP step is required"
-          },
-          "id": {
-            "type": "string",
-            "description": "Unique user identifier (UUID)",
-            "example": "b3bf4d18-8dd0-43a1-b1da-fd3f7b9553a1"
-          },
-          "email": {
-            "type": "string",
-            "format": "email",
-            "description": "Email address of the user",
-            "example": "user@example.com"
-          },
-          "firstName": {
-            "type": "string",
-            "description": "User first name",
-            "example": "John"
-          },
-          "middleName": {
-            "type": "string",
-            "nullable": true,
-            "description": "User middle name",
-            "example": "Alexander"
-          },
-          "lastName": {
-            "type": "string",
-            "description": "User last name",
-            "example": "Doe"
-          },
-          "phoneNumber": {
-            "type": "string",
-            "nullable": true,
-            "description": "User phone number",
-            "example": "+1234567890"
-          },
-          "birthDate": {
-            "type": "string",
-            "nullable": true,
-            "description": "User birth date",
-            "example": "1990-01-01"
-          },
-          "role": {
-            "type": "string",
-            "description": "User role in the system",
-            "enum": [
-              "USER",
-              "ADMIN",
-              "PHYSIOTHERAPIST"
-            ],
-            "default": "USER"
-          },
-          "isEmailVerified": {
-            "type": "boolean",
-            "description": "Indicates if the user email has been verified",
-            "default": false,
-            "example": false
-          },
-          "twoFactorEnabled": {
-            "type": "boolean",
-            "description": "Indicates if two-factor authentication is enabled",
-            "default": false
-          }
-        },
-        "required": [
-          "accessToken",
-          "requiresOtp",
-          "id",
-          "email",
-          "firstName",
-          "lastName",
-          "role",
-          "isEmailVerified",
-          "twoFactorEnabled"
-        ]
-      },
-      "OtpLoginDto": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "format": "email",
-            "description": "User email used for first login step"
-          },
-          "otp": {
-            "type": "string",
-            "description": "One-time password"
-          }
-        },
-        "required": [
-          "email",
-          "otp"
-        ]
-      },
-      "RefreshTokenDto": {
-        "type": "object",
-        "properties": {
-          "refreshToken": {
-            "type": "string",
-            "description": "The refresh token (no need to specify in case of a web auth flow)"
-          }
-        }
-      },
       "AuthUserDto": {
         "type": "object",
         "properties": {
@@ -2141,6 +2030,77 @@
           "isEmailVerified",
           "twoFactorEnabled"
         ]
+      },
+      "AccessTokenDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "The access token"
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "The access token (if not using a web auth flow)"
+          }
+        },
+        "required": [
+          "accessToken"
+        ]
+      },
+      "AuthResponseDto": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "description": "User related data",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuthUserDto"
+              }
+            ]
+          },
+          "tokens": {
+            "description": "Access token and, eventually, refresh token",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AccessTokenDto"
+              }
+            ]
+          },
+          "requiresOtp": {
+            "type": "boolean",
+            "description": "Indicates if secondary OTP step is required"
+          }
+        },
+        "required": [
+          "requiresOtp"
+        ]
+      },
+      "OtpLoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User email used for first login step"
+          },
+          "otp": {
+            "type": "string",
+            "description": "One-time password"
+          }
+        },
+        "required": [
+          "email",
+          "otp"
+        ]
+      },
+      "RefreshTokenDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "description": "The refresh token (no need to specify in case of a web auth flow)"
+          }
+        }
       },
       "UpdateAuthUserDto": {
         "type": "object",
