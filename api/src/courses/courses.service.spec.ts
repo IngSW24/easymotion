@@ -6,6 +6,7 @@ import { CreateCourseDto } from "./dto/create-course.dto";
 import { UpdateCoursesDto } from "./dto/update-course.dto";
 import { Decimal } from "@prisma/client/runtime/library";
 import {
+  Course,
   CourseAvailability,
   CourseCategory,
   CourseFrequency,
@@ -174,7 +175,8 @@ describe("CoursesService", () => {
   // FindOne Method Test
   it("should return a single course", async () => {
     const id = "1";
-    const mockCourse: CourseEntity = {
+    const ownerUuid = randomUUID();
+    const mockCourse: Course & { owner: any } = {
       id: "",
       name: "",
       description: "",
@@ -190,27 +192,42 @@ describe("CoursesService", () => {
       tags: [],
       created_at: new Date(),
       updated_at: new Date(),
+      location: "",
+      cost: new Decimal(10),
+      discount: 0,
+      highlighted_priority: 0,
+      members_capacity: 0,
+      thumbnail_path: "",
+      owner_id: ownerUuid,
       owner: {
-        id: "",
-        email: "",
-        firstName: "",
-        lastName: "",
-        middleName: "",
+        applicationUser: {
+          id: ownerUuid,
+          email: "",
+          firstName: "",
+          lastName: "",
+          middleName: "",
+        },
       },
     };
 
     prismaMock.course.findUniqueOrThrow.mockResolvedValue(mockCourse);
 
     const result = await service.findOne(id);
+    const expected = plainToInstance(CourseEntity, {
+      ...mockCourse,
+      owner: mockCourse.owner.applicationUser,
+    });
 
     expect(prismaMock.course.findUniqueOrThrow).toHaveBeenCalledWith({
       where: { id },
+      include: {
+        owner: {
+          include: { applicationUser: true },
+        },
+      },
     });
-    expect(result).toEqual(
-      new CourseEntity({
-        ...mockCourse,
-      })
-    );
+
+    expect(result).toEqual(expected);
   });
 
   // Update Method Test
