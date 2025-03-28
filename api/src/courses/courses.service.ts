@@ -118,9 +118,17 @@ export class CoursesService {
   async findOne(id: string) {
     const course = await this.prismaService.course.findUniqueOrThrow({
       where: { id },
+      include: {
+        owner: {
+          include: { applicationUser: true },
+        },
+      },
     });
 
-    return plainToInstance(CourseEntity, course);
+    return plainToInstance(CourseEntity, {
+      ...course,
+      owner: course.owner.applicationUser,
+    });
   }
 
   /**
