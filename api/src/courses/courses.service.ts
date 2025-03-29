@@ -168,13 +168,26 @@ export class CoursesService {
 
     const courses = await this.prismaService.courseFinalUser.findMany({
       where: { final_user_id: userId },
-      include: { course: true },
+      include: {
+        course: {
+          include: {
+            owner: {
+              include: { applicationUser: true },
+            },
+          },
+        },
+      },
       skip: pagination.page * pagination.perPage,
       take: pagination.perPage,
     });
 
     return toPaginatedOutput(
-      courses.map((x) => plainToInstance(CourseEntity, x.course)),
+      courses.map((x) =>
+        plainToInstance(CourseEntity, {
+          ...x.course,
+          owner: x.course.owner.applicationUser,
+        })
+      ),
       count,
       pagination
     );
