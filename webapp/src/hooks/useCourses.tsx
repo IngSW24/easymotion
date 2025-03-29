@@ -4,11 +4,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import {
-  CourseEntity,
-  CreateCourseDto,
-  UpdateCoursesDto,
-} from "@easymotion/openapi";
+import { CreateCourseDto, UpdateCoursesDto } from "@easymotion/openapi";
 import { CourseFilters } from "../components/course/FilterBlock/types";
 import { useSnack } from "./useSnack";
 import { useApiClient } from "@easymotion/auth-context";
@@ -33,13 +29,70 @@ type UpdateMutationParams = {
  * @returns an object with the CRUD operations
  */
 export const useCourses = (props: UseCoursesProps = {}) => {
-  const { fetchId = "", perPage = 100, filters, ownerId } = props;
+  const {
+    fetchId = "",
+    page,
+    perPage = 100,
+    fetchAll,
+    filters,
+    ownerId,
+  } = props;
   const { apiClient: api } = useApiClient();
   const snack = useSnack();
   const queryClient = useQueryClient();
 
-  const get = useInfiniteQuery({
-    queryKey: ["courses", { ownerId, filters, perPage }],
+  const get = useQuery({
+    queryKey: ["courses", { page, perPage }, { filters }],
+    queryFn: async () => {
+      const response = await api.courses.coursesControllerFindAll({
+        page,
+        perPage,
+      });
+      const fullData = response.data.data;
+
+      if (!filters) return fullData;
+
+      const filteredData = fullData.filter((course) => {
+        if (
+          filters.searchText &&
+          !course.name.toLowerCase().includes(filters.searchText.toLowerCase())
+        )
+          return false;
+
+        if (
+          filters.advanced.categories.length > 0 &&
+          !filters.advanced.categories.includes(course.category)
+        )
+          return false;
+
+        if (
+          filters.advanced.levels.length > 0 &&
+          !filters.advanced.levels.includes(course.level)
+        )
+          return false;
+
+        if (
+          filters.advanced.frequencies.length > 0 &&
+          !filters.advanced.frequencies.includes(course.frequency)
+        )
+          return false;
+
+        if (
+          filters.advanced.availabilities.length > 0 &&
+          !filters.advanced.availabilities.includes(course.availability)
+        )
+          return false;
+
+        return true;
+      });
+
+      return filteredData;
+    },
+    enabled: fetchAll,
+  });
+
+  const getPhysiotherapist = useInfiniteQuery({
+    queryKey: ["courses", { ownerId, perPage }],
     initialPageParam: 0,
     queryFn: async ({ pageParam = 0 }) => {
       const response = await api.courses.coursesControllerFindAll({
@@ -48,45 +101,7 @@ export const useCourses = (props: UseCoursesProps = {}) => {
         ownerId,
       });
 
-      let data = response.data.data;
-      if (filters) {
-        data = data.filter((course: CourseEntity) => {
-          if (
-            filters.searchText &&
-            !course.name
-              .toLowerCase()
-              .includes(filters.searchText.toLowerCase())
-          )
-            return false;
-
-          if (
-            filters.advanced.categories.length > 0 &&
-            !filters.advanced.categories.includes(course.category)
-          )
-            return false;
-
-          if (
-            filters.advanced.levels.length > 0 &&
-            !filters.advanced.levels.includes(course.level)
-          )
-            return false;
-
-          if (
-            filters.advanced.frequencies.length > 0 &&
-            !filters.advanced.frequencies.includes(course.frequency)
-          )
-            return false;
-
-          if (
-            filters.advanced.availabilities.length > 0 &&
-            !filters.advanced.availabilities.includes(course.availability)
-          )
-            return false;
-
-          return true;
-        });
-      }
-
+      const data = response.data.data;
       return { data, nextPage: pageParam + 1, meta: response.data.meta };
     },
     getNextPageParam: (lastPage) =>
@@ -144,5 +159,5 @@ export const useCourses = (props: UseCoursesProps = {}) => {
     onError: (error) => snack.showError(error),
   });
 
-  return { get, getSingle, update, remove, create };
+  return { get, getPhysiotherapist, getSingle, update, remove, create };
 };

@@ -19,7 +19,7 @@ export default function DashboardHome() {
   );
 
   const { get: getProfile } = useProfile();
-  const { get: getCourses, remove } = useCourses({
+  const { getPhysiotherapist: getCourses, remove } = useCourses({
     perPage: 10,
     ownerId: getProfile.data?.id,
   });

@@ -9,7 +9,6 @@ import LandingCourseCard from "./LandingCourseCard";
  */
 export default function LandingCoursesSection() {
   const { get: getCourses } = useCourses();
-  const { data, isLoading, isError } = getCourses;
 
   return (
     <Box
@@ -30,7 +29,7 @@ export default function LandingCoursesSection() {
           I nostri corsi
         </Typography>
 
-        {isError ? (
+        {getCourses.isError ? (
           <Box sx={{ textAlign: "center", py: 4 }}>
             <Typography variant="h6" component="p" color="error" sx={{ mb: 2 }}>
               Si è verificato un errore
@@ -39,7 +38,7 @@ export default function LandingCoursesSection() {
               Non è stato possibile caricare i corsi. Riprova più tardi.
             </Typography>
           </Box>
-        ) : isLoading ? (
+        ) : getCourses.isLoading ? (
           <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
             <LoadingSpinner />
           </Box>
@@ -50,8 +49,8 @@ export default function LandingCoursesSection() {
             columns={{ xs: 1, sm: 1, md: 2, lg: 3, xl: 3 }}
             justifyContent={{ xs: "center", lg: "space-between" }}
           >
-            {data &&
-              data.pages.slice(0, 3).map((course) => (
+            {getCourses.data &&
+              getCourses.data.slice(0, 3).map((course) => (
                 <Grid2 key={course.id} sx={{ xs: 1 }}>
                   <LandingCourseCard course={course} />
                 </Grid2>
