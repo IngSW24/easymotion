@@ -1,4 +1,4 @@
-import { Box, Button, Grid2, Typography } from "@mui/material";
+import { Box, Grid2, Typography } from "@mui/material";
 import OverviewSection from "../../components/dashboard/OverviewSection";
 import DashboardDataGrid from "../../components/dashboard/CoursesDataGrid";
 import { DateCalendar } from "@mui/x-date-pickers";
@@ -19,8 +19,8 @@ export default function DashboardHome() {
   );
 
   const { get: getProfile } = useProfile();
-  const { get: getCourses } = useCourses({
-    perPage: 2,
+  const { get: getCourses, remove } = useCourses({
+    perPage: 10,
     ownerId: getProfile.data?.id,
   });
 
@@ -34,7 +34,10 @@ export default function DashboardHome() {
     }
   }, [getProfile, getCourses]);
 
-  if (currentPageState === CurrentState.READY) console.log(getCourses.data);
+  if (currentPageState === CurrentState.READY) {
+    console.log(getCourses.data);
+    console.log(getCourses.data?.pageParams);
+  }
 
   return (
     <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" }, px: 2 }}>
@@ -65,18 +68,13 @@ export default function DashboardHome() {
                 courses={
                   getCourses.data?.pages.flatMap((page) => page.data) || []
                 }
-                nextPageAction={() => {}}
+                nextPageAction={() => getCourses.fetchNextPage()}
+                hasNextPage={!!getCourses.hasNextPage}
+                isFetchingNextPage={getCourses.isFetchingNextPage}
+                totalItems={getCourses.data?.pages[0]?.meta.totalItems || 0}
+                onDelete={(id) => remove.mutateAsync(id)}
               />
             </Box>
-            <Button
-              variant="contained"
-              onClick={() => getCourses.fetchNextPage()}
-              disabled={
-                !getCourses.hasNextPage || getCourses.isFetchingNextPage
-              }
-            >
-              {getCourses.isFetchingNextPage ? "Loading more..." : "Load More"}
-            </Button>
           </Grid2>
 
           {/* Right column - Calendar */}

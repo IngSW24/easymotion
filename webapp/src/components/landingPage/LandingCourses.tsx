@@ -51,7 +51,7 @@ export default function LandingCoursesSection() {
             justifyContent={{ xs: "center", lg: "space-between" }}
           >
             {data &&
-              data.slice(0, 3).map((course) => (
+              data.pages.slice(0, 3).map((course) => (
                 <Grid2 key={course.id} sx={{ xs: 1 }}>
                   <LandingCourseCard course={course} />
                 </Grid2>

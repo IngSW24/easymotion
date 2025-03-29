@@ -1,19 +1,67 @@
 import { CourseEntity } from "@easymotion/openapi";
-import { Delete, Edit, Visibility } from "@mui/icons-material";
-import { IconButton, Stack, Tooltip } from "@mui/material";
+import { Delete, Visibility } from "@mui/icons-material";
+import { Chip, IconButton, Stack, Tooltip } from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
+import { useState } from "react";
+import { useNavigate } from "react-router";
+
+const categoryColors: Record<string, string> = {
+  CROSSFIT: "#f44336", // red
+  ZUMBA_FITNESS: "#9c27b0", // purple
+  BODYWEIGHT_WORKOUT: "#2196f3", // blue
+  POSTURAL_TRAINING: "#4caf50", // green
+  PILATES: "#ff9800", // orange
+  ACQUAGYM: "#00bcd4", // cyan
+};
 
 type DashboardDataGridProps = {
   courses: CourseEntity[];
   nextPageAction: () => void;
+  hasNextPage: boolean;
+  isFetchingNextPage: boolean;
+  totalItems: number;
+  onDelete: (id: string) => void;
 };
 
 export default function DashboardDataGrid(props: DashboardDataGridProps) {
-  const { courses, nextPageAction } = props;
+  const {
+    courses,
+    nextPageAction,
+    hasNextPage,
+    isFetchingNextPage,
+    totalItems,
+    onDelete,
+  } = props;
+
+  const navigate = useNavigate();
+
+  const [paginationModel, setPaginationModel] = useState({
+    pageSize: 10,
+    page: 0,
+  });
+
+  const currentDisplayedRows =
+    paginationModel.page * paginationModel.pageSize + paginationModel.pageSize;
+  const needsMoreData = currentDisplayedRows >= courses.length && hasNextPage;
+
+  const handlePaginationModelChange = ({
+    pageSize,
+    page,
+  }: {
+    pageSize: number;
+    page: number;
+  }) => {
+    setPaginationModel({ pageSize, page });
+
+    if (needsMoreData && !isFetchingNextPage) {
+      nextPageAction();
+    }
+  };
 
   const rows = courses.map((value, index) => {
     return {
       id: index,
+      courseId: value.id,
       courseName: value.name,
       category: value.category,
       capacity: value.members_capacity,
@@ -22,8 +70,30 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
 
   const columns: GridColDef[] = [
     { field: "id", headerName: "ID", flex: 1, minWidth: 10 },
+    { field: "courseId" },
     { field: "courseName", headerName: "Nome corso", flex: 4, minWidth: 100 },
-    { field: "category", headerName: "Categoria", flex: 4, minWidth: 100 },
+    {
+      field: "category",
+      headerName: "Categoria",
+      flex: 4,
+      minWidth: 100,
+      renderCell: (params) => {
+        const category = params.value;
+        const color = categoryColors[category] || "#9e9e9e";
+
+        return (
+          <Chip
+            label={category.replace("_", " ")}
+            size="small"
+            style={{
+              backgroundColor: color,
+              color: "white",
+              fontWeight: "bold",
+            }}
+          />
+        );
+      },
+    },
     { field: "capacity", headerName: "Max Pazienti", flex: 2, minWidth: 50 },
     {
       field: "actions",
@@ -47,21 +117,10 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
                 size="small"
                 onClick={(event) => {
                   event.stopPropagation();
-                  handleView(params.row.id);
+                  navigate(`/details/${params.row.courseId}`);
                 }}
               >
                 <Visibility fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Modifica">
-              <IconButton
-                size="small"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  handleEdit(params.row.id);
-                }}
-              >
-                <Edit fontSize="small" />
               </IconButton>
             </Tooltip>
             <Tooltip title="Elimina">
@@ -69,7 +128,7 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
                 size="small"
                 onClick={(event) => {
                   event.stopPropagation();
-                  handleDelete(params.row.id);
+                  onDelete(params.row.courseId);
                 }}
               >
                 <Delete fontSize="small" color="error" />
@@ -81,22 +140,6 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
     },
   ];
 
-  // Action handlers
-  const handleView = (id: number) => {
-    console.log("View item", id);
-    // Add your view logic here
-  };
-
-  const handleEdit = (id: number) => {
-    console.log("Edit item", id);
-    // Add your edit logic here
-  };
-
-  const handleDelete = (id: number) => {
-    console.log("Delete item", id);
-    // Add your delete logic here
-  };
-
   return (
     <DataGrid
       checkboxSelection
@@ -106,7 +149,12 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
         params.indexRelativeToCurrentPage % 2 === 0 ? "even" : "odd"
       }
       initialState={{
-        pagination: { paginationModel: { pageSize: 20 } },
+        pagination: { paginationModel: { pageSize: 10 } },
+        columns: {
+          columnVisibilityModel: {
+            courseId: false,
+          },
+        },
       }}
       pageSizeOptions={[10, 20, 50]}
       disableColumnResize
@@ -137,6 +185,11 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
           },
         },
       }}
+      rowCount={totalItems || rows.length}
+      paginationModel={paginationModel}
+      onPaginationModelChange={handlePaginationModelChange}
+      paginationMode="client"
+      loading={isFetchingNextPage}
     />
   );
 }

@@ -33,14 +33,7 @@ type UpdateMutationParams = {
  * @returns an object with the CRUD operations
  */
 export const useCourses = (props: UseCoursesProps = {}) => {
-  const {
-    fetchId = "",
-    page = 0,
-    perPage = 100,
-    fetchAll = fetchId === "",
-    filters,
-    ownerId,
-  } = props;
+  const { fetchId = "", perPage = 100, filters, ownerId } = props;
   const { apiClient: api } = useApiClient();
   const snack = useSnack();
   const queryClient = useQueryClient();
@@ -94,7 +87,7 @@ export const useCourses = (props: UseCoursesProps = {}) => {
         });
       }
 
-      return { data, nextPage: pageParam + 1 };
+      return { data, nextPage: pageParam + 1, meta: response.data.meta };
     },
     getNextPageParam: (lastPage) =>
       lastPage.data.length === 0 ? undefined : lastPage.nextPage,
