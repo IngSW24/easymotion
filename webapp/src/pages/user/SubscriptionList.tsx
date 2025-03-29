@@ -14,7 +14,7 @@ export default function SubscriptionsPage(props: SubsProp) {
   const { filters } = props;
   const auth = useAuth();
   const subsRepo = useSubscriptions({
-    ...filters,
+    filters,
     userId: auth.user?.id ?? "",
   });
 

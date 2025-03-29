@@ -1,4 +1,4 @@
-import { Box, Container, Typography } from "@mui/material";
+import { Container, Typography } from "@mui/material";
 import SubscriptionsPage from "./SubscriptionList";
 import FilterBlock from "../../components/course/FilterBlock/FilterBlock";
 import { CourseFilters } from "../../components/course/FilterBlock/types";
