@@ -20,7 +20,6 @@
     "@fontsource/roboto": "^5.1.1",
     "@mui/icons-material": "^6.3.1",
     "@mui/material": "^6.3.1",
-    "@mui/x-data-grid": "^7.28.0",
     "@mui/x-date-pickers": "^7.24.0",
     "@tanstack/react-query": "^5.63.0",
     "framer-motion": "^12.0.0",
@@ -33,9 +32,10 @@
     "react-router": "^7.1.1"
   },
   "devDependencies": {
-    "@easymotion/auth-context": "workspace:../packages/auth-context",
-    "@easymotion/eslint-config": "workspace:../packages/eslint-config",
     "@easymotion/openapi": "workspace:../openapi",
+    "@easymotion/auth-context": "workspace:../packages/auth-context",
+    "eslint": "^9.19.0",
+    "@easymotion/eslint-config": "workspace:../packages/eslint-config",
     "@tanstack/react-query-devtools": "^5.63.0",
     "@testing-library/react": "^16.1.0",
     "@types/luxon": "^3.4.2",
@@ -44,7 +44,6 @@
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
     "@vitest/coverage-v8": "^2.1.9",
-    "eslint": "^9.19.0",
     "jsdom": "^25.0.1",
     "prettier": "^3.4.2",
     "typescript": "~5.6.2",

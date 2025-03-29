@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router";
+import CourseListPage from "../pages/CourseListPage";
 import CourseDetailsPage from "../pages/CourseDetailsPage";
 import CourseCreatePage from "../pages/CourseCreatePage";
 import Layout, { MenuEntry } from "../components/Layout/Layout";
@@ -15,7 +16,6 @@ import { useAuth } from "@easymotion/auth-context";
 import RestorePasswordPage from "../pages/RestorePasswordPage";
 import Dashboard from "../pages/physiotherapist/Dashboard";
 import UserArea from "../pages/user/UserArea";
-import LandingPage from "../pages/LandingPage";
 
 const menuEntries: MenuEntry[] = [
   {
@@ -41,7 +41,7 @@ export default function Router() {
       <Routes>
         <Route element={<Layout entries={menuEntries} />}>
           {/* Always accessible routes*/}
-          <Route index element={<LandingPage />} />
+          <Route index element={<CourseListPage />} />
           <Route path="details/:id" element={<CourseDetailsPage />} />
           <Route path="confirm-email" element={<ConfirmEmailPage />} />
           <Route path="terms" element={<TermsOfServicePage />} />
