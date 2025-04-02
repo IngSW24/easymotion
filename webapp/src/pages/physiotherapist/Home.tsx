@@ -37,11 +37,6 @@ export default function DashboardHome() {
     }
   }, [getProfile, getCourses]);
 
-  if (currentPageState === CurrentState.READY) {
-    console.log(getCourses.data);
-    console.log(getCourses.data?.pageParams);
-  }
-
   return (
     <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" }, px: 2 }}>
       {currentPageState === CurrentState.ERROR && (
