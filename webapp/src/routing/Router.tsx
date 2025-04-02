@@ -61,7 +61,7 @@ export default function Router() {
           {/* Accessible only by physhiotherapists */}
           <Route element={<AuthenticatedRoute roles={["PHYSIOTHERAPIST"]} />}>
             <Route path="physiotherapist/dashboard" element={<Dashboard />} />
-            <Route path="new" element={<CourseCreatePage />} />
+            <Route path="physiotherapist/new" element={<CourseCreatePage />} />
           </Route>
 
           {/* Accessible only by user */}

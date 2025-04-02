@@ -106,6 +106,7 @@ export const useCourses = (props: UseCoursesProps = {}) => {
     },
     getNextPageParam: (lastPage) =>
       lastPage.data.length === 0 ? undefined : lastPage.nextPage,
+    enabled: !!ownerId,
   });
 
   const getSingle = useQuery({

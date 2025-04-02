@@ -16,13 +16,6 @@ export default function DashboardHeader() {
       spacing={2}
     >
       <DashboardBreadCrumbs />
-      <Stack direction="row" sx={{ gap: 1 }}>
-        {/* <CustomDatePicker /> */}
-        {/* <MenuButton showBadge aria-label="Open notifications">
-          <NotificationsRoundedIcon />
-        </MenuButton> */}
-        {/* <ColorModeIconDropdown /> */}
-      </Stack>
     </Stack>
   );
 }

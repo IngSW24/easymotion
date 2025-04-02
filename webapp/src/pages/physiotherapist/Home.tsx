@@ -1,4 +1,4 @@
-import { Box, Grid2, Typography } from "@mui/material";
+import { Box, Button, Grid2, Typography } from "@mui/material";
 import OverviewSection from "../../components/dashboard/OverviewSection";
 import DashboardDataGrid from "../../components/dashboard/CoursesDataGrid";
 import { DateCalendar } from "@mui/x-date-pickers";
@@ -6,6 +6,8 @@ import { useProfile } from "../../hooks/useProfile";
 import { useCourses } from "../../hooks/useCourses";
 import { useEffect, useState } from "react";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
+import { Add, FitnessCenter } from "@mui/icons-material";
+import { useNavigate } from "react-router";
 
 enum CurrentState {
   "LOADING",
@@ -14,6 +16,7 @@ enum CurrentState {
 }
 
 export default function DashboardHome() {
+  const navigate = useNavigate();
   const [currentPageState, setCurrentPageState] = useState(
     CurrentState.LOADING
   );
@@ -57,12 +60,43 @@ export default function DashboardHome() {
             <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
               Overview
             </Typography>
-            <OverviewSection />
+            <OverviewSection
+              cards={[
+                {
+                  title: "Corsi totali",
+                  value: getCourses.data?.pages[0]?.meta.totalItems || 0,
+                  icon: <FitnessCenter />,
+                },
+              ]}
+            />
 
             {/* Courses section */}
-            <Typography pt={4} component="h2" variant="h6" sx={{ mb: 2 }}>
-              Courses
-            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                mb: 2,
+                pt: 4,
+              }}
+            >
+              <Typography component="h2" variant="h6">
+                I miei corsi
+              </Typography>
+
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<Add />}
+                size="small"
+                onClick={() => {
+                  navigate("/physiotherapist/new/");
+                }}
+              >
+                Crea corso
+              </Button>
+            </Box>
+
             <Box sx={{ width: "100%", mb: { xs: 3, lg: 0 } }}>
               <DashboardDataGrid
                 courses={

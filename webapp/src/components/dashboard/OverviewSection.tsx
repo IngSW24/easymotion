@@ -1,10 +1,4 @@
 import {
-  AccessTime,
-  AttachMoney,
-  FitnessCenter,
-  People,
-} from "@mui/icons-material";
-import {
   Box,
   Card,
   CardActionArea,
@@ -12,31 +6,21 @@ import {
   IconButton,
   Typography,
 } from "@mui/material";
+import { ReactNode } from "react";
 
-const cards = [
-  {
-    title: "Total courses",
-    value: "24",
-    icon: <FitnessCenter />,
-  },
-  {
-    title: "Active patience",
-    value: "156",
-    icon: <People />,
-  },
-  {
-    title: "Hour this mounth",
-    value: "89",
-    icon: <AccessTime />,
-  },
-  {
-    title: "Revenue",
-    value: "$4.290",
-    icon: <AttachMoney />,
-  },
-];
+type CardProps = {
+  title: string;
+  value: number;
+  icon: ReactNode;
+};
 
-export default function OverviewSection() {
+type OverviewSectionProps = {
+  cards: CardProps[];
+};
+
+export default function OverviewSection(props: OverviewSectionProps) {
+  const { cards } = props;
+
   return (
     <Box
       sx={{
