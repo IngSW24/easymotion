@@ -31,8 +31,8 @@ export const useInitialRefresh = (props: UseInitialRefreshProps) => {
         );
 
         if (response.ok) {
-          props.updateAccessToken(response.data.accessToken);
-          props.setUser(response.data);
+          props.updateAccessToken(response.data.tokens?.accessToken ?? "");
+          if (response.data.user) props.setUser(response.data.user);
         }
       } catch {
         props.updateAccessToken(null);

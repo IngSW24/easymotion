@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Expose } from "class-transformer";
-import { IsBoolean, IsString } from "class-validator";
+import { IsOptional, IsString } from "class-validator";
 
 export class AccessTokenDto {
   @ApiProperty({
@@ -11,9 +11,10 @@ export class AccessTokenDto {
   accessToken: string;
 
   @ApiProperty({
-    description: "Indicates if secondary OTP step is required",
+    description: "The access token (if not using a web auth flow)",
   })
-  @IsBoolean()
+  @IsString()
   @Expose()
-  requiresOtp: boolean;
+  @IsOptional()
+  refreshToken?: string;
 }

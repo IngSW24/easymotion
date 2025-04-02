@@ -66,8 +66,8 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
       return { needsOtp: true };
     }
     // Update the token and user state with the server's response
-    updateAccessToken(response.data.accessToken);
-    setUser(response.data);
+    updateAccessToken(response.data.tokens?.accessToken ?? "");
+    if (response.data.user) setUser(response.data.user);
     return { needsOtp: false };
   };
 
@@ -88,8 +88,8 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
     });
 
     // Update the token and user state with the server's response
-    updateAccessToken(response.data.accessToken);
-    setUser(response.data);
+    updateAccessToken(response.data.tokens?.accessToken ?? "");
+    if (response.data.user) setUser(response.data.user);
     setOtpStatus({ needsOtp: false, email: "" });
   };
 
@@ -139,8 +139,8 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
     const response = await apiInstance.authControllerConfirmEmail(payload);
 
     if (response.ok) {
-      updateAccessToken(response.data.accessToken);
-      setUser(response.data);
+      updateAccessToken(response.data.tokens?.accessToken ?? "");
+      if (response.data.user) setUser(response.data.user);
     }
   };
 
@@ -156,6 +156,7 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
   return (
     <AuthContext.Provider
       value={{
+        isPhysiotherapist: user?.role === "PHYSIOTHERAPIST",
         isAuthenticated: !!user,
         user,
         login,

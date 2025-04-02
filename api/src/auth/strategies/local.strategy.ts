@@ -17,13 +17,18 @@ export class UserLocalStrategy extends PassportStrategy(
   }
 
   async validate(email: string, password: string) {
-    const user = this.authService.validateUser(email, password, [
+    const user = await this.authService.validateUser(email, password, [
       Role.PHYSIOTHERAPIST,
       Role.USER,
     ]);
 
     if (!user) {
       throw new UnauthorizedException();
+    }
+
+    if (user.twoFactorEnabled) {
+      await this.authService.sendOtpCode(user.id, user.email);
+      return { requiresOtp: true };
     }
 
     return user;
@@ -42,10 +47,17 @@ export class AdminLocalStrategy extends PassportStrategy(
   }
 
   async validate(email: string, password: string) {
-    const user = this.authService.validateUser(email, password, [Role.ADMIN]);
+    const user = await this.authService.validateUser(email, password, [
+      Role.ADMIN,
+    ]);
 
     if (!user) {
       throw new UnauthorizedException();
+    }
+
+    if (user.twoFactorEnabled) {
+      await this.authService.sendOtpCode(user.id, user.email);
+      return { requiresOtp: true };
     }
 
     return user;

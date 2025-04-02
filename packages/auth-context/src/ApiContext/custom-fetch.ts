@@ -48,16 +48,16 @@ const customFetch = async (
      * - The `onAccessTokenUpdate` callback is called to update the application's state with the new token.
      * - The original request is retried with the updated `Authorization` header containing the new token.
      */
-    const { accessToken } = fetchResponse.data;
+    const tokens = fetchResponse.data.tokens;
 
-    onAccessTokenUpdate(accessToken); // Update the access token in the application state.
+    onAccessTokenUpdate(tokens?.accessToken ?? ""); // Update the access token in the application state.
 
     // Retry the original request with the new access token.
     return fetch(input, {
       ...init,
       headers: {
         ...init?.headers,
-        Authorization: `Bearer ${accessToken}`, // Set the new token in the headers.
+        Authorization: `Bearer ${tokens?.accessToken ?? ''}`, // Set the new token in the headers.
       },
     });
   }

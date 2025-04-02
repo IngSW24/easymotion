@@ -25,7 +25,7 @@ import {
   generatePasswordResetMessage,
 } from "./email-messages/email-confirm.message";
 import frontendConfig from "src/config/frontend.config";
-import { LoginResponse } from "./types";
+import { AuthResponseDto } from "./dto/auth-user/auth-response.dto";
 
 @Injectable()
 export class AuthService {
@@ -97,7 +97,9 @@ export class AuthService {
    * @param user the user to create the response for
    * @returns a tuple containing the user and the refresh token
    */
-  public async getJwtFromUserId(userId: string): Promise<LoginResponse> {
+  public async getAuthResponseFromUserId(
+    userId: string
+  ): Promise<AuthResponseDto> {
     const result = await this.userManager.getUserById(userId);
 
     if (!isSuccessResult(result)) {
@@ -108,26 +110,27 @@ export class AuthService {
       excludeExtraneousValues: true,
     });
 
-    return this.getJwtFromAuthUser(user);
+    return this.getAuthResponseFromUser(user);
   }
 
-  public async getJwtFromAuthUser(user: AuthUserDto): Promise<LoginResponse> {
+  public async getAuthResponseFromUser(
+    user: AuthUserDto
+  ): Promise<AuthResponseDto> {
     await this.userManager.setLastLogin(user.id);
     await this.userManager.clearFailedLoginAttempts(user.id);
     const payload = JwtPayloadDto.fromUser(user).toObject();
 
-    return {
-      user: {
+    return new AuthResponseDto({
+      user,
+      tokens: {
         accessToken: this.jwtService.sign(payload),
         refreshToken: this.jwtService.sign(
           { sub: user.id },
-          {
-            expiresIn: this.configService.refreshExpiresIn,
-          }
+          { expiresIn: this.configService.refreshExpiresIn }
         ),
-        ...user,
       },
-    };
+      requiresOtp: false,
+    });
   }
 
   /**
@@ -405,7 +408,7 @@ export class AuthService {
       excludeExtraneousValues: true,
     });
 
-    return this.getJwtFromAuthUser(authData);
+    return this.getAuthResponseFromUser(authData);
   }
 
   /**

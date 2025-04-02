@@ -118,9 +118,17 @@ export class CoursesService {
   async findOne(id: string) {
     const course = await this.prismaService.course.findUniqueOrThrow({
       where: { id },
+      include: {
+        owner: {
+          include: { applicationUser: true },
+        },
+      },
     });
 
-    return plainToInstance(CourseEntity, course);
+    return plainToInstance(CourseEntity, {
+      ...course,
+      owner: course.owner.applicationUser,
+    });
   }
 
   /**
@@ -160,13 +168,26 @@ export class CoursesService {
 
     const courses = await this.prismaService.courseFinalUser.findMany({
       where: { final_user_id: userId },
-      include: { course: true },
+      include: {
+        course: {
+          include: {
+            owner: {
+              include: { applicationUser: true },
+            },
+          },
+        },
+      },
       skip: pagination.page * pagination.perPage,
       take: pagination.perPage,
     });
 
     return toPaginatedOutput(
-      courses.map((x) => plainToInstance(CourseEntity, x.course)),
+      courses.map((x) =>
+        plainToInstance(CourseEntity, {
+          ...x.course,
+          owner: x.course.owner.applicationUser,
+        })
+      ),
       count,
       pagination
     );

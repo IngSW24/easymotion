@@ -7,6 +7,9 @@ import { UpdateCoursesDto } from "./dto/update-course.dto";
 import { CourseEntity } from "./dto/course.dto";
 import { Decimal } from "@prisma/client/runtime/library";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
+import { randomUUID } from "node:crypto";
+import { Course } from "@prisma/client";
+import { plainToInstance } from "class-transformer";
 
 describe("CoursesController", () => {
   let controller: CoursesController;
@@ -158,7 +161,7 @@ describe("CoursesController", () => {
   // Test FindOne
   it("should return a single course", async () => {
     const id = "1";
-    const mockCourse: CourseEntity = {
+    const mockCourse: Course & { owner: any } = {
       id,
       description: "aaaaa",
       short_description: "",
@@ -174,27 +177,43 @@ describe("CoursesController", () => {
       name: "aaaaaaaaaa",
       created_at: new Date(),
       updated_at: new Date(),
+      location: "",
+      cost: new Decimal(10),
+      discount: 0,
+      highlighted_priority: 0,
+      members_capacity: 0,
+      thumbnail_path: "",
+      owner_id: randomUUID(),
       owner: {
-        id: "",
-        email: "",
-        firstName: "",
-        lastName: "",
-        middleName: "",
+        applicationUser: {
+          id: randomUUID(),
+          email: "test@email.com",
+          firstName: "fname",
+          lastName: "lname",
+          middleName: "mname",
+        },
       },
     };
 
     prismaMock.course.findUniqueOrThrow.mockResolvedValue(mockCourse);
 
     const result = await controller.findOne(id);
+    const expected = plainToInstance(CourseEntity, {
+      ...mockCourse,
+      owner: mockCourse.owner.applicationUser,
+    });
 
     expect(prismaMock.course.findUniqueOrThrow).toHaveBeenCalledWith({
       where: { id },
+      include: {
+        owner: {
+          include: {
+            applicationUser: true,
+          },
+        },
+      },
     });
-    expect(result).toEqual(
-      new CourseEntity({
-        ...mockCourse,
-      })
-    );
+    expect(result).toEqual(expected);
   });
 
   // Test Update

@@ -16,6 +16,7 @@ import RestorePasswordPage from "../pages/RestorePasswordPage";
 import Dashboard from "../pages/physiotherapist/Dashboard";
 import UserHelloWorld from "../pages/user/UserHelloWorld";
 import LandingPage from "../pages/LandingPage";
+import UserArea from "../pages/user/UserArea";
 
 const menuEntries: MenuEntry[] = [
   {
@@ -67,6 +68,11 @@ export default function Router() {
           {/* Accessible only by user */}
           <Route element={<AuthenticatedRoute roles={["USER"]} />}>
             <Route path="user/userhelloworld" element={<UserHelloWorld />} />
+          </Route>
+
+          {/* Accessible only by user */}
+          <Route element={<AuthenticatedRoute roles={["USER"]} />}>
+            <Route path="my-courses" element={<UserArea />} />
           </Route>
         </Route>
       </Routes>
