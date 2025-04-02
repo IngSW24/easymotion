@@ -11,7 +11,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "@easymotion/auth-context";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Logout, Settings, SpaceDashboard } from "@mui/icons-material";
+import { Explore, Logout, Settings, SpaceDashboard } from "@mui/icons-material";
 import { AuthUserDto } from "@easymotion/openapi";
 
 type ProfileButtonActionProps = {
@@ -46,6 +46,11 @@ export default function ProfileButton() {
       icon: <MenuIcon />,
       action: () => navigate("/my-courses"),
       targetRoles: ["USER"],
+    },
+    {
+      label: "Scopri i corsi",
+      icon: <Explore />,
+      action: () => navigate("/discover"),
     },
     {
       label: "Impostazioni",

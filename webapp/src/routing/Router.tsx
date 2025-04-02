@@ -17,6 +17,7 @@ import Dashboard from "../pages/physiotherapist/Dashboard";
 import UserHelloWorld from "../pages/user/UserHelloWorld";
 import LandingPage from "../pages/LandingPage";
 import UserArea from "../pages/user/UserArea";
+import CourseListPage from "../pages/CourseListPage";
 
 const menuEntries: MenuEntry[] = [
   {
@@ -46,6 +47,7 @@ export default function Router() {
           <Route path="details/:id" element={<CourseDetailsPage />} />
           <Route path="confirm-email" element={<ConfirmEmailPage />} />
           <Route path="terms" element={<TermsOfServicePage />} />
+          <Route path="discover" element={<CourseListPage />} />
 
           {/* Accessible only by non authenticated users */}
           <Route element={<UnauthenticatedRoute />}>
