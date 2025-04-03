@@ -1,0 +1,12 @@
+{
+  "name": "Easymotion",
+  "dockerComposeFile": ["../docker-compose.yml", "../docker-compose.dev.yml"],
+  "service": "devcontainer",
+  "shutdownAction": "none",
+  "workspaceFolder": "/workspace",
+  "customizations": {
+    "vscode": {
+      "extensions": ["Orta.vscode-jest", "Prisma.prisma", "esbenp.prettier-vscode", "dbaeumer.vscode-eslint"]
+    }
+  }
+}

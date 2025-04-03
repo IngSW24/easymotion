@@ -1,12 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AuthService } from './auth.service';
-import { JwtService } from '@nestjs/jwt';
-import { EmailService } from 'src/email/email.service';
-import { UsersService } from 'src/users/users.service';
-import { UserManager } from 'src/users/user.manager';
-import { PrismaService } from 'nestjs-prisma';
+import { Test, TestingModule } from "@nestjs/testing";
+import { AuthService } from "./auth.service";
+import { JwtService } from "@nestjs/jwt";
+import { EmailService } from "src/email/email.service";
+import { UsersService } from "src/users/users.service";
+import { UserManager } from "src/users/user.manager";
+import { PrismaService } from "nestjs-prisma";
 
-describe('AuthService', () => {
+describe("AuthService", () => {
   let service: AuthService;
 
   // Mock Prisma Service
@@ -27,13 +27,13 @@ describe('AuthService', () => {
         UsersService,
         UserManager,
         {
-          provide: 'CONFIGURATION(jwt)',
+          provide: "CONFIGURATION(jwt)",
           useValue: {
-            secret: 'test-secret',
-            expiresIn: '1h',
-            audience: 'test-audience',
-            issuer: 'test-issuer',
-            refreshExpiresIn: '7d',
+            secret: "test-secret",
+            expiresIn: "1h",
+            audience: "test-audience",
+            issuer: "test-issuer",
+            refreshExpiresIn: "7d",
           },
         },
         {
@@ -47,13 +47,17 @@ describe('AuthService', () => {
           useValue: mockPrismaClient, // Inject the mock implementation
         },
         {
-          provide: 'CONFIGURATION(jwt)',
+          provide: "CONFIGURATION(jwt)",
           useValue: {
-            secret: 'test-secret',
-            expiresIn: '1h',
-            audience: 'test-audience',
-            issuer: 'test-issuer',
+            secret: "test-secret",
+            expiresIn: "1h",
+            audience: "test-audience",
+            issuer: "test-issuer",
           },
+        },
+        {
+          provide: "CONFIGURATION(frontend)",
+          useValue: {},
         },
       ],
     }).compile();
@@ -61,7 +65,7 @@ describe('AuthService', () => {
     service = module.get<AuthService>(AuthService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 });

@@ -1,0 +1,30 @@
+{
+  "name": "monorepo",
+  "private": true,
+  "scripts": {
+    "all": "concurrently \"pnpm --filter api start:dev\" \"pnpm --filter webapp dev\"",
+    "format": "prettier --write .",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test",
+    "services:up": "docker compose up -d",
+    "services:down": "docker compose -f docker-compose.yml -f docker-compose.dev.yml down",
+    "env:bootstrap": "cp webapp/.env.example webapp/.env && cp api/.env.example api/.env",
+    "clean": "rm -rf node_modules && rm -rf .pnpm-store && pnpm -r clean",
+    "openapi:generate": "pnpm --filter openapi build",
+    "api:schema": "pnpm --filter api swagger:generate -- ../openapi/schema.json",
+    "api:migrate": "pnpm --filter api prisma:migrate-dev",
+    "api:client": "pnpm --filter api prisma:gen-client",
+    "api:seed": "pnpm --filter api seed",
+    "api:migrate-reset": "pnpm --filter api prisma:migrate-reset",
+    "prepare": "husky || true"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "husky": "^9.1.7",
+    "prettier": "^3.4.2"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  }
+}

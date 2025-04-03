@@ -3,8 +3,8 @@ import { Container } from "@mui/material";
 import CourseDetail from "../components/course/CourseDetail/CourseDetail";
 import { useCourses } from "../hooks/useCourses";
 import LoadingSpinner from "../components/LoadingSpinner/LoadingSpinner";
-import { CourseEntity, UpdateCoursesDto } from "../client/Api";
-import { useAuth } from "../hooks/useAuth";
+import { CourseEntity, UpdateCoursesDto } from "@easymotion/openapi";
+import { useAuth } from "@easymotion/auth-context";
 import Hero from "../components/Hero/Hero";
 
 /**
@@ -35,7 +35,7 @@ export default function CourseDetailsPage() {
         title={courseRepo.getSingle.data?.name ?? ""}
         showSignupButton={false}
       />
-      <Container sx={{ mt: 5 }}>
+      <Container sx={{ my: 5 }}>
         {courseRepo.getSingle.data && (
           <CourseDetail
             course={courseRepo.getSingle.data}

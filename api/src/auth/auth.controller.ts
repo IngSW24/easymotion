@@ -1,4 +1,5 @@
 import {
+  applyDecorators,
   Body,
   Controller,
   Delete,
@@ -11,48 +12,62 @@ import {
   Req,
   Res,
   UseGuards,
-} from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { SignUpDto } from './dto/actions/sign-up.dto';
-import { EmailDto } from './dto/actions/email.dto';
-import { PasswordUpdateDto } from './dto/actions/password-update.dto';
-import { PasswordChangeDto } from './dto/actions/password-change.dto';
-import { OtpLoginDto } from './dto/actions/otp-login.dto';
-import { EmailConfirmDto } from './dto/actions/email-confirm.dto';
-import { LocalAuthGuard } from './guards/local-auth.guard';
-import { ApiBody, ApiResponse, IntersectionType } from '@nestjs/swagger';
-import { SignInDto } from './dto/actions/sign-in.dto';
-import { DateTime } from 'luxon';
-import { RefreshGuard } from './guards/refresh.guard';
-import { AuthUserDto } from './dto/auth-user/auth-user.dto';
-import { AccessTokenDto } from './dto/actions/access-token.dto';
-import UseAuth from './decorators/auth-with-role.decorator';
-import { UpdateAuthUserDto } from './dto/auth-user/update-auth-user.dto';
+} from "@nestjs/common";
+import { AuthService } from "./auth.service";
+import { SignUpDto } from "./dto/actions/sign-up.dto";
+import { EmailDto } from "./dto/actions/email.dto";
+import { PasswordUpdateDto } from "./dto/actions/password-update.dto";
+import { PasswordChangeDto } from "./dto/actions/password-change.dto";
+import { OtpLoginDto } from "./dto/actions/otp-login.dto";
+import { EmailConfirmDto } from "./dto/actions/email-confirm.dto";
+import { ApiBody, ApiResponse } from "@nestjs/swagger";
+import { SignInDto } from "./dto/actions/sign-in.dto";
+import { DateTime } from "luxon";
+import { RefreshGuard } from "./guards/refresh.guard";
+import { AuthUserDto } from "./dto/auth-user/auth-user.dto";
+import UseAuth from "./decorators/auth-with-role.decorator";
+import { UpdateAuthUserDto } from "./dto/auth-user/update-auth-user.dto";
+import AuthFlowHeader from "./decorators/authflow-header.decorator";
+import { CustomRequest } from "src/common/types/custom-request";
+import { RefreshTokenDto } from "./dto/actions/refresh-token.dto";
+import { OtpGuard } from "./guards/otp.guard";
+import {
+  AdminLocalAuthGuard,
+  UserLocalAuthGuard,
+} from "./guards/local-auth.guard";
+import { AuthResponseDto } from "./dto/auth-user/auth-response.dto";
 
-@Controller('auth')
+// avoids having to bloat the code with the same multiple decorators
+const ApiLoginResponse = (description: string = "Successful login") =>
+  applyDecorators(
+    ApiResponse({
+      status: 200,
+      description,
+      type: AuthResponseDto,
+    }),
+    AuthFlowHeader()
+  );
+
+@Controller("auth")
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  /**
-   * Sets the refresh token as an HTTP-only cookie.
-   * @param res The response object.
-   * @param refreshToken The refresh token to set in the cookie.
-   */
-  private setRefreshTokenCookie(res: any, refreshToken: string) {
-    res.cookie('refreshToken', refreshToken, {
-      expires: DateTime.now().plus({ days: 5 }).toJSDate(),
-      httpOnly: true,
-      sameSite: 'strict',
-      secure: process.env.NODE_ENV === 'production',
-    });
-  }
+  private async login(req: CustomRequest, res: any) {
+    if (req.user.requiresOtp) {
+      res.send(
+        new AuthResponseDto({
+          user: null,
+          tokens: null,
+          requiresOtp: true,
+        })
+      );
+      return;
+    }
 
-  /**
-   * Clears the refresh token cookie.
-   * @param res The response object.
-   */
-  private clearRefreshTokenCookie(res: any) {
-    res.clearCookie('refreshToken');
+    const authResponse = await this.authService.getAuthResponseFromUserId(
+      req.user.id
+    );
+    this.sendAuthenticationTokens(req, res, authResponse);
   }
 
   /**
@@ -60,20 +75,41 @@ export class AuthController {
    * @param req The request object, containing the authenticated user.
    * @param res The response object.
    */
-  @UseGuards(LocalAuthGuard)
-  @Post('login')
+  @UseGuards(UserLocalAuthGuard)
+  @Post("login")
   @ApiBody({ type: SignInDto })
-  @ApiResponse({
-    status: 200,
-    description: 'Successful login',
-    type: IntersectionType(AccessTokenDto, AuthUserDto),
-  })
-  async login(@Req() req, @Res() res): Promise<void> {
-    const [user, refresh] = await this.authService.login(req.user);
+  @ApiLoginResponse()
+  async userLogin(@Req() req: CustomRequest, @Res() res): Promise<void> {
+    this.login(req, res);
+  }
 
-    this.setRefreshTokenCookie(res, refresh.refreshToken);
+  /**
+   * Logs in an admin user and sets the refresh token cookie.
+   * @param req The request object, containing the authenticated user.
+   * @param res The response object.
+   */
+  @UseGuards(AdminLocalAuthGuard)
+  @Post("login/admin")
+  @ApiBody({ type: SignInDto })
+  @ApiLoginResponse()
+  async adminLogin(@Req() req: CustomRequest, @Res() res): Promise<void> {
+    this.login(req, res);
+  }
 
-    res.send(user);
+  /**
+   * Executes the OTP login stage.
+   * @param req The request object.
+   * @param res The response object
+   */
+  @UseGuards(OtpGuard)
+  @Post("login/otp")
+  @ApiLoginResponse()
+  @ApiBody({ type: OtpLoginDto })
+  async loginOtp(@Req() req: CustomRequest, @Res() res) {
+    const loginResponse = await this.authService.getAuthResponseFromUserId(
+      req.user.id
+    );
+    this.sendAuthenticationTokens(req, res, loginResponse);
   }
 
   /**
@@ -82,24 +118,21 @@ export class AuthController {
    * @param res The response object.
    */
   @UseGuards(RefreshGuard)
-  @Post('refresh')
-  @ApiResponse({
-    status: 200,
-    type: IntersectionType(AccessTokenDto, AuthUserDto),
-  })
-  async refresh(@Req() req, @Res() res) {
-    const [user, refresh] = await this.authService.refresh(req.user.sub);
-
-    this.setRefreshTokenCookie(res, refresh.refreshToken);
-
-    res.send(user);
+  @Post("refresh")
+  @ApiLoginResponse("Token refreshed successfully")
+  @ApiBody({ type: RefreshTokenDto, required: false })
+  async refresh(@Req() req: CustomRequest, @Res() res) {
+    const response = await this.authService.getAuthResponseFromUserId(
+      req.user.sub
+    );
+    this.sendAuthenticationTokens(req, res, response);
   }
 
   /**
    * Logs out the user by clearing the refresh token cookie.
    * @param res The response object.
    */
-  @Post('logout')
+  @Post("logout")
   @UseAuth()
   async logout(@Res() res) {
     this.clearRefreshTokenCookie(res);
@@ -111,7 +144,7 @@ export class AuthController {
    * @param req The request object, containing the user's ID.
    */
   @UseAuth()
-  @Get('profile')
+  @Get("profile")
   getUserProfile(@Req() req): Promise<AuthUserDto> {
     return this.authService.getUserProfile(req.user.sub);
   }
@@ -122,10 +155,10 @@ export class AuthController {
    * @param updateProfileDto The data to update the user's profile.
    */
   @UseAuth()
-  @Put('profile')
+  @Put("profile")
   updateUserProfile(
     @Req() req,
-    @Body() updateProfileDto: UpdateAuthUserDto,
+    @Body() updateProfileDto: UpdateAuthUserDto
   ): Promise<AuthUserDto> {
     return this.authService.updateUserProfile(req.user.sub, updateProfileDto);
   }
@@ -136,7 +169,7 @@ export class AuthController {
    * @param res The response object.
    */
   @UseAuth()
-  @Delete('profile')
+  @Delete("profile")
   async deleteUserProfile(@Req() req, @Res() res) {
     this.clearRefreshTokenCookie(res);
     await this.authService.deleteUserProfile(req.user.sub);
@@ -147,7 +180,7 @@ export class AuthController {
    * @param signUpDto The data for creating the new account.
    */
   @HttpCode(HttpStatus.OK)
-  @Post('signup/customer')
+  @Post("signup/customer")
   signUp(@Body() signUpDto: SignUpDto) {
     return this.authService.customerSignup(signUpDto);
   }
@@ -156,7 +189,7 @@ export class AuthController {
    * Requests a password reset for a user.
    * @param resetPasswordRequestDto The email of the user requesting a reset.
    */
-  @Post('password')
+  @Post("password")
   requestPasswordReset(@Body() resetPasswordRequestDto: EmailDto) {
     return this.authService.requestResetPassword(resetPasswordRequestDto);
   }
@@ -165,7 +198,7 @@ export class AuthController {
    * Updates the password for a user.
    * @param passwordUpdateDto The data to update the password.
    */
-  @Post('password/update')
+  @Post("password/update")
   updatePassword(@Body() passwordUpdateDto: PasswordUpdateDto) {
     return this.authService.updatePassword(passwordUpdateDto);
   }
@@ -176,7 +209,7 @@ export class AuthController {
    * @param passwordChangeDto The data to change the password.
    */
   @UseAuth()
-  @Post('password/change')
+  @Post("password/change")
   changePassword(@Req() req, @Body() passwordChangeDto: PasswordChangeDto) {
     const userId = req.user.sub;
     return this.authService.changePassword(userId, passwordChangeDto);
@@ -188,21 +221,10 @@ export class AuthController {
    * @param value The value to enable or disable two-factor authentication.
    */
   @UseAuth()
-  @Put('otp')
-  switchOtp(@Req() req, @Query() value: string) {
+  @Put("otp")
+  switchOtp(@Req() req, @Query("value") value: string) {
     const userId = req.user.sub;
-    return this.authService.switchTwoFactorEnabled(userId, {
-      enabled: value === 'true',
-    });
-  }
-
-  /**
-   * Signs in a user using a one-time password (OTP).
-   * @param otpLoginDto The OTP login data.
-   */
-  @Post('login/otp')
-  signInOtp(@Body() otpLoginDto: OtpLoginDto) {
-    return this.authService.signInOtp(otpLoginDto);
+    return this.authService.switchTwoFactorEnabled(userId, value === "true");
   }
 
   /**
@@ -211,7 +233,7 @@ export class AuthController {
    * @param emailDto The new email address.
    */
   @UseAuth()
-  @Post('email')
+  @Post("email")
   requestEmailUpdate(@Req() req, @Body() emailDto: EmailDto) {
     const userId = req.user.sub;
     return this.authService.requestEmailUpdate(userId, emailDto);
@@ -222,21 +244,51 @@ export class AuthController {
    * @param emailConfirmDto The email confirmation data.
    * @param res The response object.
    */
-  @Put('email')
-  @ApiResponse({
-    status: 200,
-    description: 'Email confirmation',
-    type: IntersectionType(AccessTokenDto, AuthUserDto),
-  })
-  async confirmEmail(
-    @Body() emailConfirmDto: EmailConfirmDto,
-    @Res() res,
-  ): Promise<void> {
-    const [user, refresh] =
-      await this.authService.confirmEmail(emailConfirmDto);
+  @Put("email")
+  @ApiLoginResponse("Email confirmed successfully")
+  async confirmEmail(@Req() req, @Res() res, @Body() confirm: EmailConfirmDto) {
+    const response = await this.authService.confirmEmail(confirm);
+    this.sendAuthenticationTokens(req, res, response);
+  }
 
-    this.setRefreshTokenCookie(res, refresh.refreshToken);
+  /**
+   * Sends the authentication tokens to the client.
+   * @param req the request object
+   * @param res the response object
+   * @param loginResponse the login response obtained by the auth service
+   */
+  private sendAuthenticationTokens(
+    req: CustomRequest,
+    res: { send(data: unknown): never },
+    authResponseDto: AuthResponseDto
+  ) {
+    if (req.isWebAuth) {
+      this.setRefreshTokenCookie(res, authResponseDto.tokens.refreshToken);
+      authResponseDto.tokens.refreshToken = null;
+    }
 
-    res.send(user);
+    res.send(authResponseDto);
+  }
+
+  /**
+   * Sets the refresh token as an HTTP-only cookie.
+   * @param res The response object.
+   * @param refreshToken The refresh token to set in the cookie.
+   */
+  private setRefreshTokenCookie(res: any, refreshToken: string) {
+    res.cookie("refreshToken", refreshToken, {
+      expires: DateTime.now().plus({ days: 5 }).toJSDate(),
+      httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+    });
+  }
+
+  /**
+   * Clears the refresh token cookie.
+   * @param res The response object.
+   */
+  private clearRefreshTokenCookie(res: any) {
+    res.clearCookie("refreshToken");
   }
 }

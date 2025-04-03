@@ -1,17 +1,16 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'nestjs-prisma';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { ApplicationUserDto } from './dto/application-user.dto';
-import { UserManager } from './user.manager';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "nestjs-prisma";
+import { CreateUserDto } from "./dto/create-user.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
+import { ApplicationUserDto } from "./dto/application-user.dto";
+import { UserManager } from "./user.manager";
 import {
   isSuccessResult,
   resultToHttpException,
-} from 'src/common/types/result';
-import { CrudService } from 'src/common/abstractions/crud-service.interface';
-import { PaginationFilter } from 'src/common/dto/pagination-filter.dto';
-import { PaginatedOutput } from 'src/common/dto/paginated-output.dto';
-import { plainToInstance } from 'class-transformer';
+} from "src/common/types/result";
+import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
+import { PaginatedOutput } from "src/common/dto/paginated-output.dto";
+import { plainToInstance } from "class-transformer";
 
 /**
  * The UsersService class provides high-level CRUD operations for ApplicationUsers,
@@ -19,12 +18,10 @@ import { plainToInstance } from 'class-transformer';
  * interface using CreateUserDto, UpdateUserDto, and ApplicationUserDto.
  */
 @Injectable()
-export class UsersService
-  implements CrudService<CreateUserDto, UpdateUserDto, ApplicationUserDto>
-{
+export class UsersService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly userManager: UserManager,
+    private readonly userManager: UserManager
   ) {}
 
   /**
@@ -39,8 +36,8 @@ export class UsersService
     });
 
     const result = await this.userManager.createUser(
-      { ...mappedUser, passwordHash: '' },
-      newUser.password,
+      { ...mappedUser, passwordHash: "" },
+      newUser.password
     );
 
     if (!isSuccessResult(result)) {
@@ -59,7 +56,7 @@ export class UsersService
    *          including pagination metadata (e.g., total count, hasNextPage, etc.).
    */
   async findAll(
-    pagination: PaginationFilter,
+    pagination: PaginationFilter
   ): Promise<PaginatedOutput<ApplicationUserDto>> {
     const { page, perPage } = pagination;
 

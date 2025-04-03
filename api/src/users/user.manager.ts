@@ -1,11 +1,11 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
-import { ApplicationUser, Prisma } from '@prisma/client';
-import { ResultPromise, isSuccessResult } from 'src/common/types/result';
-import * as argon2 from 'argon2';
-import { DateTime } from 'luxon';
-import { randomBytes, randomInt } from 'node:crypto';
-import { v4 as uuidv4 } from 'uuid';
-import { PrismaService } from 'nestjs-prisma';
+import { HttpStatus, Injectable } from "@nestjs/common";
+import { ApplicationUser, Prisma, Role } from "@prisma/client";
+import { ResultPromise, isSuccessResult } from "src/common/types/result";
+import * as argon2 from "argon2";
+import { DateTime } from "luxon";
+import { randomBytes, randomInt } from "node:crypto";
+import { v4 as uuidv4 } from "uuid";
+import { PrismaService } from "nestjs-prisma";
 
 @Injectable()
 export class UserManager {
@@ -20,7 +20,7 @@ export class UserManager {
    */
   async createUser(
     newUser: Prisma.ApplicationUserCreateInput,
-    password: string,
+    password: string
   ): ResultPromise<ApplicationUser> {
     const existingUser = await this.prisma.applicationUser.findFirst({
       where: { email: newUser.email },
@@ -29,18 +29,43 @@ export class UserManager {
     if (existingUser) {
       return {
         success: false,
-        errors: ['User with this email already exists'],
+        errors: ["User with this email already exists"],
         code: HttpStatus.CONFLICT,
       };
     }
 
     const hashedPassword = await this.hashPassword(password);
 
-    const createdUser = await this.prisma.applicationUser.create({
-      data: {
-        ...newUser,
-        passwordHash: hashedPassword,
-      },
+    const createdUser = await this.prisma.$transaction(async (tx) => {
+      const createdUser = await this.prisma.applicationUser.create({
+        data: {
+          ...newUser,
+          passwordHash: hashedPassword,
+        },
+      });
+
+      switch (createdUser.role) {
+        case Role.PHYSIOTHERAPIST:
+          await tx.physiotherapist.create({
+            data: {
+              applicationUser: {
+                connect: { id: createdUser.id },
+              },
+            },
+          });
+          break;
+        case Role.USER:
+          await tx.finalUser.create({
+            data: {
+              applicationUser: { connect: { id: createdUser.id } },
+            },
+          });
+          break;
+        default:
+          break;
+      }
+
+      return createdUser;
     });
 
     return { success: true, data: createdUser };
@@ -52,15 +77,18 @@ export class UserManager {
    * @returns A promise that resolves with a success Result if the user is found,
    *          or an error Result if not found.
    */
-  async getUserById(userId: string): ResultPromise<ApplicationUser> {
+  async getUserById(
+    userId: string,
+    roles: Role[] = undefined
+  ): ResultPromise<ApplicationUser> {
     const user = await this.prisma.applicationUser.findUnique({
-      where: { id: userId },
+      where: { id: userId, ...(roles && { role: { in: roles } }) },
     });
 
     if (!user) {
       return {
         success: false,
-        errors: ['User not found'],
+        errors: ["User not found"],
         code: HttpStatus.NOT_FOUND,
       };
     }
@@ -74,15 +102,18 @@ export class UserManager {
    * @returns A promise that resolves with a success Result if the user is found,
    *          or an error Result if not found.
    */
-  async getUserByEmail(email: string): ResultPromise<ApplicationUser> {
+  async getUserByEmail(
+    email: string,
+    roles: Role[] = undefined
+  ): ResultPromise<ApplicationUser> {
     const user = await this.prisma.applicationUser.findUnique({
-      where: { email },
+      where: { email, ...(roles && { role: { in: roles } }) },
     });
 
     if (!user) {
       return {
         success: false,
-        errors: ['User not found'],
+        errors: ["User not found"],
         code: HttpStatus.NOT_FOUND,
       };
     }
@@ -108,7 +139,7 @@ export class UserManager {
    */
   async updateUser(
     userId: string,
-    data: Prisma.ApplicationUserUpdateInput,
+    data: Prisma.ApplicationUserUpdateInput
   ): ResultPromise<ApplicationUser> {
     const user = await this.getUserById(userId); // ensures user exists
     if (!isSuccessResult(user)) return user;
@@ -141,7 +172,7 @@ export class UserManager {
    * @returns A promise that resolves to the reset token string.
    */
   async generatePasswordResetToken(userId: string): Promise<string> {
-    const resetToken = randomBytes(32).toString('hex');
+    const resetToken = randomBytes(32).toString("hex");
     const expiryDate = DateTime.now().plus({ hours: 1 });
 
     await this.prisma.applicationUser.update({
@@ -182,7 +213,7 @@ export class UserManager {
   async changePassword(
     userId: string,
     oldPassword: string,
-    newPassword: string,
+    newPassword: string
   ): ResultPromise<void> {
     const userResult = await this.getUserById(userId);
 
@@ -190,13 +221,13 @@ export class UserManager {
 
     const isPasswordValid = await this.verifyPassword(
       userResult.data.passwordHash,
-      oldPassword,
+      oldPassword
     );
 
     if (!isPasswordValid) {
       return {
         success: false,
-        errors: ['Invalid password'],
+        errors: ["Invalid password"],
         code: HttpStatus.BAD_REQUEST,
       };
     }
@@ -225,7 +256,7 @@ export class UserManager {
   async resetPassword(
     userId: string,
     resetToken: string,
-    newPassword: string,
+    newPassword: string
   ): ResultPromise<void> {
     const user = await this.prisma.applicationUser.findUnique({
       where: {
@@ -239,7 +270,7 @@ export class UserManager {
     if (!user) {
       return {
         success: false,
-        errors: ['Invalid or expired reset token'],
+        errors: ["Invalid or expired reset token"],
         code: HttpStatus.BAD_REQUEST,
       };
     }
@@ -247,7 +278,7 @@ export class UserManager {
     if (user.passwordResetToken !== resetToken) {
       return {
         success: false,
-        errors: ['Invalid reset token'],
+        errors: ["Invalid reset token"],
         code: HttpStatus.BAD_REQUEST,
       };
     }
@@ -296,7 +327,7 @@ export class UserManager {
   async resetEmail(
     userId: string,
     resetToken: string,
-    newEmail: string,
+    newEmail: string
   ): ResultPromise<void> {
     const result = await this.prisma.applicationUser.findUnique({
       where: {
@@ -309,7 +340,7 @@ export class UserManager {
     if (!result) {
       return {
         success: false,
-        errors: ['Invalid or expired confirmation token'],
+        errors: ["Invalid or expired confirmation token"],
         code: HttpStatus.BAD_REQUEST,
       };
     }
@@ -350,7 +381,7 @@ export class UserManager {
     if (!result) {
       return {
         success: false,
-        errors: ['Invalid or expired confirmation token'],
+        errors: ["Invalid or expired confirmation token"],
         code: HttpStatus.BAD_REQUEST,
       };
     }
@@ -456,7 +487,7 @@ export class UserManager {
    */
   async setLastLogin(
     userId: string,
-    time: DateTime | undefined = DateTime.now(),
+    time: DateTime | undefined = DateTime.now()
   ) {
     return this.prisma.applicationUser.update({
       where: { id: userId },
@@ -506,7 +537,7 @@ export class UserManager {
    */
   async verifyPassword(
     hashedPassword: string,
-    plainPassword: string,
+    plainPassword: string
   ): Promise<boolean> {
     return argon2.verify(hashedPassword, plainPassword);
   }

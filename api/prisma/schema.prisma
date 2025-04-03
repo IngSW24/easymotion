@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
@@ -43,27 +43,41 @@ enum CourseAvailability {
 
 // TODO: Align Course model to use camelCase instead of snake_case for field names
 model Course {
-  id                        String              @id @default(uuid())
-  name                      String
-  description               String
-  short_description         String
-  location                  String?
-  schedule                  String[]
-  instructors               String[]            // will be a user id
-  category                  CourseCategory
-  level                     CourseLevel
-  frequency                 CourseFrequency
-  session_duration          String              // In POSIX format. Eg: P2H30M -> 2h and 30M
-  cost                      Decimal?
-  discount                  Int?
-  availability              CourseAvailability
-  highlighted_priority      Int?
-  members_capacity          Int?
-  num_registered_members    Int?
-  tags                      String[]
-  thumbnail_path            String?
-  created_at                DateTime            @default(now()) @db.Timestamptz(3)
-  updated_at                DateTime            @updatedAt @db.Timestamptz(3)
+  id                     String             @id @default(uuid())
+  name                   String
+  description            String
+  short_description      String
+  location               String?
+  schedule               String[]
+  instructors            String[] // will be a user id
+  category               CourseCategory
+  level                  CourseLevel
+  frequency              CourseFrequency
+  session_duration       String // In POSIX format. Eg: P2H30M -> 2h and 30M
+  cost                   Decimal?
+  discount               Int?
+  availability           CourseAvailability
+  highlighted_priority   Int?
+  members_capacity       Int?
+  num_registered_members Int?
+  tags                   String[]
+  thumbnail_path         String?
+  created_at             DateTime           @default(now()) @db.Timestamptz(3)
+  updated_at             DateTime           @updatedAt @db.Timestamptz(3)
+  owner                  Physiotherapist    @relation(fields: [owner_id], references: [applicationUserId])
+  owner_id                String
+  subscribers            CourseFinalUser[]
+}
+
+model CourseFinalUser {
+  course_id     String
+  final_user_id String
+  course        Course    @relation(fields: [course_id], references: [id])
+  final_user    FinalUser @relation(fields: [final_user_id], references: [applicationUserId])
+  created_at    DateTime  @default(now()) @db.Timestamptz(3)
+  updated_at    DateTime  @updatedAt @db.Timestamptz(3)
+
+  @@id([course_id, final_user_id])
 }
 
 enum Role {
@@ -73,42 +87,44 @@ enum Role {
 }
 
 model ApplicationUser {
-  id                           String              @id @default(uuid())
-  email                        String              @unique
-  isEmailVerified              Boolean             @default(false)
+  id                           String           @id @default(uuid())
+  email                        String           @unique
+  isEmailVerified              Boolean          @default(false)
   emailConfirmationToken       String?
   emailConfirmationTokenExpiry DateTime?
-  passwordHash                 String              @default("")
+  passwordHash                 String           @default("")
   passwordResetToken           String?
   passwordResetTokenExpiry     DateTime?
   twoFactorCode                String?
   twoFactorExpiry              DateTime?
-  twoFactorEnabled             Boolean             @default(false)
+  twoFactorEnabled             Boolean          @default(false)
   firstName                    String
   middleName                   String?
   lastName                     String
   phoneNumber                  String?
   birthDate                    String?
-  role                         Role                @default(USER)
+  role                         Role             @default(USER)
   lastLogin                    DateTime?
-  failedLoginAttempts          Int                 @default(0)
-  createdAt                    DateTime            @default(now()) @db.Timestamptz(3)
-  updatedAt                    DateTime            @updatedAt @db.Timestamptz(3)
+  failedLoginAttempts          Int              @default(0)
+  createdAt                    DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt                    DateTime         @updatedAt @db.Timestamptz(3)
   physiotherapistData          Physiotherapist?
   finalUserData                FinalUser?
 }
 
 model Physiotherapist {
-  applicationUserId         String              @id
-  applicationUser           ApplicationUser     @relation(fields: [applicationUserId], references: [id])
+  applicationUserId String          @id
+  applicationUser   ApplicationUser @relation(fields: [applicationUserId], references: [id])
 
-  specialization            String
-  publicPhoneNumber         String?
+  specialization    String?
+  publicPhoneNumber String?
+  courses            Course[]
 }
 
 model FinalUser {
-  applicationUserId         String              @id
-  applicationUser           ApplicationUser     @relation(fields: [applicationUserId], references: [id])
+  applicationUserId String            @id
+  applicationUser   ApplicationUser   @relation(fields: [applicationUserId], references: [id])
+  courses           CourseFinalUser[]
 
   // TODO: Specify body measurements
   // bodyWeight                Decimal?

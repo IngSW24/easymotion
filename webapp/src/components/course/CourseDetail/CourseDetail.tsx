@@ -1,6 +1,6 @@
 import { Box, Chip, Grid2, Stack, Typography } from "@mui/material";
 import { useState } from "react";
-import { CourseEntity } from "../../../client/Api";
+import { CourseEntity } from "@easymotion/openapi";
 import { useSnack } from "../../../hooks/useSnack";
 import ProductCard from "./ProductCard";
 import LockUnlockButton from "../../atoms/Button/LockUnlockButton";
@@ -18,6 +18,7 @@ import {
   courseLevels,
 } from "../../../data/courseEnumerations";
 import FormTextField from "../../atoms/TextField/FormTextField";
+import SubscribeButton from "../../../pages/user/SubscribeButton";
 
 export interface CourseDetailProps {
   isNew?: boolean;
@@ -316,6 +317,12 @@ export default function CourseDetail(props: CourseDetailProps) {
               onChange={(v) => setEditCourse((prev) => ({ ...prev, level: v }))}
             />
           </Stack>
+          <Grid2
+            size={12}
+            sx={{ display: "flex", justifyContent: "flex-end", mt: 4 }}
+          >
+            <SubscribeButton />
+          </Grid2>
         </Grid2>
       </Grid2>
     </>

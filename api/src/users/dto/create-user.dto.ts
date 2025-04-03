@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import {
   IsString,
   IsEmail,
@@ -7,31 +7,33 @@ import {
   IsEnum,
   Length,
   IsBoolean,
-} from 'class-validator';
-import { Role } from '@prisma/client';
-import { Expose } from 'class-transformer';
+} from "class-validator";
+import { Role } from "@prisma/client";
+import { Expose } from "class-transformer";
+import CheckPasswordConstraints from "src/auth/decorators/strong-password.decorator";
 
 export class CreateUserDto {
   @ApiProperty({
-    description: 'Email address of the new user',
-    example: 'john.doe@example.com',
+    description: "Email address of the new user",
+    example: "john.doe@example.com",
   })
   @IsEmail()
   @Expose()
   email: string;
 
   @ApiProperty({
-    description: 'Plain-text password for the new user (will be hashed)',
-    example: 'MyStrongP@ssw0rd!',
+    description: "Plain-text password for the new user (will be hashed)",
+    example: "MyStrongP@ssw0rd!",
     minLength: 6,
   })
   @IsString()
   @Length(6)
   @Expose()
+  @CheckPasswordConstraints()
   password: string;
 
   @ApiProperty({
-    description: 'Flag indicating if the email address has been verified',
+    description: "Flag indicating if the email address has been verified",
     example: true,
   })
   @IsBoolean()
@@ -39,16 +41,16 @@ export class CreateUserDto {
   isEmailVerified: boolean;
 
   @ApiProperty({
-    description: 'First name of the new user',
-    example: 'John',
+    description: "First name of the new user",
+    example: "John",
   })
   @IsString()
   @Expose()
   firstName: string;
 
   @ApiPropertyOptional({
-    description: 'Middle name of the new user (optional)',
-    example: 'Alexander',
+    description: "Middle name of the new user (optional)",
+    example: "Alexander",
   })
   @IsOptional()
   @IsString()
@@ -56,16 +58,16 @@ export class CreateUserDto {
   middleName?: string;
 
   @ApiProperty({
-    description: 'Last name of the new user',
-    example: 'Doe',
+    description: "Last name of the new user",
+    example: "Doe",
   })
   @IsString()
   @Expose()
   lastName: string;
 
   @ApiPropertyOptional({
-    description: 'Phone number of the new user (optional)',
-    example: '+123456789',
+    description: "Phone number of the new user (optional)",
+    example: "+123456789",
   })
   @IsOptional()
   @IsString()
@@ -73,8 +75,8 @@ export class CreateUserDto {
   phoneNumber?: string;
 
   @ApiPropertyOptional({
-    description: 'Birth date in ISO format (YYYY-MM-DD) (optional)',
-    example: '1990-01-01',
+    description: "Birth date in ISO format (YYYY-MM-DD) (optional)",
+    example: "1990-01-01",
   })
   @IsOptional()
   @IsDateString()
@@ -82,7 +84,7 @@ export class CreateUserDto {
   birthDate?: string;
 
   @ApiPropertyOptional({
-    description: 'Role of the new user (defaults to USER if not provided)',
+    description: "Role of the new user (defaults to USER if not provided)",
     enum: Role,
     default: Role.USER,
   })

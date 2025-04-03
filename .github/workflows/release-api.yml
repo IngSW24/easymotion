@@ -2,12 +2,16 @@ name: Build and Push API Docker Image
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - "v*"
+      - "api-v*"
 
 jobs:
   build-api:
     runs-on: ubuntu-latest
+
+    env:
+      HUSKY: 0
 
     steps:
       - name: Checkout repository
@@ -20,9 +24,41 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Determine environment
+        id: determine_env
+        run: |
+          version=$(echo $GITHUB_REF_NAME | grep -o [0-9]\.*)
+          echo "VERSION=${version}" >> $GITHUB_ENV
+
+          if [[ "$version" == *"-beta" ]]; then
+            echo "LATEST_TAG=latest-beta" >> $GITHUB_ENV
+          else
+            echo "LATEST_TAG=latest" >> $GITHUB_ENV
+          fi
+
       - name: Build and push API Docker image
         run: |
           IMAGE_NAME=ghcr.io/ingsw24/easymotion-api
-          cd api/
-          docker build . --tag $IMAGE_NAME:latest
-          docker push $IMAGE_NAME:latest
+
+          # Build the image (version tag first)
+          docker build \
+            . \
+            --target api \
+            --tag $IMAGE_NAME:$VERSION \
+            --tag $IMAGE_NAME:$LATEST_TAG
+
+          # Push both tags
+          docker push $IMAGE_NAME:$VERSION
+          docker push $IMAGE_NAME:$LATEST_TAG
+
+      - name: Notify Discord of new release
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          curl -H "Content-Type: application/json" \
+          -X POST \
+          -d "{
+                \"username\": \"Github Release\",
+                \"content\": \"🚀 New API release: **v${VERSION}** by ${{ github.actor }}! Check it out 👉 ${{ github.event.repository.html_url }}/releases/tag/${{ github.ref_name }}\"
+              }" \
+          $DISCORD_WEBHOOK

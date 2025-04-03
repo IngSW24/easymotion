@@ -1,18 +1,21 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { CoursesService } from './courses.service';
-import { PrismaService } from 'nestjs-prisma';
-import { CourseEntity } from './dto/course.dto';
-import { CreateCourseDto } from './dto/create-course.dto';
-import { UpdateCoursesDto } from './dto/update-course.dto';
-import { Decimal } from '@prisma/client/runtime/library';
+import { Test, TestingModule } from "@nestjs/testing";
+import { CoursesService } from "./courses.service";
+import { PrismaService } from "nestjs-prisma";
+import { CourseEntity } from "./dto/course.dto";
+import { CreateCourseDto } from "./dto/create-course.dto";
+import { UpdateCoursesDto } from "./dto/update-course.dto";
+import { Decimal } from "@prisma/client/runtime/library";
 import {
+  Course,
   CourseAvailability,
   CourseCategory,
   CourseFrequency,
   CourseLevel,
-} from '@prisma/client';
+} from "@prisma/client";
+import { plainToInstance } from "class-transformer";
+import { randomUUID } from "crypto";
 
-describe('CoursesService', () => {
+describe("CoursesService", () => {
   let service: CoursesService;
 
   // Mock PrismaService
@@ -46,73 +49,87 @@ describe('CoursesService', () => {
   });
 
   // Create Method Test
-  it('should create an course', async () => {
+  it("should create an course", async () => {
     const dto: CreateCourseDto = {
-      name: 'Test Course',
-      description: 'ddddddddddd',
-      short_description: 'dddddddddddd',
+      name: "Test Course",
+      description: "ddddddddddd",
+      short_description: "dddddddddddd",
       schedule: [],
       instructors: [],
       category: CourseCategory.ACQUAGYM,
       level: CourseLevel.BASIC,
       frequency: CourseFrequency.SINGLE_SESSION,
-      session_duration: '111',
+      session_duration: "111",
       availability: CourseAvailability.ACTIVE,
       num_registered_members: 0,
-      tags: ['aa', 'bb'],
+      tags: ["aa", "bb"],
     };
 
     prismaMock.course.create.mockResolvedValue(dto);
 
-    const result = await service.create(dto);
+    const result = await service.create(dto, "1");
 
     expect(prismaMock.course.create).toHaveBeenCalledWith({
-      data: { ...dto },
+      data: { ...dto, owner_id: "1" },
     });
-    expect(result).toEqual(
-      new CourseEntity({
+    expect(result).toEqual({
+      ...new CourseEntity({
         ...dto,
       }),
-    );
+    });
   });
 
   // FindAll Method Test
-  it('should return paginated courses', async () => {
+  it("should return paginated courses", async () => {
     const pagination = { page: 0, perPage: 2 };
     const mockCourses: CourseEntity[] = [
       {
-        id: '',
-        name: '',
-        description: '',
-        short_description: '',
+        id: "",
+        name: "",
+        description: "",
+        short_description: "",
         schedule: [],
         instructors: [],
-        category: 'ACQUAGYM',
-        level: 'BASIC',
-        frequency: 'SINGLE_SESSION',
-        session_duration: '',
-        availability: 'ACTIVE',
+        category: "ACQUAGYM",
+        level: "BASIC",
+        frequency: "SINGLE_SESSION",
+        session_duration: "",
+        availability: "ACTIVE",
         num_registered_members: 0,
         tags: [],
         created_at: new Date(),
         updated_at: new Date(),
+        owner: {
+          id: randomUUID(),
+          email: "test@mail.com",
+          firstName: "",
+          lastName: "",
+          middleName: "",
+        },
       },
       {
-        id: '',
-        name: '',
-        description: '',
-        short_description: '',
+        id: "",
+        name: "",
+        description: "",
+        short_description: "",
         schedule: [],
         instructors: [],
-        category: 'ACQUAGYM',
-        level: 'BASIC',
-        frequency: 'SINGLE_SESSION',
-        session_duration: '',
-        availability: 'ACTIVE',
+        category: "ACQUAGYM",
+        level: "BASIC",
+        frequency: "SINGLE_SESSION",
+        session_duration: "",
+        availability: "ACTIVE",
         num_registered_members: 0,
         tags: [],
         created_at: new Date(),
         updated_at: new Date(),
+        owner: {
+          id: randomUUID(),
+          email: "test@mail.com",
+          firstName: "",
+          lastName: "",
+          middleName: "",
+        },
       },
     ];
     const totalItems = 5;
@@ -120,17 +137,30 @@ describe('CoursesService', () => {
     prismaMock.course.findMany.mockResolvedValue(mockCourses);
     prismaMock.course.count.mockResolvedValue(totalItems);
 
-    const result = await service.findAll(pagination);
+    const result = await service.findAll(pagination, undefined);
 
     expect(prismaMock.course.findMany).toHaveBeenCalledWith({
+      include: {
+        owner: {
+          include: {
+            applicationUser: true,
+          },
+        },
+      },
+      orderBy: {
+        created_at: "desc",
+      },
       skip: pagination.page * pagination.perPage,
       take: pagination.perPage,
     });
     expect(prismaMock.course.count).toHaveBeenCalled();
 
     expect(result).toEqual({
-      data: mockCourses.map(
-        (course) => new CourseEntity({ ...course, cost: course.cost }),
+      data: mockCourses.map((course) =>
+        plainToInstance(CourseEntity, {
+          ...course,
+          owner: undefined,
+        })
       ),
       meta: {
         currentPage: pagination.page,
@@ -143,45 +173,68 @@ describe('CoursesService', () => {
   });
 
   // FindOne Method Test
-  it('should return a single course', async () => {
-    const id = '1';
-    const mockCourse: CourseEntity = {
-      id: '',
-      name: '',
-      description: '',
-      short_description: '',
+  it("should return a single course", async () => {
+    const id = "1";
+    const ownerUuid = randomUUID();
+    const mockCourse: Course & { owner: any } = {
+      id: "",
+      name: "",
+      description: "",
+      short_description: "",
       schedule: [],
       instructors: [],
-      category: 'ACQUAGYM',
-      level: 'BASIC',
-      frequency: 'SINGLE_SESSION',
-      session_duration: '',
-      availability: 'ACTIVE',
+      category: "ACQUAGYM",
+      level: "BASIC",
+      frequency: "SINGLE_SESSION",
+      session_duration: "",
+      availability: "ACTIVE",
       num_registered_members: 0,
       tags: [],
       created_at: new Date(),
       updated_at: new Date(),
+      location: "",
+      cost: new Decimal(10),
+      discount: 0,
+      highlighted_priority: 0,
+      members_capacity: 0,
+      thumbnail_path: "",
+      owner_id: ownerUuid,
+      owner: {
+        applicationUser: {
+          id: ownerUuid,
+          email: "",
+          firstName: "",
+          lastName: "",
+          middleName: "",
+        },
+      },
     };
 
     prismaMock.course.findUniqueOrThrow.mockResolvedValue(mockCourse);
 
     const result = await service.findOne(id);
+    const expected = plainToInstance(CourseEntity, {
+      ...mockCourse,
+      owner: mockCourse.owner.applicationUser,
+    });
 
     expect(prismaMock.course.findUniqueOrThrow).toHaveBeenCalledWith({
       where: { id },
+      include: {
+        owner: {
+          include: { applicationUser: true },
+        },
+      },
     });
-    expect(result).toEqual(
-      new CourseEntity({
-        ...mockCourse,
-      }),
-    );
+
+    expect(result).toEqual(expected);
   });
 
   // Update Method Test
-  it('should update an course', async () => {
-    const id = '1';
+  it("should update an course", async () => {
+    const id = "1";
     const dto: UpdateCoursesDto = {
-      instructors: ['Updated Organizer'],
+      instructors: ["Updated Organizer"],
       cost: new Decimal(250),
     };
 
@@ -202,13 +255,13 @@ describe('CoursesService', () => {
     expect(result).toEqual(
       new CourseEntity({
         ...updatedCourse,
-      }),
+      })
     );
   });
 
   // Remove Method Test
-  it('should remove an course', async () => {
-    const id = '1';
+  it("should remove an course", async () => {
+    const id = "1";
 
     prismaMock.course.delete.mockResolvedValue(undefined);
 

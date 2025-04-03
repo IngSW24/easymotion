@@ -2,18 +2,6 @@
 
 This repository contains both the **API** and **WebApp** projects for EasyMotion.
 
-## Do you like videos more?
-
-You can follow a quick explanation of the repository and its initial configuration in a quick video [here](https://www.loom.com/share/57bff56af68040f3b9099a492d284153?sid=07ebf338-da86-4538-a9c9-9fe3d601a8dd)!
-
-## Configure the dev environment
-
-The whole dev environment can be spun up using only docker compose. However, there are some requirements that need to be fulfilled so that everything can run properly.
-
-### Install docker
-
-You can find docker installation guides on [the official website](https://www.docker.com/).
-
 ### Define domain in /etc/hosts
 
 You must edit your /etc/hosts file adding an entry that binds the domain `easymotion.devlocal` to `127.0.0.1`.
@@ -21,127 +9,121 @@ You must edit your /etc/hosts file adding an entry that binds the domain `easymo
 - On MacOS and Linux, the file will be located at `/etc/hosts`
 - On Windows, the file will be located at `C:\Windows\System32\Drivers\etc\hosts`
 
-You need to add the following line to the bottom of the file.
+You need to add the following lines to the bottom of the file.
 
 ```
 127.0.0.1 easymotion.devlocal
 127.0.0.1 api.easymotion.devlocal
+127.0.0.1 mail.easymotion.devlocal
 ```
 
-Then you can save and quit. Note that this application requires sudo/administration priviledges.
+Note that this application requires sudo/administration priviledges.
+
+### Install pnpm
+
+This repository uses **pnpm workspaces** for monorepo management. You can install pnpm via npm by running:
+
+```bash
+npm i -g pnpm
+```
+
+Other installation methods for pnpm are described on its [documentation](https://pnpm.io/installation).
 
 ### Clone the repository
 
-- https:
-
-  ```bash
-  git clone https://github.com/ingsw24/easymotion
-  ```
-
-- ssh:
-
-  ```bash
-  git clone git@github.com:IngSW24/easymotion.git
-  ```
-
-### Create environment variables
-
-You can copy the example file to start with default variables.
-
-```
-cp .env.example .env
-```
-
-If you are using **Windows**, you need to also add the following variable in your .env file.
-
-```
-POLLING=true
+```bash
+git clone https://github.com/ingsw24/easymotion  # https
+git clone git@github.com:IngSW24/easymotion.git  # ssh
 ```
 
 ### Spin up the dev environment
 
-- Run `docker compose up` (the first time it will take a while because it will install dependencies)
+Once you have cloned the repository you need to run a few commands in order to setup the environment
+
+- Run `pnpm env:bootstrap` to generate .env files with default variables
+- Run `pnpm install` to install dependencies
+- Run `pnpm services:up` to startup services (db, nginx, mailhog, ...)
+- Run `pnpm api:migrate` to apply database migrations
+- Run `pnpm api:seed` to seed the database
+- Run `pnpm all` to start all the applications
 - Visit
-  - **api** at [https://api.easymotion.devlocal/swagger](https://api.easymotion.devlocal/swagger)
-  - **webapp** at [https://easymotion.devlocal](https://easymotion.devlocal)
-  - **pgAdmin** at [http://localhost:8083](http://localhost:8083):
-    - username: `db@easymotion.devlocal`
-    - password: `1234`
-    - The server configuration must use the connection parameters declared in the `.env` file
+  - **API Swagger** at [https://api.easymotion.devlocal/swagger](https://api.easymotion.devlocal/swagger)
+  - **Webapp** at [https://easymotion.devlocal](https://easymotion.devlocal)
+  - **MailHog** at [https://mail.easymotion.devlocal](https://mail.easymotion.devlocal)
 
-> ⚠️ **HTTPs!** When you visit the https URIs, your browser will probably complain about connection being not private despite the certificate. This is ok since the development certificates are not signed by a real certification authority. Since it's a local connection, you should be able to proceed by clicking `Advanced > Proceed to website`. **You need to accept risks for both API and webapp to ensure communication between the two works**.
+#### HTTPS and Certificates
 
-### Run DB migrations and seed
+The nginx image will create some unsigned development certificates inside the gitignored `nginx/.ssl` folder. These certificates will allow https development but will required to be manually accepted by clicking `Advanced > Proceed to website` on both `api.easymotion.devlocal` and `easymotion.devlocal`. You will also need to skip validation when using tools such as Postman or CURL.
 
-Finally, you will need to apply database migrations by running:
+In case you want to use trusted certificates for development, you can install [mkcert](https://github.com/FiloSottile/mkcert) and run
 
 ```bash
-docker compose exec api npm run prisma:migrate-dev
-```
-
-You can then seed the database by running:
-
-```bash
-docker compose exec api npm run seed
+mkcert -install
+mkcert -key-file nginx/.ssl/dev.key -cert-file nginx/.ssl/dev.crt easymotion.devlocal *.easymotion.devlocal
 ```
 
 ---
 
-## Interacting with the dev environment
+### Useful commands
 
-The dev environment is completely handled by docker-compose, which spawns all the services and handles the dependencies between them.
-
-You are **NOT** supposed to run commands using npm in projects subfolders. Everything should be done throught docker-compose by specifying the service you want to execute the command in.
-
-#### Install packages
+#### Clean repository
 
 ```bash
-# api
-docker compose exec api npm i [package-name]
-# webapp
-docker compose exec webapp npm i [package-name]
+pnpm clean
 ```
 
-If you need to re-install all the packages you can simply erase the `node_modules` folder. This way, the service will run `npm ci` automatically on start.
-
-#### Run migrations on DB
+#### Run tests
 
 ```bash
-docker compose exec api npm run prisma:migrate-dev
+# All the projects
+pnpm test
+
+# Single project
+pnpm --filter webapp test
+pnpm --filter api test
 ```
 
-#### Seeding DB with fake data
+#### Apply DB migrations
 
 ```bash
-docker compose exec api npm run seed
+pnpm api:migrate
+```
+
+#### Seed the DB
+
+```bash
+pnpm api:seed
 ```
 
 #### Regenerate prisma client
 
-> Note: this command is always executed automatically after prisma:migrate-dev
+> Note: this command is always executed automatically when applying migrations
 
 ```bash
-docker compose exec api npm run prisma:generate-client
+pnpm api:client
 ```
 
 #### Regenerate webapp client
 
-> Note: this command is always executed automatically when `webapp/client` is not a directory
+```bash
+pnpm openapi:generate
+```
+
+#### Update openapi schema
 
 ```bash
-docker compose exec webapp npm run gen-client
+pnpm api:schema
 ```
 
 #### Access psql shell
 
 ```bash
-docker-compose exec db psql -U easymotion
+docker compose exec db psql -U easymotion
 ```
 
 #### Restart a service
 
 ```bash
-# Shut it down
 docker compose restart [service-name]
 ```
 
@@ -157,79 +139,42 @@ docker compose ps
 docker compose logs -f [service-name]
 ```
 
-#### Erase DB data
+#### Reapply migrations from scratch (erasing DB data)
 
 ```bash
-docker compose down # if services are running
-docker volume rm easymotion_pgdata
-docker volume rm easymotion_pgadmin_data
+pnpm api:migrate-reset
 ```
 
-#### Rebuild images
+#### Remove docker volume for postgres
+
+```bash
+docker volume rm easymotion_pgdata
+```
+
+#### Rebuild docker images
 
 ```bash
 docker compose build
 ```
 
-#### Shutdown the dev environment
+#### Shutdown the services
 
 ```bash
-# add --remove-orphans if you get warnings about orphans containers
-docker compose down
+pnpm services:down
 ```
-
-#### Other commands
-
-For more information about the usage of docker compose, check the [official docs](https://docs.docker.com/reference/cli/docker/compose/).
-
-If you use Visual Studio Code, the [Official Docker Extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker) could be helpful to keep tracks of the running containers.
 
 ---
 
-# Troubleshooting
+## DevContainers support
 
-### ️If you start getting errors with modules
+The monorepo provides support for DevContainers. You can attach to the development container directly from VSCode or any other supported IDE and run the application from the container's shell as you would do for local development.
 
-At some point you might see errors suggesting that some node module is not installed. The possible reasons are two:
-
-- Another dev added dependencies which you haven't installed
-- Something is broken
-
-First, try to install any new dependency if there's any. You can do it by running
+If you develop on the container, ensure to reinstall dependencies from inside the devcontainer by running the following commands inside the container's shell:
 
 ```bash
-docker compose exec [service-name] npm i
+pnpm clean
+pnpm install
 ```
-
-If your container was running, you may also want to try to restart it
-
-```bash
-docker compose restart [service-name]
-```
-
-If issues **persist**, you can do it the hard way by
-
-- Turning off all the services with `docker compose down`
-- Deleting the `api/node_modules` folder
-- Deleting the `webapp/node_modules` folder
-- Rebuilding the images with `docker compose build`
-- Restarting everything
-
-### If you have issues with port bindings
-
-All the services are exposed towards the host machine. If you have an instance of PSQL running on your host machine, you won't be able to run the container on its default port (5432) since it's already taken.
-
-You can either:
-
-- Turn off the service instance on your machine
-- Change the external binding port
-
-If you want to change the external binding port, you can simply add one or more variables to the `.env` file as follows:
-
-- `API_DEV_PORT=xxxx` (change api port)
-- `WEB_DEV_PORT=xxxx` (change webapp port)
-- `PG_DEV_PORT=xxxx` (change PostgreSQL port)
-- `PG_ADMIN_PORT=xxxx` (change pgAdmin port)
 
 ---
 

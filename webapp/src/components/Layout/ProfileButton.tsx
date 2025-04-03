@@ -9,24 +9,60 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { useAuth } from "../../hooks/useAuth";
-import { Logout, Settings } from "@mui/icons-material";
+import { useAuth } from "@easymotion/auth-context";
+import MenuIcon from "@mui/icons-material/Menu";
+import { Explore, Logout, Settings, SpaceDashboard } from "@mui/icons-material";
+import { AuthUserDto } from "@easymotion/openapi";
+
+type ProfileButtonActionProps = {
+  label: string;
+  icon: JSX.Element;
+  action: () => void | Promise<void>;
+  targetRoles?: AuthUserDto["role"][];
+};
 
 export default function ProfileButton() {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const navigate = useNavigate();
   const auth = useAuth();
 
-  const profileButtonActions = [
+  const isProfileButtonActionShowed = (
+    role: string | undefined,
+    allowedRoles: string[] | undefined
+  ) => {
+    if (!role || !allowedRoles || allowedRoles.length === 0) return true;
+    return allowedRoles.includes(role);
+  };
+
+  const profileButtonActions: ProfileButtonActionProps[] = [
+    {
+      label: "Dashboard",
+      icon: <SpaceDashboard />,
+      action: () => navigate("/physiotherapist/dashboard"),
+      targetRoles: ["PHYSIOTHERAPIST"],
+    },
+    {
+      label: "I miei corsi",
+      icon: <MenuIcon />,
+      action: () => navigate("/my-courses"),
+      targetRoles: ["USER"],
+    },
+    {
+      label: "Scopri i corsi",
+      icon: <Explore />,
+      action: () => navigate("/discover"),
+    },
     {
       label: "Impostazioni",
       icon: <Settings />,
       action: () => navigate("/profile"),
+      targetRoles: [],
     },
     {
       label: "Logout",
       icon: <Logout />,
       action: () => auth.logout(),
+      targetRoles: [],
     },
   ];
 
@@ -73,27 +109,33 @@ export default function ProfileButton() {
             flexDirection: "column",
           }}
         >
-          {profileButtonActions.map((action, index) => (
-            <MenuItem
-              key={index}
-              onClick={() => {
-                action.action();
-                handleCloseUserMenu();
-              }}
-              sx={{
-                display: "flex",
-                gap: 1,
-                alignItems: "center",
-              }}
-            >
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                {action.icon}
-              </Box>
-              <Typography component="div" variant="body1">
-                {action.label}
-              </Typography>
-            </MenuItem>
-          ))}
+          {profileButtonActions.map(
+            (item, index) =>
+              isProfileButtonActionShowed(
+                auth.user?.role,
+                item.targetRoles
+              ) && (
+                <MenuItem
+                  key={index}
+                  onClick={() => {
+                    item.action();
+                    handleCloseUserMenu();
+                  }}
+                  sx={{
+                    display: "flex",
+                    gap: 1,
+                    alignItems: "center",
+                  }}
+                >
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    {item.icon}
+                  </Box>
+                  <Typography component="div" variant="body1">
+                    {item.label}
+                  </Typography>
+                </MenuItem>
+              )
+          )}
         </Box>
       </Menu>
     </Box>

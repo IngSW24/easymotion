@@ -1,28 +1,31 @@
-import { BadRequestException, Inject } from '@nestjs/common';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { BadRequestException, Inject } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
 import {
   isSuccessResult,
   resultToHttpException,
-} from 'src/common/types/result';
-import { UserManager } from 'src/users/user.manager';
-import { SignUpDto } from './dto/actions/sign-up.dto';
-import { Prisma } from '@prisma/client';
-import { EmailDto } from './dto/actions/email.dto';
-import { PasswordUpdateDto } from './dto/actions/password-update.dto';
-import { PasswordChangeDto } from './dto/actions/password-change.dto';
-import { OtpSwitchDto } from './dto/actions/otp-switch.dto';
-import { OtpLoginDto } from './dto/actions/otp-login.dto';
-import { EmailService } from 'src/email/email.service';
-import { EmailConfirmDto } from './dto/actions/email-confirm.dto';
-import { plainToInstance } from 'class-transformer';
-import { AuthUserDto } from './dto/auth-user/auth-user.dto';
-import { ConfigType } from '@nestjs/config';
-import jwtConfig from 'src/config/jwt.config';
-import { JwtPayloadDto } from './dto/auth-user/jwt-payload.dto';
-import { UpdateAuthUserDto } from './dto/auth-user/update-auth-user.dto';
-import { generateEmailConfirmMessage } from './email-messages/email-confirm.message';
-import frontendConfig from 'src/config/frontend.config';
+} from "src/common/types/result";
+import { UserManager } from "src/users/user.manager";
+import { SignUpDto } from "./dto/actions/sign-up.dto";
+import { Prisma, Role } from "@prisma/client";
+import { EmailDto } from "./dto/actions/email.dto";
+import { PasswordUpdateDto } from "./dto/actions/password-update.dto";
+import { PasswordChangeDto } from "./dto/actions/password-change.dto";
+import { OtpLoginDto } from "./dto/actions/otp-login.dto";
+import { EmailService } from "src/email/email.service";
+import { EmailConfirmDto } from "./dto/actions/email-confirm.dto";
+import { plainToInstance } from "class-transformer";
+import { AuthUserDto } from "./dto/auth-user/auth-user.dto";
+import { ConfigType } from "@nestjs/config";
+import jwtConfig from "src/config/jwt.config";
+import { JwtPayloadDto } from "./dto/auth-user/jwt-payload.dto";
+import { UpdateAuthUserDto } from "./dto/auth-user/update-auth-user.dto";
+import {
+  generateEmailConfirmMessage,
+  generatePasswordResetMessage,
+} from "./email-messages/email-confirm.message";
+import frontendConfig from "src/config/frontend.config";
+import { AuthResponseDto } from "./dto/auth-user/auth-response.dto";
 
 @Injectable()
 export class AuthService {
@@ -33,7 +36,7 @@ export class AuthService {
     @Inject(jwtConfig.KEY)
     private readonly configService: ConfigType<typeof jwtConfig>,
     @Inject(frontendConfig.KEY)
-    private readonly frontendConfigService: ConfigType<typeof frontendConfig>,
+    private readonly frontendConfigService: ConfigType<typeof frontendConfig>
   ) {}
 
   /**
@@ -42,8 +45,12 @@ export class AuthService {
    * @param password the password of the user
    * @returns the user if the credentials are valid, otherwise null
    */
-  async validateUser(email: string, password: string) {
-    const result = await this.userManager.getUserByEmail(email);
+  async validateUser(
+    email: string,
+    password: string,
+    roles: Role[] = undefined
+  ) {
+    const result = await this.userManager.getUserByEmail(email, roles);
 
     if (!isSuccessResult(result)) {
       return null;
@@ -57,7 +64,7 @@ export class AuthService {
 
     const isValidPwd = await this.userManager.verifyPassword(
       user.passwordHash,
-      password,
+      password
     );
 
     if (!isValidPwd) {
@@ -70,15 +77,18 @@ export class AuthService {
   }
 
   /**
-   * Logs the current user in by generating an access token and a refresh token.
-   * Assumes the user has already been validated.
-   * @param user the user to log in
-   * @returns a tuple containing the user (with access token) and the refresh token
+   * Generates and sends an OTP code to the user's email.
+   * @param userId the ID of the user
+   * @param email the email of the user
+   * @returns a promise that resolves when the email is sent
    */
-  async login(user: AuthUserDto) {
-    await this.userManager.setLastLogin(user.id);
-    await this.userManager.clearFailedLoginAttempts(user.id);
-    return this.getLoginResponse(user);
+  async sendOtpCode(userId: string, email: string) {
+    const code = await this.userManager.generateOtpCode(userId);
+    await this.emailService.sendEmail(
+      email,
+      "Effettua il login in EasyMotion",
+      `Il tuo codice di verifica per accedere ad EasyMotion è ${code}`
+    );
   }
 
   /**
@@ -87,31 +97,9 @@ export class AuthService {
    * @param user the user to create the response for
    * @returns a tuple containing the user and the refresh token
    */
-  private async getLoginResponse(user: AuthUserDto) {
-    const payload = JwtPayloadDto.fromUser(user).toObject();
-
-    return [
-      {
-        accessToken: this.jwtService.sign(payload),
-        ...user,
-      },
-      {
-        refreshToken: this.jwtService.sign(
-          { sub: user.id },
-          {
-            expiresIn: this.configService.refreshExpiresIn,
-          },
-        ),
-      },
-    ];
-  }
-
-  /**
-   * Refereshes the access token of the user.
-   * @param user the user to refresh the token for
-   * @returns a tuple containing the new access token and the refresh token
-   */
-  async refresh(userId: string) {
+  public async getAuthResponseFromUserId(
+    userId: string
+  ): Promise<AuthResponseDto> {
     const result = await this.userManager.getUserById(userId);
 
     if (!isSuccessResult(result)) {
@@ -122,7 +110,27 @@ export class AuthService {
       excludeExtraneousValues: true,
     });
 
-    return this.getLoginResponse(user);
+    return this.getAuthResponseFromUser(user);
+  }
+
+  public async getAuthResponseFromUser(
+    user: AuthUserDto
+  ): Promise<AuthResponseDto> {
+    await this.userManager.setLastLogin(user.id);
+    await this.userManager.clearFailedLoginAttempts(user.id);
+    const payload = JwtPayloadDto.fromUser(user).toObject();
+
+    return new AuthResponseDto({
+      user,
+      tokens: {
+        accessToken: this.jwtService.sign(payload),
+        refreshToken: this.jwtService.sign(
+          { sub: user.id },
+          { expiresIn: this.configService.refreshExpiresIn }
+        ),
+      },
+      requiresOtp: false,
+    });
   }
 
   /**
@@ -149,7 +157,7 @@ export class AuthService {
    */
   async updateUserProfile(
     userId: string,
-    updateAuthUserDto: UpdateAuthUserDto,
+    updateAuthUserDto: UpdateAuthUserDto
   ) {
     const result = await this.userManager.updateUser(userId, updateAuthUserDto);
 
@@ -200,12 +208,12 @@ export class AuthService {
       lastName,
       phoneNumber: phoneNumber || null,
       birthDate: birthDate || null,
-      role: 'USER',
+      role: "USER",
     };
 
     if (password !== repeatedPassword) {
       throw new BadRequestException(
-        "Password and repeated password don't correspond",
+        "Password and repeated password don't correspond"
       );
     }
 
@@ -216,18 +224,18 @@ export class AuthService {
     }
 
     const emailToken = await this.userManager.generateEmailConfirmationToken(
-      result.data.id,
+      result.data.id
     );
 
     await this.emailService.sendEmail(
       result.data.email,
-      'Completa la registrazione in EasyMotion',
+      "Completa la registrazione in EasyMotion",
       generateEmailConfirmMessage(
         this.frontendConfigService.url,
         emailToken,
         result.data.id,
-        result.data.email,
-      ),
+        result.data.email
+      )
     );
   }
 
@@ -243,7 +251,7 @@ export class AuthService {
    */
   async changePassword(
     userId: string,
-    passwordChangeDto: PasswordChangeDto,
+    passwordChangeDto: PasswordChangeDto
   ): Promise<void> {
     const user = await this.getUserByIdOrThrow(userId);
 
@@ -252,7 +260,7 @@ export class AuthService {
     const result = await this.userManager.changePassword(
       user.id,
       oldPassword,
-      newPassword,
+      newPassword
     );
 
     if (!isSuccessResult(result)) {
@@ -275,13 +283,17 @@ export class AuthService {
     }
 
     const resetToken = await this.userManager.generatePasswordResetToken(
-      user.data.id,
+      user.data.id
     );
 
     await this.emailService.sendEmail(
       user.data.email,
-      'Email reset token',
-      `Reset token is ${resetToken}`,
+      "Modifica la tua password di EasyMotion",
+      generatePasswordResetMessage(
+        this.frontendConfigService.url,
+        resetToken,
+        user.data.id
+      )
     );
   }
 
@@ -302,7 +314,7 @@ export class AuthService {
     const result = await this.userManager.resetPassword(
       user.id,
       token,
-      newPassword,
+      newPassword
     );
 
     if (!isSuccessResult(result)) {
@@ -313,39 +325,33 @@ export class AuthService {
   /**
    * Set the two-factor authentication status (enabled/disabled) for a user.
    * @param userId - The unique identifier of the user to update.
-   * @param otpSwitchDto - The data transfer object containing the new two-factor status.
+   * @param enabled - The new status to set for two-factor authentication.
    * @returns A promise that resolves with the new two-factor status.
    */
-  async switchTwoFactorEnabled(
-    userId: string,
-    otpSwitchDto: OtpSwitchDto,
-  ): Promise<OtpSwitchDto> {
+  async switchTwoFactorEnabled(userId: string, enabled: boolean) {
     const currentStatus = await this.userManager.setTwoFactorEnabled(
       userId,
-      otpSwitchDto.enabled,
+      enabled
     );
 
     return { enabled: currentStatus };
   }
 
-  /**
-   * Second login step with one time password which is required for users with
-   * two-factor authentication enabled.
-   * @param otpLoginDto - The data transfer object containing the user's OTP.
-   * @returns A promise that resolves with the user and the refresh token.
-   */
-  async signInOtp(otpLoginDto: OtpLoginDto) {
-    const { userId, otp } = otpLoginDto;
+  async validateOtp(otpLoginDto: OtpLoginDto) {
+    const { email, otp } = otpLoginDto;
 
-    const user = await this.getUserByIdOrThrow(userId);
+    const result = await this.userManager.getUserByEmail(email);
 
-    const result = await this.userManager.validateTwoFactor(user.id, otp);
-
-    if (!result) {
-      throw new UnauthorizedException('Invalid OTP');
+    if (!isSuccessResult(result)) {
+      throw resultToHttpException(result);
     }
 
-    return this.getLoginResponse(user);
+    const validationResult = await this.userManager.validateTwoFactor(
+      result.data.id,
+      otp
+    );
+
+    return validationResult ? result.data : null;
   }
 
   /**
@@ -356,18 +362,18 @@ export class AuthService {
   async requestEmailUpdate(userId: string, emailDto: EmailDto) {
     const user = await this.getUserByIdOrThrow(userId);
     const token = await this.userManager.generateEmailConfirmationToken(
-      user.id,
+      user.id
     );
 
     await this.emailService.sendEmail(
       emailDto.email,
-      'Conferma la tua mail di EasyMotion',
+      "Conferma la tua mail di EasyMotion",
       generateEmailConfirmMessage(
         this.frontendConfigService.url,
         token,
         user.id,
-        emailDto.email,
-      ),
+        emailDto.email
+      )
     );
   }
 
@@ -382,19 +388,19 @@ export class AuthService {
     if (user.email === emailConfirmDto.email && user.isEmailVerified) {
       result = await this.userManager.confirmEmail(
         user.id,
-        emailConfirmDto.token,
+        emailConfirmDto.token
       );
     } else {
       result = await this.userManager.resetEmail(
         user.id,
         emailConfirmDto.token,
-        emailConfirmDto.email,
+        emailConfirmDto.email
       );
     }
 
     if (!isSuccessResult(result)) {
       throw new BadRequestException({
-        message: 'Data provided is not valid for email confirmation',
+        message: "Data provided is not valid for email confirmation",
       });
     }
 
@@ -402,7 +408,7 @@ export class AuthService {
       excludeExtraneousValues: true,
     });
 
-    return this.getLoginResponse(authData);
+    return this.getAuthResponseFromUser(authData);
   }
 
   /**

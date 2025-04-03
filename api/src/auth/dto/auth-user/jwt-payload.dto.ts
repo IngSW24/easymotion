@@ -1,4 +1,4 @@
-import { AuthUserDto } from './auth-user.dto';
+import { AuthUserDto } from "./auth-user.dto";
 
 export class JwtPayloadDto {
   sub: string;

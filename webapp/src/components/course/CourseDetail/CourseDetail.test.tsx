@@ -2,11 +2,12 @@ import CourseDetail from "./CourseDetail";
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-import { CourseEntity } from "../../../client/Api";
+import { CourseEntity } from "@easymotion/openapi";
 import {
   courseCategories,
   courseLevels,
 } from "../../../data/courseEnumerations";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 async function onCourseDetailSave(course: CourseEntity): Promise<CourseEntity> {
   return Promise.resolve(course);
@@ -39,17 +40,21 @@ describe("CourseDetail GUI test", () => {
     tags: ["sample_tag1", "sample_tag2"],
     created_at: "",
     updated_at: "",
+    owner: { id: "", email: "", firstName: "", lastName: "", middleName: "" },
   };
 
   it("Check if CourseDetail shows the correct information", () => {
     // Render CourseCard
+    const mockQueryClient = new QueryClient();
     render(
       <MemoryRouter>
-        <CourseDetail
-          course={testCourse}
-          canEdit={false}
-          onSave={onCourseDetailSave}
-        />
+        <QueryClientProvider client={mockQueryClient}>
+          <CourseDetail
+            course={testCourse}
+            canEdit={false}
+            onSave={onCourseDetailSave}
+          />
+        </QueryClientProvider>
       </MemoryRouter>
     );
 

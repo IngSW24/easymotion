@@ -1,0 +1,20 @@
+{
+  "name": "@easymotion/openapi",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "./dist/Api.js",
+  "types": "./dist/Api.d.ts",
+  "scripts": {
+    "build": "swagger-typescript-api -p ./schema.json -o ./src && tsc",
+    "postinstall": "pnpm build",
+    "clean": "rm -rf dist && rm -rf node_modules && rm -rf src"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "swagger-typescript-api": "^13.0.23",
+    "typescript": "^5.7.3"
+  }
+}

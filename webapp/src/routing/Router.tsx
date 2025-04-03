@@ -1,5 +1,4 @@
 import { BrowserRouter, Route, Routes } from "react-router";
-import CourseListPage from "../pages/CourseListPage";
 import CourseDetailsPage from "../pages/CourseDetailsPage";
 import CourseCreatePage from "../pages/CourseCreatePage";
 import Layout, { MenuEntry } from "../components/Layout/Layout";
@@ -9,11 +8,15 @@ import ConfirmEmailPage from "../pages/ConfirmEmailPage";
 import SignupPage from "../pages/SignUpPage";
 import LoginPage from "../pages/LoginPage";
 import { Home } from "@mui/icons-material";
-import AuthenticationWrapper from "./AuthenticatedRoute";
 import AuthenticatedRoute from "./AuthenticatedRoute";
 import TermsOfServicePage from "../pages/TermsOfServicePage";
 import UnauthenticatedRoute from "./UnauthenticatedRoute";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "@easymotion/auth-context";
+import RestorePasswordPage from "../pages/RestorePasswordPage";
+import Dashboard from "../pages/physiotherapist/Dashboard";
+import LandingPage from "../pages/LandingPage";
+import UserArea from "../pages/user/UserArea";
+import CourseListPage from "../pages/CourseListPage";
 
 const menuEntries: MenuEntry[] = [
   {
@@ -39,15 +42,17 @@ export default function Router() {
       <Routes>
         <Route element={<Layout entries={menuEntries} />}>
           {/* Always accessible routes*/}
-          <Route index element={<CourseListPage />} />
+          <Route index element={<LandingPage />} />
           <Route path="details/:id" element={<CourseDetailsPage />} />
           <Route path="confirm-email" element={<ConfirmEmailPage />} />
           <Route path="terms" element={<TermsOfServicePage />} />
+          <Route path="discover" element={<CourseListPage />} />
 
           {/* Accessible only by non authenticated users */}
           <Route element={<UnauthenticatedRoute />}>
             <Route path="login" element={<LoginPage />} />
             <Route path="signup" element={<SignupPage />} />
+            <Route path="password-restore" element={<RestorePasswordPage />} />
           </Route>
 
           {/* Accessible only all the authenticated users */}
@@ -55,13 +60,15 @@ export default function Router() {
             <Route path="profile" element={<ProfilePage />} />
           </Route>
 
-          {/* Accessible only by admins and physhiotherapists */}
-          <Route
-            element={
-              <AuthenticationWrapper roles={["ADMIN", "PHYSIOTHERAPIST"]} />
-            }
-          >
-            <Route path="new" element={<CourseCreatePage />} />
+          {/* Accessible only by physhiotherapists */}
+          <Route element={<AuthenticatedRoute roles={["PHYSIOTHERAPIST"]} />}>
+            <Route path="physiotherapist/dashboard" element={<Dashboard />} />
+            <Route path="physiotherapist/new" element={<CourseCreatePage />} />
+          </Route>
+
+          {/* Accessible only by user */}
+          <Route element={<AuthenticatedRoute roles={["USER"]} />}>
+            <Route path="my-courses" element={<UserArea />} />
           </Route>
         </Route>
       </Routes>

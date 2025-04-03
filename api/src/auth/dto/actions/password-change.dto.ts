@@ -1,25 +1,20 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
-import { IsString, IsStrongPassword } from 'class-validator';
+import { ApiProperty } from "@nestjs/swagger";
+import { Expose } from "class-transformer";
+import { IsString } from "class-validator";
+import CheckPasswordConstraints from "src/auth/decorators/strong-password.decorator";
 
 export class PasswordChangeDto {
   @ApiProperty({
-    description: 'The previous password',
+    description: "The previous password",
   })
   @IsString()
   @Expose()
   oldPassword: string;
 
   @ApiProperty({
-    description: 'The new password',
+    description: "The new password",
   })
-  @IsStrongPassword({
-    minLength: 4,
-    minLowercase: 0,
-    minNumbers: 0,
-    minSymbols: 0,
-    minUppercase: 0,
-  })
+  @CheckPasswordConstraints()
   @Expose()
   newPassword: string;
 }

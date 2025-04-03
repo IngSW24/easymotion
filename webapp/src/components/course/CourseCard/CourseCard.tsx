@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { Delete, Launch } from "@mui/icons-material";
 import { Link } from "react-router";
-import { CourseEntity } from "../../../client/Api";
+import { CourseEntity } from "@easymotion/openapi";
 import {
   courseCategories,
   courseLevels,
@@ -72,7 +72,7 @@ export default function CourseCard(props: CourseCardProps) {
         }}
       >
         {course.tags.map((tag) => (
-          <Chip key={tag} label={tag} variant="outlined" color="secondary" />
+          <Chip key={tag} label={tag} variant="outlined" color="primary" />
         ))}
       </Stack>
       <CardActions sx={{ justifyContent: "right", paddingX: 2 }}>
@@ -89,7 +89,7 @@ export default function CourseCard(props: CourseCardProps) {
           startIcon={<Launch />}
           component={Link}
           variant="contained"
-          to={"details/" + course.id}
+          to={"/details/" + course.id}
         >
           Scopri
         </Button>

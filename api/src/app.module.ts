@@ -1,17 +1,21 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { CourseModule } from './courses/courses.module';
-import { PrismaModule } from 'nestjs-prisma';
-import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { EmailModule } from './email/email.module';
-import configurations from './config';
+import { MiddlewareConsumer, Module } from "@nestjs/common";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { CourseModule } from "./courses/courses.module";
+import { PrismaModule } from "nestjs-prisma";
+import { AuthModule } from "./auth/auth.module";
+import { UsersModule } from "./users/users.module";
+import { EmailModule } from "./email/email.module";
+import { SubscriptionsModule } from "./subscriptions/subscriptions.module";
+import configurations from "./config";
+import { RequestMiddleware } from "./middlewares/request.middleware";
+import { AuthController } from "./auth/auth.controller";
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       load: [...configurations],
       isGlobal: true,
+      expandVariables: true,
     }),
     CourseModule,
     PrismaModule,
@@ -22,7 +26,7 @@ import configurations from './config';
           prismaOptions: {
             datasources: {
               db: {
-                url: configService.get<string>('db.url'),
+                url: configService.get<string>("db.url"),
               },
             },
           },
@@ -33,6 +37,11 @@ import configurations from './config';
     AuthModule,
     UsersModule,
     EmailModule,
+    SubscriptionsModule,
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RequestMiddleware).forRoutes(AuthController);
+  }
+}

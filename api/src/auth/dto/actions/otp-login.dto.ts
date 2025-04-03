@@ -1,19 +1,19 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
-import { IsString, IsUUID } from 'class-validator';
+import { ApiProperty } from "@nestjs/swagger";
+import { Expose } from "class-transformer";
+import { IsEmail, IsString } from "class-validator";
 
 export class OtpLoginDto {
   @ApiProperty({
-    name: 'userId',
-    description: 'User ID of the user',
+    name: "email",
+    description: "User email used for first login step",
   })
-  @IsUUID()
+  @IsEmail()
   @Expose()
-  userId: string;
+  email: string;
 
   @ApiProperty({
-    name: 'otp',
-    description: 'One-time password',
+    name: "otp",
+    description: "One-time password",
   })
   @IsString()
   @Expose()
