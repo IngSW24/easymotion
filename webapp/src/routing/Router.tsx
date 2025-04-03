@@ -1,5 +1,4 @@
 import { BrowserRouter, Route, Routes } from "react-router";
-import CourseListPage from "../pages/CourseListPage";
 import CourseDetailsPage from "../pages/CourseDetailsPage";
 import CourseCreatePage from "../pages/CourseCreatePage";
 import Layout, { MenuEntry } from "../components/Layout/Layout";
@@ -15,7 +14,9 @@ import UnauthenticatedRoute from "./UnauthenticatedRoute";
 import { useAuth } from "@easymotion/auth-context";
 import RestorePasswordPage from "../pages/RestorePasswordPage";
 import Dashboard from "../pages/physiotherapist/Dashboard";
+import LandingPage from "../pages/LandingPage";
 import UserArea from "../pages/user/UserArea";
+import CourseListPage from "../pages/CourseListPage";
 
 const menuEntries: MenuEntry[] = [
   {
@@ -41,10 +42,11 @@ export default function Router() {
       <Routes>
         <Route element={<Layout entries={menuEntries} />}>
           {/* Always accessible routes*/}
-          <Route index element={<CourseListPage />} />
+          <Route index element={<LandingPage />} />
           <Route path="details/:id" element={<CourseDetailsPage />} />
           <Route path="confirm-email" element={<ConfirmEmailPage />} />
           <Route path="terms" element={<TermsOfServicePage />} />
+          <Route path="discover" element={<CourseListPage />} />
 
           {/* Accessible only by non authenticated users */}
           <Route element={<UnauthenticatedRoute />}>
@@ -61,7 +63,7 @@ export default function Router() {
           {/* Accessible only by physhiotherapists */}
           <Route element={<AuthenticatedRoute roles={["PHYSIOTHERAPIST"]} />}>
             <Route path="physiotherapist/dashboard" element={<Dashboard />} />
-            <Route path="new" element={<CourseCreatePage />} />
+            <Route path="physiotherapist/new" element={<CourseCreatePage />} />
           </Route>
 
           {/* Accessible only by user */}

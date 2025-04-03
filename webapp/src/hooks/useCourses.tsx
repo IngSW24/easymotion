@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { CreateCourseDto, UpdateCoursesDto } from "@easymotion/openapi";
 import { CourseFilters } from "../components/course/FilterBlock/types";
 import { useSnack } from "./useSnack";
@@ -10,6 +15,7 @@ type UseCoursesProps = {
   perPage?: number;
   fetchAll?: boolean;
   filters?: CourseFilters;
+  ownerId?: string;
 };
 
 type UpdateMutationParams = {
@@ -25,10 +31,11 @@ type UpdateMutationParams = {
 export const useCourses = (props: UseCoursesProps = {}) => {
   const {
     fetchId = "",
-    page = 0,
+    page,
     perPage = 100,
-    fetchAll = fetchId === "",
+    fetchAll,
     filters,
+    ownerId,
   } = props;
   const { apiClient: api } = useApiClient();
   const snack = useSnack();
@@ -84,6 +91,24 @@ export const useCourses = (props: UseCoursesProps = {}) => {
     enabled: fetchAll,
   });
 
+  const getPhysiotherapist = useInfiniteQuery({
+    queryKey: ["courses", { ownerId, perPage }],
+    initialPageParam: 0,
+    queryFn: async ({ pageParam = 0 }) => {
+      const response = await api.courses.coursesControllerFindAll({
+        page: pageParam,
+        perPage,
+        ownerId,
+      });
+
+      const data = response.data.data;
+      return { data, nextPage: pageParam + 1, meta: response.data.meta };
+    },
+    getNextPageParam: (lastPage) =>
+      lastPage.data.length === 0 ? undefined : lastPage.nextPage,
+    enabled: !!ownerId,
+  });
+
   const getSingle = useQuery({
     queryKey: ["courses", { fetchId }],
     queryFn: async () => {
@@ -135,5 +160,5 @@ export const useCourses = (props: UseCoursesProps = {}) => {
     onError: (error) => snack.showError(error),
   });
 
-  return { get, getSingle, update, remove, create };
+  return { get, getPhysiotherapist, getSingle, update, remove, create };
 };
