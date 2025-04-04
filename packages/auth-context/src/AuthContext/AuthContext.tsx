@@ -9,9 +9,9 @@ export interface AuthContextProps {
   loginOtp: (otp: string) => Promise<void>;
   logout: () => Promise<void>;
   signup: (signupInfo: SignUpDto) => Promise<boolean>;
-  updateEmail: (email: string, userId: string, token: string) => void;
+  updateEmail: (email: string, userId: string, token: string) => Promise<void>;
   updateUser: (user: AuthUserDto) => void;
-  updateOtpStatus: (otpEnabled: boolean) => void;
+  updateOtpStatus: (otpEnabled: boolean) => Promise<void>;
   initialized: boolean;
 }
 

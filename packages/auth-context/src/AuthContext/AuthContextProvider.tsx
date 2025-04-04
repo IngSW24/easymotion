@@ -139,7 +139,7 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
     const response = await apiInstance.authControllerConfirmEmail(payload);
 
     if (response.ok) {
-      updateAccessToken(response.data.tokens?.accessToken ?? "");
+      updateAccessToken(response.data?.tokens?.accessToken ?? "");
       if (response.data.user) setUser(response.data.user);
     }
   };
