@@ -109,7 +109,8 @@ export default function SchedulePicker({
     } catch (e) {
       console.error("Failed to parse schedule dates", e);
     }
-  }, []); // Only on initial mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Generate schedule dates based on parameters
   function generateSchedule(
