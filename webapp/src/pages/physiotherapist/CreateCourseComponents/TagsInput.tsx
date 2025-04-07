@@ -1,12 +1,14 @@
 import { Box, Chip, TextField } from "@mui/material";
 import { useState, KeyboardEvent } from "react";
 
-interface TagsInputProps {
+export interface TagsInputProps {
   value: string[];
   onChange: (tags: string[]) => void;
 }
 
-export default function TagsInput({ value, onChange }: TagsInputProps) {
+export default function TagsInput(props: TagsInputProps) {
+  const { value, onChange } = props;
+
   const [inputValue, setInputValue] = useState("");
 
   const handleDelete = (tagToDelete: string) => {
@@ -38,8 +40,8 @@ export default function TagsInput({ value, onChange }: TagsInputProps) {
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="Premi enter per aggiungere"
-        helperText="Premi Enter per aggiungere un tag"
+        placeholder="Premi invio per aggiungere"
+        helperText="Aggiungi uno o più tag separati da spazi"
       />
 
       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>

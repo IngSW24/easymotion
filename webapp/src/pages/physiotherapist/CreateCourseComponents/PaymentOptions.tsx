@@ -12,23 +12,25 @@ import {
 
 export type PaymentType = "free" | "single" | "multiple";
 
-interface PaymentOptionsProps {
+export interface PaymentOptionsProps {
   cost: number | undefined;
   onCostChange: (cost: number | undefined) => void;
   paymentType: PaymentType;
   onPaymentTypeChange: (type: PaymentType) => void;
-  numPayments: number;
+  numPayments: number | undefined;
   onNumPaymentsChange: (num: number) => void;
 }
 
-export default function PaymentOptions({
-  cost,
-  onCostChange,
-  paymentType,
-  onPaymentTypeChange,
-  numPayments,
-  onNumPaymentsChange,
-}: PaymentOptionsProps) {
+export default function PaymentOptions(props: PaymentOptionsProps) {
+  const {
+    cost,
+    onCostChange,
+    paymentType,
+    onPaymentTypeChange,
+    numPayments,
+    onNumPaymentsChange,
+  } = props;
+
   const handleCostChange = (value: string) => {
     const parsedValue = parseFloat(value);
     onCostChange(isNaN(parsedValue) ? undefined : parsedValue);
@@ -97,7 +99,7 @@ export default function PaymentOptions({
               onChange={(e) => handleNumPaymentsChange(e.target.value)}
             />
             <FormHelperText>
-              Prezzo totale: {((cost || 0) * numPayments).toFixed(2)}€
+              Prezzo totale: {((cost || 0) * (numPayments ?? 0)).toFixed(2)}€
             </FormHelperText>
           </Grid>
         </Grid>
