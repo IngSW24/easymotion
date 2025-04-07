@@ -44,7 +44,7 @@ export default function ProfileButton() {
     {
       label: "I miei corsi",
       icon: <MenuIcon />,
-      action: () => navigate("/my-courses"),
+      action: () => navigate("/user/my-courses"),
       targetRoles: ["USER"],
     },
     {
