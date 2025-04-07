@@ -7,7 +7,7 @@ export default function UserHeader() {
       <Toolbar>
         {/* Your dashboard-specific header content */}
         <Typography variant="h6" noWrap component="div">
-          User Header
+          EasyMotion
         </Typography>
         <Box sx={{ flexGrow: 1 }} />
         <ProfileButton /> {/* Assuming you always want this in dashboards */}
