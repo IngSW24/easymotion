@@ -15,8 +15,8 @@ import { Event } from "@mui/icons-material";
 import { CourseSession } from "./types";
 
 export interface SessionListProps {
-  schedule: CourseSession[];
-  onScheduleUpdate: (s: CourseSession[]) => void;
+  session: CourseSession[];
+  onSessionUpdate: (s: CourseSession[]) => void;
 }
 
 const durationOptions = [
@@ -49,7 +49,7 @@ const getSessionDuration = (session: CourseSession): number => {
 };
 
 export default function SessionList(props: SessionListProps) {
-  const { schedule, onScheduleUpdate } = props;
+  const { session, onSessionUpdate } = props;
 
   const handleTimeChange = (sessionIndex: number, newTime: string) => {
     const timeComponents = newTime.split(":").map(Number);
@@ -60,7 +60,7 @@ export default function SessionList(props: SessionListProps) {
     const [hours, minutes] = timeComponents;
 
     // Use map to create a new array with the updated session
-    const updatedSchedule = schedule.map((session, idx) => {
+    const updatedSchedule = session.map((session, idx) => {
       if (idx !== sessionIndex) return session;
 
       const updatedStartTime = session.startTime.set({
@@ -82,7 +82,7 @@ export default function SessionList(props: SessionListProps) {
       };
     });
 
-    onScheduleUpdate(updatedSchedule);
+    onSessionUpdate(updatedSchedule);
   };
 
   const handleDurationChange = (
@@ -90,7 +90,7 @@ export default function SessionList(props: SessionListProps) {
     durationMinutes: number
   ) => {
     // Use map to create a new array with the updated session
-    const updatedSchedule = schedule.map((session, idx) =>
+    const updatedSchedule = session.map((session, idx) =>
       idx === sessionIndex
         ? {
             ...session,
@@ -99,7 +99,7 @@ export default function SessionList(props: SessionListProps) {
         : session
     );
 
-    onScheduleUpdate(updatedSchedule);
+    onSessionUpdate(updatedSchedule);
   };
 
   return (
@@ -116,13 +116,13 @@ export default function SessionList(props: SessionListProps) {
           sx={{ display: "flex", alignItems: "center" }}
         >
           <Event sx={{ mr: 1, color: "primary.main" }} />
-          Sessioni programmate ({schedule.length})
+          Sessioni programmate ({session.length})
         </Typography>
       </Box>
 
-      {schedule.length > 0 ? (
+      {session.length > 0 ? (
         <List disablePadding>
-          {schedule.map((session, index) => (
+          {session.map((session, index) => (
             <Box key={index}>
               {index > 0 && <Divider />}
               <ListItem

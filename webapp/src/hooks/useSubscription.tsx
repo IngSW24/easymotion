@@ -157,25 +157,13 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
 
         if (
           filters.advanced.categories.length > 0 &&
-          !filters.advanced.categories.includes(course.category)
+          !filters.advanced.categories.some((x) => x.id === course.category.id)
         )
           return false;
 
         if (
           filters.advanced.levels.length > 0 &&
           !filters.advanced.levels.includes(course.level)
-        )
-          return false;
-
-        if (
-          filters.advanced.frequencies.length > 0 &&
-          !filters.advanced.frequencies.includes(course.frequency)
-        )
-          return false;
-
-        if (
-          filters.advanced.availabilities.length > 0 &&
-          !filters.advanced.availabilities.includes(course.availability)
         )
           return false;
 

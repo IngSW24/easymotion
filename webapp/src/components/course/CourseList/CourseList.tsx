@@ -1,49 +1,19 @@
 import { Box, Grid2, Typography } from "@mui/material";
 import CourseCard from "../CourseCard/CourseCard";
 import { useCourses } from "../../../hooks/useCourses";
-import { useSnack } from "../../../hooks/useSnack";
-import { useDialog } from "../../../hooks/useDialog";
 import FilterBlock from "../FilterBlock/FilterBlock";
 import { CourseFilters } from "../FilterBlock/types";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import LoadingSpinner from "../../LoadingSpinner/LoadingSpinner";
-
-interface CourseListProps {
-  canEdit?: boolean;
-}
 
 /**
  * Lists all the courses in a grid and allows to navigate to detail or delete them
  * @returns a react component
  */
-export default function CourseList(props: CourseListProps) {
-  const { canEdit = false } = props;
-
+export default function CourseList() {
   const [filters, setFilters] = useState<CourseFilters | undefined>(undefined);
 
   const courseRepo = useCourses({ filters });
-
-  const snack = useSnack();
-  const dialog = useDialog();
-
-  const handleCourseDelete = useCallback(
-    async (id: string) => {
-      const confirm = await dialog.showConfirmationDialog({
-        title: "Delete course",
-        content: "Sei sicuro di voler eliminare il corso?",
-      });
-
-      if (!confirm) return;
-
-      try {
-        await courseRepo.remove.mutateAsync(id);
-        snack.showSuccess("Il corso è stato eliminato con successo");
-      } catch (e) {
-        if (e instanceof Error || typeof e === "string") snack.showError(e);
-      }
-    },
-    [courseRepo.remove, dialog, snack]
-  );
 
   if (courseRepo.get.isError)
     return (
@@ -96,11 +66,7 @@ export default function CourseList(props: CourseListProps) {
                         key={e.id}
                         size={{ xs: 1, sm: 1, md: 1, lg: 1, xl: 1 }}
                       >
-                        <CourseCard
-                          course={e}
-                          canEdit={canEdit}
-                          onDelete={handleCourseDelete}
-                        />
+                        <CourseCard course={e} />
                       </Grid2>
                     ))}
                   </>

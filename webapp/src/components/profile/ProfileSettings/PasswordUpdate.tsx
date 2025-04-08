@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useApiClient, useAuth } from "@easymotion/auth-context";
-import { ensurePasswordConstraints } from "../../../data/validators";
+import { ensurePasswordConstraints } from "../../../utils/format";
 
 type Message = {
   type: "success" | "error" | "none";

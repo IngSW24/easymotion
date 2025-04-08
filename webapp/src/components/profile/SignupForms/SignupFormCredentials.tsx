@@ -1,11 +1,9 @@
 import { Button, Checkbox, FormControlLabel, TextField } from "@mui/material";
 import { useState } from "react";
 import { SignUpDto } from "@easymotion/openapi";
-import {
-  ensurePasswordConstraints,
-  isValidEmail,
-} from "../../../data/validators";
+import {} from "../../../data/validators";
 import { Link } from "react-router";
+import { ensurePasswordConstraints, isValidEmail } from "../../../utils/format";
 
 export interface SignupFormCredentialsProps {
   onSubmit: (data: Partial<SignUpDto>) => void;

@@ -1,21 +1,12 @@
-import { CourseEntity } from "@easymotion/openapi";
+import { CourseDto } from "@easymotion/openapi";
 import { Delete, Visibility } from "@mui/icons-material";
 import { Chip, IconButton, Stack, Tooltip } from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
-const categoryColors: Record<string, string> = {
-  CROSSFIT: "#f44336", // red
-  ZUMBA_FITNESS: "#9c27b0", // purple
-  BODYWEIGHT_WORKOUT: "#2196f3", // blue
-  POSTURAL_TRAINING: "#4caf50", // green
-  PILATES: "#ff9800", // orange
-  ACQUAGYM: "#00bcd4", // cyan
-};
-
 type DashboardDataGridProps = {
-  courses: CourseEntity[];
+  courses: CourseDto[];
   nextPageAction: () => void;
   hasNextPage: boolean;
   isFetchingNextPage: boolean;
@@ -64,7 +55,7 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
       courseId: value.id,
       courseName: value.name,
       category: value.category,
-      capacity: value.members_capacity,
+      capacity: value.max_subscribers,
     };
   });
 
@@ -79,11 +70,11 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
       minWidth: 100,
       renderCell: (params) => {
         const category = params.value;
-        const color = categoryColors[category] || "#9e9e9e";
+        const color = "#9e9e9e";
 
         return (
           <Chip
-            label={category.replace("_", " ")}
+            label={category.name.replace("_", " ")}
             size="small"
             style={{
               backgroundColor: color,

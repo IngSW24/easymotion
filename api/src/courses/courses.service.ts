@@ -157,6 +157,8 @@ export class CoursesService {
         owner: {
           include: { applicationUser: true },
         },
+        sessions: true,
+        category: true,
       },
     });
 

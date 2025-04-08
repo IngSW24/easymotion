@@ -1,9 +1,9 @@
+import { CourseCategoryDto } from "@easymotion/openapi";
+
 export type CourseFilters = {
   advanced: {
-    categories: string[];
+    categories: CourseCategoryDto[];
     levels: string[];
-    frequencies: string[];
-    availabilities: string[];
   };
   searchText: string;
 };

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useEffect } from "react";
 import {
   Button,
   Dialog,
@@ -20,18 +20,21 @@ import {
   CardContent,
   CardHeader,
 } from "@mui/material";
-import { CreateCourseDto } from "@easymotion/openapi";
-import { useSnack } from "../../hooks/useSnack";
-import { useCourses } from "../../hooks/useCourses";
-import { defaultCourse } from "../../data/defaults";
-import { useNavigate } from "react-router";
-import { PaymentType } from "./CreateCourseComponents/PaymentOptions";
-import SchedulePicker from "./CreateCourseComponents/SchedulePicker";
-import TagsInput from "./CreateCourseComponents/TagsInput";
-import PaymentOptions from "./CreateCourseComponents/PaymentOptions";
-import { courseCategories, courseLevels } from "../../data/courseEnumerations";
 import {
-  Add,
+  AuthUserDto,
+  CourseCategoryDto,
+  CourseDto,
+  CreateCourseDto,
+} from "@easymotion/openapi";
+import { useSnack } from "../../../hooks/useSnack";
+import { useCourses } from "../../../hooks/useCourses";
+import { useNavigate } from "react-router";
+import { PaymentType } from "./PaymentOptions";
+import SessionBuilder from "./SessionBuilder/SessionBuilder";
+import TagsInput from "./TagsInput";
+import PaymentOptions from "./PaymentOptions";
+import { courseLevels } from "../../../data/course-levels";
+import {
   ArrowBack,
   Save,
   Cancel,
@@ -48,10 +51,13 @@ import {
   InfoOutlined,
   CreateOutlined,
 } from "@mui/icons-material";
-import { CourseSession } from "./CreateCourseComponents/SchedulePickerComponents/types";
+import { useCourseCategory } from "../../../hooks/useCourseCategories";
+import { CourseSession } from "./SessionBuilder/types";
+import { useAuth } from "@easymotion/auth-context";
+import { formatUserName } from "../../../utils/format";
 
 // Memoize components for better performance
-const MemoizedSchedulePicker = React.memo(SchedulePicker);
+const MemoizedSessionBuilder = React.memo(SessionBuilder);
 const MemoizedTagsInput = React.memo(TagsInput);
 const MemoizedPaymentOptions = React.memo(PaymentOptions);
 
@@ -180,8 +186,8 @@ type EditCourse = {
   description: string;
   location: string;
   instructorName: string;
-  category: typeof defaultCourse.category;
-  level: typeof defaultCourse.level;
+  categoryId: string | undefined;
+  level: CourseDto["level"];
   sessions: CourseSession[];
   tags: string[];
   paymentType: PaymentType;
@@ -189,14 +195,16 @@ type EditCourse = {
   numPayments: number | undefined;
 };
 
-export function CreateCourseModal({
+export default function CreateCourseModal({
   open,
   onClose,
 }: {
   open: boolean;
   onClose: () => void;
 }) {
+  const { user } = useAuth();
   const { create } = useCourses();
+  const { getAll: categories } = useCourseCategory();
   const navigate = useNavigate();
   const snack = useSnack();
   const [confirmClose, setConfirmClose] = useState(false);
@@ -206,15 +214,24 @@ export function CreateCourseModal({
     shortDescription: "",
     description: "",
     location: "",
-    instructorName: "",
-    category: defaultCourse.category,
-    level: defaultCourse.level,
+    instructorName: formatUserName(user),
+    categoryId: categories.data?.shift()?.id,
+    level: "BASIC",
     sessions: [],
     tags: [],
     paymentType: "free",
     cost: undefined,
     numPayments: undefined,
   });
+
+  useEffect(() => {
+    if (!categories.data || categories.data.length < 1) return;
+
+    setEditCourse((prev) => ({
+      ...prev,
+      categoryId: prev.categoryId || categories.data[0].id,
+    }));
+  }, [categories.data]);
 
   // Form validation
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -284,24 +301,30 @@ export function CreateCourseModal({
   const handleSubmit = useCallback(async () => {
     if (!validateForm()) return;
 
+    if (!editCourse.categoryId) return;
+
     try {
       // Prepare the course data
-      const newCourse: Omit<CreateCourseDto, "session_duration"> = {
+      const newCourse: CreateCourseDto = {
         name: editCourse.title,
         short_description: editCourse.shortDescription,
         description: editCourse.description,
         location: editCourse.location,
-        schedule: editCourse.sessions.map((x) => x.startTime.toString()),
+        sessions: editCourse.sessions.map((x) => ({
+          start_time: x.startTime.toISO() || "",
+          end_time: x.endTime.toISO() || "",
+        })),
         instructors: [editCourse.instructorName], // Simplified for now, using only the name
-        category: editCourse.category,
+        category_id: editCourse.categoryId,
         level: editCourse.level,
-        frequency: editCourse.sessions.length > 1 ? "WEEKLY" : "SINGLE_SESSION", // Simplify by just checking if multiple sessions
-        availability: "ACTIVE",
         tags: editCourse.tags,
-        cost: editCourse.cost,
-        num_registered_members: 0,
+        price: editCourse.cost,
+        is_free: false,
+        is_published: false,
+        subscriptions_open: false,
       };
 
+      // TODO: create course
       // await create.mutateAsync(newCourse);
 
       snack.showSuccess("Corso creato con successo!");
@@ -318,12 +341,12 @@ export function CreateCourseModal({
   // Memoize category and level menu items to prevent re-renders
   const categoryMenuItems = useMemo(
     () =>
-      courseCategories.map((option) => (
-        <MenuItem key={option.value} value={option.value}>
-          {option.label}
+      categories.data?.map((option) => (
+        <MenuItem key={option.id} value={option.id}>
+          {option.name}
         </MenuItem>
       )),
-    []
+    [categories.data]
   );
 
   const levelMenuItems = useMemo(
@@ -448,8 +471,8 @@ export function CreateCourseModal({
               select
               fullWidth
               label="Categoria"
-              name="category"
-              value={editCourse.category}
+              name="categoryId"
+              value={editCourse.categoryId}
               onChange={handleChange}
               required
               icon={<School />}
@@ -488,7 +511,7 @@ export function CreateCourseModal({
       </SectionCard>
     ),
     [
-      editCourse.category,
+      editCourse.categoryId,
       editCourse.level,
       editCourse.instructorName,
       errors.instructorName,
@@ -524,8 +547,8 @@ export function CreateCourseModal({
   const ScheduleSection = useMemo(
     () => (
       <SectionCard title="Calendario" icon={<EventNote />}>
-        <MemoizedSchedulePicker
-          initialSchedule={editCourse.sessions}
+        <MemoizedSessionBuilder
+          initialSession={editCourse.sessions}
           onScheduleChange={setSchedule}
         />
         {errors.schedule && (
@@ -683,33 +706,6 @@ export function CreateCourseModal({
           </Button>
         </DialogActions>
       </Dialog>
-    </>
-  );
-}
-
-export default function CreateCourseButton() {
-  const [open, setOpen] = useState(false);
-
-  const handleOpen = useCallback(() => {
-    setOpen(true);
-  }, []);
-
-  const handleClose = useCallback(() => {
-    setOpen(false);
-  }, []);
-
-  return (
-    <>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<Add />}
-        size="small"
-        onClick={handleOpen}
-      >
-        Crea corso
-      </Button>
-      <CreateCourseModal open={open} onClose={handleClose} />
     </>
   );
 }

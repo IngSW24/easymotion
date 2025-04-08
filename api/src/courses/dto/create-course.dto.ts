@@ -1,19 +1,11 @@
 import { ApiProperty, OmitType } from "@nestjs/swagger";
-import { CourseDto } from "./course.dto";
+import { CourseDto, CourseSessionDto } from "./course.dto";
 import { Expose, Type } from "class-transformer";
-import { IsArray, IsDate, IsUUID } from "class-validator";
+import { IsArray, IsUUID } from "class-validator";
 
-export class CreateCourseSessionDto {
-  @ApiProperty({ description: "Start time of the session" })
-  @IsDate()
-  @Expose()
-  start_time: Date;
-
-  @ApiProperty({ description: "End time of the session" })
-  @IsDate()
-  @Expose()
-  end_time: Date;
-}
+export class CreateCourseSessionDto extends OmitType(CourseSessionDto, [
+  "id",
+]) {}
 
 export class CreateCourseDto extends OmitType(CourseDto, [
   "id",

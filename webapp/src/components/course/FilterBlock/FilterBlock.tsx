@@ -14,13 +14,8 @@ import { ArrowUpward, FilterList } from "@mui/icons-material";
 import { useState } from "react";
 import CheckboxSelector from "../../atoms/Select/CheckboxSelector";
 import { CourseFilters } from "./types";
-import {
-  courseAvilabilities,
-  courseCategories,
-  courseFrequencies,
-  courseLevels,
-} from "../../../data/courseEnumerations";
 import DebouncedSearchBar from "./DebouncedSearchBar";
+import { courseLevels } from "../../../data/course-levels";
 
 export interface FilterBlockProps {
   filters?: CourseFilters;
@@ -28,14 +23,16 @@ export interface FilterBlockProps {
 }
 
 const filterOptions = [
-  { key: "categories", label: "Categorie", values: courseCategories },
-  { key: "levels", label: "Livelli", values: courseLevels },
-  { key: "frequencies", label: "Frequenze", values: courseFrequencies },
   {
-    key: "availabilities",
-    label: "Disponibilità",
-    values: courseAvilabilities,
+    key: "categories",
+    label: "Categorie",
+    values: [
+      { value: "BASIC", label: "Base" },
+      { value: "MEDIUM", label: "Intermedio" },
+      { value: "ADVANCED", label: "Avanzato" },
+    ],
   },
+  { key: "levels", label: "Livelli", values: courseLevels },
 ] as const;
 
 export default function FilterBlock({ filters, onChange }: FilterBlockProps) {
@@ -48,8 +45,6 @@ export default function FilterBlock({ filters, onChange }: FilterBlockProps) {
       advanced: {
         categories: [],
         levels: [],
-        frequencies: [],
-        availabilities: [],
       },
     }
   );
@@ -78,9 +73,11 @@ export default function FilterBlock({ filters, onChange }: FilterBlockProps) {
     valueToRemove?: string
   ) => {
     const updatedValues = valueToRemove
-      ? localFilters.advanced[key].filter((v) => v !== valueToRemove)
+      ? localFilters.advanced[key].filter((v) =>
+          typeof v === "string" ? v !== valueToRemove : v.id !== valueToRemove
+        )
       : [];
-    handleAdvancedFilterChange(key, updatedValues);
+    handleAdvancedFilterChange(key, updatedValues as string[]);
   };
 
   return (
@@ -113,9 +110,11 @@ export default function FilterBlock({ filters, onChange }: FilterBlockProps) {
 
             return (
               <Chip
-                key={`${key}-${value}`}
+                key={`${key}-${typeof value === "string" ? value : value.id}`}
                 label={`${label}: ${valueLabel}`}
-                onDelete={() => clearFilter(key, value)}
+                onDelete={() =>
+                  clearFilter(key, typeof value === "string" ? value : value.id)
+                }
               />
             );
           });
@@ -134,7 +133,7 @@ export default function FilterBlock({ filters, onChange }: FilterBlockProps) {
               >
                 <InputLabel>{label}</InputLabel>
                 <CheckboxSelector
-                  values={localFilters.advanced[key]}
+                  values={localFilters.advanced[key] as string[]}
                   label={label}
                   allValues={values}
                   maxWidth={230}

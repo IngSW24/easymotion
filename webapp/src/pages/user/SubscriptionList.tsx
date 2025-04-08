@@ -10,7 +10,6 @@ export interface SubsProp {
 }
 
 export default function SubscriptionsPage(props: SubsProp) {
-  const canEdit = false;
   const { filters } = props;
   const auth = useAuth();
   const subsRepo = useSubscriptions({
@@ -64,11 +63,7 @@ export default function SubscriptionsPage(props: SubsProp) {
                         key={e.id}
                         size={{ xs: 1, sm: 1, md: 1, lg: 1, xl: 1 }}
                       >
-                        <CourseCard
-                          course={e}
-                          canEdit={canEdit}
-                          onDelete={() => {}}
-                        />
+                        <CourseCard course={e} />
                       </Grid2>
                     ))}
                   </>

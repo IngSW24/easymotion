@@ -5,7 +5,7 @@ import { Edit, Event } from "@mui/icons-material";
 import CustomPickersDay from "./CustomPickersDay";
 
 export interface CalendarPickerProps {
-  scheduleType: "single" | "recurring";
+  sessionType: "single" | "recurring";
   editMode: boolean;
   setEditMode: (value: boolean) => void;
   singleDate: DateTime;
@@ -19,7 +19,7 @@ export interface CalendarPickerProps {
 
 export default function CalendarPicker(props: CalendarPickerProps) {
   const {
-    scheduleType,
+    sessionType,
     editMode,
     setEditMode,
     singleDate,
@@ -48,7 +48,7 @@ export default function CalendarPicker(props: CalendarPickerProps) {
         onClick={() => {
           if (editMode) {
             toggleDateSelection(dayProps.day);
-          } else if (!isSelected && scheduleType === "recurring") {
+          } else if (!isSelected && sessionType === "recurring") {
             // In recurring mode without edit mode, allow selecting the base date
             handleRecurringBaseDateChange(dayProps.day);
           }
@@ -77,12 +77,12 @@ export default function CalendarPicker(props: CalendarPickerProps) {
           <Event sx={{ mr: 1, color: "primary.main" }} />
           {editMode
             ? "Gestisci le date (clicca per aggiungere/rimuovere)"
-            : scheduleType === "single"
+            : sessionType === "single"
               ? "Seleziona la data"
               : "Seleziona la prima data"}
         </Typography>
 
-        {scheduleType === "recurring" && sessions.length > 1 && (
+        {sessionType === "recurring" && sessions.length > 1 && (
           <Button
             size="small"
             startIcon={<Edit />}
@@ -118,7 +118,7 @@ export default function CalendarPicker(props: CalendarPickerProps) {
         )}
 
         {/* Use different calendar components based on mode */}
-        {scheduleType === "single" ? (
+        {sessionType === "single" ? (
           <DateCalendar
             value={singleDate}
             onChange={handleSingleDateChange}

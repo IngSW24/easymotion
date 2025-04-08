@@ -4,7 +4,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { CreateCourseDto, UpdateCoursesDto } from "@easymotion/openapi";
+import { CreateCourseDto, UpdateCourseDto } from "@easymotion/openapi";
 import { CourseFilters } from "../components/course/FilterBlock/types";
 import { useSnack } from "./useSnack";
 import { useApiClient } from "@easymotion/auth-context";
@@ -20,7 +20,7 @@ type UseCoursesProps = {
 
 type UpdateMutationParams = {
   courseId: string;
-  courseData: UpdateCoursesDto;
+  courseData: UpdateCourseDto;
 };
 
 /**
@@ -61,25 +61,13 @@ export const useCourses = (props: UseCoursesProps = {}) => {
 
         if (
           filters.advanced.categories.length > 0 &&
-          !filters.advanced.categories.includes(course.category)
+          !filters.advanced.categories.some((x) => course.category.id === x.id)
         )
           return false;
 
         if (
           filters.advanced.levels.length > 0 &&
           !filters.advanced.levels.includes(course.level)
-        )
-          return false;
-
-        if (
-          filters.advanced.frequencies.length > 0 &&
-          !filters.advanced.frequencies.includes(course.frequency)
-        )
-          return false;
-
-        if (
-          filters.advanced.availabilities.length > 0 &&
-          !filters.advanced.availabilities.includes(course.availability)
         )
           return false;
 

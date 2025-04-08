@@ -1,13 +1,14 @@
-import { Box, Grid2, Typography } from "@mui/material";
+import { Box, Button, Grid2, Typography } from "@mui/material";
 import OverviewSection from "../../components/dashboard/OverviewSection";
 import DashboardDataGrid from "../../components/dashboard/CoursesDataGrid";
 import { DateCalendar } from "@mui/x-date-pickers";
 import { useProfile } from "../../hooks/useProfile";
 import { useCourses } from "../../hooks/useCourses";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
-import { FitnessCenter } from "@mui/icons-material";
-import CreateCourseButton from "./CreateCourse";
+import { Add, FitnessCenter } from "@mui/icons-material";
+import CreateCourseButton from "../../components/course/CreateCourse/CreateCourseModal";
+import CreateCourseModal from "../../components/course/CreateCourse/CreateCourseModal";
 
 enum CurrentState {
   "LOADING",
@@ -20,11 +21,17 @@ export default function DashboardHome() {
     CurrentState.LOADING
   );
 
+  const [createOpen, setCreateOpen] = useState(false);
+
   const { get: getProfile } = useProfile();
   const { getPhysiotherapist: getCourses, remove } = useCourses({
     perPage: 10,
     ownerId: getProfile.data?.id,
   });
+
+  const handleOpen = useCallback(() => setCreateOpen(true), []);
+
+  const handleClose = useCallback(() => setCreateOpen(false), []);
 
   useEffect(() => {
     if (getProfile.isError || getCourses.isError) {
@@ -78,7 +85,16 @@ export default function DashboardHome() {
                 I miei corsi
               </Typography>
 
-              <CreateCourseButton />
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<Add />}
+                size="small"
+                onClick={handleOpen}
+              >
+                Crea corso
+              </Button>
+              <CreateCourseModal open={createOpen} onClose={handleClose} />
             </Box>
 
             <Box sx={{ width: "100%", mb: { xs: 3, lg: 0 } }}>

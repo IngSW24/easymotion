@@ -5,7 +5,7 @@ import { Type } from "class-transformer";
 export class UpdateCourseSessionDto extends CreateCourseSessionDto {
   @ApiProperty({
     description:
-      "The id of the session to update if the session exists already1",
+      "The id of the session to update if the session exists already",
     required: false,
   })
   @IsOptional()

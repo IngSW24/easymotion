@@ -9,12 +9,12 @@ import {
 } from "@mui/material";
 import { Event, EventRepeat } from "@mui/icons-material";
 
-export interface ScheduleTypeSelectorProps {
+export interface SessionTypeSelectorProps {
   value: "single" | "recurring";
   onChange: (value: "single" | "recurring") => void;
 }
 
-export default function ScheduleTypeSelector(props: ScheduleTypeSelectorProps) {
+export default function SessionTypeSelector(props: SessionTypeSelectorProps) {
   const { value, onChange } = props;
 
   return (

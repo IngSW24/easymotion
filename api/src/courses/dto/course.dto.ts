@@ -9,12 +9,31 @@ import {
   IsString,
   IsUUID,
 } from "class-validator";
-import { Course, CourseLevel, CourseSession } from "@prisma/client";
+import { Course, CourseLevel } from "@prisma/client";
 import { Exclude, Expose, Transform, Type } from "class-transformer";
 import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 import { CourseOwnerDto } from "./course-owner.dto";
 import { Decimal } from "@prisma/client/runtime/library";
 import { CourseCategoryDto } from "src/categories/dto/category.dto";
+
+export class CourseSessionDto {
+  @ApiProperty({
+    description: "The id of the session",
+    required: false,
+  })
+  @IsUUID()
+  id: string;
+
+  @ApiProperty({ description: "Start time of the session", type: Date })
+  @IsDate()
+  @Expose()
+  start_time: Date;
+
+  @ApiProperty({ description: "End time of the session", type: Date })
+  @IsDate()
+  @Expose()
+  end_time: Date;
+}
 
 export class CourseDto implements Course {
   @ApiProperty({ description: "The id of the course" })
@@ -133,7 +152,13 @@ export class CourseDto implements Course {
   @Exclude()
   category_id: string;
 
-  @ApiProperty({ description: "Sessions of the course" })
+  @ApiProperty({
+    description: "The sessions of the course",
+    required: true,
+    type: [CourseSessionDto],
+  })
+  @IsArray()
+  @Type(() => CourseSessionDto)
   @Expose()
-  sessions: CourseSession[];
+  sessions: CourseSessionDto[];
 }
