@@ -1,9 +1,9 @@
 import { useState, useCallback, useEffect } from "react";
 import { PaymentType } from "../PaymentOptions";
-import { EditCourse } from "../types";
-import { CourseSession } from "../SessionBuilder/types";
+import { CourseSession, EditCourse } from "../types";
 import { formatUserName } from "../../../../utils/format";
 import { DateTime } from "luxon";
+import { CourseDto } from "@easymotion/openapi";
 
 const initialCourseState: EditCourse = {
   title: "",
@@ -26,7 +26,7 @@ const initialCourseState: EditCourse = {
 export interface UseCourseFormProps {
   open: boolean;
   courseId?: string;
-  initialData?: any;
+  initialData?: CourseDto;
   user: any;
   categories: any[];
 }
@@ -69,7 +69,7 @@ export const useCourseForm = ({
         instructorName: course.instructors[0],
         categoryId: course.category.id,
         level: course.level,
-        sessions: course.sessions.map((session: any) => ({
+        sessions: course.sessions.map((session) => ({
           id: session.id,
           startTime: DateTime.fromISO(session.start_time),
           endTime: DateTime.fromISO(session.end_time),
@@ -224,6 +224,7 @@ export const useCourseForm = ({
       description: editCourse.description,
       location: editCourse.location,
       sessions: editCourse.sessions.map((x) => ({
+        id: x.id,
         start_time: x.startTime.toISO() || "",
         end_time: x.endTime.toISO() || "",
       })),

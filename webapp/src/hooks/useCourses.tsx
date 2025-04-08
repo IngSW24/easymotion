@@ -1,11 +1,4 @@
-import {
-  useInfiniteQuery,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
-import { CreateCourseDto, UpdateCourseDto } from "@easymotion/openapi";
-import { useSnack } from "./useSnack";
+import { useQuery } from "@tanstack/react-query";
 import { useApiClient } from "@easymotion/auth-context";
 
 export type CourseFilters = {
@@ -23,28 +16,14 @@ type UseCoursesProps = {
   ownerId?: string;
 };
 
-type UpdateMutationParams = {
-  courseId: string;
-  courseData: UpdateCourseDto;
-};
-
 /**
  * Defines a hook that handles CRUD operations for courses
  * @param props a set of properties of type UseCoursesProps
  * @returns an object with the CRUD operations
  */
 export const useCourses = (props: UseCoursesProps = {}) => {
-  const {
-    fetchId = "",
-    page = 0,
-    perPage = 100,
-    fetchAll,
-    filters,
-    ownerId,
-  } = props;
+  const { fetchId = "", page = 0, perPage = 100, fetchAll, filters } = props;
   const { apiClient: api } = useApiClient();
-  const snack = useSnack();
-  const queryClient = useQueryClient();
 
   const get = useQuery({
     queryKey: ["courses", { page, perPage, ...filters }],
@@ -73,47 +52,5 @@ export const useCourses = (props: UseCoursesProps = {}) => {
     enabled: fetchId !== "",
   });
 
-  const update = useMutation({
-    mutationFn: async ({ courseId, courseData }: UpdateMutationParams) => {
-      const response = await api.courses.coursesControllerUpdate(
-        courseId,
-        courseData
-      );
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["courses"],
-      });
-    },
-    onError: (error) => snack.showError(error),
-  });
-
-  const create = useMutation({
-    mutationFn: async (courseData: CreateCourseDto) => {
-      const response = await api.courses.coursesControllerCreate(courseData);
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["courses"],
-      });
-    },
-    onError: (error) => snack.showError(error),
-  });
-
-  const remove = useMutation({
-    mutationFn: async (id: string) => {
-      await api.courses.coursesControllerRemove(id);
-      return id;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["courses"],
-      });
-    },
-    onError: (error) => snack.showError(error),
-  });
-
-  return { get, getSingle, update, remove, create };
+  return { get, getSingle };
 };

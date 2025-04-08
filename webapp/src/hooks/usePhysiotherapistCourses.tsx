@@ -1,21 +1,35 @@
 import { useApiClient, useAuth } from "@easymotion/auth-context";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { useSnack } from "./useSnack";
+import { CreateCourseDto, UpdateCourseDto } from "@easymotion/openapi";
 
 export interface UsePhysiotherapistCoursesProps {
-  page?: number;
   perPage?: number;
+  fetch?: boolean;
 }
+
+type UpdateMutationParams = {
+  courseId: string;
+  courseData: UpdateCourseDto;
+};
 
 export const usePhysiotherapistCourses = (
   props: UsePhysiotherapistCoursesProps
 ) => {
-  const { page, perPage } = props;
+  const queryClient = useQueryClient();
+  const { perPage } = props;
   const { user } = useAuth();
+  const snack = useSnack();
   const { apiClient } = useApiClient();
 
-  return useInfiniteQuery({
-    queryKey: ["courses", "physio", user?.id, { page, perPage }],
+  const getAll = useInfiniteQuery({
+    queryKey: ["courses", "physio", user?.id, { perPage }],
     initialPageParam: 0,
+    enabled: props.fetch ?? true,
     queryFn: async ({ pageParam = 0 }) => {
       const response =
         await apiClient.courses.coursesControllerFindAllForPhysiotherapist({
@@ -29,4 +43,49 @@ export const usePhysiotherapistCourses = (
     getNextPageParam: (lastPage) =>
       lastPage.data.length === 0 ? undefined : lastPage.nextPage,
   });
+
+  const update = useMutation({
+    mutationFn: async ({ courseId, courseData }: UpdateMutationParams) => {
+      const response = await apiClient.courses.coursesControllerUpdate(
+        courseId,
+        courseData
+      );
+      return response.data;
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["courses", "physio"],
+      });
+    },
+    onError: (error) => snack.showError(error),
+  });
+
+  const create = useMutation({
+    mutationFn: async (courseData: CreateCourseDto) => {
+      const response =
+        await apiClient.courses.coursesControllerCreate(courseData);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["courses"],
+      });
+    },
+    onError: (error) => snack.showError(error),
+  });
+
+  const remove = useMutation({
+    mutationFn: async (id: string) => {
+      await apiClient.courses.coursesControllerRemove(id);
+      return id;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["courses"],
+      });
+    },
+    onError: (error) => snack.showError(error),
+  });
+
+  return { getAll, update, create, remove };
 };

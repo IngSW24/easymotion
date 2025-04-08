@@ -1,32 +1,33 @@
 import { useMemo, useCallback } from "react";
 import { Drawer, Box, MenuItem, Grid2 } from "@mui/material";
 import { useSnack } from "../../../hooks/useSnack";
-import { useCourses } from "../../../hooks/useCourses";
 import { courseLevels } from "../../../data/course-levels";
 import { useCourseCategory } from "../../../hooks/useCourseCategories";
 import { useAuth } from "@easymotion/auth-context";
 import BasicInfoSection from "./EditCourseSections/BasicInfoSection";
 import CategoryLevelSection from "./EditCourseSections/CategoryLevelSection";
 import PaymentSection from "./EditCourseSections/PaymentSection";
-import ScheduleSection from "./EditCourseSections/ScheduleSection";
 import TagsSection from "./EditCourseSections/TagsSection";
 import PublicationStatusSection from "./EditCourseSections/PublicationStatusSection";
+import ScheduleSection from "./EditCourseSections/ScheduleSection";
 import { useCourseForm } from "./hooks/useCourseForm";
 import { useCloseHandling } from "./hooks/useCloseHandling";
 import ModalHeader from "./ModalHeader";
+import { CourseDto } from "@easymotion/openapi";
+import { usePhysiotherapistCourses } from "../../../hooks/usePhysiotherapistCourses";
 
 export interface CourseEditModalProps {
   open: boolean;
   onClose: () => void;
-  courseId?: string;
+  course?: CourseDto;
 }
 
 export default function CourseEditModal(props: CourseEditModalProps) {
-  const { open, onClose, courseId } = props;
+  const { open, onClose, course } = props;
 
   const { user } = useAuth();
-  const { create, update, getSingle } = useCourses({ fetchId: courseId });
   const { getAll: categories } = useCourseCategory();
+  const { update, create } = usePhysiotherapistCourses({ fetch: false });
   const snack = useSnack();
 
   // Use the extracted form hook
@@ -49,8 +50,8 @@ export default function CourseEditModal(props: CourseEditModalProps) {
     getMissingFields,
   } = useCourseForm({
     open,
-    courseId,
-    initialData: getSingle.data,
+    courseId: course?.id,
+    initialData: course,
     user,
     categories: categories.data || [],
   });
@@ -69,8 +70,10 @@ export default function CourseEditModal(props: CourseEditModalProps) {
     try {
       const courseData = getCourseData();
 
-      if (courseId) {
-        await update.mutateAsync({ courseId, courseData });
+      console.log("update course", courseData);
+
+      if (course) {
+        await update.mutateAsync({ courseId: course.id, courseData });
         snack.showSuccess("Corso aggiornato con successo!");
       } else {
         await create.mutateAsync(courseData);
@@ -79,7 +82,7 @@ export default function CourseEditModal(props: CourseEditModalProps) {
     } catch (error) {
       console.error("Error during course operation:", error);
       snack.showError(
-        `Si è verificato un errore durante ${courseId ? "l'aggiornamento" : "la creazione"} del corso`
+        `Si è verificato un errore durante ${course ? "l'aggiornamento" : "la creazione"} del corso`
       );
     } finally {
       onClose();
@@ -88,10 +91,10 @@ export default function CourseEditModal(props: CourseEditModalProps) {
     validateForm,
     editCourse.categoryId,
     getCourseData,
-    courseId,
+    course,
     update,
-    create,
     snack,
+    create,
     onClose,
   ]);
 
@@ -192,15 +195,6 @@ export default function CourseEditModal(props: CourseEditModalProps) {
     ]
   );
 
-  const scheduleProps = useMemo(
-    () => ({
-      sessions: editCourse.sessions,
-      errors: { schedule: errors.schedule },
-      onScheduleChange: setSchedule,
-    }),
-    [editCourse.sessions, errors.schedule, setSchedule]
-  );
-
   const tagsProps = useMemo(
     () => ({
       tags: editCourse.tags,
@@ -222,6 +216,15 @@ export default function CourseEditModal(props: CourseEditModalProps) {
       setIsPublished,
       setSubscriptionsOpen,
     ]
+  );
+
+  const scheduleProps = useMemo(
+    () => ({
+      sessions: editCourse.sessions,
+      onSessionsChange: setSchedule,
+      isCreateMode: !course,
+    }),
+    [editCourse.sessions, setSchedule, course]
   );
 
   return (
@@ -247,7 +250,7 @@ export default function CourseEditModal(props: CourseEditModalProps) {
     >
       {/* Use the new ModalHeader component */}
       <ModalHeader
-        courseId={courseId}
+        course={course}
         isPending={create.isPending || update.isPending}
         isFormValid={isFormValid()}
         onClose={handleCloseAttempt}
@@ -276,11 +279,11 @@ export default function CourseEditModal(props: CourseEditModalProps) {
           </Grid2>
 
           <Grid2 size={{ xs: 12 }}>
-            <PaymentSection {...paymentSectionProps} />
+            <ScheduleSection {...scheduleProps} />
           </Grid2>
 
           <Grid2 size={{ xs: 12 }}>
-            <ScheduleSection {...scheduleProps} />
+            <PaymentSection {...paymentSectionProps} />
           </Grid2>
 
           <Grid2 size={{ xs: 12 }}>

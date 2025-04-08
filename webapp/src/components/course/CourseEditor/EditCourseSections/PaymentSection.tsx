@@ -79,7 +79,6 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
             label="Numero massimo di partecipanti"
             value={maxSubscribers}
             onChange={onMaxSubscribersChange}
-            inputProps={{ min: 1 }}
             sx={{ mt: 2 }}
             error={!!errors.maxSubscribers}
             helperText={errors.maxSubscribers}

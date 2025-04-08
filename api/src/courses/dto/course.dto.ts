@@ -21,6 +21,7 @@ export class CourseSessionDto {
     required: false,
   })
   @IsString()
+  @Expose()
   id: string;
 
   @ApiProperty({ description: "Start time of the session", type: Date })

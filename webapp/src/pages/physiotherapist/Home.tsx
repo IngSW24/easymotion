@@ -3,13 +3,13 @@ import OverviewSection from "../../components/dashboard/OverviewSection";
 import DashboardDataGrid from "../../components/dashboard/CoursesDataGrid";
 import { DateCalendar } from "@mui/x-date-pickers";
 import { useProfile } from "../../hooks/useProfile";
-import { useCourses } from "../../hooks/useCourses";
 import { useCallback, useEffect, useState } from "react";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import { Add, FitnessCenter } from "@mui/icons-material";
 import CourseEditModal from "../../components/course/CourseEditor/CourseEditModal";
 import { useDialog } from "../../hooks/useDialog";
 import { usePhysiotherapistCourses } from "../../hooks/usePhysiotherapistCourses";
+import { CourseDto } from "@easymotion/openapi";
 
 enum CurrentState {
   "LOADING",
@@ -24,51 +24,54 @@ export default function DashboardHome() {
 
   const confirm = useDialog();
   const [createOpen, setCreateOpen] = useState(false);
-  const [editingCourseId, setEditingCourseId] = useState<string | undefined>(
+  const [editingCourse, setEditingCourse] = useState<CourseDto | undefined>(
     undefined
   );
 
   const { get: getProfile } = useProfile();
-  const { remove } = useCourses();
-  const { get: getPhysiotherapistCourses } = usePhysiotherapistCourses({
-    page: 0
+  const { getAll, remove } = usePhysiotherapistCourses({
     perPage: 10,
-  })
+  });
+
   const handleOpen = useCallback(() => {
-    setEditingCourseId(undefined);
+    setEditingCourse(undefined);
     setCreateOpen(true);
   }, []);
 
   const handleClose = useCallback(() => {
     setCreateOpen(false);
-    setEditingCourseId(undefined);
+    setEditingCourse(undefined);
   }, []);
 
-  const handleEdit = useCallback((courseId: string) => {
-    setEditingCourseId(courseId);
-    setCreateOpen(true);
-  }, []);
+  const handleEdit = useCallback(
+    (courseId: string) => {
+      const course = getAll.data?.pages
+        .flatMap((page) => page.data)
+        .find((course) => course.id === courseId);
+      if (course) {
+        setEditingCourse(course);
+        setCreateOpen(true);
+      }
+    },
+    [getAll.data?.pages]
+  );
 
   useEffect(() => {
-    if (getProfile.isError || getCourses.isError) {
+    if (getProfile.isError || getAll.isError) {
       setCurrentPageState(CurrentState.ERROR);
-    } else if (getProfile.isSuccess && getCourses.isSuccess) {
+    } else if (getProfile.isSuccess && getAll.isSuccess) {
       setCurrentPageState(CurrentState.READY);
     } else {
       setCurrentPageState(CurrentState.LOADING);
     }
-  }, [getProfile, getCourses]);
+  }, [getProfile, getAll]);
 
   return (
     <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" }, px: 2 }}>
       {currentPageState === CurrentState.ERROR && (
         <Typography>Error ....</Typography>
       )}
-      {currentPageState === CurrentState.LOADING && (
-        <Typography>
-          <LoadingSpinner />
-        </Typography>
-      )}
+      {currentPageState === CurrentState.LOADING && <LoadingSpinner />}
       {currentPageState === CurrentState.READY && (
         <Grid2 container spacing={3}>
           {/* Left column - Overview and DataGrid */}
@@ -81,7 +84,7 @@ export default function DashboardHome() {
               cards={[
                 {
                   title: "Corsi totali",
-                  value: getCourses.data?.pages[0]?.meta.totalItems || 0,
+                  value: getAll.data?.pages[0]?.meta.totalItems || 0,
                   icon: <FitnessCenter />,
                 },
               ]}
@@ -113,19 +116,17 @@ export default function DashboardHome() {
               <CourseEditModal
                 open={createOpen}
                 onClose={handleClose}
-                courseId={editingCourseId}
+                course={editingCourse}
               />
             </Box>
 
             <Box sx={{ width: "100%", mb: { xs: 3, lg: 0 } }}>
               <DashboardDataGrid
-                courses={
-                  getCourses.data?.pages.flatMap((page) => page.data) || []
-                }
-                nextPageAction={() => getCourses.fetchNextPage()}
-                hasNextPage={!!getCourses.hasNextPage}
-                isFetchingNextPage={getCourses.isFetchingNextPage}
-                totalItems={getCourses.data?.pages[0]?.meta.totalItems || 0}
+                courses={getAll.data?.pages.flatMap((page) => page.data) || []}
+                nextPageAction={() => getAll.fetchNextPage()}
+                hasNextPage={!!getAll.hasNextPage}
+                isFetchingNextPage={getAll.isFetchingNextPage}
+                totalItems={getAll.data?.pages[0]?.meta.totalItems || 0}
                 onDelete={async (id) => {
                   const result = await confirm.showConfirmationDialog({
                     title: "Sei sicuro di voler eliminare questo corso?",

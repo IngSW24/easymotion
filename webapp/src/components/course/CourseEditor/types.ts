@@ -1,5 +1,11 @@
 import { CourseDto } from "@easymotion/openapi";
-import { CourseSession } from "./SessionBuilder/types";
+import { DateTime } from "luxon";
+
+export type CourseSession = {
+  id?: string;
+  startTime: DateTime;
+  endTime: DateTime;
+};
 
 export type EditCourse = {
   title: string;

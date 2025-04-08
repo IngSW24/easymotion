@@ -9,9 +9,10 @@ import {
   Tooltip,
 } from "@mui/material";
 import { ArrowBack, Save, CreateOutlined } from "@mui/icons-material";
+import { CourseDto } from "@easymotion/openapi";
 
 interface ModalHeaderProps {
-  courseId?: string;
+  course?: CourseDto;
   isPending: boolean;
   isFormValid: boolean;
   onClose: () => void;
@@ -20,7 +21,7 @@ interface ModalHeaderProps {
 }
 
 const ModalHeader: React.FC<ModalHeaderProps> = ({
-  courseId,
+  course,
   isPending,
   isFormValid,
   onClose,
@@ -53,7 +54,7 @@ const ModalHeader: React.FC<ModalHeaderProps> = ({
           sx={{ ml: 2, flex: 1, display: "flex", alignItems: "center" }}
         >
           <CreateOutlined sx={{ mr: 1 }} />{" "}
-          {courseId ? "Modifica corso" : "Crea nuovo corso"}
+          {course ? "Modifica corso" : "Crea nuovo corso"}
         </Typography>
         <Stack direction="row" spacing={1}>
           <Tooltip title={tooltipMessage} placement="bottom-start" arrow>
@@ -68,10 +69,10 @@ const ModalHeader: React.FC<ModalHeaderProps> = ({
                 startIcon={<Save />}
               >
                 {isPending
-                  ? courseId
+                  ? course
                     ? "Aggiornamento in corso..."
                     : "Creazione in corso..."
-                  : courseId
+                  : course
                     ? "Aggiorna corso"
                     : "Crea corso"}
               </Button>
