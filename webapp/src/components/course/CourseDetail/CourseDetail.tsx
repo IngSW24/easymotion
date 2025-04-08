@@ -3,8 +3,8 @@ import { CourseDto } from "@easymotion/openapi";
 import ProductCard from "./ProductCard";
 import EventAvailableOutlinedIcon from "@mui/icons-material/EventAvailableOutlined";
 import SubscribeButton from "../../../pages/user/SubscribeButton";
-import { Euro, LocationOn, Person } from "@mui/icons-material";
 import { DateTime } from "luxon";
+import { Euro, LocationOn, Person } from "@mui/icons-material";
 import { getCourseLevelName } from "../../../data/course-levels";
 
 export interface CourseDetailProps {
@@ -45,6 +45,26 @@ export default function CourseDetail(props: CourseDetailProps) {
               <Box sx={{ mt: 3 }}>
                 <Typography variant="body1" sx={{ overflowWrap: "break-word" }}>
                   {course.description}
+                </Typography>
+              </Box>
+            </div>
+            <div>
+              <Typography variant="h4" color="primary.dark" fontWeight="bold">
+                Periodo di iscrizione
+              </Typography>
+              <Box sx={{ mt: 3 }}>
+                <Typography variant="body1" sx={{ overflowWrap: "break-word" }}>
+                  {"Data inizio + data fine"}
+                </Typography>
+              </Box>
+            </div>
+            <div>
+              <Typography variant="h4" color="primary.dark" fontWeight="bold">
+                Periodo di iscrizione
+              </Typography>
+              <Box sx={{ mt: 3 }}>
+                <Typography variant="body1" sx={{ overflowWrap: "break-word" }}>
+                  {"Start date + end date"}
                 </Typography>
               </Box>
             </div>

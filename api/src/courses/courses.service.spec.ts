@@ -264,6 +264,8 @@ describe("CoursesService", () => {
         instructors: [],
         owner_id: "owner1",
         category_id: "id1",
+        subscription_start_date: new Date(),
+        subscription_end_date: new Date(),
       };
 
       prismaMock.course.findUniqueOrThrow.mockResolvedValue(mockCourse);
