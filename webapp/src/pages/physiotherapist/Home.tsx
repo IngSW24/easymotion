@@ -9,6 +9,7 @@ import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import { Add, FitnessCenter } from "@mui/icons-material";
 import CourseEditModal from "../../components/course/CourseEditor/CourseEditModal";
 import { useDialog } from "../../hooks/useDialog";
+import { usePhysiotherapistCourses } from "../../hooks/usePhysiotherapistCourses";
 
 enum CurrentState {
   "LOADING",
@@ -28,11 +29,11 @@ export default function DashboardHome() {
   );
 
   const { get: getProfile } = useProfile();
-  const { getPhysiotherapist: getCourses, remove } = useCourses({
+  const { remove } = useCourses();
+  const { get: getPhysiotherapistCourses } = usePhysiotherapistCourses({
+    page: 0
     perPage: 10,
-    ownerId: getProfile.data?.id,
-  });
-
+  })
   const handleOpen = useCallback(() => {
     setEditingCourseId(undefined);
     setCreateOpen(true);

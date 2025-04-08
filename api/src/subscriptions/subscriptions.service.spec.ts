@@ -19,12 +19,14 @@ describe("SubsriptionsService", () => {
       create: jest.fn(),
       delete: jest.fn(),
       deleteMany: jest.fn(),
+      findUniqueOrThrow: jest.fn(),
     },
     course: {
       findUniqueOrThrow: jest.fn(),
     },
     finalUser: {
       findUnique: jest.fn(),
+      findUniqueOrThrow: jest.fn(),
     },
   };
 
@@ -70,7 +72,7 @@ describe("SubsriptionsService", () => {
         number_of_payments: 1,
         is_published: true,
         subscriptions_open: true,
-        max_subscribers: null,
+        max_subscribers: 10,
         tags: [],
         created_at: new Date(),
         updated_at: new Date(),
@@ -139,13 +141,14 @@ describe("SubsriptionsService", () => {
       id: courseId,
     };
 
-    prismaMock.finalUser.findUnique.mockResolvedValue(user);
+    prismaMock.finalUser.findUniqueOrThrow.mockResolvedValue(user);
     prismaMock.course.findUniqueOrThrow.mockResolvedValue(course);
+    prismaMock.courseFinalUser.count.mockResolvedValue(2);
 
-    await service.subscribeFinalUser(userId, { courseId });
+    await service.subscribeFinalUser(userId, { courseId }, true);
 
-    expect(prismaMock.finalUser.findUnique).toHaveBeenCalledWith({
-      where: { applicationUserId: userId },
+    expect(prismaMock.finalUser.findUniqueOrThrow).toHaveBeenCalledWith({
+      where: { applicationUserId: user.applicationUserId },
     });
 
     expect(prismaMock.course.findUniqueOrThrow).toHaveBeenCalledWith({
@@ -164,7 +167,7 @@ describe("SubsriptionsService", () => {
     const userId = "1";
     const courseId = "2";
 
-    prismaMock.finalUser.findUnique.mockRejectedValue(() => {
+    prismaMock.finalUser.findUniqueOrThrow.mockRejectedValue(() => {
       throw new NotFoundException("User not found");
     });
 
@@ -172,7 +175,7 @@ describe("SubsriptionsService", () => {
       NotFoundException
     );
 
-    expect(prismaMock.finalUser.findUnique).toHaveBeenCalledWith({
+    expect(prismaMock.finalUser.findUniqueOrThrow).toHaveBeenCalledWith({
       where: { applicationUserId: userId },
     });
   });
@@ -185,9 +188,9 @@ describe("SubsriptionsService", () => {
       throw new NotFoundException("User not found");
     });
 
-    expect(service.subscribeFinalUser(userId, { courseId })).rejects.toThrow(
-      NotFoundException
-    );
+    expect(
+      service.subscribeFinalUser(userId, { courseId }, true)
+    ).rejects.toThrow(NotFoundException);
   });
 
   it("should throw not found exception if course does not exist", async () => {

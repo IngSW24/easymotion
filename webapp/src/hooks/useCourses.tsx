@@ -64,24 +64,6 @@ export const useCourses = (props: UseCoursesProps = {}) => {
     enabled: fetchAll,
   });
 
-  const getPhysiotherapist = useInfiniteQuery({
-    queryKey: ["courses", { ownerId, perPage }],
-    initialPageParam: 0,
-    queryFn: async ({ pageParam = 0 }) => {
-      const response = await api.courses.coursesControllerFindAll({
-        page: pageParam,
-        perPage,
-        ownerId,
-      });
-
-      const data = response.data.data;
-      return { data, nextPage: pageParam + 1, meta: response.data.meta };
-    },
-    getNextPageParam: (lastPage) =>
-      lastPage.data.length === 0 ? undefined : lastPage.nextPage,
-    enabled: !!ownerId,
-  });
-
   const getSingle = useQuery({
     queryKey: ["courses", { fetchId }],
     queryFn: async () => {
@@ -133,5 +115,5 @@ export const useCourses = (props: UseCoursesProps = {}) => {
     onError: (error) => snack.showError(error),
   });
 
-  return { get, getPhysiotherapist, getSingle, update, remove, create };
+  return { get, getSingle, update, remove, create };
 };

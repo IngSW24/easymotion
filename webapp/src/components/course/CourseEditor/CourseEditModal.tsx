@@ -14,7 +14,6 @@ import PublicationStatusSection from "./EditCourseSections/PublicationStatusSect
 import { useCourseForm } from "./hooks/useCourseForm";
 import { useCloseHandling } from "./hooks/useCloseHandling";
 import ModalHeader from "./ModalHeader";
-import ConfirmDialog from "./ConfirmDialog";
 
 export interface CourseEditModalProps {
   open: boolean;
@@ -57,12 +56,7 @@ export default function CourseEditModal(props: CourseEditModalProps) {
   });
 
   // Use the extracted close handling hook
-  const {
-    confirmClose,
-    handleCloseAttempt,
-    handleConfirmClose,
-    handleCancelClose,
-  } = useCloseHandling({
+  const { handleCloseAttempt } = useCloseHandling({
     editCourse,
     onClose,
   });
@@ -231,78 +225,69 @@ export default function CourseEditModal(props: CourseEditModalProps) {
   );
 
   return (
-    <>
-      <Drawer
-        anchor="right"
-        open={open}
-        variant="temporary"
-        onClose={(_event, reason) => {
-          if (reason === "backdropClick" || reason === "escapeKeyDown") {
-            return;
-          }
-        }}
-        ModalProps={{
-          keepMounted: false,
-        }}
+    <Drawer
+      anchor="right"
+      open={open}
+      variant="temporary"
+      onClose={(_event, reason) => {
+        if (reason === "backdropClick" || reason === "escapeKeyDown") {
+          return;
+        }
+      }}
+      ModalProps={{
+        keepMounted: false,
+      }}
+      sx={{
+        "& .MuiDrawer-paper": {
+          width: { xs: "100%", sm: "90%", md: "80%", lg: "70%" },
+          boxSizing: "border-box",
+          bgcolor: "#f5f7fa",
+        },
+      }}
+    >
+      {/* Use the new ModalHeader component */}
+      <ModalHeader
+        courseId={courseId}
+        isPending={create.isPending || update.isPending}
+        isFormValid={isFormValid()}
+        onClose={handleCloseAttempt}
+        onSubmit={handleSubmit}
+        tooltipMessage={getSubmitButtonTooltip()}
+      />
+
+      <Box
         sx={{
-          "& .MuiDrawer-paper": {
-            width: { xs: "100%", sm: "90%", md: "80%", lg: "70%" },
-            boxSizing: "border-box",
-            bgcolor: "#f5f7fa",
-          },
+          p: { xs: 2, md: 3 },
+          overflow: "auto",
+          height: "calc(100% - 64px)",
         }}
       >
-        {/* Use the new ModalHeader component */}
-        <ModalHeader
-          courseId={courseId}
-          isPending={create.isPending || update.isPending}
-          isFormValid={isFormValid()}
-          onClose={handleCloseAttempt}
-          onSubmit={handleSubmit}
-          tooltipMessage={getSubmitButtonTooltip()}
-        />
-
-        <Box
-          sx={{
-            p: { xs: 2, md: 3 },
-            overflow: "auto",
-            height: "calc(100% - 64px)",
-          }}
-        >
-          <Grid2 container spacing={3}>
-            <Grid2 size={{ xs: 12 }}>
-              <BasicInfoSection {...basicInfoProps} />
-            </Grid2>
-
-            <Grid2 size={{ xs: 12, md: 6 }}>
-              <CategoryLevelSection {...categoryLevelProps} />
-            </Grid2>
-
-            <Grid2 size={{ xs: 12, md: 6 }}>
-              <PublicationStatusSection {...publicationStatusProps} />
-            </Grid2>
-
-            <Grid2 size={{ xs: 12 }}>
-              <PaymentSection {...paymentSectionProps} />
-            </Grid2>
-
-            <Grid2 size={{ xs: 12 }}>
-              <ScheduleSection {...scheduleProps} />
-            </Grid2>
-
-            <Grid2 size={{ xs: 12 }}>
-              <TagsSection {...tagsProps} />
-            </Grid2>
+        <Grid2 container spacing={3}>
+          <Grid2 size={{ xs: 12 }}>
+            <BasicInfoSection {...basicInfoProps} />
           </Grid2>
-        </Box>
-      </Drawer>
 
-      {/* Use the new ConfirmDialog component */}
-      <ConfirmDialog
-        open={confirmClose}
-        onCancel={handleCancelClose}
-        onConfirm={handleConfirmClose}
-      />
-    </>
+          <Grid2 size={{ xs: 12, md: 6 }}>
+            <CategoryLevelSection {...categoryLevelProps} />
+          </Grid2>
+
+          <Grid2 size={{ xs: 12, md: 6 }}>
+            <PublicationStatusSection {...publicationStatusProps} />
+          </Grid2>
+
+          <Grid2 size={{ xs: 12 }}>
+            <PaymentSection {...paymentSectionProps} />
+          </Grid2>
+
+          <Grid2 size={{ xs: 12 }}>
+            <ScheduleSection {...scheduleProps} />
+          </Grid2>
+
+          <Grid2 size={{ xs: 12 }}>
+            <TagsSection {...tagsProps} />
+          </Grid2>
+        </Grid2>
+      </Box>
+    </Drawer>
   );
 }

@@ -71,7 +71,8 @@ export class CoursesService {
    */
   async findAll(
     pagination: PaginationFilter,
-    filter: CourseQueryFilter
+    filter: CourseQueryFilter,
+    onlyPublished: boolean = false
   ): Promise<PaginatedOutput<CourseDto>> {
     const { page, perPage } = pagination;
 
@@ -83,6 +84,7 @@ export class CoursesService {
       skip: page * perPage,
       take: perPage,
       where: {
+        ...(onlyPublished && { is_published: true }),
         ...(filter?.ownerId && {
           owner: {
             applicationUser: {

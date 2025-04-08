@@ -169,7 +169,7 @@ describe("CoursesController", () => {
     const result = await controller.findAll(pagination, {});
 
     expect(prismaMock.course.findMany).toHaveBeenCalledWith({
-      where: {},
+      where: { is_published: true },
       include: {
         owner: {
           include: {

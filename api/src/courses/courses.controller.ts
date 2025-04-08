@@ -34,7 +34,22 @@ export class CoursesController {
     @Query() pagination: PaginationFilter,
     @Query() filters: CourseQueryFilter
   ) {
-    return this.coursesService.findAll(pagination, filters);
+    return this.coursesService.findAll(pagination, filters, true);
+  }
+
+  @Get("physiotherapist")
+  @UseAuth([Role.PHYSIOTHERAPIST])
+  @ApiPaginatedResponse(CourseDto)
+  findAllForPhysiotherapist(
+    @Query() pagination: PaginationFilter,
+    @Query() filters: CourseQueryFilter,
+    @Req() req
+  ) {
+    return this.coursesService.findAll(
+      pagination,
+      { ...filters, ownerId: req.user.sub },
+      false
+    );
   }
 
   /**

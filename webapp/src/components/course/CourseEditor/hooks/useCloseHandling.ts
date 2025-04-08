@@ -1,5 +1,6 @@
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
 import { EditCourse } from "../types";
+import { useDialog } from "../../../../hooks/useDialog";
 
 interface UseCloseHandlingProps {
   editCourse: EditCourse;
@@ -10,7 +11,7 @@ export const useCloseHandling = ({
   editCourse,
   onClose,
 }: UseCloseHandlingProps) => {
-  const [confirmClose, setConfirmClose] = useState(false);
+  const confirm = useDialog();
 
   // Check if the form has any data that would be lost
   const hasUnsavedChanges = useCallback(() => {
@@ -30,29 +31,22 @@ export const useCloseHandling = ({
   }, [editCourse]);
 
   // Handle the close attempt
-  const handleCloseAttempt = useCallback(() => {
-    if (hasUnsavedChanges()) {
-      setConfirmClose(true);
-    } else {
+  const handleCloseAttempt = useCallback(async () => {
+    if (!hasUnsavedChanges()) {
       onClose();
+      return;
     }
-  }, [hasUnsavedChanges, onClose]);
+    const result = await confirm.showConfirmationDialog({
+      title: "Attenzione",
+      content: "Le modifiche non salvate verranno perse",
+      confirmText: "Prosegui",
+      cancelText: "Annulla",
+    });
 
-  // Confirm discard changes
-  const handleConfirmClose = useCallback(() => {
-    setConfirmClose(false);
-    onClose();
-  }, [onClose]);
-
-  // Cancel close attempt
-  const handleCancelClose = useCallback(() => {
-    setConfirmClose(false);
-  }, []);
+    if (result) onClose();
+  }, [confirm, hasUnsavedChanges, onClose]);
 
   return {
-    confirmClose,
     handleCloseAttempt,
-    handleConfirmClose,
-    handleCancelClose,
   };
 };
