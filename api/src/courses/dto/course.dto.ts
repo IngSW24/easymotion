@@ -1,170 +1,139 @@
 import {
   IsArray,
+  IsBoolean,
   IsDate,
   IsEnum,
-  IsInt,
+  IsNumber,
   IsOptional,
   IsPositive,
   IsString,
+  IsUUID,
 } from "class-validator";
-import { ApiProperty } from "@nestjs/swagger";
-import {
-  CourseCategory,
-  CourseAvailability,
-  CourseFrequency,
-  CourseLevel,
-  Prisma,
-} from "@prisma/client";
-import { Expose, Transform, Type } from "class-transformer";
+import { Course, CourseLevel, CourseSession } from "@prisma/client";
+import { Exclude, Expose, Transform, Type } from "class-transformer";
+import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 import { CourseOwnerDto } from "./course-owner.dto";
+import { Decimal } from "@prisma/client/runtime/library";
+import { CourseCategoryDto } from "src/categories/dto/category.dto";
 
-export class CourseEntity {
-  @ApiProperty({ description: "Unique identifier for the course" })
-  @IsString()
+export class CourseDto implements Course {
+  @ApiProperty({ description: "The id of the course" })
+  @IsUUID()
   @Expose()
   id: string;
 
-  @ApiProperty({ description: "Name of the course" })
+  @ApiProperty({ description: "The name of the course" })
   @IsString()
   @Expose()
   name: string;
 
-  @ApiProperty({ description: "Full description of the course" })
+  @ApiProperty({ description: "The complete description of the course" })
   @IsString()
   @Expose()
   description: string;
 
-  @ApiProperty({ description: "Short description of the course" })
+  @ApiProperty({ description: "A brief description of the course" })
   @IsString()
   @Expose()
   short_description: string;
 
-  @ApiProperty({ description: "Location where the course is held (optional)" })
-  @IsOptional()
+  @ApiProperty({
+    description: "Location where the course will be held",
+    required: false,
+  })
   @IsString()
   @Expose()
-  location?: string;
+  @IsOptional()
+  location: string | null;
 
-  @ApiProperty({ description: "Schedule of course session days" })
-  @IsArray()
-  @IsString({ each: true })
-  @Expose()
-  schedule: string[];
-
-  @ApiProperty({ description: "Array of user IDs of instructors" })
+  @ApiProperty({ description: "List of instructors for the course" })
   @IsArray()
   @IsString({ each: true })
   @Expose()
   instructors: string[];
-
-  @ApiProperty({ description: "Category of the course", enum: CourseCategory })
-  @IsEnum(CourseCategory)
-  @Expose()
-  category: CourseCategory;
 
   @ApiProperty({ description: "Level of the course", enum: CourseLevel })
   @IsEnum(CourseLevel)
   @Expose()
   level: CourseLevel;
 
-  @ApiProperty({
-    description: "Frequency of the course",
-    enum: CourseFrequency,
-  })
-  @IsEnum(CourseFrequency)
+  @ApiProperty({ description: "Indicates if the course is free" })
+  @IsBoolean()
   @Expose()
-  frequency: CourseFrequency;
-
-  @ApiProperty({ description: "Duration of each session in POSIX format" })
-  @IsString()
-  @Expose()
-  session_duration: string;
+  is_free: boolean;
 
   @ApiProperty({
-    description: "Cost of the course (optional)",
+    description: "Price of the course",
     required: false,
-    type: "number",
+    type: Number,
   })
   @Transform(({ value }) => value)
   @Type(() => Number)
   @IsOptional()
   @IsPositive()
   @Expose()
-  cost?: Prisma.Decimal;
+  price: Decimal | null;
+
+  @ApiProperty({ description: "Amount of payment required", required: false })
+  @IsNumber()
+  @Expose()
+  @IsOptional()
+  number_of_payments: number | null;
+
+  @ApiProperty({ description: "Indicates if the course is public" })
+  @IsBoolean()
+  @Expose()
+  is_published: boolean;
+
+  @ApiProperty({ description: "Indicates if subscriptions are open" })
+  @IsBoolean()
+  @Expose()
+  subscriptions_open: boolean;
 
   @ApiProperty({
-    description: "Discount for the course (optional)",
+    description: "Amount of maximum subscribers (unlimited if null)",
     required: false,
   })
+  @IsNumber()
   @IsOptional()
-  @IsInt()
-  @IsPositive()
   @Expose()
-  discount?: number;
+  max_subscribers: number | null;
 
-  @ApiProperty({
-    description: "Availability status of the course",
-    enum: CourseAvailability,
-  })
-  @IsEnum(CourseAvailability)
-  @Expose()
-  availability: CourseAvailability;
-
-  @ApiProperty({
-    description: "Priority level for highlighting the course (optional)",
-    required: false,
-  })
-  @IsOptional()
-  @IsInt()
-  @IsPositive()
-  @Expose()
-  highlighted_priority?: number;
-
-  @ApiProperty({
-    description: "Maximum capacity of course members (optional)",
-    required: false,
-  })
-  @IsOptional()
-  @IsInt()
-  @IsPositive()
-  @Expose()
-  members_capacity?: number;
-
-  @ApiProperty({ description: "Number of registered members", default: 0 })
-  @IsInt()
-  @IsPositive()
-  @Expose()
-  num_registered_members: number;
-
-  @ApiProperty({ description: "Tags associated with the course" })
+  @ApiProperty({ description: "Related tags" })
   @IsArray()
   @IsString({ each: true })
   @Expose()
   tags: string[];
 
-  @ApiProperty({
-    description: "Path to the thumbnail image for the course (optional)",
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  @Expose()
-  thumbnail_path?: string;
-
+  @ApiProperty({ description: "Date of creation" })
   @IsDate()
   @Expose()
   created_at: Date;
 
+  @ApiProperty({ description: "Date of last update" })
   @IsDate()
   @Expose()
   updated_at: Date;
 
-  @ApiProperty({ description: "Owner of the course" })
-  @Expose()
+  @ApiProperty({ description: "The owner of the course" })
   @Type(() => CourseOwnerDto)
+  @Expose()
   owner: CourseOwnerDto;
 
-  constructor(partial: Partial<CourseEntity>) {
-    Object.assign(this, partial);
-  }
+  @Exclude()
+  @ApiHideProperty()
+  owner_id: string;
+
+  @ApiProperty({ description: "The category of the course" })
+  @Type(() => CourseCategoryDto)
+  @Expose()
+  category: CourseCategoryDto;
+
+  @ApiHideProperty()
+  @Exclude()
+  category_id: string;
+
+  @ApiProperty({ description: "Sessions of the course" })
+  @Expose()
+  sessions: CourseSession[];
 }

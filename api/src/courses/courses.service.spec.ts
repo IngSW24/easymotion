@@ -1,17 +1,11 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { CoursesService } from "./courses.service";
 import { PrismaService } from "nestjs-prisma";
-import { CourseEntity } from "./dto/course.dto";
+import { CourseDto } from "./dto/course.dto";
 import { CreateCourseDto } from "./dto/create-course.dto";
-import { UpdateCoursesDto } from "./dto/update-course.dto";
+import { UpdateCourseDto } from "./dto/update-course.dto";
 import { Decimal } from "@prisma/client/runtime/library";
-import {
-  Course,
-  CourseAvailability,
-  CourseCategory,
-  CourseFrequency,
-  CourseLevel,
-} from "@prisma/client";
+import { Course, CourseLevel } from "@prisma/client";
 import { plainToInstance } from "class-transformer";
 import { randomUUID } from "crypto";
 
@@ -49,20 +43,23 @@ describe("CoursesService", () => {
   });
 
   // Create Method Test
-  it("should create an course", async () => {
+  it("should create a course", async () => {
     const dto: CreateCourseDto = {
       name: "Test Course",
-      description: "ddddddddddd",
-      short_description: "dddddddddddd",
-      schedule: [],
+      description: "Test Description",
+      short_description: "Short Description",
       instructors: [],
-      category: CourseCategory.ACQUAGYM,
+      category_id: randomUUID(),
       level: CourseLevel.BASIC,
-      frequency: CourseFrequency.SINGLE_SESSION,
-      session_duration: "111",
-      availability: CourseAvailability.ACTIVE,
-      num_registered_members: 0,
       tags: ["aa", "bb"],
+      location: "",
+      is_free: false,
+      price: new Decimal(12),
+      number_of_payments: 0,
+      is_published: false,
+      subscriptions_open: false,
+      max_subscribers: 0,
+      sessions: [],
     };
 
     prismaMock.course.create.mockResolvedValue(dto);
@@ -73,32 +70,35 @@ describe("CoursesService", () => {
       data: { ...dto, owner_id: "1" },
     });
     expect(result).toEqual({
-      ...new CourseEntity({
-        ...dto,
-      }),
+      ...dto,
     });
   });
 
   // FindAll Method Test
   it("should return paginated courses", async () => {
     const pagination = { page: 0, perPage: 2 };
-    const mockCourses: CourseEntity[] = [
+    const mockCourses: CourseDto[] = [
       {
         id: "",
         name: "",
         description: "",
         short_description: "",
-        schedule: [],
         instructors: [],
-        category: "ACQUAGYM",
-        level: "BASIC",
-        frequency: "SINGLE_SESSION",
-        session_duration: "",
-        availability: "ACTIVE",
-        num_registered_members: 0,
+        category: {
+          id: randomUUID(),
+          name: "Category",
+        },
+        level: CourseLevel.BASIC,
         tags: [],
         created_at: new Date(),
         updated_at: new Date(),
+        location: "",
+        is_free: false,
+        price: new Decimal(0),
+        number_of_payments: 0,
+        is_published: false,
+        subscriptions_open: false,
+        max_subscribers: 0,
         owner: {
           id: randomUUID(),
           email: "test@mail.com",
@@ -106,23 +106,31 @@ describe("CoursesService", () => {
           lastName: "",
           middleName: "",
         },
+        sessions: [],
+        owner_id: randomUUID(),
+        category_id: randomUUID(),
       },
       {
         id: "",
         name: "",
         description: "",
         short_description: "",
-        schedule: [],
         instructors: [],
-        category: "ACQUAGYM",
-        level: "BASIC",
-        frequency: "SINGLE_SESSION",
-        session_duration: "",
-        availability: "ACTIVE",
-        num_registered_members: 0,
+        category: {
+          id: randomUUID(),
+          name: "Category",
+        },
+        level: CourseLevel.BASIC,
         tags: [],
         created_at: new Date(),
         updated_at: new Date(),
+        location: "",
+        is_free: false,
+        price: new Decimal(0),
+        number_of_payments: 0,
+        is_published: false,
+        subscriptions_open: false,
+        max_subscribers: 0,
         owner: {
           id: randomUUID(),
           email: "test@mail.com",
@@ -130,6 +138,9 @@ describe("CoursesService", () => {
           lastName: "",
           middleName: "",
         },
+        sessions: [],
+        owner_id: randomUUID(),
+        category_id: randomUUID(),
       },
     ];
     const totalItems = 5;
@@ -146,6 +157,8 @@ describe("CoursesService", () => {
             applicationUser: true,
           },
         },
+        category: true,
+        sessions: true,
       },
       orderBy: {
         created_at: "desc",
@@ -157,7 +170,7 @@ describe("CoursesService", () => {
 
     expect(result).toEqual({
       data: mockCourses.map((course) =>
-        plainToInstance(CourseEntity, {
+        plainToInstance(CourseDto, {
           ...course,
           owner: undefined,
         })
@@ -176,29 +189,29 @@ describe("CoursesService", () => {
   it("should return a single course", async () => {
     const id = "1";
     const ownerUuid = randomUUID();
-    const mockCourse: Course & { owner: any } = {
+    const mockCourse: Course & { owner: any; category: any; sessions: any } = {
       id: "",
       name: "",
       description: "",
       short_description: "",
-      schedule: [],
       instructors: [],
-      category: "ACQUAGYM",
-      level: "BASIC",
-      frequency: "SINGLE_SESSION",
-      session_duration: "",
-      availability: "ACTIVE",
-      num_registered_members: 0,
+      category: {
+        id: randomUUID(),
+        name: "Category",
+      },
+      level: CourseLevel.BASIC,
       tags: [],
       created_at: new Date(),
       updated_at: new Date(),
       location: "",
-      cost: new Decimal(10),
-      discount: 0,
-      highlighted_priority: 0,
-      members_capacity: 0,
-      thumbnail_path: "",
+      is_free: false,
+      price: new Decimal(0),
+      number_of_payments: 0,
+      is_published: false,
+      subscriptions_open: false,
+      max_subscribers: 0,
       owner_id: ownerUuid,
+      category_id: randomUUID(),
       owner: {
         applicationUser: {
           id: ownerUuid,
@@ -208,12 +221,13 @@ describe("CoursesService", () => {
           middleName: "",
         },
       },
+      sessions: [],
     };
 
     prismaMock.course.findUniqueOrThrow.mockResolvedValue(mockCourse);
 
     const result = await service.findOne(id);
-    const expected = plainToInstance(CourseEntity, {
+    const expected = plainToInstance(CourseDto, {
       ...mockCourse,
       owner: mockCourse.owner.applicationUser,
     });
@@ -224,6 +238,8 @@ describe("CoursesService", () => {
         owner: {
           include: { applicationUser: true },
         },
+        category: true,
+        sessions: true,
       },
     });
 
@@ -231,18 +247,30 @@ describe("CoursesService", () => {
   });
 
   // Update Method Test
-  it("should update an course", async () => {
+  it("should update a course", async () => {
     const id = "1";
-    const dto: UpdateCoursesDto = {
-      instructors: ["Updated Organizer"],
-      cost: new Decimal(250),
+    const dto: UpdateCourseDto = {
+      instructors: ["Updated Instructor"],
+      price: new Decimal(250),
+      category_id: "",
+      sessions: [],
+      name: "",
+      description: "",
+      short_description: "",
+      location: "",
+      level: "BASIC",
+      is_free: false,
+      number_of_payments: 0,
+      is_published: false,
+      subscriptions_open: false,
+      max_subscribers: 0,
+      tags: [],
     };
 
-    const updatedCourse = new UpdateCoursesDto({
+    const updatedCourse = {
       id,
       ...dto,
-      cost: new Decimal(250),
-    });
+    };
 
     prismaMock.course.update.mockResolvedValue(updatedCourse);
 
@@ -252,15 +280,11 @@ describe("CoursesService", () => {
       where: { id },
       data: { ...dto },
     });
-    expect(result).toEqual(
-      new CourseEntity({
-        ...updatedCourse,
-      })
-    );
+    expect(result).toEqual(plainToInstance(CourseDto, updatedCourse));
   });
 
   // Remove Method Test
-  it("should remove an course", async () => {
+  it("should remove a course", async () => {
     const id = "1";
 
     prismaMock.course.delete.mockResolvedValue(undefined);

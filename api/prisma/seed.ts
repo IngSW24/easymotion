@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import getUsers from "./seed-data/users";
 import getCourses from "./seed-data/courses";
+import { getCategories } from "./seed-data/categories";
 
 const prisma = new PrismaClient();
 
@@ -34,6 +35,16 @@ async function main() {
           },
         });
       }
+    });
+  }
+
+  const categories = getCategories();
+
+  for (const category of categories) {
+    await prisma.courseCategory.upsert({
+      where: { id: category.id },
+      update: {},
+      create: { ...category },
     });
   }
 

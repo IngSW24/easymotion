@@ -3,12 +3,12 @@ import { CoursesController } from "./courses.controller";
 import { CoursesService } from "./courses.service";
 import { PrismaService } from "nestjs-prisma";
 import { CreateCourseDto } from "./dto/create-course.dto";
-import { UpdateCoursesDto } from "./dto/update-course.dto";
-import { CourseEntity } from "./dto/course.dto";
+import { UpdateCourseDto } from "./dto/update-course.dto";
+import { CourseDto } from "./dto/course.dto";
 import { Decimal } from "@prisma/client/runtime/library";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { randomUUID } from "node:crypto";
-import { Course } from "@prisma/client";
+import { Course, CourseLevel } from "@prisma/client";
 import { plainToInstance } from "class-transformer";
 
 describe("CoursesController", () => {
@@ -44,34 +44,29 @@ describe("CoursesController", () => {
 
   // Test Create
   it("should create a new course", async () => {
-    const dto = new CreateCourseDto({
-      name: "aa",
-      description: "",
-      short_description: "",
-      schedule: [],
+    const dto: CreateCourseDto = {
+      name: "Test Course",
+      description: "Test Description",
+      short_description: "Short Description",
       instructors: [],
-      category: "ACQUAGYM",
-      level: "BASIC",
-      frequency: "SINGLE_SESSION",
-      session_duration: "",
-      availability: "ACTIVE",
-      num_registered_members: 0,
-      tags: [],
-      cost: 100,
-      created_at: new Date(),
-      updated_at: new Date(),
-      discount: null,
-      highlighted_priority: null,
-      location: null,
-      members_capacity: null,
-      thumbnail_path: null,
-    });
+      category_id: randomUUID(),
+      level: CourseLevel.BASIC,
+      tags: ["aa", "bb"],
+      location: "",
+      is_free: false,
+      price: new Decimal(100),
+      number_of_payments: 0,
+      is_published: false,
+      subscriptions_open: false,
+      max_subscribers: 0,
+      sessions: [],
+    };
 
-    const createdCourse = new CourseEntity({
+    const createdCourse = {
       id: "1",
       ...dto,
-      cost: new Decimal(100),
-    });
+      price: new Decimal(100),
+    };
 
     prismaMock.course.create.mockResolvedValue(createdCourse);
 
@@ -80,47 +75,50 @@ describe("CoursesController", () => {
     expect(prismaMock.course.create).toHaveBeenCalledWith({
       data: { ...dto, owner_id: "1" },
     });
-    expect(result).toEqual({
-      ...createdCourse,
-      cost: createdCourse.cost.toNumber(),
-    });
+    expect(result).toEqual(
+      plainToInstance(CourseDto, {
+        ...createdCourse,
+        price: createdCourse.price.toNumber(),
+      })
+    );
   });
 
   // Test FindAll
   it("should return paginated courses", async () => {
     const pagination: PaginationFilter = { page: 0, perPage: 10 };
 
-    const mockCourses: CourseEntity[] = [
+    const mockCourses: CourseDto[] = [
       {
         id: "",
         name: "",
         description: "",
         short_description: "",
-        schedule: [],
         instructors: [],
-        category: "ACQUAGYM",
-        level: "BASIC",
-        discount: null,
-        frequency: "SINGLE_SESSION",
-        cost: undefined,
-        location: null,
-        members_capacity: null,
-        highlighted_priority: null,
-        session_duration: "",
-        availability: "ACTIVE",
-        num_registered_members: 0,
+        category: {
+          id: randomUUID(),
+          name: "Category",
+        },
+        level: CourseLevel.BASIC,
         tags: [],
         created_at: new Date(),
         updated_at: new Date(),
-        thumbnail_path: null,
-
+        location: "",
+        is_free: false,
+        price: new Decimal(0),
+        number_of_payments: 0,
+        is_published: false,
+        subscriptions_open: false,
+        max_subscribers: 0,
         owner: {
-          id: "",
+          id: randomUUID(),
           email: "",
           firstName: "",
           lastName: "",
           middleName: "",
         },
+        sessions: [],
+        owner_id: randomUUID(),
+        category_id: randomUUID(),
       },
     ];
     const totalItems = 1;
@@ -137,6 +135,8 @@ describe("CoursesController", () => {
             applicationUser: true,
           },
         },
+        category: true,
+        sessions: true,
       },
       orderBy: {
         created_at: "desc",
@@ -147,7 +147,9 @@ describe("CoursesController", () => {
     expect(prismaMock.course.count).toHaveBeenCalled();
 
     expect(result).toEqual({
-      data: mockCourses.map((x) => ({ ...x, owner: undefined })),
+      data: mockCourses.map((x) =>
+        plainToInstance(CourseDto, { ...x, owner: undefined })
+      ),
       meta: {
         currentPage: pagination.page,
         items: 1,
@@ -161,29 +163,29 @@ describe("CoursesController", () => {
   // Test FindOne
   it("should return a single course", async () => {
     const id = "1";
-    const mockCourse: Course & { owner: any } = {
+    const mockCourse: Course & { owner: any; category: any; sessions: any } = {
       id,
-      description: "aaaaa",
-      short_description: "",
-      schedule: [],
+      name: "Test Course",
+      description: "Test Description",
+      short_description: "Short Description",
       instructors: [],
-      category: "ACQUAGYM",
-      level: "BASIC",
-      frequency: "SINGLE_SESSION",
-      session_duration: "",
-      availability: "ACTIVE",
-      num_registered_members: 0,
+      category: {
+        id: randomUUID(),
+        name: "Category",
+      },
+      level: CourseLevel.BASIC,
       tags: [],
-      name: "aaaaaaaaaa",
       created_at: new Date(),
       updated_at: new Date(),
       location: "",
-      cost: new Decimal(10),
-      discount: 0,
-      highlighted_priority: 0,
-      members_capacity: 0,
-      thumbnail_path: "",
+      is_free: false,
+      price: new Decimal(10),
+      number_of_payments: 0,
+      is_published: false,
+      subscriptions_open: false,
+      max_subscribers: 0,
       owner_id: randomUUID(),
+      category_id: randomUUID(),
       owner: {
         applicationUser: {
           id: randomUUID(),
@@ -193,12 +195,13 @@ describe("CoursesController", () => {
           middleName: "mname",
         },
       },
+      sessions: [],
     };
 
     prismaMock.course.findUniqueOrThrow.mockResolvedValue(mockCourse);
 
     const result = await controller.findOne(id);
-    const expected = plainToInstance(CourseEntity, {
+    const expected = plainToInstance(CourseDto, {
       ...mockCourse,
       owner: mockCourse.owner.applicationUser,
     });
@@ -211,6 +214,8 @@ describe("CoursesController", () => {
             applicationUser: true,
           },
         },
+        category: true,
+        sessions: true,
       },
     });
     expect(result).toEqual(expected);
@@ -219,16 +224,28 @@ describe("CoursesController", () => {
   // Test Update
   it("should update a course", async () => {
     const id = "1";
-    const dto: UpdateCoursesDto = {
-      instructors: ["Updated Organizer"],
-      cost: new Decimal(250),
+    const dto: UpdateCourseDto = {
+      instructors: ["Updated Instructor"],
+      price: new Decimal(250),
+      category_id: "",
+      sessions: [],
+      name: "",
+      description: "",
+      short_description: "",
+      location: "",
+      level: "BASIC",
+      is_free: false,
+      number_of_payments: 0,
+      is_published: false,
+      subscriptions_open: false,
+      max_subscribers: 0,
+      tags: [],
     };
 
-    const updatedCourse = new UpdateCoursesDto({
+    const updatedCourse = {
       id,
       ...dto,
-      cost: new Decimal(250),
-    });
+    };
 
     prismaMock.course.update.mockResolvedValue(updatedCourse);
 
@@ -238,11 +255,7 @@ describe("CoursesController", () => {
       where: { id },
       data: { ...dto },
     });
-    expect(result).toEqual(
-      new CourseEntity({
-        ...updatedCourse,
-      })
-    );
+    expect(result).toEqual(plainToInstance(CourseDto, updatedCourse));
   });
 
   // Test Remove
