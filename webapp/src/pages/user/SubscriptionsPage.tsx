@@ -1,9 +1,9 @@
 import { Box, Grid2, Typography } from "@mui/material";
 import useSubscriptions from "../../hooks/useSubscription";
-import { CourseFilters } from "../../components/course/FilterBlock/types";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import CourseCard from "../../components/course/CourseCard/CourseCard";
 import { useAuth } from "@easymotion/auth-context";
+import { CourseFilters } from "../../hooks/useCourses";
 
 export interface SubsProp {
   filters?: CourseFilters;
@@ -41,7 +41,7 @@ export default function SubscriptionsPage(props: SubsProp) {
               <LoadingSpinner />
             ) : (
               <>
-                {subsRepo.getSubscription.data?.length === 0 ? (
+                {subsRepo.getSubscription.data?.data.length === 0 ? (
                   <Box sx={{ width: "100%" }}>
                     <Typography
                       align="center"
@@ -58,7 +58,7 @@ export default function SubscriptionsPage(props: SubsProp) {
                   </Box>
                 ) : (
                   <>
-                    {subsRepo.getSubscription.data?.map((e) => (
+                    {subsRepo.getSubscription.data?.data.map((e) => (
                       <Grid2
                         key={e.id}
                         size={{ xs: 1, sm: 1, md: 1, lg: 1, xl: 1 }}

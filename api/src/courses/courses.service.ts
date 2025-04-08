@@ -8,7 +8,7 @@ import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { instanceToPlain, plainToInstance } from "class-transformer";
 import { toPaginatedOutput } from "src/common/utils/pagination";
 import { CourseQueryFilter } from "./dto/filters/course-query-filter.dto";
-import { Prisma } from "@prisma/client";
+import { CourseLevel, Prisma } from "@prisma/client";
 
 @Injectable()
 /**
@@ -29,8 +29,6 @@ export class CoursesService {
    * @returns The newly created course mapped to a DTO.
    */
   async create(newCourse: CreateCourseDto, ownerId: string) {
-    console.log("new course is", newCourse);
-
     const course = await this.prismaService.course.create({
       data: {
         name: newCourse.name,
@@ -79,18 +77,37 @@ export class CoursesService {
 
     const count = await this.prismaService.course.count();
 
+    const categoryIds = filter.categoryIds?.split(",");
+
     const courses = await this.prismaService.course.findMany({
       skip: page * perPage,
       take: perPage,
-      ...(filter?.ownerId && {
-        where: {
+      where: {
+        ...(filter?.ownerId && {
           owner: {
             applicationUser: {
               id: filter.ownerId,
             },
           },
-        },
-      }),
+        }),
+        ...(filter?.searchText && {
+          name: {
+            contains: filter.searchText,
+            mode: "insensitive",
+          },
+        }),
+        ...(categoryIds && {
+          category: {
+            id: {
+              in: categoryIds,
+            },
+          },
+        }),
+        ...(filter?.level && {
+          level: filter.level as CourseLevel,
+        }),
+      },
+
       include: {
         owner: {
           include: {
@@ -183,6 +200,7 @@ export class CoursesService {
     });
 
     delete cleanUpdates.sessions;
+    delete cleanUpdates.category_id;
 
     const data: Prisma.CourseUpdateInput = {
       ...cleanUpdates,
@@ -194,7 +212,7 @@ export class CoursesService {
     };
 
     if (updates.sessions) {
-      // Step 1: get all existing session IDs for this course
+      // get all existing session IDs for this course
       const existingSessions = await this.prismaService.courseSession.findMany({
         where: { course_id: courseId },
         select: { id: true },
@@ -248,19 +266,56 @@ export class CoursesService {
    * @param userId the id of the logged in user
    * @param pagination the pagination filter
    */
-  async findSubscribedCourses(userId: string, pagination: PaginationFilter) {
+  async findSubscribedCourses(
+    userId: string,
+    pagination: PaginationFilter,
+    filters: CourseQueryFilter
+  ) {
     const count = await this.prismaService.courseFinalUser.count({
       where: { final_user_id: userId },
     });
 
     const courses = await this.prismaService.courseFinalUser.findMany({
-      where: { final_user_id: userId },
+      where: {
+        AND: [
+          { final_user_id: userId },
+          {
+            ...(filters.searchText
+              ? {
+                  OR: [
+                    {
+                      course: {
+                        name: {
+                          contains: filters.searchText,
+                          mode: "insensitive",
+                        },
+                      },
+                    },
+                    {
+                      course: {
+                        description: {
+                          contains: filters.searchText,
+                          mode: "insensitive",
+                        },
+                      },
+                    },
+                  ],
+                }
+              : {}),
+            ...(filters.categoryIds
+              ? { category_id: { in: filters.categoryIds.split(",") } }
+              : {}),
+            ...(filters.level ? { level: filters.level } : {}),
+          },
+        ],
+      },
       include: {
         course: {
           include: {
             owner: {
               include: { applicationUser: true },
             },
+            category: true,
           },
         },
       },

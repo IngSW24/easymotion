@@ -1,6 +1,6 @@
 import { ApiProperty, OmitType, PartialType } from "@nestjs/swagger";
 import { CreateCourseDto, CreateCourseSessionDto } from "./create-course.dto";
-import { IsArray, IsOptional, IsUUID } from "class-validator";
+import { IsArray, IsOptional, IsString } from "class-validator";
 import { Type } from "class-transformer";
 export class UpdateCourseSessionDto extends CreateCourseSessionDto {
   @ApiProperty({
@@ -9,7 +9,7 @@ export class UpdateCourseSessionDto extends CreateCourseSessionDto {
     required: false,
   })
   @IsOptional()
-  @IsUUID()
+  @IsString()
   id?: string;
 }
 

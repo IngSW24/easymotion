@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Box, Typography, Grid, Alert } from "@mui/material";
+import { Box, Typography, Alert, Grid2 } from "@mui/material";
 import { DateTime } from "luxon";
 import CalendarPicker from "./CalendarPicker";
 import RecurringOptions from "./RecurringOptions";
@@ -214,15 +214,15 @@ export default function SessionBuilder({
         Programmazione
       </Typography>
 
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
+      <Grid2 container spacing={3}>
+        <Grid2 size={{ xs: 12 }}>
           <SessionTypeSelector
             value={sessionType}
             onChange={handleSessionTypeChange}
           />
-        </Grid>
+        </Grid2>
 
-        <Grid item xs={12} md={sessionType === "recurring" ? 8 : 12}>
+        <Grid2 size={{ xs: 12, md: sessionType === "recurring" ? 8 : 12 }}>
           <CalendarPicker
             sessionType={sessionType}
             editMode={editMode}
@@ -235,10 +235,10 @@ export default function SessionBuilder({
             toggleDateSelection={toggleDateSelection}
             handleRecurringBaseDateChange={handleRecurringBaseDateChange}
           />
-        </Grid>
+        </Grid2>
 
         {sessionType === "recurring" && (
-          <Grid item xs={12} md={4}>
+          <Grid2 size={{ xs: 12, md: 4 }}>
             <RecurringOptions
               sessionCount={sessionCount}
               repeatFrequency={repeatFrequency}
@@ -248,23 +248,23 @@ export default function SessionBuilder({
               onResetOptions={handleResetOptions}
               sessionsCount={session.length}
             />
-          </Grid>
+          </Grid2>
         )}
 
         {/* Sessions List */}
-        <Grid item xs={12}>
+        <Grid2 size={{ xs: 12 }}>
           <SessionList
             session={session}
             onSessionUpdate={(s) => setSession(s)}
           />
-        </Grid>
+        </Grid2>
 
         {error && (
-          <Grid item xs={12}>
+          <Grid2 size={{ xs: 12 }}>
             <Alert severity="error">{error}</Alert>
-          </Grid>
+          </Grid2>
         )}
-      </Grid>
+      </Grid2>
     </Box>
   );
 }

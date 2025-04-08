@@ -63,7 +63,7 @@ model CourseSession {
   id         String   @id @default(uuid())
   start_time DateTime
   end_time   DateTime
-  course     Course   @relation(fields: [course_id], references: [id])
+  course     Course   @relation(fields: [course_id], references: [id], onDelete: Cascade)
   course_id  String
 }
 

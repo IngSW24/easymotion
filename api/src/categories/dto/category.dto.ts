@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { CourseCategory } from "@prisma/client";
 import { Expose } from "class-transformer";
-import { IsString, IsUUID } from "class-validator";
+import { IsString } from "class-validator";
 
 export class CourseCategoryDto implements CourseCategory {
   @ApiProperty({ description: "The name of the course category" })
@@ -11,6 +11,6 @@ export class CourseCategoryDto implements CourseCategory {
 
   @ApiProperty({ description: "The id of the course category" })
   @Expose()
-  @IsUUID()
+  @IsString()
   id: string;
 }

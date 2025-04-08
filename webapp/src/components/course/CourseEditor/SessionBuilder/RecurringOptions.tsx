@@ -5,13 +5,13 @@ import {
   FormControl,
   FormControlLabel,
   FormLabel,
-  Grid,
   Radio,
   RadioGroup,
   InputAdornment,
   Paper,
   TextField,
   Typography,
+  Grid2,
 } from "@mui/material";
 import { EventRepeat, Timer, Refresh, Warning } from "@mui/icons-material";
 
@@ -50,18 +50,20 @@ export default function RecurringOptions({
         </Typography>
       </Box>
 
-      <Grid container spacing={3} alignItems="center">
-        <Grid item xs={12}>
+      <Grid2 container spacing={3} alignItems="center">
+        <Grid2 size={{ xs: 12 }}>
           <TextField
             label="Numero di sessioni"
             type="number"
-            InputProps={{
-              inputProps: { min: 1 },
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Timer fontSize="small" />
-                </InputAdornment>
-              ),
+            slotProps={{
+              input: {
+                inputProps: { min: 1 },
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Timer fontSize="small" />
+                  </InputAdornment>
+                ),
+              },
             }}
             value={sessionCount}
             disabled={manualEdited}
@@ -69,8 +71,8 @@ export default function RecurringOptions({
             size="small"
             fullWidth
           />
-        </Grid>
-        <Grid item xs={12}>
+        </Grid2>
+        <Grid2 size={{ xs: 12 }}>
           <FormControl component="fieldset" fullWidth>
             <FormLabel component="legend" sx={{ fontSize: "0.75rem", mb: 0.5 }}>
               Frequenza
@@ -97,8 +99,8 @@ export default function RecurringOptions({
               />
             </RadioGroup>
           </FormControl>
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
 
       {manualEdited && (
         <Box sx={{ mt: 2 }}>

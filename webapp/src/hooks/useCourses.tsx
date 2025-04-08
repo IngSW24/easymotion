@@ -5,9 +5,14 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { CreateCourseDto, UpdateCourseDto } from "@easymotion/openapi";
-import { CourseFilters } from "../components/course/FilterBlock/types";
 import { useSnack } from "./useSnack";
 import { useApiClient } from "@easymotion/auth-context";
+
+export type CourseFilters = {
+  searchText?: string;
+  categories?: string[];
+  level?: string;
+};
 
 type UseCoursesProps = {
   fetchId?: string;
@@ -31,7 +36,7 @@ type UpdateMutationParams = {
 export const useCourses = (props: UseCoursesProps = {}) => {
   const {
     fetchId = "",
-    page,
+    page = 0,
     perPage = 100,
     fetchAll,
     filters,
@@ -42,39 +47,19 @@ export const useCourses = (props: UseCoursesProps = {}) => {
   const queryClient = useQueryClient();
 
   const get = useQuery({
-    queryKey: ["courses", { page, perPage }, { filters }],
+    queryKey: ["courses", { page, perPage, ...filters }],
     queryFn: async () => {
       const response = await api.courses.coursesControllerFindAll({
         page,
         perPage,
-      });
-      const fullData = response.data.data;
-
-      if (!filters) return fullData;
-
-      const filteredData = fullData.filter((course) => {
-        if (
-          filters.searchText &&
-          !course.name.toLowerCase().includes(filters.searchText.toLowerCase())
-        )
-          return false;
-
-        if (
-          filters.advanced.categories.length > 0 &&
-          !filters.advanced.categories.some((x) => course.category.id === x.id)
-        )
-          return false;
-
-        if (
-          filters.advanced.levels.length > 0 &&
-          !filters.advanced.levels.includes(course.level)
-        )
-          return false;
-
-        return true;
+        ...(filters?.searchText && { searchText: filters.searchText }),
+        ...(filters?.categories && {
+          categoryIds: filters?.categories?.join(","),
+        }),
+        ...(filters?.level && { level: filters.level }),
       });
 
-      return filteredData;
+      return response.data.data;
     },
     enabled: fetchAll,
   });

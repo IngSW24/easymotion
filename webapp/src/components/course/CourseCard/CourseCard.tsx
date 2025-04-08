@@ -38,10 +38,7 @@ export default function CourseCard(props: CourseCardProps) {
         margin: "auto",
       }}
     >
-      <CardMedia
-        sx={{ height: 180 }}
-        image={`/${course.category.name.toLowerCase()}.jpg`}
-      />
+      <CardMedia sx={{ height: 180 }} image={`/${course.category.id}.jpg`} />
       <CardContent
         sx={{
           flexGrow: 1,

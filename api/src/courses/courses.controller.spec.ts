@@ -26,6 +26,9 @@ describe("CoursesController", () => {
         update: jest.fn(),
         delete: jest.fn(),
       },
+      courseSession: {
+        findMany: jest.fn(),
+      },
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -44,12 +47,13 @@ describe("CoursesController", () => {
 
   // Test Create
   it("should create a new course", async () => {
+    const categoryId = "f81eed98-99c5-469d-a546-6c9e6d9d7988";
     const dto: CreateCourseDto = {
       name: "Test Course",
       description: "Test Description",
       short_description: "Short Description",
       instructors: [],
-      category_id: randomUUID(),
+      category_id: categoryId,
       level: CourseLevel.BASIC,
       tags: ["aa", "bb"],
       location: "",
@@ -73,7 +77,43 @@ describe("CoursesController", () => {
     const result = await controller.create(dto, { user: { sub: "1" } });
 
     expect(prismaMock.course.create).toHaveBeenCalledWith({
-      data: { ...dto, owner_id: "1" },
+      data: {
+        name: "Test Course",
+        description: "Test Description",
+        short_description: "Short Description",
+        instructors: [],
+        category: {
+          connect: {
+            id: categoryId,
+          },
+        },
+        level: CourseLevel.BASIC,
+        tags: ["aa", "bb"],
+        location: "",
+        is_free: false,
+        price: new Decimal(100),
+        number_of_payments: 0,
+        is_published: false,
+        subscriptions_open: false,
+        max_subscribers: 0,
+        owner: {
+          connect: {
+            applicationUserId: "1",
+          },
+        },
+        sessions: {
+          create: [],
+        },
+      },
+      include: {
+        category: true,
+        owner: {
+          include: {
+            applicationUser: true,
+          },
+        },
+        sessions: true,
+      },
     });
     expect(result).toEqual(
       plainToInstance(CourseDto, {
@@ -129,6 +169,7 @@ describe("CoursesController", () => {
     const result = await controller.findAll(pagination, {});
 
     expect(prismaMock.course.findMany).toHaveBeenCalledWith({
+      where: {},
       include: {
         owner: {
           include: {
@@ -227,35 +268,97 @@ describe("CoursesController", () => {
     const dto: UpdateCourseDto = {
       instructors: ["Updated Instructor"],
       price: new Decimal(250),
-      category_id: "",
-      sessions: [],
-      name: "",
-      description: "",
-      short_description: "",
-      location: "",
-      level: "BASIC",
+      name: "Updated Course",
+      description: "Updated Description",
+      short_description: "Updated Short Description",
+      location: "Updated Location",
+      level: CourseLevel.MEDIUM,
       is_free: false,
-      number_of_payments: 0,
-      is_published: false,
-      subscriptions_open: false,
-      max_subscribers: 0,
-      tags: [],
+      number_of_payments: 3,
+      is_published: true,
+      subscriptions_open: true,
+      max_subscribers: 20,
+      tags: ["tag1", "tag2"],
+      sessions: [],
     };
 
     const updatedCourse = {
       id,
-      ...dto,
+      name: dto.name,
+      description: dto.description,
+      short_description: dto.short_description,
+      instructors: dto.instructors,
+      location: dto.location,
+      level: dto.level,
+      is_free: dto.is_free,
+      price: dto.price,
+      number_of_payments: dto.number_of_payments,
+      is_published: dto.is_published,
+      subscriptions_open: dto.subscriptions_open,
+      max_subscribers: dto.max_subscribers,
+      tags: dto.tags,
+      created_at: new Date(),
+      updated_at: new Date(),
+      owner_id: randomUUID(),
+      category_id: randomUUID(),
+      category: {
+        id: randomUUID(),
+        name: "Category",
+      },
+      owner: {
+        applicationUser: {
+          id: randomUUID(),
+          email: "test@email.com",
+          firstName: "fname",
+          lastName: "lname",
+          middleName: "mname",
+        },
+      },
+      sessions: [],
     };
 
+    prismaMock.courseSession.findMany.mockResolvedValue([]);
+    prismaMock.course.findUniqueOrThrow.mockResolvedValue(updatedCourse);
     prismaMock.course.update.mockResolvedValue(updatedCourse);
 
     const result = await controller.update(id, dto);
 
-    expect(prismaMock.course.update).toHaveBeenCalledWith({
-      where: { id },
-      data: { ...dto },
+    // Check that update was called with correct ID
+    expect(prismaMock.course.update.mock.calls[0][0].where).toEqual({ id });
+
+    // Check that data contains all the expected fields with correct values
+    const updateData = prismaMock.course.update.mock.calls[0][0].data;
+    expect(updateData.name).toBe(dto.name);
+    expect(updateData.description).toBe(dto.description);
+    expect(updateData.short_description).toBe(dto.short_description);
+    expect(updateData.instructors).toEqual(dto.instructors);
+    expect(updateData.location).toBe(dto.location);
+    expect(updateData.level).toBe(dto.level);
+    expect(updateData.is_free).toBe(dto.is_free);
+    expect(updateData.number_of_payments).toBe(dto.number_of_payments);
+    expect(updateData.is_published).toBe(dto.is_published);
+    expect(updateData.subscriptions_open).toBe(dto.subscriptions_open);
+    expect(updateData.max_subscribers).toBe(dto.max_subscribers);
+    expect(updateData.tags).toEqual(dto.tags);
+
+    // Check that correct include options were used
+    expect(prismaMock.course.update.mock.calls[0][0].include).toEqual({
+      owner: {
+        include: {
+          applicationUser: true,
+        },
+      },
+      category: true,
+      sessions: true,
     });
-    expect(result).toEqual(plainToInstance(CourseDto, updatedCourse));
+
+    // Check result
+    expect(result).toEqual(
+      plainToInstance(CourseDto, {
+        ...updatedCourse,
+        owner: updatedCourse.owner.applicationUser,
+      })
+    );
   });
 
   // Test Remove

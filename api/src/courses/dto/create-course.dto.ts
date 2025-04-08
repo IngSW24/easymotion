@@ -1,7 +1,7 @@
 import { ApiProperty, OmitType } from "@nestjs/swagger";
 import { CourseDto, CourseSessionDto } from "./course.dto";
 import { Expose, Type } from "class-transformer";
-import { IsArray, IsUUID } from "class-validator";
+import { IsArray, IsString } from "class-validator";
 
 export class CreateCourseSessionDto extends OmitType(CourseSessionDto, [
   "id",
@@ -18,7 +18,7 @@ export class CreateCourseDto extends OmitType(CourseDto, [
   "category_id",
 ]) {
   @ApiProperty({ description: "id of the existent category" })
-  @IsUUID()
+  @IsString()
   @Expose()
   category_id: string;
 

@@ -7,7 +7,8 @@ import { useCourses } from "../../hooks/useCourses";
 import { useCallback, useEffect, useState } from "react";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import { Add, FitnessCenter } from "@mui/icons-material";
-import CreateCourseModal from "../../components/course/CreateCourse/CreateCourseModal";
+import CourseEditModal from "../../components/course/CourseEditor/CourseEditModal";
+import { useDialog } from "../../hooks/useDialog";
 
 enum CurrentState {
   "LOADING",
@@ -20,7 +21,11 @@ export default function DashboardHome() {
     CurrentState.LOADING
   );
 
+  const confirm = useDialog();
   const [createOpen, setCreateOpen] = useState(false);
+  const [editingCourseId, setEditingCourseId] = useState<string | undefined>(
+    undefined
+  );
 
   const { get: getProfile } = useProfile();
   const { getPhysiotherapist: getCourses, remove } = useCourses({
@@ -28,9 +33,20 @@ export default function DashboardHome() {
     ownerId: getProfile.data?.id,
   });
 
-  const handleOpen = useCallback(() => setCreateOpen(true), []);
+  const handleOpen = useCallback(() => {
+    setEditingCourseId(undefined);
+    setCreateOpen(true);
+  }, []);
 
-  const handleClose = useCallback(() => setCreateOpen(false), []);
+  const handleClose = useCallback(() => {
+    setCreateOpen(false);
+    setEditingCourseId(undefined);
+  }, []);
+
+  const handleEdit = useCallback((courseId: string) => {
+    setEditingCourseId(courseId);
+    setCreateOpen(true);
+  }, []);
 
   useEffect(() => {
     if (getProfile.isError || getCourses.isError) {
@@ -93,7 +109,11 @@ export default function DashboardHome() {
               >
                 Crea corso
               </Button>
-              <CreateCourseModal open={createOpen} onClose={handleClose} />
+              <CourseEditModal
+                open={createOpen}
+                onClose={handleClose}
+                courseId={editingCourseId}
+              />
             </Box>
 
             <Box sx={{ width: "100%", mb: { xs: 3, lg: 0 } }}>
@@ -105,7 +125,17 @@ export default function DashboardHome() {
                 hasNextPage={!!getCourses.hasNextPage}
                 isFetchingNextPage={getCourses.isFetchingNextPage}
                 totalItems={getCourses.data?.pages[0]?.meta.totalItems || 0}
-                onDelete={(id) => remove.mutateAsync(id)}
+                onDelete={async (id) => {
+                  const result = await confirm.showConfirmationDialog({
+                    title: "Sei sicuro di voler eliminare questo corso?",
+                    content: "Questa azione è irreversibile.",
+                  });
+
+                  if (result) {
+                    await remove.mutateAsync(id);
+                  }
+                }}
+                onEdit={handleEdit}
               />
             </Box>
           </Grid2>

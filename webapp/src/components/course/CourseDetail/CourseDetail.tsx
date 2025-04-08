@@ -5,6 +5,7 @@ import EventAvailableOutlinedIcon from "@mui/icons-material/EventAvailableOutlin
 import SubscribeButton from "../../../pages/user/SubscribeButton";
 import { Euro, LocationOn, Person } from "@mui/icons-material";
 import { DateTime } from "luxon";
+import { getCourseLevelName } from "../../../data/course-levels";
 
 export interface CourseDetailProps {
   course: CourseDto;
@@ -128,7 +129,10 @@ export default function CourseDetail(props: CourseDetailProps) {
 
             <ProductCard title="Categoria" value={course.category.name} />
 
-            <ProductCard title="Livello" value={course.level} />
+            <ProductCard
+              title="Livello"
+              value={getCourseLevelName(course.level)}
+            />
           </Stack>
           <Grid2
             size={12}

@@ -1,5 +1,5 @@
 import { CourseDto } from "@easymotion/openapi";
-import { Delete, Visibility } from "@mui/icons-material";
+import { Delete, Visibility, Edit } from "@mui/icons-material";
 import { Chip, IconButton, Stack, Tooltip } from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { useState } from "react";
@@ -12,6 +12,7 @@ type DashboardDataGridProps = {
   isFetchingNextPage: boolean;
   totalItems: number;
   onDelete: (id: string) => void;
+  onEdit: (id: string) => void;
 };
 
 export default function DashboardDataGrid(props: DashboardDataGridProps) {
@@ -22,6 +23,7 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
     isFetchingNextPage,
     totalItems,
     onDelete,
+    onEdit,
   } = props;
 
   const navigate = useNavigate();
@@ -112,6 +114,17 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
                 }}
               >
                 <Visibility fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Modifica">
+              <IconButton
+                size="small"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onEdit(params.row.courseId);
+                }}
+              >
+                <Edit fontSize="small" color="primary" />
               </IconButton>
             </Tooltip>
             <Tooltip title="Elimina">

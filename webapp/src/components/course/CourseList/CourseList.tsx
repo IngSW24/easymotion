@@ -1,8 +1,7 @@
 import { Box, Grid2, Typography } from "@mui/material";
 import CourseCard from "../CourseCard/CourseCard";
-import { useCourses } from "../../../hooks/useCourses";
+import { CourseFilters, useCourses } from "../../../hooks/useCourses";
 import FilterBlock from "../FilterBlock/FilterBlock";
-import { CourseFilters } from "../FilterBlock/types";
 import { useState } from "react";
 import LoadingSpinner from "../../LoadingSpinner/LoadingSpinner";
 

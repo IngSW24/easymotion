@@ -2,14 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useApiClient } from "@easymotion/auth-context";
 import { useSnack } from "./useSnack";
 
-type UseCategoryProps = {
-  fetchId?: string;
-  page?: number;
-  perPage?: number;
-};
-
-export const useCourseCategory = (props: UseCategoryProps = {}) => {
-  const { fetchId = "" } = props;
+export const useCourseCategory = () => {
   const { apiClient: api } = useApiClient();
   const snack = useSnack();
   const queryClient = useQueryClient();
@@ -20,16 +13,6 @@ export const useCourseCategory = (props: UseCategoryProps = {}) => {
       const response = await api.categories.categoriesControllerFindAll();
       return response.data;
     },
-  });
-
-  const getSingle = useQuery({
-    queryKey: ["categories", { fetchId }],
-    queryFn: async () => {
-      const response =
-        await api.categories.categoriesControllerFindOne(fetchId);
-      return response.data;
-    },
-    enabled: fetchId !== "",
   });
 
   const create = useMutation({
@@ -87,7 +70,6 @@ export const useCourseCategory = (props: UseCategoryProps = {}) => {
 
   return {
     getAll,
-    getSingle,
     create,
     update,
     remove,

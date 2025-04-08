@@ -4,7 +4,7 @@ import {
   FormControlLabel,
   FormHelperText,
   FormLabel,
-  Grid,
+  Grid2,
   Radio,
   RadioGroup,
   TextField,
@@ -13,12 +13,12 @@ import {
 export type PaymentType = "free" | "single" | "multiple";
 
 export interface PaymentOptionsProps {
-  cost: number | undefined;
-  onCostChange: (cost: number | undefined) => void;
+  cost: number | null | undefined;
+  onCostChange: (cost: number | null | undefined) => void;
   paymentType: PaymentType;
   onPaymentTypeChange: (type: PaymentType) => void;
-  numPayments: number | undefined;
-  onNumPaymentsChange: (num: number) => void;
+  numPayments: number | null | undefined;
+  onNumPaymentsChange: (num: number | null | undefined) => void;
 }
 
 export default function PaymentOptions(props: PaymentOptionsProps) {
@@ -33,14 +33,12 @@ export default function PaymentOptions(props: PaymentOptionsProps) {
 
   const handleCostChange = (value: string) => {
     const parsedValue = parseFloat(value);
-    onCostChange(isNaN(parsedValue) ? undefined : parsedValue);
+    onCostChange(isNaN(parsedValue) ? null : parsedValue);
   };
 
   const handleNumPaymentsChange = (value: string) => {
     const parsedValue = parseInt(value, 10);
-    onNumPaymentsChange(
-      isNaN(parsedValue) || parsedValue < 2 ? 2 : parsedValue
-    );
+    onNumPaymentsChange(isNaN(parsedValue) ? null : parsedValue);
   };
 
   return (
@@ -70,39 +68,40 @@ export default function PaymentOptions(props: PaymentOptionsProps) {
           fullWidth
           label="Prezzo"
           type="number"
-          InputProps={{ inputProps: { min: 0, step: 0.01 } }}
-          value={cost === undefined ? "" : cost}
+          value={cost === null || cost === undefined ? "" : cost}
           onChange={(e) => handleCostChange(e.target.value)}
           sx={{ mt: 2 }}
         />
       )}
 
       {paymentType === "multiple" && (
-        <Grid container spacing={2} sx={{ mt: 1 }}>
-          <Grid item xs={12} md={6}>
+        <Grid2 container spacing={2} sx={{ mt: 1 }}>
+          <Grid2 size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               label="Prezzo per rata"
               type="number"
-              InputProps={{ inputProps: { min: 0, step: 0.01 } }}
-              value={cost === undefined ? "" : cost}
+              value={cost === null || cost === undefined ? "" : cost}
               onChange={(e) => handleCostChange(e.target.value)}
             />
-          </Grid>
-          <Grid item xs={12} md={6}>
+          </Grid2>
+          <Grid2 size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               label="Numero di rate"
               type="number"
-              InputProps={{ inputProps: { min: 2 } }}
-              value={numPayments}
+              value={
+                numPayments === null || numPayments === undefined
+                  ? ""
+                  : numPayments
+              }
               onChange={(e) => handleNumPaymentsChange(e.target.value)}
             />
             <FormHelperText>
-              Prezzo totale: {((cost || 0) * (numPayments ?? 0)).toFixed(2)}€
+              Prezzo totale: {((cost || 0) * (numPayments || 0)).toFixed(2)}€
             </FormHelperText>
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       )}
     </Box>
   );

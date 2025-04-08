@@ -46,9 +46,14 @@ export class CoursesController {
   @ApiPaginatedResponse(CourseDto)
   findSubscribedCoursesForUserId(
     @Query() pagination: PaginationFilter,
-    @Param("userId") userId: string
+    @Param("userId") userId: string,
+    @Query() filters: CourseQueryFilter
   ) {
-    return this.coursesService.findSubscribedCourses(userId, pagination);
+    return this.coursesService.findSubscribedCourses(
+      userId,
+      pagination,
+      filters
+    );
   }
 
   /**

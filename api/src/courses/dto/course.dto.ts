@@ -7,7 +7,6 @@ import {
   IsOptional,
   IsPositive,
   IsString,
-  IsUUID,
 } from "class-validator";
 import { Course, CourseLevel } from "@prisma/client";
 import { Exclude, Expose, Transform, Type } from "class-transformer";
@@ -21,7 +20,7 @@ export class CourseSessionDto {
     description: "The id of the session",
     required: false,
   })
-  @IsUUID()
+  @IsString()
   id: string;
 
   @ApiProperty({ description: "Start time of the session", type: Date })
@@ -37,7 +36,7 @@ export class CourseSessionDto {
 
 export class CourseDto implements Course {
   @ApiProperty({ description: "The id of the course" })
-  @IsUUID()
+  @IsString()
   @Expose()
   id: string;
 

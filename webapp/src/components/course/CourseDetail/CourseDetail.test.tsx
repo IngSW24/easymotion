@@ -3,12 +3,9 @@ import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { CourseDto } from "@easymotion/openapi";
-import { courseLevels } from "../../../data/course-levels";
+import { getCourseLevelName } from "../../../data/course-levels";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DateTime } from "luxon";
-
-const getLabel = (value: string, options: LiteralUnionDescriptor<string>) =>
-  options.find((o) => o.value === value)?.label ?? value;
 
 describe("CourseDetail GUI test", () => {
   const testCourse: CourseDto = {
@@ -53,7 +50,7 @@ describe("CourseDetail GUI test", () => {
 
     //expect(screen.getByText(testCourse.name)).toBeDefined();
     expect(
-      screen.getByText(getLabel(testCourse.level, courseLevels))
+      screen.getByText(getCourseLevelName(testCourse.level))
     ).toBeDefined();
     expect(screen.getByText(testCourse.short_description)).toBeDefined();
     expect(screen.getByText(testCourse.description)).toBeDefined();

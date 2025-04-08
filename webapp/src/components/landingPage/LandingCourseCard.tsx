@@ -29,7 +29,7 @@ export default function LandingCourseCard(props: CourseCardProps) {
     >
       <CardMedia
         component="img"
-        image={`/${course.category.name.toLowerCase()}.jpg`}
+        image={`/${course.category.id}.jpg`}
         alt={course.name}
         sx={{
           height: 150,
