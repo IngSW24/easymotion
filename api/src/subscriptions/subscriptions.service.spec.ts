@@ -78,6 +78,8 @@ describe("SubsriptionsService", () => {
         updated_at: new Date(),
         owner_id: "1",
         category_id: "1",
+        subscription_start_date: new Date(),
+        subscription_end_date: new Date(),
       },
     ];
 
@@ -139,6 +141,8 @@ describe("SubsriptionsService", () => {
 
     const course = {
       id: courseId,
+      subscription_start_date: new Date(),
+      subscription_end_date: new Date(new Date().getTime() + 60000), // FIXME: add 1 minute (60000 milliseconds)
     };
 
     prismaMock.finalUser.findUniqueOrThrow.mockResolvedValue(user);

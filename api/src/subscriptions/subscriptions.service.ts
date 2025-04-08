@@ -1,3 +1,4 @@
+import { ForbiddenException, Injectable } from "@nestjs/common";
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { plainToInstance } from "class-transformer";
 import { PrismaService } from "nestjs-prisma";
@@ -74,6 +75,14 @@ export class SubscriptionsService {
       ) {
         throw new BadRequestException("Course is full");
       }
+    }
+
+    const now = new Date();
+    if (
+      now.getTime() < course.subscription_start_date.getTime() ||
+      now.getTime() > course.subscription_end_date.getTime()
+    ) {
+      throw new ForbiddenException("Subscriptions closed");
     }
 
     await this.prismaService.courseFinalUser.create({
