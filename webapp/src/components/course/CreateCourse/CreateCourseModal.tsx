@@ -20,12 +20,7 @@ import {
   CardContent,
   CardHeader,
 } from "@mui/material";
-import {
-  AuthUserDto,
-  CourseCategoryDto,
-  CourseDto,
-  CreateCourseDto,
-} from "@easymotion/openapi";
+import { CourseDto, CreateCourseDto } from "@easymotion/openapi";
 import { useSnack } from "../../../hooks/useSnack";
 import { useCourses } from "../../../hooks/useCourses";
 import { useNavigate } from "react-router";

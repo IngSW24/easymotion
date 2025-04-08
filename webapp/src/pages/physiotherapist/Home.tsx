@@ -7,7 +7,6 @@ import { useCourses } from "../../hooks/useCourses";
 import { useCallback, useEffect, useState } from "react";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import { Add, FitnessCenter } from "@mui/icons-material";
-import CreateCourseButton from "../../components/course/CreateCourse/CreateCourseModal";
 import CreateCourseModal from "../../components/course/CreateCourse/CreateCourseModal";
 
 enum CurrentState {
