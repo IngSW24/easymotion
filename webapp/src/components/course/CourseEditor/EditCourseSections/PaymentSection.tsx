@@ -1,8 +1,6 @@
 import React from "react";
 import {
-  Box,
   TextField,
-  Stack,
   Switch,
   FormControlLabel,
   Typography,
