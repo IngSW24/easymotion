@@ -27,6 +27,8 @@ describe("CourseCard GUI test", () => {
     is_published: false,
     subscriptions_open: false,
     sessions: [],
+    subscription_start_date: "",
+    subscription_end_date: "",
   };
 
   it("Check if CourseCard shows the correct information", () => {

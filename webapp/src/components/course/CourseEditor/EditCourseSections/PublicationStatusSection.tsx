@@ -3,6 +3,20 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import { useFormContext } from "react-hook-form";
 import type { CourseFormData } from "../schema";
+import { DateTimePicker } from "@mui/x-date-pickers";
+import { DateTime } from "luxon";
+
+interface PublicationStatusSectionProps {
+  isPublished: boolean;
+  subscriptionsOpen: boolean;
+  startDate: DateTime;
+  endDate: DateTime;
+
+  onIsPublishedChange: (isPublished: boolean) => void;
+  onSubscriptionsOpenChange: (subscriptionsOpen: boolean) => void;
+  onStartDateChange: (newStartDate: DateTime | null) => void;
+  onEndDateChange: (newEndDate: DateTime | null) => void;
+}
 
 export default function PublicationStatusSection() {
   const { watch, setValue } = useFormContext<CourseFormData>();
@@ -45,6 +59,32 @@ export default function PublicationStatusSection() {
                   />
                 }
                 label="Iscrizioni aperte"
+              />
+            </Tooltip>
+          </Stack>
+        </Box>
+
+        <Box>
+          <Stack direction="row" spacing={2} alignItems="center">
+            <HowToRegIcon color={subscriptionsOpen ? "primary" : "disabled"} />
+            <Tooltip title="Data inizio iscrizioni">
+              <DateTimePicker
+                label="Data inizio iscrizioni"
+                value={startDate}
+                onChange={onStartDateChange}
+              />
+            </Tooltip>
+          </Stack>
+        </Box>
+
+        <Box>
+          <Stack direction="row" spacing={2} alignItems="center">
+            <HowToRegIcon color={subscriptionsOpen ? "primary" : "disabled"} />
+            <Tooltip title="Data fine iscrizioni">
+              <DateTimePicker
+                label="Data fine iscrizioni"
+                value={endDate}
+                onChange={onEndDateChange}
               />
             </Tooltip>
           </Stack>

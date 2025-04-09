@@ -2036,6 +2036,16 @@
             "items": {
               "$ref": "#/components/schemas/CourseSessionDto"
             }
+          },
+          "subscription_start_date": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Subscription start date"
+          },
+          "subscription_end_date": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Subscription end date"
           }
         },
         "required": [
@@ -2053,7 +2063,9 @@
           "updated_at",
           "owner",
           "category",
-          "sessions"
+          "sessions",
+          "subscription_start_date",
+          "subscription_end_date"
         ]
       },
       "CreateCourseSessionDto": {
@@ -2146,6 +2158,16 @@
               "type": "string"
             }
           },
+          "subscription_start_date": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Subscription start date"
+          },
+          "subscription_end_date": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Subscription end date"
+          },
           "category_id": {
             "type": "string",
             "description": "id of the existent category"
@@ -2167,6 +2189,8 @@
           "is_published",
           "subscriptions_open",
           "tags",
+          "subscription_start_date",
+          "subscription_end_date",
           "category_id",
           "sessions"
         ]
@@ -2264,6 +2288,16 @@
             "items": {
               "type": "string"
             }
+          },
+          "subscription_start_date": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Subscription start date"
+          },
+          "subscription_end_date": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Subscription end date"
           },
           "category_id": {
             "type": "string",

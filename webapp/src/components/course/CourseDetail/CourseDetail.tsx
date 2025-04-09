@@ -53,18 +53,20 @@ export default function CourseDetail(props: CourseDetailProps) {
                 Periodo di iscrizione
               </Typography>
               <Box sx={{ mt: 3 }}>
-                <Typography variant="body1" sx={{ overflowWrap: "break-word" }}>
-                  {"Data inizio + data fine"}
-                </Typography>
-              </Box>
-            </div>
-            <div>
-              <Typography variant="h4" color="primary.dark" fontWeight="bold">
-                Periodo di iscrizione
-              </Typography>
-              <Box sx={{ mt: 3 }}>
-                <Typography variant="body1" sx={{ overflowWrap: "break-word" }}>
-                  {"Start date + end date"}
+                <Typography variant="h5" sx={{ overflowWrap: "break-word" }}>
+                  {DateTime.fromISO(
+                    course.subscription_start_date
+                  ).toLocaleString({
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                  }) +
+                    " - " +
+                    DateTime.fromISO(
+                      course.subscription_end_date
+                    ).toLocaleString({
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    })}
                 </Typography>
               </Box>
             </div>
@@ -85,8 +87,15 @@ export default function CourseDetail(props: CourseDetailProps) {
                       color="secondary"
                     />
                     <Typography component="div" variant="h5" letterSpacing={1}>
-                      {DateTime.fromISO(item.start_time).toString()}
-                      {DateTime.fromISO(item.end_time).toString()}
+                      {DateTime.fromISO(item.start_time).toLocaleString({
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                      }) +
+                        " - " +
+                        DateTime.fromISO(item.end_time).toLocaleString({
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                        })}
                     </Typography>
                   </Stack>
                 ))}
