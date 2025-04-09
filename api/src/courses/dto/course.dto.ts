@@ -2,6 +2,7 @@ import {
   IsArray,
   IsBoolean,
   IsDate,
+  IsDateString,
   IsEnum,
   IsNumber,
   IsOptional,
@@ -166,7 +167,7 @@ export class CourseDto implements Course {
     description: "Subscription start date",
     required: true,
   })
-  @IsDate()
+  @IsDateString() // TODO: use IsDateString() because it does not use class-transformer Type(()=>Date)
   @Expose()
   subscription_start_date: Date;
 
@@ -174,7 +175,7 @@ export class CourseDto implements Course {
     description: "Subscription end date",
     required: true,
   })
-  @IsDate()
+  @IsDateString()
   @Expose()
   subscription_end_date: Date;
 }

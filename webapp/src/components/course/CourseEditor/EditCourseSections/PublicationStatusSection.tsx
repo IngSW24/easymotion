@@ -14,8 +14,8 @@ interface PublicationStatusSectionProps {
 
   onIsPublishedChange: (isPublished: boolean) => void;
   onSubscriptionsOpenChange: (subscriptionsOpen: boolean) => void;
-  onStartDateChange: (newStartDate: DateTime | null) => void;
-  onEndDateChange: (newEndDate: DateTime | null) => void;
+  onStartDateChange: (newStartDate: DateTime) => void;
+  onEndDateChange: (newEndDate: DateTime) => void;
 }
 
 export default function PublicationStatusSection() {
@@ -23,6 +23,22 @@ export default function PublicationStatusSection() {
   const isPublished = watch("is_published");
   const subscriptionsOpen = watch("subscriptions_open");
 
+export default function PublicationStatusSection({
+  isPublished,
+  subscriptionsOpen,
+  startDate,
+  endDate,
+  onIsPublishedChange,
+  onSubscriptionsOpenChange,
+  onStartDateChange,
+  onEndDateChange,
+}: PublicationStatusSectionProps) {
+  const changeStartDate = (newStartDate: DateTime | null) => {
+    if (newStartDate) onStartDateChange(newStartDate);
+  };
+  const changeEndDate = (newEndDate: DateTime | null) => {
+    if (newEndDate) onEndDateChange(newEndDate);
+  };
   return (
     <Box>
       <Stack spacing={3}>
@@ -71,7 +87,7 @@ export default function PublicationStatusSection() {
               <DateTimePicker
                 label="Data inizio iscrizioni"
                 value={startDate}
-                onChange={onStartDateChange}
+                onChange={changeStartDate}
               />
             </Tooltip>
           </Stack>
@@ -84,7 +100,7 @@ export default function PublicationStatusSection() {
               <DateTimePicker
                 label="Data fine iscrizioni"
                 value={endDate}
-                onChange={onEndDateChange}
+                onChange={changeEndDate}
               />
             </Tooltip>
           </Stack>
