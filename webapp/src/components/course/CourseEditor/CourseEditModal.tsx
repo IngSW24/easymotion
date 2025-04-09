@@ -76,7 +76,7 @@ export default function CourseEditModal(props: CourseEditModalProps) {
           });
           snack.showSuccess("Corso aggiornato con successo!");
         } else {
-          await create.mutateAsync(data);
+          await create.mutateAsync(dataToSubmit);
           snack.showSuccess("Corso creato con successo!");
         }
         onClose();
@@ -201,10 +201,7 @@ export default function CourseEditModal(props: CourseEditModalProps) {
                       Tag
                     </Typography>
                   </Box>
-                  <TagsSection
-                    value={methods.watch("tags")}
-                    onChange={(tags) => methods.setValue("tags", tags)}
-                  />
+                  <TagsSection />
                 </Paper>
               </Grid2>
             </Grid2>

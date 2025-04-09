@@ -1,28 +1,29 @@
 import { Box, Chip, TextField } from "@mui/material";
 import { useState, KeyboardEvent } from "react";
 import { extractTags } from "../../../../utils/format";
+import { useFormContext } from "react-hook-form";
+import type { CourseFormData } from "../schema";
 
-export interface TagsSectionProps {
-  value: string[];
-  onChange: (tags: string[]) => void;
-}
-
-export default function TagsSection(props: TagsSectionProps) {
-  const { value, onChange } = props;
+export default function TagsSection() {
+  const { setValue, watch } = useFormContext<CourseFormData>();
+  const tags = watch("tags");
 
   const [inputValue, setInputValue] = useState("");
 
   const handleDelete = (tagToDelete: string) => {
-    onChange(value.filter((tag) => tag !== tagToDelete));
+    setValue(
+      "tags",
+      tags.filter((tag) => tag !== tagToDelete)
+    );
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "Enter" && inputValue.trim() !== "") {
       event.preventDefault();
 
-      const tags = extractTags(inputValue).filter((x) => !value.includes(x));
+      const newTags = extractTags(inputValue).filter((x) => !tags.includes(x));
 
-      onChange([...value, ...new Set(tags)]);
+      setValue("tags", [...tags, ...new Set(newTags)]);
 
       setInputValue("");
     }
@@ -41,7 +42,7 @@ export default function TagsSection(props: TagsSectionProps) {
       />
 
       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
-        {value.map((tag) => (
+        {tags.map((tag) => (
           <Chip
             key={tag}
             label={`#${tag}`}

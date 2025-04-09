@@ -1,11 +1,4 @@
-import {
-  Typography,
-  FormControlLabel,
-  Switch,
-  Stack,
-  Tooltip,
-  Box,
-} from "@mui/material";
+import { FormControlLabel, Switch, Stack, Tooltip, Box } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import { useFormContext } from "react-hook-form";
