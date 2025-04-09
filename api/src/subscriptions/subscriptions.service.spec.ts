@@ -19,12 +19,14 @@ describe("SubsriptionsService", () => {
       create: jest.fn(),
       delete: jest.fn(),
       deleteMany: jest.fn(),
+      findUniqueOrThrow: jest.fn(),
     },
     course: {
       findUniqueOrThrow: jest.fn(),
     },
     finalUser: {
       findUnique: jest.fn(),
+      findUniqueOrThrow: jest.fn(),
     },
   };
 
@@ -63,23 +65,19 @@ describe("SubsriptionsService", () => {
         description: "",
         short_description: "",
         location: "",
-        schedule: [],
         instructors: [],
-        category: "ACQUAGYM",
         level: "BASIC",
-        frequency: "SINGLE_SESSION",
-        session_duration: "",
-        cost: new Prisma.Decimal("0"),
-        discount: 0,
-        availability: "ACTIVE",
-        highlighted_priority: 0,
-        members_capacity: 0,
-        num_registered_members: 0,
+        is_free: false,
+        price: new Prisma.Decimal("0"),
+        number_of_payments: 1,
+        is_published: true,
+        subscriptions_open: true,
+        max_subscribers: 10,
         tags: [],
-        thumbnail_path: "",
-        created_at: undefined,
-        updated_at: undefined,
+        created_at: new Date(),
+        updated_at: new Date(),
         owner_id: "1",
+        category_id: "1",
       },
     ];
 
@@ -143,13 +141,14 @@ describe("SubsriptionsService", () => {
       id: courseId,
     };
 
-    prismaMock.finalUser.findUnique.mockResolvedValue(user);
+    prismaMock.finalUser.findUniqueOrThrow.mockResolvedValue(user);
     prismaMock.course.findUniqueOrThrow.mockResolvedValue(course);
+    prismaMock.courseFinalUser.count.mockResolvedValue(2);
 
-    await service.subscribeFinalUser(userId, { courseId });
+    await service.subscribeFinalUser(userId, { courseId }, true);
 
-    expect(prismaMock.finalUser.findUnique).toHaveBeenCalledWith({
-      where: { applicationUserId: userId },
+    expect(prismaMock.finalUser.findUniqueOrThrow).toHaveBeenCalledWith({
+      where: { applicationUserId: user.applicationUserId },
     });
 
     expect(prismaMock.course.findUniqueOrThrow).toHaveBeenCalledWith({
@@ -168,7 +167,7 @@ describe("SubsriptionsService", () => {
     const userId = "1";
     const courseId = "2";
 
-    prismaMock.finalUser.findUnique.mockRejectedValue(() => {
+    prismaMock.finalUser.findUniqueOrThrow.mockRejectedValue(() => {
       throw new NotFoundException("User not found");
     });
 
@@ -176,7 +175,7 @@ describe("SubsriptionsService", () => {
       NotFoundException
     );
 
-    expect(prismaMock.finalUser.findUnique).toHaveBeenCalledWith({
+    expect(prismaMock.finalUser.findUniqueOrThrow).toHaveBeenCalledWith({
       where: { applicationUserId: userId },
     });
   });
@@ -189,9 +188,9 @@ describe("SubsriptionsService", () => {
       throw new NotFoundException("User not found");
     });
 
-    expect(service.subscribeFinalUser(userId, { courseId })).rejects.toThrow(
-      NotFoundException
-    );
+    expect(
+      service.subscribeFinalUser(userId, { courseId }, true)
+    ).rejects.toThrow(NotFoundException);
   });
 
   it("should throw not found exception if course does not exist", async () => {

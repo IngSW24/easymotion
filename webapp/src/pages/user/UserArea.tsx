@@ -1,8 +1,8 @@
 import { Container, Typography } from "@mui/material";
-import SubscriptionsPage from "./SubscriptionList";
 import FilterBlock from "../../components/course/FilterBlock/FilterBlock";
-import { CourseFilters } from "../../components/course/FilterBlock/types";
 import { useState } from "react";
+import { CourseFilters } from "../../hooks/useCourses";
+import SubscriptionsPage from "./SubscriptionsPage";
 
 export default function UserArea() {
   const [filters, setFilters] = useState<CourseFilters | undefined>(undefined);
@@ -15,7 +15,7 @@ export default function UserArea() {
           component="h3"
           align="left"
           fontWeight="bold"
-          sx={{ paddingTop: 5, paddingLeft: 5 }}
+          sx={{ paddingTop: 5, paddingLeft: 5, textAlign: "center" }}
         >
           I Miei Corsi
         </Typography>
@@ -23,7 +23,7 @@ export default function UserArea() {
           variant="h5"
           component="h5"
           align="left"
-          sx={{ paddingTop: 2, paddingLeft: 5 }}
+          sx={{ paddingTop: 2, paddingLeft: 5, textAlign: "center" }}
         >
           Visualizza e gestisci i corsi a cui sei iscritto
         </Typography>

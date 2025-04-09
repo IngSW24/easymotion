@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { plainToInstance } from "class-transformer";
 import { PrismaService } from "nestjs-prisma";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
@@ -49,28 +49,37 @@ export class SubscriptionsService {
    */
   async subscribeFinalUser(
     finalUserId: string,
-    subscriptionCreateDto: SubscriptionCreateDto
+    subscriptionCreateDto: SubscriptionCreateDto,
+    forceSubscribe: boolean = false
   ) {
-    const user = await this.prismaService.finalUser.findUnique({
+    const user = await this.prismaService.finalUser.findUniqueOrThrow({
       where: { applicationUserId: finalUserId },
     });
-
-    if (!user) {
-      throw new NotFoundException("User not found");
-    }
 
     const course = await this.prismaService.course.findUniqueOrThrow({
       where: { id: subscriptionCreateDto.courseId },
     });
 
-    if (!course) {
-      throw new NotFoundException("Course not found");
+    if (!forceSubscribe) {
+      const numExistingSubscriptions =
+        await this.prismaService.courseFinalUser.count({
+          where: {
+            course_id: course.id,
+          },
+        });
+
+      if (
+        numExistingSubscriptions >= course.max_subscribers ||
+        !course.subscriptions_open
+      ) {
+        throw new BadRequestException("Course is full");
+      }
     }
 
     await this.prismaService.courseFinalUser.create({
       data: {
         course_id: course.id,
-        final_user_id: finalUserId,
+        final_user_id: user.applicationUserId,
       },
     });
   }

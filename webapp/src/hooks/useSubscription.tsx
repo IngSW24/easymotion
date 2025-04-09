@@ -5,7 +5,7 @@ import {
   SubscriptionCreateDto,
   SubscriptionDeleteDto,
 } from "@easymotion/openapi";
-import { CourseFilters } from "../components/course/FilterBlock/types";
+import { CourseFilters } from "./useCourses";
 
 export interface UseSubscriptionsProps {
   userId?: string;
@@ -106,7 +106,7 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
       queryClient.invalidateQueries({
         queryKey: ["course-subscribers"],
       });
-      snack.showSuccess("Successfully subscribed!");
+      snack.showSuccess("Iscrizione avvenuta con successo!");
     },
     onError: (error) => snack.showError(error),
   });
@@ -128,13 +128,15 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
       queryClient.invalidateQueries({
         queryKey: ["course-subscribers"],
       });
-      snack.showSuccess("Successfully unsubscribed!");
+      snack.showSuccess("Disiscrizione avvenuta con successo!");
     },
     onError: (error) => snack.showError(error),
   });
 
   const getSubscription = useQuery({
-    queryKey: ["courses", { page, perPage }, { filters }],
+    queryKey: !filters
+      ? ["courses", { page, perPage }]
+      : ["courses", { page, perPage }, { filters }],
     queryFn: async () => {
       const response =
         await api.courses.coursesControllerFindSubscribedCoursesForUserId(
@@ -142,47 +144,15 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
           {
             page,
             perPage,
+            ...(filters?.searchText && { searchText: filters.searchText }),
+            ...(filters?.categories &&
+              filters?.categories.length > 0 && {
+                categoryIds: filters?.categories?.join(","),
+              }),
+            ...(filters?.level && { level: filters.level }),
           }
         );
-      const fullData = response.data.data;
-
-      if (!filters) return fullData;
-
-      const filteredData = fullData.filter((course) => {
-        if (
-          filters.searchText &&
-          !course.name.toLowerCase().includes(filters.searchText.toLowerCase())
-        )
-          return false;
-
-        if (
-          filters.advanced.categories.length > 0 &&
-          !filters.advanced.categories.includes(course.category)
-        )
-          return false;
-
-        if (
-          filters.advanced.levels.length > 0 &&
-          !filters.advanced.levels.includes(course.level)
-        )
-          return false;
-
-        if (
-          filters.advanced.frequencies.length > 0 &&
-          !filters.advanced.frequencies.includes(course.frequency)
-        )
-          return false;
-
-        if (
-          filters.advanced.availabilities.length > 0 &&
-          !filters.advanced.availabilities.includes(course.availability)
-        )
-          return false;
-
-        return true;
-      });
-
-      return filteredData;
+      return response.data;
     },
     enabled: fetchAll,
   });

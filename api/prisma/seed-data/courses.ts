@@ -1,9 +1,11 @@
 import { Prisma } from "@prisma/client";
 import getUsers from "./users";
+import { getCategories } from "./categories";
 
 const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
   const users = await getUsers();
   const physiotherapist = users.find((x) => x.role === "PHYSIOTHERAPIST");
+  const categories = getCategories();
 
   return [
     {
@@ -15,51 +17,76 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
         "Migliora resistenza e flessibilità in acqua, ideale per tutti.",
       location: "Piscina Comunale, Via Pradamano 5, Udine",
       instructors: ["Anna Bianchi"],
-      category: "ACQUAGYM",
       level: "BASIC",
-      frequency: "WEEKLY",
-      session_duration: "PT1H",
-      cost: 15.0,
-      discount: 10,
-      availability: "ACTIVE",
-      highlighted_priority: 1,
-      members_capacity: 20,
-      num_registered_members: 12,
+      is_free: false,
+      price: 15.99,
+      number_of_payments: 1,
+      is_published: true,
+      subscriptions_open: true,
+      max_subscribers: 20,
       tags: ["Fitness", "Acquatico", "Base", "Rilassante"],
-      thumbnail_path: null,
-      schedule: ["Martedì alle 20:30", "Giovedì alle 19:00"],
+      category: {
+        connect: { id: categories[0].id },
+      },
       owner: {
         connect: { applicationUserId: physiotherapist.id },
+      },
+      sessions: {
+        create: [
+          {
+            id: "s1a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
+            start_time: new Date("2024-04-09T20:30:00Z"),
+            end_time: new Date("2024-04-09T21:30:00Z"),
+          },
+          {
+            id: "s2a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
+            start_time: new Date("2024-04-11T19:00:00Z"),
+            end_time: new Date("2024-04-11T20:00:00Z"),
+          },
+        ],
       },
     },
     {
       id: "2f60f825-fc2e-45bd-ab1b-5f26d8eef27f",
       name: "CrossFit: Potenza e Resistenza",
       description:
-        "Un programma intenso progettato per migliorare forza, resistenza e agilità.  e box jump.",
+        "Un programma intenso progettato per migliorare forza, resistenza e agilità. e box jump.",
       short_description:
         "Allenamento ad alta intensità per forza e resistenza.",
       location: "Palestra EnergyFit, Via dello Sport 12, Udine",
       instructors: ["Marco Conti"],
-      category: "CROSSFIT",
       level: "ADVANCED",
-      frequency: "WEEKLY",
-      session_duration: "PT1H30M",
-      cost: 25.0,
-      discount: 15,
-      availability: "ACTIVE",
-      highlighted_priority: 2,
-      members_capacity: 15,
-      num_registered_members: 10,
+      is_free: false,
+      price: 25.0,
+      number_of_payments: 1,
+      is_published: true,
+      subscriptions_open: true,
+      max_subscribers: 15,
       tags: ["Intenso", "Potenza", "Avanzato", "Serale"],
-      thumbnail_path: null,
-      schedule: [
-        "Lunedì alle 18:00",
-        "Mercoledì alle 18:00",
-        "Venerdì alle 18:00",
-      ],
+      category: {
+        connect: { id: categories[1].id },
+      },
       owner: {
         connect: { applicationUserId: physiotherapist.id },
+      },
+      sessions: {
+        create: [
+          {
+            id: "s3a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
+            start_time: new Date("2024-04-08T18:00:00Z"),
+            end_time: new Date("2024-04-08T19:30:00Z"),
+          },
+          {
+            id: "s4a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
+            start_time: new Date("2024-04-10T18:00:00Z"),
+            end_time: new Date("2024-04-10T19:30:00Z"),
+          },
+          {
+            id: "s5a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
+            start_time: new Date("2024-04-12T18:00:00Z"),
+            end_time: new Date("2024-04-12T19:30:00Z"),
+          },
+        ],
       },
     },
     {
@@ -71,21 +98,33 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
         "Migliora postura e flessibilità con il metodo Pilates.",
       location: "Studio Pilates, Via della Pace 7, Udine",
       instructors: ["Giulia Galli"],
-      category: "PILATES",
       level: "MEDIUM",
-      frequency: "WEEKLY",
-      session_duration: "PT2H",
-      cost: 20.0,
-      discount: null,
-      availability: "ACTIVE",
-      highlighted_priority: 3,
-      members_capacity: 12,
-      num_registered_members: 8,
+      is_free: false,
+      price: 20.0,
+      number_of_payments: 1,
+      is_published: true,
+      subscriptions_open: true,
+      max_subscribers: 12,
       tags: ["Postura", "Relax", "Medio"],
-      thumbnail_path: null,
-      schedule: ["Martedì alle 10:00", "Giovedì alle 10:00"],
+      category: {
+        connect: { id: categories[2].id },
+      },
       owner: {
         connect: { applicationUserId: physiotherapist.id },
+      },
+      sessions: {
+        create: [
+          {
+            id: "s6a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
+            start_time: new Date("2024-04-09T10:00:00Z"),
+            end_time: new Date("2024-04-09T12:00:00Z"),
+          },
+          {
+            id: "s7a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
+            start_time: new Date("2024-04-11T10:00:00Z"),
+            end_time: new Date("2024-04-11T12:00:00Z"),
+          },
+        ],
       },
     },
     {
@@ -96,21 +135,33 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       short_description: "Allenati ballando con ritmi coinvolgenti.",
       location: "Dance Studio, Piazza Gioia 2, Udine",
       instructors: ["Elisa Ferri"],
-      category: "ZUMBA_FITNESS",
       level: "BASIC",
-      frequency: "WEEKLY",
-      session_duration: "PT1H30M",
-      cost: 15.0,
-      discount: null,
-      availability: "ACTIVE",
-      highlighted_priority: 1,
-      members_capacity: 25,
-      num_registered_members: 20,
+      is_free: false,
+      price: 15.0,
+      number_of_payments: 1,
+      is_published: true,
+      subscriptions_open: true,
+      max_subscribers: 25,
       tags: ["Ballare", "Divertimento", "Base", "Serale"],
-      thumbnail_path: null,
-      schedule: ["Lunedì alle 20:30", "Mercoledì alle 20:30"],
+      category: {
+        connect: { id: categories[3].id },
+      },
       owner: {
         connect: { applicationUserId: physiotherapist.id },
+      },
+      sessions: {
+        create: [
+          {
+            id: "s8a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
+            start_time: new Date("2024-04-08T20:30:00Z"),
+            end_time: new Date("2024-04-08T22:00:00Z"),
+          },
+          {
+            id: "s9a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
+            start_time: new Date("2024-04-10T20:30:00Z"),
+            end_time: new Date("2024-04-10T22:00:00Z"),
+          },
+        ],
       },
     },
     {
@@ -121,21 +172,33 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       short_description: "Correggi la postura e allevia i dolori muscolari.",
       location: "Centro Benessere Postura, Via Poscolle 14, Udine",
       instructors: ["Mario Rossi"],
-      category: "POSTURAL_TRAINING",
       level: "BASIC",
-      frequency: "WEEKLY",
-      session_duration: "PT1H",
-      cost: 18.0,
-      discount: 5,
-      availability: "ACTIVE",
-      highlighted_priority: 3,
-      members_capacity: 10,
-      num_registered_members: 7,
+      is_free: false,
+      price: 18.0,
+      number_of_payments: 1,
+      is_published: true,
+      subscriptions_open: true,
+      max_subscribers: 10,
       tags: ["Postura", "Salute", "Base"],
-      thumbnail_path: null,
-      schedule: ["Martedì alle 09:00", "Giovedì alle 11:00"],
+      category: {
+        connect: { id: categories[5].id },
+      },
       owner: {
         connect: { applicationUserId: physiotherapist.id },
+      },
+      sessions: {
+        create: [
+          {
+            id: "s10a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
+            start_time: new Date("2024-04-09T09:00:00Z"),
+            end_time: new Date("2024-04-09T10:00:00Z"),
+          },
+          {
+            id: "s11a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
+            start_time: new Date("2024-04-11T11:00:00Z"),
+            end_time: new Date("2024-04-11T12:00:00Z"),
+          },
+        ],
       },
     },
     {
@@ -146,21 +209,33 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       short_description: "Allenamento funzionale senza attrezzi.",
       location: "Palestra All-in-One, Via Mercatovecchio 8, Udine",
       instructors: ["Luca Verdi"],
-      category: "BODYWEIGHT_WORKOUT",
       level: "MEDIUM",
-      frequency: "WEEKLY",
-      session_duration: "PT2H",
-      cost: 12.0,
-      discount: null,
-      availability: "ACTIVE",
-      highlighted_priority: 2,
-      members_capacity: 20,
-      num_registered_members: 15,
+      is_free: false,
+      price: 12.0,
+      number_of_payments: 1,
+      is_published: true,
+      subscriptions_open: true,
+      max_subscribers: 20,
       tags: ["Funzionale", "Medio", "Naturale"],
-      thumbnail_path: null,
-      schedule: ["Lunedì alle 18:00", "Mercoledì alle 18:00"],
+      category: {
+        connect: { id: categories[4].id },
+      },
       owner: {
         connect: { applicationUserId: physiotherapist.id },
+      },
+      sessions: {
+        create: [
+          {
+            id: "s12a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
+            start_time: new Date("2024-04-08T18:00:00Z"),
+            end_time: new Date("2024-04-08T20:00:00Z"),
+          },
+          {
+            id: "s13a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
+            start_time: new Date("2024-04-10T18:00:00Z"),
+            end_time: new Date("2024-04-10T20:00:00Z"),
+          },
+        ],
       },
     },
     {
@@ -171,21 +246,33 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
         "Yoga immersi nella natura per rilassare mente e corpo.",
       location: "Parco del Cormor, Via Cormor Alto, Udine",
       instructors: ["Chiara De Luca"],
-      category: "POSTURAL_TRAINING",
       level: "BASIC",
-      frequency: "WEEKLY",
-      session_duration: "PT0H45M",
-      cost: 10.0,
-      discount: null,
-      availability: "ACTIVE",
-      highlighted_priority: 2,
-      members_capacity: 20,
-      num_registered_members: 15,
+      is_free: false,
+      price: 10.0,
+      number_of_payments: 1,
+      is_published: true,
+      subscriptions_open: true,
+      max_subscribers: 20,
       tags: ["Yoga", "Rilassante", "Base", "All'aperto"],
-      thumbnail_path: null,
-      schedule: ["Sabato alle 09:30", "Domenica alle 09:30"],
+      category: {
+        connect: { id: categories[3].id },
+      },
       owner: {
         connect: { applicationUserId: physiotherapist.id },
+      },
+      sessions: {
+        create: [
+          {
+            id: "s14a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
+            start_time: new Date("2024-04-13T09:30:00Z"),
+            end_time: new Date("2024-04-13T10:15:00Z"),
+          },
+          {
+            id: "s15a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
+            start_time: new Date("2024-04-14T09:30:00Z"),
+            end_time: new Date("2024-04-14T10:15:00Z"),
+          },
+        ],
       },
     },
     {
@@ -196,21 +283,33 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       short_description: "Brucia grassi con allenamenti brevi e intensi.",
       location: "Palestra MoveIt, Via Grazzano 20, Udine",
       instructors: ["Simone Neri"],
-      category: "BODYWEIGHT_WORKOUT",
       level: "ADVANCED",
-      frequency: "WEEKLY",
-      session_duration: "PT1H30M",
-      cost: 15.0,
-      discount: 10,
-      availability: "ACTIVE",
-      highlighted_priority: 1,
-      members_capacity: 15,
-      num_registered_members: 12,
+      is_free: false,
+      price: 15.0,
+      number_of_payments: 1,
+      is_published: true,
+      subscriptions_open: true,
+      max_subscribers: 15,
       tags: ["HIIT", "Intenso", "Avanzato", "Brucia-Grassi"],
-      thumbnail_path: null,
-      schedule: ["Martedì alle 19:00", "Giovedì alle 19:00"],
+      category: {
+        connect: { id: categories[4].id },
+      },
       owner: {
         connect: { applicationUserId: physiotherapist.id },
+      },
+      sessions: {
+        create: [
+          {
+            id: "s16a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
+            start_time: new Date("2024-04-09T19:00:00Z"),
+            end_time: new Date("2024-04-09T20:30:00Z"),
+          },
+          {
+            id: "s17a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
+            start_time: new Date("2024-04-11T19:00:00Z"),
+            end_time: new Date("2024-04-11T20:30:00Z"),
+          },
+        ],
       },
     },
     {
@@ -221,21 +320,33 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       short_description: "Fitness coreografico con musica ed energia.",
       location: "Centro Danza Joy, Via Manin 30, Udine",
       instructors: ["Elena Russo"],
-      category: "ZUMBA_FITNESS",
       level: "BASIC",
-      frequency: "WEEKLY",
-      session_duration: "PT1H",
-      cost: 12.0,
-      discount: null,
-      availability: "ACTIVE",
-      highlighted_priority: 3,
-      members_capacity: 25,
-      num_registered_members: 18,
+      is_free: false,
+      price: 12.0,
+      number_of_payments: 1,
+      is_published: true,
+      subscriptions_open: true,
+      max_subscribers: 25,
       tags: ["Dance", "Divertente", "Base", "Serale"],
-      thumbnail_path: null,
-      schedule: ["Mercoledì alle 20:00", "Venerdì alle 20:00"],
+      category: {
+        connect: { id: categories[3].id },
+      },
       owner: {
         connect: { applicationUserId: physiotherapist.id },
+      },
+      sessions: {
+        create: [
+          {
+            id: "s18a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
+            start_time: new Date("2024-04-10T20:00:00Z"),
+            end_time: new Date("2024-04-10T21:00:00Z"),
+          },
+          {
+            id: "s19a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
+            start_time: new Date("2024-04-12T20:00:00Z"),
+            end_time: new Date("2024-04-12T21:00:00Z"),
+          },
+        ],
       },
     },
     {
@@ -246,21 +357,33 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       short_description: "Allenamento completo in stile bootcamp all'aperto.",
       location: "Parco Moretti, Via Mentana 60, Udine",
       instructors: ["Giorgio Bassi"],
-      category: "CROSSFIT",
       level: "MEDIUM",
-      frequency: "WEEKLY",
-      session_duration: "PT1H30M",
-      cost: 18.0,
-      discount: null,
-      availability: "ACTIVE",
-      highlighted_priority: 2,
-      members_capacity: 20,
-      num_registered_members: 15,
+      is_free: false,
+      price: 18.0,
+      number_of_payments: 1,
+      is_published: true,
+      subscriptions_open: true,
+      max_subscribers: 20,
       tags: ["All'aperto", "Resistenza", "Medio", "Dinamico"],
-      thumbnail_path: null,
-      schedule: ["Lunedì alle 19:00", "Giovedì alle 19:00"],
+      category: {
+        connect: { id: categories[1].id },
+      },
       owner: {
         connect: { applicationUserId: physiotherapist.id },
+      },
+      sessions: {
+        create: [
+          {
+            id: "s20a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
+            start_time: new Date("2024-04-08T19:00:00Z"),
+            end_time: new Date("2024-04-08T20:30:00Z"),
+          },
+          {
+            id: "s21a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
+            start_time: new Date("2024-04-11T19:00:00Z"),
+            end_time: new Date("2024-04-11T20:30:00Z"),
+          },
+        ],
       },
     },
   ];

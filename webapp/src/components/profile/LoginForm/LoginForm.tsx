@@ -11,12 +11,9 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import {
-  isValidEmail,
-  ensurePasswordConstraints,
-} from "../../../data/validators";
 import { SignInDto } from "@easymotion/openapi";
 import { useApiClient } from "@easymotion/auth-context";
+import { ensurePasswordConstraints, isValidEmail } from "../../../utils/format";
 
 export interface LoginFormProps {
   onSubmit: (data: SignInDto) => void;

@@ -11,8 +11,8 @@ import {
 } from "@nestjs/common";
 import { CoursesService } from "./courses.service";
 import { CreateCourseDto } from "./dto/create-course.dto";
-import { UpdateCoursesDto } from "./dto/update-course.dto";
-import { CourseEntity } from "./dto/course.dto";
+import { UpdateCourseDto } from "./dto/update-course.dto";
+import { CourseDto } from "./dto/course.dto";
 import { ApiCreatedResponse, ApiOkResponse } from "@nestjs/swagger";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { ApiPaginatedResponse } from "src/common/decorators/api-paginated-response.decorator";
@@ -29,12 +29,27 @@ export class CoursesController {
    * @returns all courses
    */
   @Get()
-  @ApiPaginatedResponse(CourseEntity)
+  @ApiPaginatedResponse(CourseDto)
   findAll(
     @Query() pagination: PaginationFilter,
     @Query() filters: CourseQueryFilter
   ) {
-    return this.coursesService.findAll(pagination, filters);
+    return this.coursesService.findAll(pagination, filters, true);
+  }
+
+  @Get("physiotherapist")
+  @UseAuth([Role.PHYSIOTHERAPIST])
+  @ApiPaginatedResponse(CourseDto)
+  findAllForPhysiotherapist(
+    @Query() pagination: PaginationFilter,
+    @Query() filters: CourseQueryFilter,
+    @Req() req
+  ) {
+    return this.coursesService.findAll(
+      pagination,
+      { ...filters, ownerId: req.user.sub },
+      false
+    );
   }
 
   /**
@@ -43,12 +58,17 @@ export class CoursesController {
    */
   @Get("/subscribed/:userId")
   @UseAuth()
-  @ApiPaginatedResponse(CourseEntity)
+  @ApiPaginatedResponse(CourseDto)
   findSubscribedCoursesForUserId(
     @Query() pagination: PaginationFilter,
-    @Param("userId") userId: string
+    @Param("userId") userId: string,
+    @Query() filters: CourseQueryFilter
   ) {
-    return this.coursesService.findSubscribedCourses(userId, pagination);
+    return this.coursesService.findSubscribedCourses(
+      userId,
+      pagination,
+      filters
+    );
   }
 
   /**
@@ -57,7 +77,7 @@ export class CoursesController {
    * @returns the course with the given id
    */
   @Get(":id")
-  @ApiOkResponse({ type: CourseEntity })
+  @ApiOkResponse({ type: CourseDto })
   findOne(@Param("id") id: string) {
     return this.coursesService.findOne(id);
   }
@@ -69,7 +89,7 @@ export class CoursesController {
    */
   @Post()
   @UseAuth([Role.PHYSIOTHERAPIST])
-  @ApiCreatedResponse({ type: CourseEntity })
+  @ApiCreatedResponse({ type: CourseDto })
   create(@Body() createCourseDto: CreateCourseDto, @Req() req) {
     return this.coursesService.create(createCourseDto, req.user.sub);
   }
@@ -81,9 +101,9 @@ export class CoursesController {
    * @returns the updated course
    */
   @Put(":id")
-  @ApiOkResponse({ type: CourseEntity })
+  @ApiOkResponse({ type: CourseDto })
   @UseAuth([Role.PHYSIOTHERAPIST])
-  update(@Param("id") id: string, @Body() updateCoursesDto: UpdateCoursesDto) {
+  update(@Param("id") id: string, @Body() updateCoursesDto: UpdateCourseDto) {
     return this.coursesService.update(id, updateCoursesDto);
   }
 

@@ -14,7 +14,7 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { useSearchParams } from "react-router";
 import { Home, Login } from "@mui/icons-material";
-import { ensurePasswordConstraints } from "../data/validators";
+import { ensurePasswordConstraints } from "../utils/format";
 
 export default function RestorePasswordPage() {
   const { apiClient } = useApiClient();

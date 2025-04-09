@@ -11,7 +11,7 @@ import {
 import { useState } from "react";
 import { useApiClient } from "@easymotion/auth-context";
 import { isHttpResponseError } from "../../../data/guards";
-import { isValidEmail } from "../../../data/validators";
+import { isValidEmail } from "../../../utils/format";
 
 const messages = {
   success:

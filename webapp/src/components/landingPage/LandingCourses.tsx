@@ -8,7 +8,7 @@ import LandingCourseCard from "./LandingCourseCard";
  * It fetches course data and renders up to 3 course cards.
  */
 export default function LandingCoursesSection() {
-  const { get: getCourses } = useCourses();
+  const { get: getCourses } = useCourses({ page: 0, perPage: 3 });
 
   return (
     <Box
@@ -49,12 +49,11 @@ export default function LandingCoursesSection() {
             columns={{ xs: 1, sm: 1, md: 2, lg: 3, xl: 3 }}
             justifyContent={{ xs: "center", lg: "space-between" }}
           >
-            {getCourses.data &&
-              getCourses.data.slice(0, 3).map((course) => (
-                <Grid2 key={course.id} sx={{ xs: 1 }}>
-                  <LandingCourseCard course={course} />
-                </Grid2>
-              ))}
+            {getCourses.data?.map((course) => (
+              <Grid2 key={course.id} sx={{ xs: 1 }}>
+                <LandingCourseCard course={course} />
+              </Grid2>
+            ))}
           </Grid2>
         )}
       </Container>

@@ -10,7 +10,6 @@ import {
   IsDate,
   IsBoolean,
   IsEnum,
-  IsUUID,
 } from "class-validator";
 import { Expose, Type } from "class-transformer";
 import { ApplicationUser, Role } from "@prisma/client";
@@ -20,7 +19,7 @@ export class ApplicationUserDto implements Readonly<ApplicationUser> {
     description: "Unique user identifier (UUID)",
     example: "b3bf4d18-8dd0-43a1-b1da-fd3f7b9553a1",
   })
-  @IsUUID()
+  @IsString()
   @Expose()
   id: string;
 

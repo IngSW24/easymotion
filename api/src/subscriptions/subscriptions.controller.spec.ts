@@ -126,7 +126,8 @@ describe("SubscriptionsController", () => {
 
     expect(subscriptionServiceMockup.subscribeFinalUser).toHaveBeenCalledWith(
       req.user.sub,
-      subscribeDto
+      subscribeDto,
+      false
     );
 
     expect(result).toBeUndefined();

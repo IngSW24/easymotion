@@ -1,6 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router";
 import CourseDetailsPage from "../pages/CourseDetailsPage";
-import CourseCreatePage from "../pages/CourseCreatePage";
 import Layout, { MenuEntry } from "../components/Layout/Layout";
 
 import ProfilePage from "../pages/ProfilePage";
@@ -63,7 +62,6 @@ export default function Router() {
           {/* Accessible only by physhiotherapists */}
           <Route element={<AuthenticatedRoute roles={["PHYSIOTHERAPIST"]} />}>
             <Route path="physiotherapist/dashboard" element={<Dashboard />} />
-            <Route path="physiotherapist/new" element={<CourseCreatePage />} />
           </Route>
 
           {/* Accessible only by user */}

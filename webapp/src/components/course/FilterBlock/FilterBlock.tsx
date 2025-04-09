@@ -9,78 +9,109 @@ import {
   Collapse,
   Stack,
   Typography,
+  CircularProgress,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
 } from "@mui/material";
 import { ArrowUpward, FilterList } from "@mui/icons-material";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import CheckboxSelector from "../../atoms/Select/CheckboxSelector";
-import { CourseFilters } from "./types";
-import {
-  courseAvilabilities,
-  courseCategories,
-  courseFrequencies,
-  courseLevels,
-} from "../../../data/courseEnumerations";
 import DebouncedSearchBar from "./DebouncedSearchBar";
+import { CourseFilters } from "../../../hooks/useCourses";
+import { useCourseCategory } from "../../../hooks/useCourseCategories";
 
 export interface FilterBlockProps {
   filters?: CourseFilters;
   onChange: (filters: CourseFilters) => void;
 }
 
-const filterOptions = [
-  { key: "categories", label: "Categorie", values: courseCategories },
-  { key: "levels", label: "Livelli", values: courseLevels },
-  { key: "frequencies", label: "Frequenze", values: courseFrequencies },
-  {
-    key: "availabilities",
-    label: "Disponibilità",
-    values: courseAvilabilities,
-  },
-] as const;
+const levelsOptions = [
+  { value: "BASIC", label: "Base" },
+  { value: "MEDIUM", label: "Intermedio" },
+  { value: "ADVANCED", label: "Avanzato" },
+];
 
 export default function FilterBlock({ filters, onChange }: FilterBlockProps) {
-  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const { getAll: getCategories } = useCourseCategory();
 
-  // Local state for filters
+  const categoryOptions = useMemo(() => {
+    if (getCategories.isLoading || !getCategories.data) return [];
+
+    return getCategories.data.map((category) => ({
+      value: category.id,
+      label: category.name,
+    }));
+  }, [getCategories.data, getCategories.isLoading]);
+
+  const filterOptions = useMemo(
+    () => [{ key: "categories", label: "Categorie", values: categoryOptions }],
+    [categoryOptions]
+  );
+
   const [localFilters, setLocalFilters] = useState<CourseFilters>(
     filters || {
-      searchText: "",
-      advanced: {
-        categories: [],
-        levels: [],
-        frequencies: [],
-        availabilities: [],
-      },
+      searchText: undefined,
+      categories: undefined,
+      level: undefined,
     }
   );
 
-  // Handle searchText updates from DebouncedSearchBar
+  const handleChange = (filters: CourseFilters) => {
+    onChange({
+      searchText: !filters.searchText ? undefined : filters.searchText,
+      level: filters.level ?? undefined,
+      categories:
+        (filters.categories?.length ?? 0) > 0 ? filters.categories : undefined,
+    });
+  };
+
   const handleSearchChange = (searchText: string) => {
     const updatedFilters = { ...localFilters, searchText };
     setLocalFilters(updatedFilters);
-    onChange(updatedFilters);
+    handleChange(updatedFilters);
   };
 
-  // Handle updates for advanced filters
-  const handleAdvancedFilterChange = (
-    key: keyof CourseFilters["advanced"],
+  const handleFilterChange = (
+    key: keyof Omit<CourseFilters, "searchText" | "level">,
     value: string[]
   ) => {
-    const updatedAdvanced = { ...localFilters.advanced, [key]: value };
-    const updatedFilters = { ...localFilters, advanced: updatedAdvanced };
+    const updatedFilters = { ...localFilters, [key]: value };
     setLocalFilters(updatedFilters);
-    onChange(updatedFilters);
+    handleChange(updatedFilters);
+  };
+
+  const handleLevelChange = (event: SelectChangeEvent<string>) => {
+    const level = event.target.value === "" ? undefined : event.target.value;
+    const updatedFilters = { ...localFilters, level };
+    setLocalFilters(updatedFilters);
+    handleChange(updatedFilters);
   };
 
   // Clear filters
   const clearFilter = (
-    key: keyof CourseFilters["advanced"],
+    key: keyof Omit<CourseFilters, "searchText">,
     valueToRemove?: string
   ) => {
+    if (!localFilters[key]) return;
+
+    if (key === "level") {
+      const updatedFilters = { ...localFilters, level: undefined };
+      setLocalFilters(updatedFilters);
+      handleChange(updatedFilters);
+      return;
+    }
+
+    const currentValues = localFilters[key] as string[];
     const updatedValues = valueToRemove
-      ? localFilters.advanced[key].filter((v) => v !== valueToRemove)
+      ? currentValues.filter((v) => v !== valueToRemove)
       : [];
-    handleAdvancedFilterChange(key, updatedValues);
+
+    handleFilterChange(
+      key as keyof Omit<CourseFilters, "searchText" | "level">,
+      updatedValues
+    );
   };
 
   return (
@@ -88,15 +119,15 @@ export default function FilterBlock({ filters, onChange }: FilterBlockProps) {
       {/* Search Bar */}
       <Stack gap={3} direction="row" mb={2} width="100%">
         <DebouncedSearchBar
-          value={localFilters.searchText}
+          value={localFilters.searchText || ""}
           onChange={handleSearchChange}
         />
         <Button
           variant="contained"
-          onClick={() => setShowAdvanced((prev) => !prev)}
+          onClick={() => setShowFilters((prev) => !prev)}
           sx={{ whiteSpace: "nowrap" }}
         >
-          {showAdvanced ? <ArrowUpward /> : <FilterList />}
+          {showFilters ? <ArrowUpward /> : <FilterList />}
           <Typography component="span" sx={{ px: { xs: 1, md: 2 } }}>
             Filtri
           </Typography>
@@ -105,8 +136,12 @@ export default function FilterBlock({ filters, onChange }: FilterBlockProps) {
 
       {/* Active Filters */}
       <Box display="flex" gap={1} mb={2} flexWrap="wrap">
+        {/* Category Chips */}
         {filterOptions.map(({ key, label, values }) => {
-          const selectedValues = localFilters.advanced[key];
+          const selectedValues =
+            (localFilters[
+              key as keyof Omit<CourseFilters, "searchText">
+            ] as string[]) || [];
           return selectedValues.map((value) => {
             const valueLabel =
               values.find((v) => v.value === value)?.label || value;
@@ -115,33 +150,85 @@ export default function FilterBlock({ filters, onChange }: FilterBlockProps) {
               <Chip
                 key={`${key}-${value}`}
                 label={`${label}: ${valueLabel}`}
-                onDelete={() => clearFilter(key, value)}
+                onDelete={() =>
+                  clearFilter(
+                    key as keyof Omit<CourseFilters, "searchText">,
+                    value
+                  )
+                }
               />
             );
           });
         })}
+
+        {/* Level Chip */}
+        {localFilters.level && (
+          <Chip
+            key="level-chip"
+            label={`Livello: ${levelsOptions.find((l) => l.value === localFilters.level)?.label || localFilters.level}`}
+            onDelete={() => clearFilter("level")}
+          />
+        )}
       </Box>
 
-      {/* Advanced Filters */}
-      <Collapse in={showAdvanced}>
+      {/* Filters Panel */}
+      <Collapse in={showFilters}>
         <Paper sx={{ p: 3 }}>
           <Box display="flex" gap={2} flexWrap="wrap">
-            {filterOptions.map(({ key, label, values }) => (
-              <FormControl
-                sx={{ minWidth: 250 }}
-                size="small"
-                key={`filter-${key}`}
-              >
-                <InputLabel>{label}</InputLabel>
-                <CheckboxSelector
-                  values={localFilters.advanced[key]}
-                  label={label}
-                  allValues={values}
-                  maxWidth={230}
-                  onChange={(value) => handleAdvancedFilterChange(key, value)}
-                />
-              </FormControl>
-            ))}
+            {getCategories.isLoading ? (
+              <CircularProgress size={24} />
+            ) : (
+              <>
+                {/* Categories (multi-select) */}
+                {filterOptions.map(({ key, label, values }) => (
+                  <FormControl
+                    sx={{ minWidth: 250 }}
+                    size="small"
+                    key={`filter-${key}`}
+                  >
+                    <InputLabel>{label}</InputLabel>
+                    <CheckboxSelector
+                      values={
+                        (localFilters[
+                          key as keyof Omit<CourseFilters, "searchText">
+                        ] as string[]) || []
+                      }
+                      label={label}
+                      allValues={values}
+                      maxWidth={230}
+                      onChange={(value) =>
+                        handleFilterChange(
+                          key as keyof Omit<
+                            CourseFilters,
+                            "searchText" | "level"
+                          >,
+                          value
+                        )
+                      }
+                    />
+                  </FormControl>
+                ))}
+
+                {/* Level (single-select) */}
+                <FormControl sx={{ minWidth: 250 }} size="small">
+                  <InputLabel>Livello</InputLabel>
+                  <Select
+                    value={localFilters.level || ""}
+                    label="Livello"
+                    onChange={handleLevelChange}
+                  >
+                    <MenuItem value="">
+                      <em>Nessuno</em>
+                    </MenuItem>
+                    {levelsOptions.map((level) => (
+                      <MenuItem key={level.value} value={level.value}>
+                        {level.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </>
+            )}
           </Box>
         </Paper>
       </Collapse>

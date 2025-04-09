@@ -1,9 +1,24 @@
 import { Expose } from "class-transformer";
-import { IsOptional, IsUUID } from "class-validator";
+import { IsOptional, IsString } from "class-validator";
 
 export class CourseQueryFilter {
   @Expose()
   @IsOptional()
-  @IsUUID()
+  @IsString()
   ownerId?: string;
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  searchText?: string;
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  categoryIds?: string;
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  level?: string;
 }
