@@ -161,4 +161,20 @@ export class CourseDto implements Course {
   @Type(() => CourseSessionDto)
   @Expose()
   sessions: CourseSessionDto[];
+
+  @ApiProperty({
+    description: "Subscription start date",
+    required: true,
+  })
+  @IsDate()
+  @Expose()
+  subscription_start_date: Date;
+
+  @ApiProperty({
+    description: "Subscription end date",
+    required: true,
+  })
+  @IsDate()
+  @Expose()
+  subscription_end_date: Date;
 }

@@ -64,6 +64,8 @@ describe("CoursesController", () => {
       subscriptions_open: false,
       max_subscribers: 0,
       sessions: [],
+      subscription_start_date: new Date(),
+      subscription_end_date: new Date(),
     };
 
     const createdCourse = {
@@ -78,9 +80,9 @@ describe("CoursesController", () => {
 
     expect(prismaMock.course.create).toHaveBeenCalledWith({
       data: {
-        name: "Test Course",
-        description: "Test Description",
-        short_description: "Short Description",
+        name: dto.name,
+        description: dto.description,
+        short_description: dto.short_description,
         instructors: [],
         category: {
           connect: {
@@ -88,7 +90,7 @@ describe("CoursesController", () => {
           },
         },
         level: CourseLevel.BASIC,
-        tags: ["aa", "bb"],
+        tags: dto.tags,
         location: "",
         is_free: false,
         price: new Decimal(100),
@@ -104,6 +106,8 @@ describe("CoursesController", () => {
         sessions: {
           create: [],
         },
+        subscription_start_date: dto.subscription_start_date,
+        subscription_end_date: dto.subscription_end_date,
       },
       include: {
         category: true,
@@ -159,6 +163,8 @@ describe("CoursesController", () => {
         sessions: [],
         owner_id: randomUUID(),
         category_id: randomUUID(),
+        subscription_start_date: new Date(),
+        subscription_end_date: new Date(),
       },
     ];
     const totalItems = 1;

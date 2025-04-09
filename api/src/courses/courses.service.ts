@@ -44,6 +44,8 @@ export class CoursesService {
         subscriptions_open: newCourse.subscriptions_open,
         max_subscribers: newCourse.max_subscribers,
         tags: newCourse.tags,
+        subscription_start_date: newCourse.subscription_start_date,
+        subscription_end_date: newCourse.subscription_end_date, // TODO: use three dot notation
         sessions: {
           create: newCourse.sessions,
         },
