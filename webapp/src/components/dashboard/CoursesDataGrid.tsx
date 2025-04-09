@@ -12,6 +12,7 @@ type DashboardDataGridProps = {
   isFetchingNextPage: boolean;
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;
+  onCourseUsers: (id: string) => void;
 };
 
 export default function DashboardDataGrid(props: DashboardDataGridProps) {
@@ -22,6 +23,7 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
     isFetchingNextPage,
     onDelete,
     onEdit,
+    onCourseUsers,
   } = props;
 
   const navigate = useNavigate();
@@ -108,7 +110,8 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
                 size="small"
                 onClick={(event) => {
                   event.stopPropagation();
-                  navigate(`/details/${params.row.courseId}`);
+                  // navigate(`/details/${params.row.courseId}`);
+                  onCourseUsers(params.row.courseId);
                 }}
               >
                 <Visibility fontSize="small" />
