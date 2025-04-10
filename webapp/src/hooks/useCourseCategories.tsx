@@ -1,6 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useApiClient } from "@easymotion/auth-context";
 import { useSnack } from "./useSnack";
+import {
+  CreateCourseCategoryDto,
+  UpdateCourseCategoryDto,
+} from "@easymotion/openapi";
 
 export const useCourseCategory = () => {
   const { apiClient: api } = useApiClient();
@@ -16,7 +20,7 @@ export const useCourseCategory = () => {
   });
 
   const create = useMutation({
-    mutationFn: async (categoryData: any) => {
+    mutationFn: async (categoryData: CreateCourseCategoryDto) => {
       const response =
         await api.categories.categoriesControllerCreate(categoryData);
       return response.data;
@@ -38,7 +42,7 @@ export const useCourseCategory = () => {
       categoryData,
     }: {
       categoryId: string;
-      categoryData: any;
+      categoryData: UpdateCourseCategoryDto;
     }) => {
       const response = await api.categories.categoriesControllerUpdate(
         categoryId,

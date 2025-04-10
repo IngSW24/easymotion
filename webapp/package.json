@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0 --clearScreen false",
     "build": "tsc -b && vite build",
-    "lint": "eslint src",
+    "lint": "eslint src --fix",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest --watch",

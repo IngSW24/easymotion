@@ -6,7 +6,7 @@
   "main": "src/index.ts",
   "scripts": {
     "clean": "rm -rf node_modules",
-    "lint": "eslint src"
+    "lint": "eslint src --fix"
   },
   "peerDependencies": {
     "react": "^18.0.0",

@@ -69,7 +69,7 @@ export default function RestorePasswordPage() {
         newPassword,
       });
       setStatus("success");
-    } catch (_e) {
+    } catch (_) {
       setStatus("failed");
     } finally {
       setPasswordError("");
