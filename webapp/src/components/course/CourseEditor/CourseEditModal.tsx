@@ -26,7 +26,7 @@ export default function CourseEditModal(props: CourseEditModalProps) {
   const { open, onClose, course } = props;
 
   const { user } = useAuth();
-  const { getAll: categories } = useCourseCategory();
+  const { getAll: categories, create: createCategory } = useCourseCategory();
   const { update, create } = usePhysiotherapistCourses({ fetch: false });
   const snack = useSnack();
 
@@ -61,6 +61,29 @@ export default function CourseEditModal(props: CourseEditModalProps) {
     editCourse,
     onClose,
   });
+
+  const handleCategoryCreation = useCallback(
+    async (categoryName: string) => {
+      if (!categoryName) {
+        snack.showError("Inserisci un nome per la nuova categoria.");
+        return null;
+      }
+
+      try {
+        const newCategory = await createCategory.mutateAsync({
+          name: categoryName,
+        });
+        snack.showSuccess("Categoria creata con successo!");
+        return newCategory.id;
+      } catch (error: any) {
+        snack.showError(
+          `Errore nella creazione della categoria: ${error.message || error}`
+        );
+        return null;
+      }
+    },
+    [createCategory, snack]
+  );
 
   // Handle form submission
   const handleSubmit = useCallback(async () => {
@@ -153,6 +176,7 @@ export default function CourseEditModal(props: CourseEditModalProps) {
       level: editCourse.level,
       instructorName: editCourse.instructorName,
       onFieldChange: handleChange,
+      onCreation: handleCategoryCreation,
       categories: categories.data || [],
       isCategoriesLoading: !!categories.isLoading,
       levelMenuItems,
@@ -162,6 +186,7 @@ export default function CourseEditModal(props: CourseEditModalProps) {
       editCourse.level,
       editCourse.instructorName,
       handleChange,
+      handleCategoryCreation,
       categories.data,
       categories.isLoading,
       levelMenuItems,
