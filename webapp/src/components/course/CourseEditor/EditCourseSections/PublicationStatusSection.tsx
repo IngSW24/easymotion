@@ -3,11 +3,21 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import { useFormContext } from "react-hook-form";
 import type { CourseFormData } from "../schema";
+import { DateTimePicker } from "@mui/x-date-pickers";
+import { DateTime } from "luxon";
+import { DateRange } from "@mui/icons-material";
 
 export default function PublicationStatusSection() {
-  const { watch, setValue } = useFormContext<CourseFormData>();
+  const {
+    watch,
+    setValue,
+    register,
+    formState: { errors },
+  } = useFormContext<CourseFormData>();
   const isPublished = watch("is_published");
   const subscriptionsOpen = watch("subscriptions_open");
+  const subscriptionStartDate = watch("subscription_start_date");
+  const subscriptionEndDate = watch("subscription_end_date");
 
   return (
     <Box>
@@ -47,6 +57,47 @@ export default function PublicationStatusSection() {
                 label="Iscrizioni aperte"
               />
             </Tooltip>
+          </Stack>
+        </Box>
+
+        <Box>
+          <Stack direction="row" spacing={2} alignItems="center">
+            <DateRange color="primary" />
+            <DateTimePicker
+              {...register("subscription_start_date")}
+              label="Data inizio iscrizioni"
+              value={DateTime.fromISO(subscriptionStartDate)}
+              onChange={(date) => {
+                if (date)
+                  setValue("subscription_start_date", date.toISO() ?? "");
+              }}
+              slotProps={{
+                textField: {
+                  error: !!errors.subscription_start_date,
+                  helperText: errors.subscription_start_date?.message,
+                },
+              }}
+            />
+          </Stack>
+        </Box>
+
+        <Box>
+          <Stack direction="row" spacing={2} alignItems="center">
+            <DateRange color="primary" />
+            <DateTimePicker
+              {...register("subscription_end_date")}
+              label="Data fine iscrizioni"
+              value={DateTime.fromISO(subscriptionEndDate)}
+              onChange={(date) => {
+                if (date) setValue("subscription_end_date", date.toISO() ?? "");
+              }}
+              slotProps={{
+                textField: {
+                  error: !!errors.subscription_end_date,
+                  helperText: errors.subscription_end_date?.message,
+                },
+              }}
+            />
           </Stack>
         </Box>
       </Stack>

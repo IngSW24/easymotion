@@ -126,7 +126,6 @@ export default function DashboardHome() {
                 nextPageAction={() => getAll.fetchNextPage()}
                 hasNextPage={!!getAll.hasNextPage}
                 isFetchingNextPage={getAll.isFetchingNextPage}
-                totalItems={getAll.data?.pages[0]?.meta.totalItems || 0}
                 onDelete={async (id) => {
                   const result = await confirm.showConfirmationDialog({
                     title: "Sei sicuro di voler eliminare questo corso?",

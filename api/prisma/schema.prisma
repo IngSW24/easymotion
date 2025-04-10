@@ -50,6 +50,9 @@ model Course {
   owner_id               String
   owner                  Physiotherapist    @relation(fields: [owner_id], references: [applicationUserId])
   subscribers            CourseFinalUser[]
+
+  subscription_start_date DateTime @default(now()) @db.Timestamptz(3)
+  subscription_end_date   DateTime @db.Timestamptz(3)
   sessions               CourseSession[]
 }
 
@@ -116,7 +119,7 @@ model Physiotherapist {
 
   specialization    String?
   publicPhoneNumber String?
-  courses            Course[]
+  courses           Course[]
 }
 
 model FinalUser {

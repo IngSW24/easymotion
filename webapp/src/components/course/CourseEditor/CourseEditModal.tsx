@@ -46,12 +46,16 @@ export default function CourseEditModal(props: CourseEditModalProps) {
   const methods = useForm<CourseFormData>({
     resolver: zodResolver(courseSchema),
     defaultValues: defaultCourse,
+    mode: "all",
   });
 
   useEffect(() => {
     // reset form if creating new course
     if (!course) {
-      methods.reset({ ...defaultCourse, instructors: [formatUserName(user)] });
+      methods.reset({
+        ...defaultCourse,
+        instructors: [formatUserName(user)], // TODO: ??
+      });
       return;
     }
 
@@ -115,15 +119,13 @@ export default function CourseEditModal(props: CourseEditModalProps) {
           <ModalHeader
             course={course}
             isPending={create.isPending || update.isPending}
-            isFormValid={methods.formState.isValid}
             onClose={onClose}
             onSubmit={methods.handleSubmit(onSubmit)}
-            tooltipMessage={
-              !methods.formState.isValid
-                ? "Compila tutti i campi obbligatori"
-                : ""
-            }
           />
+
+          <Typography>
+            Valido: {methods.formState.isValid ? "SI" : "NO"}
+          </Typography>
 
           <Box
             sx={{

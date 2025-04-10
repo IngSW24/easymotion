@@ -1,4 +1,5 @@
 import { CreateCourseDto } from "@easymotion/openapi";
+import { DateTime } from "luxon";
 import { z } from "zod";
 
 export type CourseFormData = CreateCourseDto & { id?: string };
@@ -30,13 +31,28 @@ export const courseSchema = z
       .array(
         z.object({
           id: z.string().optional().nullable(),
-          start_time: z.string().min(1, "L'orario di inizio è obbligatorio"),
-          end_time: z.string().min(1, "L'orario di fine è obbligatorio"),
+          start_time: z.string().datetime({
+            message: "L'orario di inizio è obbligatorio",
+            offset: true,
+          }),
+          end_time: z.string().datetime({
+            message: "L'orario di fine è obbligatorio",
+            offset: true,
+          }),
         })
       )
       .min(1, "Almeno una sessione è obbligatoria"),
+    subscription_start_date: z.string().datetime({
+      message: "L'orario di inizio iscrizioni è obbligatorio",
+      offset: true,
+    }),
+    subscription_end_date: z.string().datetime({
+      message: "L'orario di fine iscrizioni è obbligatorio",
+      offset: true,
+    }),
   })
   .superRefine((data, ctx) => {
+    // FIXME: si applica solo dopo aver premuto il tasto Invia
     if (!data.is_free) {
       if (data.price === null || data.price === undefined || data.price <= 0) {
         ctx.addIssue({
@@ -44,6 +60,34 @@ export const courseSchema = z
           message:
             "Il prezzo deve essere maggiore di 0 se il corso non è gratuito",
           path: ["price"],
+        });
+      }
+    }
+
+    if (
+      DateTime.fromISO(data.subscription_end_date).diff(
+        DateTime.fromISO(data.subscription_start_date)
+      ).milliseconds <= 0
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          "La data di inizio iscrizioni deve essere antecedente alla data di fine iscrizioni",
+        path: ["subscription_start_date"],
+      });
+    }
+
+    for (const session of data.sessions) {
+      if (
+        DateTime.fromISO(session.start_time).diff(
+          DateTime.fromISO(data.subscription_end_date)
+        ).milliseconds <= 0
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message:
+            "La data di fine iscrizioni deve essere antecedente alla data di inizio della prima sessione",
+          path: ["subscription_end_date"],
         });
       }
     }
@@ -66,4 +110,6 @@ export const defaultCourse: CourseFormData = {
   is_published: false,
   subscriptions_open: false,
   sessions: [],
+  subscription_start_date: DateTime.now().toISO(),
+  subscription_end_date: DateTime.now().toISO(),
 };
