@@ -52,7 +52,7 @@ export default function PasswordUpdate() {
           text: "Password aggiornata con successo",
         });
       }
-    } catch (_e) {
+    } catch (_) {
       setMessage({
         type: "error",
         text: "Password errata",

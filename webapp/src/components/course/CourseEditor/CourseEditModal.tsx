@@ -123,10 +123,6 @@ export default function CourseEditModal(props: CourseEditModalProps) {
             onSubmit={methods.handleSubmit(onSubmit)}
           />
 
-          <Typography>
-            Valido: {methods.formState.isValid ? "SI" : "NO"}
-          </Typography>
-
           <Box
             sx={{
               p: { xs: 2, md: 3 },
