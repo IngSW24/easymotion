@@ -14,19 +14,15 @@ import { CourseDto } from "@easymotion/openapi";
 interface ModalHeaderProps {
   course?: CourseDto;
   isPending: boolean;
-  isFormValid: boolean;
   onClose: () => void;
   onSubmit: () => void;
-  tooltipMessage: string;
 }
 
 const ModalHeader: React.FC<ModalHeaderProps> = ({
   course,
   isPending,
-  isFormValid,
   onClose,
   onSubmit,
-  tooltipMessage,
 }) => {
   return (
     <AppBar
@@ -57,7 +53,7 @@ const ModalHeader: React.FC<ModalHeaderProps> = ({
           {course ? "Modifica corso" : "Crea nuovo corso"}
         </Typography>
         <Stack direction="row" spacing={1}>
-          <Tooltip title={tooltipMessage} placement="bottom-start" arrow>
+          <Tooltip title="Invia" placement="bottom-start" arrow>
             <span>
               {" "}
               {/* Wrapper needed for disabled button tooltip */}
@@ -65,7 +61,7 @@ const ModalHeader: React.FC<ModalHeaderProps> = ({
                 onClick={onSubmit}
                 variant="contained"
                 color="primary"
-                disabled={isPending || !isFormValid}
+                disabled={isPending}
                 startIcon={<Save />}
               >
                 {isPending

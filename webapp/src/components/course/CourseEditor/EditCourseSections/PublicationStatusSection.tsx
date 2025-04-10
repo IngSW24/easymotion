@@ -1,44 +1,31 @@
-import { FormControlLabel, Switch, Stack, Tooltip, Box } from "@mui/material";
+import {
+  FormControlLabel,
+  Switch,
+  Stack,
+  Tooltip,
+  Box,
+  TextField,
+} from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import { useFormContext } from "react-hook-form";
 import type { CourseFormData } from "../schema";
 import { DateTimePicker } from "@mui/x-date-pickers";
 import { DateTime } from "luxon";
-
-interface PublicationStatusSectionProps {
-  isPublished: boolean;
-  subscriptionsOpen: boolean;
-  startDate: DateTime;
-  endDate: DateTime;
-
-  onIsPublishedChange: (isPublished: boolean) => void;
-  onSubscriptionsOpenChange: (subscriptionsOpen: boolean) => void;
-  onStartDateChange: (newStartDate: DateTime) => void;
-  onEndDateChange: (newEndDate: DateTime) => void;
-}
+import { DateRange } from "@mui/icons-material";
 
 export default function PublicationStatusSection() {
-  const { watch, setValue } = useFormContext<CourseFormData>();
+  const {
+    watch,
+    setValue,
+    register,
+    formState: { errors },
+  } = useFormContext<CourseFormData>();
   const isPublished = watch("is_published");
   const subscriptionsOpen = watch("subscriptions_open");
+  const subscriptionStartDate = watch("subscription_start_date");
+  const subscriptionEndDate = watch("subscription_end_date");
 
-export default function PublicationStatusSection({
-  isPublished,
-  subscriptionsOpen,
-  startDate,
-  endDate,
-  onIsPublishedChange,
-  onSubscriptionsOpenChange,
-  onStartDateChange,
-  onEndDateChange,
-}: PublicationStatusSectionProps) {
-  const changeStartDate = (newStartDate: DateTime | null) => {
-    if (newStartDate) onStartDateChange(newStartDate);
-  };
-  const changeEndDate = (newEndDate: DateTime | null) => {
-    if (newEndDate) onEndDateChange(newEndDate);
-  };
   return (
     <Box>
       <Stack spacing={3}>
@@ -82,27 +69,42 @@ export default function PublicationStatusSection({
 
         <Box>
           <Stack direction="row" spacing={2} alignItems="center">
-            <HowToRegIcon color={subscriptionsOpen ? "primary" : "disabled"} />
-            <Tooltip title="Data inizio iscrizioni">
-              <DateTimePicker
-                label="Data inizio iscrizioni"
-                value={startDate}
-                onChange={changeStartDate}
-              />
-            </Tooltip>
+            <DateRange color="primary" />
+            <DateTimePicker
+              {...register("subscription_start_date")}
+              label="Data inizio iscrizioni"
+              value={DateTime.fromISO(subscriptionStartDate)}
+              onChange={(date) => {
+                if (date)
+                  setValue("subscription_start_date", date.toISO() ?? "");
+              }}
+              slotProps={{
+                textField: {
+                  error: !!errors.subscription_start_date,
+                  helperText: errors.subscription_start_date?.message,
+                },
+              }}
+            />
           </Stack>
         </Box>
 
         <Box>
           <Stack direction="row" spacing={2} alignItems="center">
-            <HowToRegIcon color={subscriptionsOpen ? "primary" : "disabled"} />
-            <Tooltip title="Data fine iscrizioni">
-              <DateTimePicker
-                label="Data fine iscrizioni"
-                value={endDate}
-                onChange={changeEndDate}
-              />
-            </Tooltip>
+            <DateRange color="primary" />
+            <DateTimePicker
+              {...register("subscription_end_date")}
+              label="Data fine iscrizioni"
+              value={DateTime.fromISO(subscriptionEndDate)}
+              onChange={(date) => {
+                if (date) setValue("subscription_end_date", date.toISO() ?? "");
+              }}
+              slotProps={{
+                textField: {
+                  error: !!errors.subscription_end_date,
+                  helperText: errors.subscription_end_date?.message,
+                },
+              }}
+            />
           </Stack>
         </Box>
       </Stack>

@@ -189,7 +189,6 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
           },
         },
       }}
-      rowCount={totalItems || rows.length}
       paginationModel={paginationModel}
       onPaginationModelChange={handlePaginationModelChange}
       paginationMode="client"

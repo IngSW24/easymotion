@@ -3,6 +3,7 @@ import {
   Card,
   CardActionArea,
   CardContent,
+  Icon,
   IconButton,
   Typography,
 } from "@mui/material";
@@ -59,9 +60,7 @@ export default function OverviewSection(props: OverviewSectionProps) {
                     {card.value}
                   </Typography>
                 </Box>
-                <IconButton color="primary" disableRipple>
-                  {card.icon}
-                </IconButton>
+                <Icon color="primary">{card.icon}</Icon>
               </Box>
             </CardContent>
           </CardActionArea>
