@@ -4,7 +4,6 @@ import {
   CardActionArea,
   CardContent,
   Icon,
-  IconButton,
   Typography,
 } from "@mui/material";
 import { ReactNode } from "react";
