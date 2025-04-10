@@ -1,4 +1,5 @@
 import { AuthUserDto } from "@easymotion/openapi";
+import { DateTime } from "luxon";
 
 /**
  * Formats a user's name
@@ -49,4 +50,26 @@ export const extractTags = (tagsSpaceSeparated: string) => {
     .replace(/[^a-zA-Z0-9\s]/g, "")
     .split(" ")
     .filter((x) => x !== "");
+};
+
+/**
+ * Calculates the duration between two dates
+ * @param start - The start date
+ * @param end - The end date
+ * @returns The duration in hours and minutes
+ */
+export const calculateDuration = (start: DateTime, end: DateTime) => {
+  const diff = end.diff(start, ["hours", "minutes"]);
+  const hours = Math.floor(diff.hours);
+  const minutes = Math.floor(diff.minutes);
+
+  if (hours === 0) {
+    return `${minutes} ${minutes === 1 ? "minuto" : "minuti"}`;
+  } else if (minutes === 0) {
+    return `${hours} ${hours === 1 ? "ora" : "ore"}`;
+  } else {
+    return `${hours} ${hours === 1 ? "ora" : "ore"} e ${minutes} ${
+      minutes === 1 ? "minuto" : "minuti"
+    }`;
+  }
 };

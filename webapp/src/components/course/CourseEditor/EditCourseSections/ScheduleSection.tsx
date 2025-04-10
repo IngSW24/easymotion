@@ -27,6 +27,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import RepeatIcon from "@mui/icons-material/Repeat";
 import { useFormContext, useFieldArray } from "react-hook-form";
 import type { CourseFormData } from "../schema";
+import { calculateDuration } from "../../../../utils/format";
 
 type SessionFormState = {
   date: DateTime | null;
@@ -113,20 +114,6 @@ export default function ScheduleSection() {
   const handleRecurringOpen = () => setRecurringOpen(true);
 
   const handleRecurringClose = () => setRecurringOpen(false);
-
-  const calculateDuration = useCallback((start: DateTime, end: DateTime) => {
-    const diff = end.diff(start, ["hours", "minutes"]);
-    const hours = Math.floor(diff.hours);
-    const minutes = Math.floor(diff.minutes);
-
-    if (hours === 0) {
-      return `${minutes} minuti`;
-    } else if (minutes === 0) {
-      return `${hours} ore`;
-    } else {
-      return `${hours} ore e ${minutes} minuti`;
-    }
-  }, []);
 
   const handleAddClick = useCallback(() => {
     setIsEditing(false);
