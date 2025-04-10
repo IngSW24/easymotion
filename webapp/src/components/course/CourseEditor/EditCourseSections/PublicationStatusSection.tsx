@@ -1,33 +1,16 @@
-import {
-  Typography,
-  FormControlLabel,
-  Switch,
-  Stack,
-  Tooltip,
-  Box,
-} from "@mui/material";
+import { FormControlLabel, Switch, Stack, Tooltip, Box } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
+import { useFormContext } from "react-hook-form";
+import type { CourseFormData } from "../schema";
 
-interface PublicationStatusSectionProps {
-  isPublished: boolean;
-  subscriptionsOpen: boolean;
-  onIsPublishedChange: (isPublished: boolean) => void;
-  onSubscriptionsOpenChange: (subscriptionsOpen: boolean) => void;
-}
+export default function PublicationStatusSection() {
+  const { watch, setValue } = useFormContext<CourseFormData>();
+  const isPublished = watch("is_published");
+  const subscriptionsOpen = watch("subscriptions_open");
 
-export default function PublicationStatusSection({
-  isPublished,
-  subscriptionsOpen,
-  onIsPublishedChange,
-  onSubscriptionsOpenChange,
-}: PublicationStatusSectionProps) {
   return (
     <Box>
-      <Typography variant="h6" gutterBottom>
-        Stato del corso
-      </Typography>
-
       <Stack spacing={3}>
         <Box>
           <Stack direction="row" spacing={2} alignItems="center">
@@ -37,7 +20,7 @@ export default function PublicationStatusSection({
                 control={
                   <Switch
                     checked={isPublished}
-                    onChange={(e) => onIsPublishedChange(e.target.checked)}
+                    onChange={(e) => setValue("is_published", e.target.checked)}
                     color="primary"
                   />
                 }
@@ -56,7 +39,7 @@ export default function PublicationStatusSection({
                   <Switch
                     checked={subscriptionsOpen}
                     onChange={(e) =>
-                      onSubscriptionsOpenChange(e.target.checked)
+                      setValue("subscriptions_open", e.target.checked)
                     }
                     color="primary"
                   />

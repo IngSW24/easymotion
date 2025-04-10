@@ -1,119 +1,66 @@
-import React, { ChangeEvent } from "react";
-import { Grid2, TextField, Box, Typography, MenuItem } from "@mui/material";
-import { Category, School, FitnessCenter, Person } from "@mui/icons-material";
+import { Box, TextField, MenuItem } from "@mui/material";
+import { useFormContext } from "react-hook-form";
+import type { CourseFormData } from "../schema";
+import { courseLevels } from "../../../../data/course-levels";
+import { useCourseCategory } from "../../../../hooks/useCourseCategories";
+import LoadingSpinner from "../../../LoadingSpinner/LoadingSpinner";
 
-interface CategoryOption {
-  id: string;
-  name: string;
-}
+export default function CategoryLevelSection() {
+  const {
+    register,
+    formState: { errors },
+    watch,
+  } = useFormContext<CourseFormData>();
 
-interface CategoryLevelSectionProps {
-  categoryId: string | undefined;
-  level: string;
-  instructorName: string;
-  onFieldChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  categories: CategoryOption[];
-  isCategoriesLoading: boolean;
-  levelMenuItems: React.ReactNode[];
-}
+  const { getAll: categories } = useCourseCategory();
+  const currentCategoryId = watch("category_id");
+  const currentLevel = watch("level");
 
-const CategoryLevelSection: React.FC<CategoryLevelSectionProps> = ({
-  categoryId,
-  level,
-  instructorName,
-  onFieldChange,
-  categories,
-  isCategoriesLoading,
-  levelMenuItems,
-}) => {
-  if (isCategoriesLoading) {
-    return (
-      <Box>
-        <Typography variant="h6">Caricamento...</Typography>
-      </Box>
-    );
+  if (categories.isLoading) {
+    return <LoadingSpinner />;
   }
 
   return (
-    <Box>
-      <Typography
-        variant="h6"
-        sx={{ display: "flex", alignItems: "center", mb: 2 }}
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+      <TextField
+        {...register("category_id")}
+        select
+        label="Categoria"
+        error={!!errors.category_id}
+        helperText={errors.category_id?.message}
+        fullWidth
+        value={currentCategoryId}
       >
-        <Category sx={{ mr: 1 }} /> Categoria e Livello
-      </Typography>
-      <Grid2 container spacing={2}>
-        <Grid2 size={{ xs: 12 }}>
-          <TextField
-            select
-            fullWidth
-            label="Categoria"
-            name="categoryId"
-            value={categoryId || ""}
-            onChange={onFieldChange}
-            required
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <Box sx={{ display: "flex", mr: 1, color: "text.secondary" }}>
-                    <School />
-                  </Box>
-                ),
-              },
-            }}
-            disabled={isCategoriesLoading}
-          >
-            {categories.map((option) => (
-              <MenuItem key={option.id} value={option.id}>
-                {option.name}
-              </MenuItem>
-            ))}
-          </TextField>
-        </Grid2>
-        <Grid2 size={{ xs: 12 }}>
-          <TextField
-            select
-            fullWidth
-            label="Livello"
-            name="level"
-            value={level}
-            onChange={onFieldChange}
-            required
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <Box sx={{ display: "flex", mr: 1, color: "text.secondary" }}>
-                    <FitnessCenter />
-                  </Box>
-                ),
-              },
-            }}
-          >
-            {levelMenuItems}
-          </TextField>
-        </Grid2>
-        <Grid2 size={{ xs: 12 }}>
-          <TextField
-            fullWidth
-            label="Nome istruttore"
-            name="instructorName"
-            value={instructorName}
-            onChange={onFieldChange}
-            required
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <Box sx={{ display: "flex", mr: 1, color: "text.secondary" }}>
-                    <Person />
-                  </Box>
-                ),
-              },
-            }}
-          />
-        </Grid2>
-      </Grid2>
+        {categories.data?.map((category) => (
+          <MenuItem key={category.id} value={category.id}>
+            {category.name}
+          </MenuItem>
+        ))}
+      </TextField>
+
+      <TextField
+        {...register("level")}
+        select
+        label="Livello"
+        error={!!errors.level}
+        value={currentLevel}
+        helperText={errors.level?.message}
+        fullWidth
+      >
+        {courseLevels.map((option) => (
+          <MenuItem key={option.value} value={option.value}>
+            {option.label}
+          </MenuItem>
+        ))}
+      </TextField>
+
+      <TextField
+        {...register("instructors.0")}
+        label="Nome Istruttore"
+        error={!!errors.instructors}
+        helperText={errors.instructors?.message}
+        fullWidth
+      />
     </Box>
   );
-};
-
-export default React.memo(CategoryLevelSection);
+}
