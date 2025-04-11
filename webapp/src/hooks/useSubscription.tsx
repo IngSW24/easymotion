@@ -94,7 +94,6 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
    */
   const subscribe = useMutation({
     mutationFn: async (dto: SubscriptionCreateDto) => {
-      console.log("subscribe", dto);
       return await api.subscriptions.subscriptionsControllerSubscribeLoggedUser(
         dto
       );
