@@ -64,7 +64,7 @@ export default function CategoryLevelSection() {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       <CrudSelector
-        label="Category"
+        label="Categoria"
         items={categories.data || []}
         value={categories.data.find((c) => c.id === currentCategoryId) || null}
         onChange={(newValue) => setValue("category_id", newValue?.id ?? "")}
