@@ -54,7 +54,8 @@ export default function CourseEditModal(props: CourseEditModalProps) {
     if (!course) {
       methods.reset({
         ...defaultCourse,
-        instructors: [formatUserName(user)], // TODO: ??
+        // assumes instructor is the current user and defaults course with their name
+        instructors: [formatUserName(user)],
       });
       return;
     }

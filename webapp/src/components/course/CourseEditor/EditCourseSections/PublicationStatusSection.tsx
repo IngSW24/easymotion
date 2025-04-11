@@ -77,6 +77,7 @@ export default function PublicationStatusSection() {
                   helperText: errors.subscription_start_date?.message,
                 },
               }}
+              format="dd/MM/yyyy HH:mm"
             />
           </Stack>
         </Box>
@@ -97,6 +98,7 @@ export default function PublicationStatusSection() {
                   helperText: errors.subscription_end_date?.message,
                 },
               }}
+              format="dd/MM/yyyy HH:mm"
             />
           </Stack>
         </Box>
