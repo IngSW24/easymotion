@@ -1,4 +1,4 @@
-import { Box, Container, Grid2, Typography } from "@mui/material";
+import { Box, Container, Grid, Typography } from "@mui/material";
 import { useCourses } from "../../hooks/useCourses";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 import LandingCourseCard from "./LandingCourseCard";
@@ -43,18 +43,18 @@ export default function LandingCoursesSection() {
             <LoadingSpinner />
           </Box>
         ) : (
-          <Grid2
+          <Grid
             container
             spacing={{ xs: 2 }}
             columns={{ xs: 1, sm: 1, md: 2, lg: 3, xl: 3 }}
             justifyContent={{ xs: "center", lg: "space-between" }}
           >
             {getCourses.data?.map((course) => (
-              <Grid2 key={course.id} sx={{ xs: 1 }}>
+              <Grid key={course.id} sx={{ xs: 1 }}>
                 <LandingCourseCard course={course} />
-              </Grid2>
+              </Grid>
             ))}
-          </Grid2>
+          </Grid>
         )}
       </Container>
     </Box>

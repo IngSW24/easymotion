@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from "react";
-import { Drawer, Box, Grid2, Typography, Paper, SxProps } from "@mui/material";
+import { Drawer, Box, Grid, Typography, Paper, SxProps } from "@mui/material";
 import { useSnack } from "../../../hooks/useSnack";
 import BasicInfoSection from "./EditCourseSections/BasicInfoSection";
 import CategoryLevelSection from "./EditCourseSections/CategoryLevelSection";
@@ -130,8 +130,8 @@ export default function CourseEditModal(props: CourseEditModalProps) {
               height: "calc(100% - 64px)",
             }}
           >
-            <Grid2 container spacing={3}>
-              <Grid2 size={{ xs: 12 }}>
+            <Grid container spacing={3}>
+              <Grid size={{ xs: 12 }}>
                 <Paper elevation={1} sx={{ p: 3 }}>
                   <Box sx={sectionCardStyle}>
                     <InfoIcon sx={{ mr: 1, color: "primary.main" }} />
@@ -141,9 +141,9 @@ export default function CourseEditModal(props: CourseEditModalProps) {
                   </Box>
                   <BasicInfoSection />
                 </Paper>
-              </Grid2>
+              </Grid>
 
-              <Grid2 size={{ xs: 12, md: 6 }}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Paper elevation={1} sx={{ p: 3 }}>
                   <Box sx={sectionCardStyle}>
                     <CategoryIcon sx={{ mr: 1, color: "primary.main" }} />
@@ -153,9 +153,9 @@ export default function CourseEditModal(props: CourseEditModalProps) {
                   </Box>
                   <CategoryLevelSection />
                 </Paper>
-              </Grid2>
+              </Grid>
 
-              <Grid2 size={{ xs: 12, md: 6 }}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Paper elevation={1} sx={{ p: 3 }}>
                   <Box sx={sectionCardStyle}>
                     <PublicIcon sx={{ mr: 1, color: "primary.main" }} />
@@ -165,9 +165,9 @@ export default function CourseEditModal(props: CourseEditModalProps) {
                   </Box>
                   <PublicationStatusSection />
                 </Paper>
-              </Grid2>
+              </Grid>
 
-              <Grid2 size={{ xs: 12 }}>
+              <Grid size={{ xs: 12 }}>
                 <Paper elevation={1} sx={{ p: 3 }}>
                   <Box sx={sectionCardStyle}>
                     <EventIcon sx={{ mr: 1, color: "primary.main" }} />
@@ -177,9 +177,9 @@ export default function CourseEditModal(props: CourseEditModalProps) {
                   </Box>
                   <ScheduleSection />
                 </Paper>
-              </Grid2>
+              </Grid>
 
-              <Grid2 size={{ xs: 12 }}>
+              <Grid size={{ xs: 12 }}>
                 <Paper elevation={1} sx={{ p: 3 }}>
                   <Box sx={sectionCardStyle}>
                     <EuroIcon sx={{ mr: 1, color: "primary.main" }} />
@@ -189,9 +189,9 @@ export default function CourseEditModal(props: CourseEditModalProps) {
                   </Box>
                   <PaymentSection />
                 </Paper>
-              </Grid2>
+              </Grid>
 
-              <Grid2 size={{ xs: 12 }}>
+              <Grid size={{ xs: 12 }}>
                 <Paper elevation={1} sx={{ p: 3 }}>
                   <Box sx={sectionCardStyle}>
                     <LocalOfferIcon sx={{ mr: 1, color: "primary.main" }} />
@@ -201,8 +201,8 @@ export default function CourseEditModal(props: CourseEditModalProps) {
                   </Box>
                   <TagsSection />
                 </Paper>
-              </Grid2>
-            </Grid2>
+              </Grid>
+            </Grid>
           </Box>
         </form>
       </FormProvider>

@@ -8,16 +8,16 @@
     "clean": "rm -rf node_modules",
     "lint": "eslint src --fix"
   },
-  "peerDependencies": {
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
-    "@easymotion/eslint-config": "workspace:../eslint-config",
-    "@easymotion/openapi": "workspace:../../openapi",
-    "@types/react": "^18.3.18",
-    "@types/react-dom": "^18.3.5",
-    "eslint": "^9.19.0",
-    "typescript": "~5.6.2"
+    "@easymotion/eslint-config": "workspace:^",
+    "@easymotion/openapi": "workspace:^",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.2",
+    "eslint": "^9.24.0",
+    "typescript": "~5.8.3"
   }
 }

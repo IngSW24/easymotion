@@ -7,7 +7,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "@easymotion/auth-context";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -16,7 +16,7 @@ import { AuthUserDto } from "@easymotion/openapi";
 
 type ProfileButtonActionProps = {
   label: string;
-  icon: JSX.Element;
+  icon: React.ReactNode;
   action: () => void | Promise<void>;
   targetRoles?: AuthUserDto["role"][];
 };
