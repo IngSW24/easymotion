@@ -26,7 +26,11 @@ export default function CourseEditModal(props: CourseEditModalProps) {
   const { open, onClose, course } = props;
 
   const { user } = useAuth();
-  const { getAll: categories, create: createCategory } = useCourseCategory();
+  const {
+    getAll: categories,
+    create: createCategory,
+    remove: removeCategory,
+  } = useCourseCategory();
   const { update, create } = usePhysiotherapistCourses({ fetch: false });
   const snack = useSnack();
 
@@ -62,6 +66,35 @@ export default function CourseEditModal(props: CourseEditModalProps) {
     onClose,
   });
 
+  const handleCategoryRemoval = useCallback(
+    async (categoryName: string): Promise<string | null> => {
+      if (!categoryName) {
+        snack.showError("Inserisci un nome per la categoria da rimuovere.");
+        return null;
+      }
+
+      const targetCategory = categories.data?.find(
+        (cat) => cat.name.toLowerCase() === categoryName.toLowerCase()
+      );
+      if (!targetCategory || !targetCategory.id) {
+        snack.showError("Categoria non trovata o non valida.");
+        return null;
+      }
+
+      try {
+        await removeCategory.mutateAsync(targetCategory.id);
+        snack.showSuccess("Categoria rimossa con successo!");
+        return null;
+      } catch (error: any) {
+        snack.showError(
+          `Errore nella rimozione della categoria: ${error.message || error}`
+        );
+        return error.message || "Errore sconosciuto";
+      }
+    },
+    [categories.data, removeCategory, snack]
+  );
+
   const handleCategoryCreation = useCallback(
     async (categoryName: string) => {
       if (!categoryName) {
@@ -70,11 +103,29 @@ export default function CourseEditModal(props: CourseEditModalProps) {
       }
 
       try {
-        const newCategory = await createCategory.mutateAsync({
-          name: categoryName,
-        });
-        snack.showSuccess("Categoria creata con successo!");
-        return newCategory.id;
+        if (
+          categories.data?.some(
+            (cat) =>
+              cat.name.trim().toLowerCase() ===
+              categoryName.trim().toLowerCase()
+          )
+        ) {
+          snack.showError("Categoria già esistente.");
+          return null;
+        } else {
+          const newCategory = await createCategory.mutateAsync({
+            name: categoryName,
+          });
+          snack.showSuccess("Categoria creata con successo!");
+          return newCategory.id;
+        }
+        {
+          const newCategory = await createCategory.mutateAsync({
+            name: categoryName,
+          });
+          snack.showSuccess("Categoria creata con successo!");
+          return newCategory.id;
+        }
       } catch (error: any) {
         snack.showError(
           `Errore nella creazione della categoria: ${error.message || error}`
@@ -82,7 +133,7 @@ export default function CourseEditModal(props: CourseEditModalProps) {
         return null;
       }
     },
-    [createCategory, snack]
+    [categories.data, createCategory, snack]
   );
 
   // Handle form submission
@@ -177,6 +228,7 @@ export default function CourseEditModal(props: CourseEditModalProps) {
       instructorName: editCourse.instructorName,
       onFieldChange: handleChange,
       onCreation: handleCategoryCreation,
+      onRemoval: handleCategoryRemoval,
       categories: categories.data || [],
       isCategoriesLoading: !!categories.isLoading,
       levelMenuItems,
@@ -185,8 +237,9 @@ export default function CourseEditModal(props: CourseEditModalProps) {
       editCourse.categoryId,
       editCourse.level,
       editCourse.instructorName,
-      handleChange,
       handleCategoryCreation,
+      handleCategoryRemoval,
+      handleChange,
       categories.data,
       categories.isLoading,
       levelMenuItems,

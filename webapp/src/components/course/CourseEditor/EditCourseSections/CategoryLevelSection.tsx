@@ -1,7 +1,21 @@
 import React, { ChangeEvent, useState } from "react";
-import { Grid2, TextField, Box, Typography, MenuItem } from "@mui/material";
+import {
+  Grid2,
+  TextField,
+  Box,
+  Typography,
+  MenuItem,
+  Divider,
+} from "@mui/material";
 import { Category, School, FitnessCenter, Person } from "@mui/icons-material";
 import DialogWindow from "../../../atoms/Dialog/DialogWindow";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+
+enum CategoryOperation {
+  CREATE = "create",
+  REMOVE = "remove",
+}
 
 interface CategoryOption {
   id: string;
@@ -14,6 +28,7 @@ interface CategoryLevelSectionProps {
   instructorName: string;
   onFieldChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onCreation: (categoryName: string) => Promise<string | null>;
+  onRemoval: (categoryId: string) => Promise<string | null>;
   categories: CategoryOption[];
   isCategoriesLoading: boolean;
   levelMenuItems: React.ReactNode[];
@@ -25,49 +40,64 @@ const CategoryLevelSection: React.FC<CategoryLevelSectionProps> = ({
   instructorName,
   onFieldChange,
   onCreation,
+  onRemoval,
   categories,
   isCategoriesLoading,
   levelMenuItems,
 }) => {
-  const [newCategoryName, setNewCategoryName] = useState<string>("");
-  const [openNewCategoryDialog, setOpenNewCategoryDialog] =
-    useState<boolean>(false);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [categoryToRemove, setCategoryToRemove] = useState("");
 
-  const handleMenuItemClick = (e: React.MouseEvent) => {
+  const handleAddDialogOpen = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    setOpenNewCategoryDialog(true);
+    setIsAddDialogOpen(true);
   };
 
-  const handleCategoryCreation = async () => {
-    if (newCategoryName) {
-      const newCategoryId = await onCreation(newCategoryName);
+  const handleRemoveDialogOpen = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setIsRemoveDialogOpen(true);
+  };
 
-      setNewCategoryName("");
-      setOpenNewCategoryDialog(false);
-      handleCategoryNameSelection(newCategoryId);
+  const handleCategoryOperation = async (
+    operation: CategoryOperation,
+    value: string
+  ): Promise<void> => {
+    try {
+      let categoryId: string | null = null;
+
+      if (value != null) {
+        if (operation === CategoryOperation.CREATE) {
+          categoryId = await onCreation(value);
+          setNewCategoryName("");
+          setIsAddDialogOpen(false);
+        } else if (operation === CategoryOperation.REMOVE) {
+          await onRemoval(value);
+          setCategoryToRemove("");
+          setIsRemoveDialogOpen(false);
+        }
+
+        updateCategorySelection(categoryId);
+      }
+    } catch (error) {
+      console.error(`Errore durante l'operazione ${operation}:`, error);
     }
   };
 
-  const handleCategoryNameSelection = (category: string | null) => {
-    if (category != null) {
+  const updateCategorySelection = (categoryId: string | null): void => {
+    if (categoryId !== null) {
       const syntheticEvent = {
         target: {
           name: "categoryId",
-          value: category,
+          value: categoryId,
         },
       } as unknown as ChangeEvent<HTMLInputElement>;
 
       onFieldChange(syntheticEvent);
-    } else {
-      onCloseDialog();
-    }
-  };
-
-  const onCloseDialog = () => {
-    setOpenNewCategoryDialog(false);
-
-    if (categories.length > 0) {
+    } else if (categories.length > 0) {
       const firstCategoryId = categories[0].id;
       const syntheticEvent = {
         target: {
@@ -78,6 +108,28 @@ const CategoryLevelSection: React.FC<CategoryLevelSectionProps> = ({
 
       onFieldChange(syntheticEvent);
     }
+  };
+
+  const handleCategoryCreation = () => {
+    if (newCategoryName) {
+      handleCategoryOperation(CategoryOperation.CREATE, newCategoryName);
+    }
+  };
+
+  const handleRemoveCategory = () => {
+    if (categoryToRemove) {
+      handleCategoryOperation(CategoryOperation.REMOVE, categoryToRemove);
+    }
+  };
+
+  const onCloseCreateDialog = () => {
+    setIsAddDialogOpen(false);
+    updateCategorySelection(null);
+  };
+
+  const onCloseRemoveDialog = () => {
+    setIsRemoveDialogOpen(false);
+    updateCategorySelection(null);
   };
 
   if (isCategoriesLoading) {
@@ -122,26 +174,84 @@ const CategoryLevelSection: React.FC<CategoryLevelSectionProps> = ({
                 {option.name}
               </MenuItem>
             ))}
+            {categories.length > 0 && <Divider />}
             <MenuItem
               key="add-new-category"
               value="new"
-              onClick={handleMenuItemClick}
+              onClick={handleAddDialogOpen}
+              sx={{ flex: 1, justifyContent: "center" }}
             >
-              <Typography variant="body2" color="primary">
+              <Typography
+                variant="body2"
+                color="primary"
+                sx={{ display: "flex", alignItems: "center" }}
+              >
+                <AddIcon fontSize="small" sx={{ mr: 0.5 }} />
                 Aggiungi nuova categoria
               </Typography>
             </MenuItem>
+            <Divider orientation="vertical" flexItem />
+
+            <MenuItem
+              key="remove-category"
+              value="remove"
+              onClick={handleRemoveDialogOpen}
+              sx={{ flex: 1, justifyContent: "center" }}
+            >
+              <Typography
+                variant="body2"
+                color="error"
+                sx={{ display: "flex", alignItems: "center" }}
+              >
+                <DeleteIcon fontSize="small" sx={{ mr: 0.5 }} />
+                Rimuovi categoria
+              </Typography>
+            </MenuItem>
+            {/**<Box sx={{ display: "flex", width: "100%" }}></Box>*/}
           </TextField>
         </Grid2>
+        <DialogWindow
+          open={isAddDialogOpen}
+          onClose={onCloseCreateDialog}
+          title="Aggiungi nuova categoria"
+          contentText="Inserisci il nome della nuova categoria"
+          submitText="Aggiungi"
+          onSubmit={handleCategoryCreation}
+        >
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Nome categoria"
+            fullWidth
+            value={newCategoryName}
+            onChange={(e) => setNewCategoryName(e.target.value)}
+          />
+        </DialogWindow>
 
         <DialogWindow
-          open={openNewCategoryDialog}
-          onClose={onCloseDialog}
-          categoryName={newCategoryName}
-          onCategoryNameChange={setNewCategoryName}
-          onCreateCategory={handleCategoryCreation}
-        />
-
+          open={isRemoveDialogOpen}
+          onClose={onCloseRemoveDialog}
+          title="Rimuovi categoria"
+          submitText="Rimuovi"
+          submitColor="error"
+          onSubmit={handleRemoveCategory}
+        >
+          <TextField
+            select
+            autoFocus
+            margin="dense"
+            label="Seleziona categoria da rimuovere"
+            fullWidth
+            value={categoryToRemove}
+            onChange={(e) => setCategoryToRemove(e.target.value)}
+          >
+            {categories.map((category) => (
+              <MenuItem key={category.id} value={category.name}>
+                {category.name}
+              </MenuItem>
+            ))}
+          </TextField>
+        </DialogWindow>
         <Grid2 size={{ xs: 12 }}>
           <TextField
             select
