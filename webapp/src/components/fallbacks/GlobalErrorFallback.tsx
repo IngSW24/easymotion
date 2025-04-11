@@ -9,9 +9,8 @@ import {
 } from "@mui/material";
 
 export function GlobalErrorFallback({ error }: FallbackProps) {
-  const handleGoHome = () => {
-    window.location.href = "/";
-  };
+  // no react router since this is higher in the tree
+  const handleGoHome = () => (window.location.href = "/");
 
   return (
     <Box
