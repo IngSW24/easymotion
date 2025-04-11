@@ -61,7 +61,10 @@ export default function ProfileButton() {
     {
       label: "Logout",
       icon: <Logout />,
-      action: () => auth.logout(),
+      action: () => {
+        auth.logout();
+        navigate("/");
+      },
       targetRoles: [],
     },
   ];
