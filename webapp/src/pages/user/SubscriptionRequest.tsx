@@ -1,7 +1,14 @@
-import { Box, Button, Modal, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Modal,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import React from "react";
 import { useCourses } from "../../hooks/useCourses";
-import { text } from "stream/consumers";
+import DoneIcon from "@mui/icons-material/Done";
 
 const style = {
   position: "absolute",
@@ -17,6 +24,7 @@ const style = {
 
 export interface CourseDetailProps {
   courseId?: string;
+  userId?: string;
 }
 
 export default function SubscriptionRequest(props: CourseDetailProps) {
@@ -56,7 +64,9 @@ export default function SubscriptionRequest(props: CourseDetailProps) {
 
   return (
     <>
-      <Button onClick={handleOpen}>Subscription Request</Button>
+      <Button startIcon={<DoneIcon />} variant="contained" sx={{ fontSize: 20 }} onClick={handleOpen}>
+        Iscriviti
+      </Button>
       <Modal
         open={open}
         onClose={handleClose}
@@ -105,13 +115,15 @@ export default function SubscriptionRequest(props: CourseDetailProps) {
             )}
           </Box>
 
-          <Typography mb={3}>
-            Usa lo spazio qui in basso per scrivere una "lettera di motivazione"
-            per scrivere i motivi per partecipare a questo corso
-          </Typography>
-
           <Box mb={3}>
-            <Typography>Motivazioni a partecipare</Typography>
+            <Typography fontWeight="bold" sx={{ fontSize: 20 }}>
+              Motivazioni a partecipare:
+            </Typography>
+
+            <Typography>
+              Usa lo spazio qui in basso per scrivere una "lettera di
+              motivazione" per scrivere i motivi per partecipare a questo corso
+            </Typography>
             <TextField
               fullWidth
               multiline
@@ -127,25 +139,33 @@ export default function SubscriptionRequest(props: CourseDetailProps) {
             </Typography>
           </Box>
 
-          {requestDone ? (
+          <Stack direction={"row"} spacing={2} sx={{ justifyContent: "right" }}>
+            {requestDone ? (
+              <Button
+                variant="contained"
+                color="error"
+                sx={{ fontSize: 20 }}
+                onClick={deleteRequest}
+              >
+                Cancella la richiesta
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                sx={{ fontSize: 20 }}
+                onClick={sendRequest}
+              >
+                Invia la richiesta
+              </Button>
+            )}
             <Button
-              variant="contained"
-              color="error"
+              variant="outlined"
               sx={{ fontSize: 20 }}
-              onClick={deleteRequest}
+              onClick={handleClose}
             >
-              Cancella la richiesta
+              Cancel
             </Button>
-          ) : (
-            <Button
-              variant="contained"
-              sx={{ fontSize: 20 }}
-              onClick={sendRequest}
-            >
-              Invia la richiesta
-            </Button>
-          )}
-          <Button onClick={handleClose}>Cancel</Button>
+          </Stack>
         </Box>
       </Modal>
     </>

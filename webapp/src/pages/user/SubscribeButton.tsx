@@ -58,8 +58,6 @@ export default function SubscribeButton() {
 
   return (
     <CardActions sx={{ justifyContent: "right", paddingX: 2, fontSize: 20 }}>
-      <SubscriptionRequest courseId={courseId}></SubscriptionRequest>
-
       {subscribed ? (
         <Button
           startIcon={<Delete />}
@@ -71,15 +69,24 @@ export default function SubscribeButton() {
           Annulla iscrizione
         </Button>
       ) : (
-        <Button
-          startIcon={<DoneIcon />}
-          variant="contained"
-          sx={{ fontSize: 20 }}
-          onClick={handleSubscribe}
-        >
-          Iscriviti
-        </Button>
+        <SubscriptionRequest
+          courseId={courseId}
+          userId={userId}
+        ></SubscriptionRequest>
       )}
     </CardActions>
   );
 }
+
+/**
+Vecchio pulsante per iscrizione (ora sostuito con il <SubscriptionRequest>)
+
+          <Button
+            startIcon={<DoneIcon />}
+            variant="contained"
+            sx={{ fontSize: 15 }}
+            onClick={handleSubscribe}
+          >
+            Iscriviti vecchio
+          </Button>
+ */
