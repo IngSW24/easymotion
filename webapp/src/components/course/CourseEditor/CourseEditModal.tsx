@@ -1,20 +1,26 @@
-import { useMemo, useCallback } from "react";
-import { Drawer, Box, MenuItem, Grid2 } from "@mui/material";
+import { useCallback, useEffect } from "react";
+import { Drawer, Box, Grid, Typography, Paper, SxProps } from "@mui/material";
 import { useSnack } from "../../../hooks/useSnack";
-import { courseLevels } from "../../../data/course-levels";
-import { useCourseCategory } from "../../../hooks/useCourseCategories";
-import { useAuth } from "@easymotion/auth-context";
 import BasicInfoSection from "./EditCourseSections/BasicInfoSection";
 import CategoryLevelSection from "./EditCourseSections/CategoryLevelSection";
 import PaymentSection from "./EditCourseSections/PaymentSection";
 import TagsSection from "./EditCourseSections/TagsSection";
 import PublicationStatusSection from "./EditCourseSections/PublicationStatusSection";
 import ScheduleSection from "./EditCourseSections/ScheduleSection";
-import { useCourseForm } from "./hooks/useCourseForm";
-import { useCloseHandling } from "./hooks/useCloseHandling";
-import ModalHeader from "./ModalHeader";
+import ModalHeader from "./EditCourseSections/ModalHeader";
 import { CourseDto } from "@easymotion/openapi";
 import { usePhysiotherapistCourses } from "../../../hooks/usePhysiotherapistCourses";
+import { useForm, FormProvider, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CourseFormData, courseSchema, defaultCourse } from "./schema";
+import InfoIcon from "@mui/icons-material/Info";
+import CategoryIcon from "@mui/icons-material/Category";
+import EventIcon from "@mui/icons-material/Event";
+import EuroIcon from "@mui/icons-material/Euro";
+import LocalOfferIcon from "@mui/icons-material/LocalOffer";
+import PublicIcon from "@mui/icons-material/Public";
+import { useAuth } from "@easymotion/auth-context";
+import { formatUserName } from "../../../utils/format";
 
 export interface CourseEditModalProps {
   open: boolean;
@@ -22,287 +28,70 @@ export interface CourseEditModalProps {
   course?: CourseDto;
 }
 
+const sectionCardStyle: SxProps = {
+  display: "flex",
+  alignItems: "center",
+  mb: 3,
+  pb: 2,
+  borderBottom: "1px solid",
+  borderColor: "divider",
+};
+
 export default function CourseEditModal(props: CourseEditModalProps) {
   const { open, onClose, course } = props;
-
-  const { user } = useAuth();
-  const {
-    getAll: categories,
-    create: createCategory,
-    remove: removeCategory,
-  } = useCourseCategory();
   const { update, create } = usePhysiotherapistCourses({ fetch: false });
+  const { user } = useAuth();
   const snack = useSnack();
 
-  // Use the extracted form hook
-  const {
-    editCourse,
-    errors,
-    handleChange,
-    setTags,
-    setSchedule,
-    setPaymentType,
-    setPrice,
-    setNumPayments,
-    handleMaxSubscribersToggle,
-    handleMaxSubscribersChange,
-    setIsPublished,
-    setSubscriptionsOpen,
-    validateForm,
-    getCourseData,
-    isFormValid,
-    getMissingFields,
-  } = useCourseForm({
-    open,
-    courseId: course?.id,
-    initialData: course,
-    user,
-    categories: categories.data || [],
+  const methods = useForm<CourseFormData>({
+    resolver: zodResolver(courseSchema),
+    defaultValues: defaultCourse,
+    mode: "all",
   });
 
-  // Use the extracted close handling hook
-  const { handleCloseAttempt } = useCloseHandling({
-    editCourse,
-    onClose,
-  });
+  useEffect(() => {
+    // reset form if creating new course
+    if (!course) {
+      methods.reset({
+        ...defaultCourse,
+        // assumes instructor is the current user and defaults course with their name
+        instructors: [formatUserName(user)],
+      });
+      return;
+    }
 
-  const handleCategoryRemoval = useCallback(
-    async (categoryName: string): Promise<string | null> => {
-      if (!categoryName) {
-        snack.showError("Inserisci un nome per la categoria da rimuovere.");
-        return null;
-      }
+    // apply course to data form if editing
+    methods.reset({ ...course, category_id: course.category.id });
+  }, [course, methods, user]);
 
-      const targetCategory = categories.data?.find(
-        (cat) => cat.name.toLowerCase() === categoryName.toLowerCase()
-      );
-      if (!targetCategory || !targetCategory.id) {
-        snack.showError("Categoria non trovata o non valida.");
-        return null;
-      }
-
-      try {
-        await removeCategory.mutateAsync(targetCategory.id);
-        snack.showSuccess("Categoria rimossa con successo!");
-        return null;
-      } catch (error: any) {
-        snack.showError(
-          `Errore nella rimozione della categoria: ${error.message || error}`
-        );
-        return error.message || "Errore sconosciuto";
-      }
-    },
-    [categories.data, removeCategory, snack]
-  );
-
-  const handleCategoryCreation = useCallback(
-    async (categoryName: string) => {
-      if (!categoryName) {
-        snack.showError("Inserisci un nome per la nuova categoria.");
-        return null;
-      }
+  const onSubmit: SubmitHandler<CourseFormData> = useCallback(
+    async (data) => {
+      // this is temporary until backend logic is changed according to proposal
+      const dataToSubmit = {
+        ...data,
+        price: data.is_free ? null : data.price,
+        number_of_payments: data.is_free ? null : data.number_of_payments,
+      };
 
       try {
-        if (
-          categories.data?.some(
-            (cat) =>
-              cat.name.trim().toLowerCase() ===
-              categoryName.trim().toLowerCase()
-          )
-        ) {
-          snack.showError("Categoria già esistente.");
-          return null;
+        if (course) {
+          await update.mutateAsync({
+            courseId: course.id,
+            courseData: dataToSubmit,
+          });
+          snack.showSuccess("Corso aggiornato con successo!");
         } else {
-          const newCategory = await createCategory.mutateAsync({
-            name: categoryName,
-          });
-          snack.showSuccess("Categoria creata con successo!");
-          return newCategory.id;
+          await create.mutateAsync(dataToSubmit);
+          snack.showSuccess("Corso creato con successo!");
         }
-        {
-          const newCategory = await createCategory.mutateAsync({
-            name: categoryName,
-          });
-          snack.showSuccess("Categoria creata con successo!");
-          return newCategory.id;
-        }
-      } catch (error: any) {
+        onClose();
+      } catch (_e) {
         snack.showError(
-          `Errore nella creazione della categoria: ${error.message || error}`
+          `Si è verificato un errore durante ${course ? "l'aggiornamento" : "la creazione"} del corso`
         );
-        return null;
       }
     },
-    [categories.data, createCategory, snack]
-  );
-
-  // Handle form submission
-  const handleSubmit = useCallback(async () => {
-    if (!validateForm()) return;
-    if (!editCourse.categoryId) return;
-
-    try {
-      const courseData = getCourseData();
-
-      console.log("update course", courseData);
-
-      if (course) {
-        await update.mutateAsync({ courseId: course.id, courseData });
-        snack.showSuccess("Corso aggiornato con successo!");
-      } else {
-        await create.mutateAsync(courseData);
-        snack.showSuccess("Corso creato con successo!");
-      }
-    } catch (error) {
-      console.error("Error during course operation:", error);
-      snack.showError(
-        `Si è verificato un errore durante ${course ? "l'aggiornamento" : "la creazione"} del corso`
-      );
-    } finally {
-      onClose();
-    }
-  }, [
-    validateForm,
-    editCourse.categoryId,
-    getCourseData,
-    course,
-    update,
-    snack,
-    create,
-    onClose,
-  ]);
-
-  // Get the tooltip message for the submit button
-  const getSubmitButtonTooltip = useCallback(() => {
-    if (create.isPending || update.isPending) {
-      return "Operazione in corso...";
-    }
-
-    const missingFields = getMissingFields();
-    return missingFields.length > 0
-      ? `Campi obbligatori mancanti: ${missingFields.join(", ")}`
-      : "";
-  }, [create.isPending, update.isPending, getMissingFields]);
-
-  // Prepare level menu items
-  const levelMenuItems = useMemo(
-    () =>
-      courseLevels.map((option) => (
-        <MenuItem key={option.value} value={option.value}>
-          {option.label}
-        </MenuItem>
-      )),
-    []
-  );
-
-  // Memoize props for each section
-  const basicInfoProps = useMemo(
-    () => ({
-      title: editCourse.title,
-      shortDescription: editCourse.shortDescription,
-      description: editCourse.description,
-      location: editCourse.location,
-      errors: {
-        title: errors.title,
-        shortDescription: errors.shortDescription,
-        description: errors.description,
-      },
-      onFieldChange: handleChange,
-    }),
-    [
-      editCourse.title,
-      editCourse.shortDescription,
-      editCourse.description,
-      editCourse.location,
-      errors.title,
-      errors.shortDescription,
-      errors.description,
-      handleChange,
-    ]
-  );
-
-  const categoryLevelProps = useMemo(
-    () => ({
-      categoryId: editCourse.categoryId,
-      level: editCourse.level,
-      instructorName: editCourse.instructorName,
-      onFieldChange: handleChange,
-      onCreation: handleCategoryCreation,
-      onRemoval: handleCategoryRemoval,
-      categories: categories.data || [],
-      isCategoriesLoading: !!categories.isLoading,
-      levelMenuItems,
-    }),
-    [
-      editCourse.categoryId,
-      editCourse.level,
-      editCourse.instructorName,
-      handleCategoryCreation,
-      handleCategoryRemoval,
-      handleChange,
-      categories.data,
-      categories.isLoading,
-      levelMenuItems,
-    ]
-  );
-
-  const paymentSectionProps = useMemo(
-    () => ({
-      price: editCourse.price,
-      isFree: editCourse.isFree,
-      numPayments: editCourse.numPayments,
-      maxSubscribers: editCourse.maxSubscribers,
-      errors: { maxSubscribers: errors.maxSubscribers },
-      onCostChange: setPrice,
-      onPaymentTypeChange: setPaymentType,
-      onNumPaymentsChange: setNumPayments,
-      onMaxSubscribersToggle: handleMaxSubscribersToggle,
-      onMaxSubscribersChange: handleMaxSubscribersChange,
-    }),
-    [
-      editCourse.price,
-      editCourse.isFree,
-      editCourse.numPayments,
-      editCourse.maxSubscribers,
-      errors.maxSubscribers,
-      setPrice,
-      setPaymentType,
-      setNumPayments,
-      handleMaxSubscribersToggle,
-      handleMaxSubscribersChange,
-    ]
-  );
-
-  const tagsProps = useMemo(
-    () => ({
-      tags: editCourse.tags,
-      onTagsChange: setTags,
-    }),
-    [editCourse.tags, setTags]
-  );
-
-  const publicationStatusProps = useMemo(
-    () => ({
-      isPublished: editCourse.isPublished,
-      subscriptionsOpen: editCourse.subscriptionsOpen,
-      onIsPublishedChange: setIsPublished,
-      onSubscriptionsOpenChange: setSubscriptionsOpen,
-    }),
-    [
-      editCourse.isPublished,
-      editCourse.subscriptionsOpen,
-      setIsPublished,
-      setSubscriptionsOpen,
-    ]
-  );
-
-  const scheduleProps = useMemo(
-    () => ({
-      sessions: editCourse.sessions,
-      onSessionsChange: setSchedule,
-      isCreateMode: !course,
-    }),
-    [editCourse.sessions, setSchedule, course]
+    [course, onClose, update, snack, create]
   );
 
   return (
@@ -326,49 +115,98 @@ export default function CourseEditModal(props: CourseEditModalProps) {
         },
       }}
     >
-      {/* Use the new ModalHeader component */}
-      <ModalHeader
-        course={course}
-        isPending={create.isPending || update.isPending}
-        isFormValid={isFormValid()}
-        onClose={handleCloseAttempt}
-        onSubmit={handleSubmit}
-        tooltipMessage={getSubmitButtonTooltip()}
-      />
+      <FormProvider {...methods}>
+        <form onSubmit={methods.handleSubmit(onSubmit)}>
+          <ModalHeader
+            course={course}
+            isPending={create.isPending || update.isPending}
+            onClose={onClose}
+            onSubmit={methods.handleSubmit(onSubmit)}
+          />
 
-      <Box
-        sx={{
-          p: { xs: 2, md: 3 },
-          overflow: "auto",
-          height: "calc(100% - 64px)",
-        }}
-      >
-        <Grid2 container spacing={3}>
-          <Grid2 size={{ xs: 12 }}>
-            <BasicInfoSection {...basicInfoProps} />
-          </Grid2>
+          <Box
+            sx={{
+              p: { xs: 2, md: 3 },
+              overflow: "auto",
+              height: "calc(100% - 64px)",
+            }}
+          >
+            <Grid container spacing={3}>
+              <Grid size={{ xs: 12 }}>
+                <Paper elevation={1} sx={{ p: 3 }}>
+                  <Box sx={sectionCardStyle}>
+                    <InfoIcon sx={{ mr: 1, color: "primary.main" }} />
+                    <Typography variant="h5" sx={{ fontWeight: 500 }}>
+                      Informazioni base
+                    </Typography>
+                  </Box>
+                  <BasicInfoSection />
+                </Paper>
+              </Grid>
 
-          <Grid2 size={{ xs: 12, md: 6 }}>
-            <CategoryLevelSection {...categoryLevelProps} />
-          </Grid2>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Paper elevation={1} sx={{ p: 3 }}>
+                  <Box sx={sectionCardStyle}>
+                    <CategoryIcon sx={{ mr: 1, color: "primary.main" }} />
+                    <Typography variant="h5" sx={{ fontWeight: 500 }}>
+                      Categoria e livello
+                    </Typography>
+                  </Box>
+                  <CategoryLevelSection />
+                </Paper>
+              </Grid>
 
-          <Grid2 size={{ xs: 12, md: 6 }}>
-            <PublicationStatusSection {...publicationStatusProps} />
-          </Grid2>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Paper elevation={1} sx={{ p: 3 }}>
+                  <Box sx={sectionCardStyle}>
+                    <PublicIcon sx={{ mr: 1, color: "primary.main" }} />
+                    <Typography variant="h5" sx={{ fontWeight: 500 }}>
+                      Stato pubblicazione
+                    </Typography>
+                  </Box>
+                  <PublicationStatusSection />
+                </Paper>
+              </Grid>
 
-          <Grid2 size={{ xs: 12 }}>
-            <ScheduleSection {...scheduleProps} />
-          </Grid2>
+              <Grid size={{ xs: 12 }}>
+                <Paper elevation={1} sx={{ p: 3 }}>
+                  <Box sx={sectionCardStyle}>
+                    <EventIcon sx={{ mr: 1, color: "primary.main" }} />
+                    <Typography variant="h5" sx={{ fontWeight: 500 }}>
+                      Calendario appuntamenti
+                    </Typography>
+                  </Box>
+                  <ScheduleSection />
+                </Paper>
+              </Grid>
 
-          <Grid2 size={{ xs: 12 }}>
-            <PaymentSection {...paymentSectionProps} />
-          </Grid2>
+              <Grid size={{ xs: 12 }}>
+                <Paper elevation={1} sx={{ p: 3 }}>
+                  <Box sx={sectionCardStyle}>
+                    <EuroIcon sx={{ mr: 1, color: "primary.main" }} />
+                    <Typography variant="h5" sx={{ fontWeight: 500 }}>
+                      Pagamento
+                    </Typography>
+                  </Box>
+                  <PaymentSection />
+                </Paper>
+              </Grid>
 
-          <Grid2 size={{ xs: 12 }}>
-            <TagsSection {...tagsProps} />
-          </Grid2>
-        </Grid2>
-      </Box>
+              <Grid size={{ xs: 12 }}>
+                <Paper elevation={1} sx={{ p: 3 }}>
+                  <Box sx={sectionCardStyle}>
+                    <LocalOfferIcon sx={{ mr: 1, color: "primary.main" }} />
+                    <Typography variant="h5" sx={{ fontWeight: 500 }}>
+                      Tag
+                    </Typography>
+                  </Box>
+                  <TagsSection />
+                </Paper>
+              </Grid>
+            </Grid>
+          </Box>
+        </form>
+      </FormProvider>
     </Drawer>
   );
 }

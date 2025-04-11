@@ -31,6 +31,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       owner: {
         connect: { applicationUserId: physiotherapist.id },
       },
+      subscription_end_date: new Date(),
       sessions: {
         create: [
           {
@@ -69,6 +70,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       owner: {
         connect: { applicationUserId: physiotherapist.id },
       },
+      subscription_end_date: new Date(),
       sessions: {
         create: [
           {
@@ -112,6 +114,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       owner: {
         connect: { applicationUserId: physiotherapist.id },
       },
+      subscription_end_date: new Date(),
       sessions: {
         create: [
           {
@@ -149,6 +152,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       owner: {
         connect: { applicationUserId: physiotherapist.id },
       },
+      subscription_end_date: new Date(),
       sessions: {
         create: [
           {
@@ -186,6 +190,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       owner: {
         connect: { applicationUserId: physiotherapist.id },
       },
+      subscription_end_date: new Date(),
       sessions: {
         create: [
           {
@@ -223,6 +228,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       owner: {
         connect: { applicationUserId: physiotherapist.id },
       },
+      subscription_end_date: new Date(),
       sessions: {
         create: [
           {
@@ -260,6 +266,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       owner: {
         connect: { applicationUserId: physiotherapist.id },
       },
+      subscription_end_date: new Date(),
       sessions: {
         create: [
           {
@@ -297,6 +304,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       owner: {
         connect: { applicationUserId: physiotherapist.id },
       },
+      subscription_end_date: new Date(),
       sessions: {
         create: [
           {
@@ -334,6 +342,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       owner: {
         connect: { applicationUserId: physiotherapist.id },
       },
+      subscription_end_date: new Date(),
       sessions: {
         create: [
           {
@@ -371,6 +380,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       owner: {
         connect: { applicationUserId: physiotherapist.id },
       },
+      subscription_end_date: new Date(),
       sessions: {
         create: [
           {

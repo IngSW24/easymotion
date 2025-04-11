@@ -22,13 +22,14 @@ export default function CourseDetailsPage() {
   return (
     <>
       <Hero
-        backgroundImage="/hero.jpg"
+        opacity={0.5}
         title={courseRepo.getSingle.data?.name ?? ""}
-        showSignupButton={false}
+        subtitle={courseRepo.getSingle.data?.short_description ?? ""}
+        backgroundImage={`/${courseRepo.getSingle.data?.category.id ?? "hero"}.jpg`}
       />
       <Container sx={{ my: 5 }}>
         {courseRepo.getSingle.data && (
-          <CourseDetail course={courseRepo.getSingle.data} />
+          <CourseDetail course={courseRepo.getSingle.data} hideTitle />
         )}
       </Container>
     </>

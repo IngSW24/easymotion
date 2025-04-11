@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from "@nestjs/common";
 import { plainToInstance } from "class-transformer";
 import { PrismaService } from "nestjs-prisma";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
@@ -74,6 +78,14 @@ export class SubscriptionsService {
       ) {
         throw new BadRequestException("Course is full");
       }
+    }
+
+    const now = new Date();
+    if (
+      now.getTime() < course.subscription_start_date.getTime() ||
+      now.getTime() > course.subscription_end_date.getTime()
+    ) {
+      throw new ForbiddenException("Subscriptions closed");
     }
 
     await this.prismaService.courseFinalUser.create({
