@@ -5,6 +5,7 @@ import { useParams } from "react-router";
 import { useState, useEffect } from "react";
 import { useAuth } from "@easymotion/auth-context";
 import useSubscriptions from "../../hooks/useSubscription";
+import SubscriptionRequest from "./SubscriptionRequest";
 
 export default function SubscribeButton() {
   const [subscribed, setSubscribed] = useState(false);
@@ -57,6 +58,8 @@ export default function SubscribeButton() {
 
   return (
     <CardActions sx={{ justifyContent: "right", paddingX: 2, fontSize: 20 }}>
+      <SubscriptionRequest courseId={courseId}></SubscriptionRequest>
+
       {subscribed ? (
         <Button
           startIcon={<Delete />}
