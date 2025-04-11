@@ -1,4 +1,4 @@
-import { Box, Grid2, Typography } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import CourseCard from "../CourseCard/CourseCard";
 import { CourseFilters, useCourses } from "../../../hooks/useCourses";
 import FilterBlock from "../FilterBlock/FilterBlock";
@@ -28,7 +28,7 @@ export default function CourseList() {
         onChange={(filters: CourseFilters) => setFilters(filters)}
       />
 
-      <Grid2
+      <Grid
         container
         spacing={6}
         columns={{ xs: 1, sm: 1, md: 2, lg: 3, xl: 4 }}
@@ -61,12 +61,12 @@ export default function CourseList() {
                 ) : (
                   <>
                     {courseRepo.get.data?.map((e) => (
-                      <Grid2
+                      <Grid
                         key={e.id}
                         size={{ xs: 1, sm: 1, md: 1, lg: 1, xl: 1 }}
                       >
                         <CourseCard course={e} />
-                      </Grid2>
+                      </Grid>
                     ))}
                   </>
                 )}
@@ -74,7 +74,7 @@ export default function CourseList() {
             )}
           </>
         )}
-      </Grid2>
+      </Grid>
     </>
   );
 }

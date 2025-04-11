@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Grid2,
+  Grid,
   TextField,
   MenuItem,
   FormControl,
@@ -337,8 +337,8 @@ export default function ScheduleSection() {
   );
 
   return (
-    <Grid2 container spacing={3}>
-      <Grid2 size={{ xs: 12 }}>
+    <Grid container spacing={3}>
+      <Grid size={{ xs: 12 }}>
         <Stack spacing={2}>
           {fields.length > 0 ? (
             fields.map((field, index) => {
@@ -407,7 +407,7 @@ export default function ScheduleSection() {
             </Button>
           </Box>
         </Stack>
-      </Grid2>
+      </Grid>
 
       {/* Single session dialog */}
       <Dialog
@@ -581,6 +581,6 @@ export default function ScheduleSection() {
           </Button>
         </DialogActions>
       </Dialog>
-    </Grid2>
+    </Grid>
   );
 }
