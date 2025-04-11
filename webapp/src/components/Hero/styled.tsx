@@ -1,7 +1,10 @@
 import { Box, Container, styled } from "@mui/material";
 import { motion } from "framer-motion";
+export interface HeroSectionProps {
+  opacity?: number;
+}
 
-export const HeroSection = styled(Box)(() => ({
+export const HeroSection = styled(Box)<HeroSectionProps>(({ opacity }) => ({
   position: "relative",
   display: "flex",
   alignItems: "center",
@@ -13,7 +16,7 @@ export const HeroSection = styled(Box)(() => ({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.8)",
+    backgroundColor: `rgba(0, 0, 0, ${opacity ?? 0.8})`,
     zIndex: 1,
   },
 }));

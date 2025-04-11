@@ -10,15 +10,19 @@ export default function LandingHeader() {
       component="section"
       sx={{
         position: "relative",
-        backgroundImage: 'url("/hero2.jpg")',
+        backgroundImage: 'url("/hero.jpg")',
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
         color: "#fff",
-        height: "100vh",
+        height: {
+          xs: "calc(100svh - 56px)",
+          sm: "calc(100svh - 64px)",
+        },
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        overflow: "hidden",
       }}
       aria-label="Hero section"
     >
@@ -27,31 +31,44 @@ export default function LandingHeader() {
         sx={{
           position: "absolute",
           inset: 0,
-          backgroundColor: "rgba(0, 0, 0, 0.6)",
+          backgroundColor: "rgba(0, 0, 0, 0.7)",
           zIndex: 1,
         }}
         aria-hidden="true"
       />
 
+      {/* Optional animated particles or shapes could go here for extra flair */}
+
       <Container
         maxWidth="lg"
         sx={{
-          position: "relative",
           zIndex: 2,
-          textAlign: { xs: "center", md: "start" },
+          textAlign: "center",
           px: { xs: 3, sm: 4 },
         }}
       >
-        <Typography
-          variant="h3"
-          component="h1"
-          fontWeight="bold"
+        <Box
+          component="img"
+          src="/logo.png"
+          alt="EasyMotion Logo"
           sx={{
             mb: 3,
-            fontSize: { xs: "2rem", sm: "2.5rem", md: "3rem" },
+            width: "200px",
+            height: "200px",
+          }}
+        />
+
+        <Typography
+          variant="h2"
+          component="h1"
+          sx={{
+            mb: 2,
+            fontSize: { xs: "2.6rem", sm: "3.1rem" },
+            textShadow: "2px 4px 8px rgba(0,0,0,0.3)",
+            fontWeight: "bold",
           }}
         >
-          Fisioterapia professionale e guida all&apos;allenamento
+          EasyMotion
         </Typography>
 
         <Typography
@@ -59,10 +76,13 @@ export default function LandingHeader() {
           component="p"
           sx={{
             mb: 4,
-            maxWidth: "600px",
+            fontSize: { xs: "1.3rem", sm: "1.4rem" },
+            textShadow: "1px 2px 6px rgba(0,0,0,0.3)",
+            fontWeight: "light",
           }}
         >
-          Soluzioni di fitness ottimizzate e personalizzate per te.
+          Fisioterapia professionale e guida all&apos;allenamento.
+          <br /> Soluzioni di fitness ottimizzate e personalizzate per te.
         </Typography>
 
         <Button
@@ -72,8 +92,24 @@ export default function LandingHeader() {
           aria-label="Inizia qui"
           sx={{
             py: 1.5,
-            px: 4,
+            px: 5,
             fontWeight: 600,
+            fontSize: { xs: "1rem", sm: "1.125rem" },
+            "&:hover": {
+              transform: "scale(1.05)",
+              animation: "pulsate 2s infinite",
+              "@keyframes pulsate": {
+                "0%": {
+                  transform: "scale(1)",
+                },
+                "50%": {
+                  transform: "scale(1.05)",
+                },
+                "100%": {
+                  transform: "scale(1)",
+                },
+              },
+            },
           }}
           onClick={() => {
             document
