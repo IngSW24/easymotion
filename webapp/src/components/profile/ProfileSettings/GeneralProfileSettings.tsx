@@ -8,7 +8,7 @@ import {
   Typography,
   Chip,
   Alert,
-  Grid2,
+  Grid,
   TextField,
 } from "@mui/material";
 import { useState } from "react";
@@ -167,8 +167,8 @@ export default function GeneralProfileSettings(
           <Divider sx={{ marginY: 2 }} />
 
           {/* User Information */}
-          <Grid2 container spacing={2}>
-            <Grid2 size={{ xs: 12, sm: 6 }}>
+          <Grid container spacing={2}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <Typography variant="subtitle2" color="text.secondary" mb={1}>
                 Nome *
               </Typography>
@@ -184,8 +184,8 @@ export default function GeneralProfileSettings(
                   setHasPendingChanges(true);
                 }}
               />
-            </Grid2>
-            <Grid2 size={{ xs: 12, sm: 6 }}>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <Typography variant="subtitle2" color="text.secondary" mb={1}>
                 Secondo nome
               </Typography>
@@ -203,8 +203,8 @@ export default function GeneralProfileSettings(
                   setHasPendingChanges(true);
                 }}
               />
-            </Grid2>
-            <Grid2 size={{ xs: 12, sm: 6 }}>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <Typography variant="subtitle2" color="text.secondary" mb={1}>
                 Cognome *
               </Typography>
@@ -220,8 +220,8 @@ export default function GeneralProfileSettings(
                   setHasPendingChanges(true);
                 }}
               />
-            </Grid2>
-            <Grid2 size={{ xs: 12, sm: 6 }}>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <Typography variant="subtitle2" color="text.secondary" mb={1}>
                 Numero di telefono
               </Typography>
@@ -233,8 +233,8 @@ export default function GeneralProfileSettings(
                 }}
                 value={formData.phoneNumber ?? ""}
               />
-            </Grid2>
-            <Grid2 size={{ xs: 12 }}>
+            </Grid>
+            <Grid size={{ xs: 12 }}>
               <Typography variant="subtitle2" color="text.secondary" mb={1}>
                 Data di nascita *
               </Typography>
@@ -248,8 +248,8 @@ export default function GeneralProfileSettings(
                   setHasPendingChanges(true);
                 }}
               />
-            </Grid2>
-          </Grid2>
+            </Grid>
+          </Grid>
 
           <Divider sx={{ marginY: 2 }} />
 

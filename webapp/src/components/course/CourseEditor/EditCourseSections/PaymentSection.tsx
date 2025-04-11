@@ -4,7 +4,7 @@ import {
   Switch,
   FormControlLabel,
   Box,
-  Grid2,
+  Grid,
   FormControl,
   FormLabel,
   Radio,
@@ -206,16 +206,16 @@ export default function PaymentSection() {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-      <Grid2 container spacing={2}>
-        <Grid2 size={{ xs: 12, md: 6 }}>
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <PaymentTypeSelector
             value={paymentType}
             onChange={handlePaymentTypeChange}
           />
-        </Grid2>
+        </Grid>
 
         {paymentType !== "free" && (
-          <Grid2 size={{ xs: 12, md: 6 }}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
               <PriceInput
                 label={
@@ -256,9 +256,9 @@ export default function PaymentSection() {
                 </>
               )}
             </Box>
-          </Grid2>
+          </Grid>
         )}
-      </Grid2>
+      </Grid>
 
       <MaxSubscribersInput
         value={formMaxSubscribers ?? null}

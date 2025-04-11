@@ -21,44 +21,44 @@ enum CourseLevel {
 }
 
 model Course {
-  id                     String             @id @default(uuid())
-  name                   String
+  id   String @id @default(uuid())
+  name String
 
-  description            String
-  short_description      String
+  description       String
+  short_description String
 
-  location               String?
-  instructors            String[]
+  location    String?
+  instructors String[]
 
-  level                  CourseLevel
+  level CourseLevel
 
-  is_free                Boolean
-  price                  Decimal?
-  number_of_payments     Int?
+  is_free            Boolean
+  price              Decimal?
+  number_of_payments Int?
 
-  is_published           Boolean 
-  subscriptions_open     Boolean
-  max_subscribers        Int?
+  is_published       Boolean
+  subscriptions_open Boolean
+  max_subscribers    Int?
 
-  tags                   String[]
+  tags String[]
 
-  created_at             DateTime           @default(now()) @db.Timestamptz(3)
-  updated_at             DateTime           @updatedAt @db.Timestamptz(3)
+  created_at DateTime @default(now()) @db.Timestamptz(3)
+  updated_at DateTime @updatedAt @db.Timestamptz(3)
 
-  category_id            String
-  category               CourseCategory @relation(fields: [category_id], references: [id])
-  owner_id               String
-  owner                  Physiotherapist    @relation(fields: [owner_id], references: [applicationUserId])
-  subscribers            CourseFinalUser[]
+  category_id String
+  category    CourseCategory    @relation(fields: [category_id], references: [id])
+  owner_id    String
+  owner       Physiotherapist   @relation(fields: [owner_id], references: [applicationUserId])
+  subscribers CourseFinalUser[]
 
-  subscription_start_date DateTime @default(now()) @db.Timestamptz(3)
-  subscription_end_date   DateTime @db.Timestamptz(3)
-  sessions               CourseSession[]
+  subscription_start_date DateTime        @default(now()) @db.Timestamptz(3)
+  subscription_end_date   DateTime        @db.Timestamptz(3)
+  sessions                CourseSession[]
 }
 
 model CourseCategory {
-  id String @id @default(uuid())
-  name String
+  id     String   @id @default(uuid())
+  name   String
   Course Course[]
 }
 

@@ -1,4 +1,4 @@
-import { Box, Chip, Grid2, Stack, Typography } from "@mui/material";
+import { Box, Chip, Grid, Stack, Typography } from "@mui/material";
 import { CourseDto } from "@easymotion/openapi";
 import ProductCard from "./ProductCard";
 import EventAvailableOutlinedIcon from "@mui/icons-material/EventAvailableOutlined";
@@ -21,9 +21,9 @@ export default function CourseDetail(props: CourseDetailProps) {
 
   return (
     <>
-      <Grid2 container spacing={4}>
-        <Grid2 container size={12} sx={{ mt: 2, mb: 3 }}>
-          <Grid2
+      <Grid container spacing={4}>
+        <Grid container size={12} sx={{ mt: 2, mb: 3 }}>
+          <Grid
             size={{ xs: 12, md: 9 }}
             alignItems="center"
             textAlign={{ xs: "center", md: "start" }}
@@ -34,9 +34,9 @@ export default function CourseDetail(props: CourseDetailProps) {
                 {course.short_description}
               </Typography>
             </Stack>
-          </Grid2>
-        </Grid2>
-        <Grid2 size={{ xs: 12, md: 8 }}>
+          </Grid>
+        </Grid>
+        <Grid size={{ xs: 12, md: 8 }}>
           <Stack spacing={6}>
             <div>
               <Typography variant="h4" color="primary.dark" fontWeight="bold">
@@ -110,9 +110,9 @@ export default function CourseDetail(props: CourseDetailProps) {
               <Typography variant="h4" color="primary.dark" fontWeight="bold">
                 Tags
               </Typography>
-              <Grid2 container spacing={2} sx={{ mt: 3 }}>
+              <Grid container spacing={2} sx={{ mt: 3 }}>
                 {course.tags?.map((item, index) => (
-                  <Grid2 key={`tag-${index}`}>
+                  <Grid key={`tag-${index}`}>
                     <Chip
                       label={
                         <Typography
@@ -126,13 +126,13 @@ export default function CourseDetail(props: CourseDetailProps) {
                       color="primary"
                       variant="outlined" // Optional: Makes the chip outlined
                     />
-                  </Grid2>
+                  </Grid>
                 ))}
-              </Grid2>
+              </Grid>
             </div>
           </Stack>
-        </Grid2>
-        <Grid2 size={{ xs: 12, md: 4 }}>
+        </Grid>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Stack spacing={3}>
             {/* Product Card (dx screen) */}
 
@@ -163,14 +163,14 @@ export default function CourseDetail(props: CourseDetailProps) {
               value={getCourseLevelName(course.level)}
             />
           </Stack>
-          <Grid2
+          <Grid
             size={12}
             sx={{ display: "flex", justifyContent: "flex-end", mt: 4 }}
           >
             <SubscribeButton />
-          </Grid2>
-        </Grid2>
-      </Grid2>
+          </Grid>
+        </Grid>
+      </Grid>
     </>
   );
 }
