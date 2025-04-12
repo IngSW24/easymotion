@@ -33,6 +33,7 @@ import {
 import { CourseDto } from "@easymotion/openapi";
 import { calculateDuration } from "../../../utils/format";
 import { useSubscribeButton } from "./useSubscribeButton";
+import SubscriptionRequest from "../../../pages/user/SubscriptionRequest";
 
 export interface CourseDetailProps {
   course: CourseDto;
@@ -180,6 +181,12 @@ const CourseDetail: React.FC<CourseDetailProps> = (
                     Vuoi partecipare? Iscriviti ora
                   </Box>
                 </Typography>
+
+                <SubscriptionRequest
+                  courseId={course.id}
+                  userId=""
+                ></SubscriptionRequest>
+
                 {!subscribeButton.isHidden && (
                   <Button
                     startIcon={

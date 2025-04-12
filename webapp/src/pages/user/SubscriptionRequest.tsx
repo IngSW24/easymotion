@@ -28,7 +28,7 @@ export interface CourseDetailProps {
 }
 
 export default function SubscriptionRequest(props: CourseDetailProps) {
-  const { courseId } = props;
+  const { courseId, userId } = props;
 
   const courseRepo = useCourses({ fetchId: courseId }); //Get the course with the id
 
@@ -64,7 +64,12 @@ export default function SubscriptionRequest(props: CourseDetailProps) {
 
   return (
     <>
-      <Button startIcon={<DoneIcon />} variant="contained" sx={{ fontSize: 20 }} onClick={handleOpen}>
+      <Button
+        startIcon={<DoneIcon />}
+        variant="contained"
+        sx={{ fontSize: 20 }}
+        onClick={handleOpen}
+      >
         Iscriviti
       </Button>
       <Modal
@@ -86,23 +91,22 @@ export default function SubscriptionRequest(props: CourseDetailProps) {
               Istruttori: {courseRepo.getSingle.data?.instructors}
             </Typography>
             <Typography>
-              Posizione: {courseRepo.getSingle.data?.location}
+              Luogo: {courseRepo.getSingle.data?.location}
             </Typography>
             <Typography>
-              Costo (€): {courseRepo.getSingle.data?.cost}
+              Prezzo (€): {courseRepo.getSingle.data?.price}
             </Typography>
             <Typography>
-              Categoria: {courseRepo.getSingle.data?.category}
+              Categoria: {courseRepo.getSingle.data?.category.name}
             </Typography>
             <Typography>Livello: {courseRepo.getSingle.data?.level}</Typography>
             <Typography>
-              Numero di partecipanti:{" "}
-              {courseRepo.getSingle.data?.num_registered_members} /{" "}
-              {courseRepo.getSingle.data?.members_capacity}
+              Numero massimo di partecipanti:{" "}
+              {courseRepo.getSingle.data?.max_subscribers}
             </Typography>
           </Box>
           <Box mb={3}>
-            {courseRepo.getSingle.data?.availability ? (
+            {courseRepo.getSingle.data?.subscriptions_open ? (
               <Typography>
                 Stato:
                 <Typography color="green">ISCRIZIONI APERTE</Typography>{" "}
@@ -146,6 +150,7 @@ export default function SubscriptionRequest(props: CourseDetailProps) {
                 color="error"
                 sx={{ fontSize: 20 }}
                 onClick={deleteRequest}
+                disabled={!courseRepo.getSingle.data?.is_published}
               >
                 Cancella la richiesta
               </Button>
@@ -154,6 +159,7 @@ export default function SubscriptionRequest(props: CourseDetailProps) {
                 variant="contained"
                 sx={{ fontSize: 20 }}
                 onClick={sendRequest}
+                disabled={!courseRepo.getSingle.data?.is_published}
               >
                 Invia la richiesta
               </Button>
