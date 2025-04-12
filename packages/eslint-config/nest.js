@@ -1,18 +1,16 @@
 import js from "@eslint/js";
 import tseslint from "typescript-eslint";
-import prettier from "eslint-plugin-prettier";
+import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 
 export default tseslint.config(
   { ignores: [".eslintrc.js"] },
+  eslintPluginPrettierRecommended,
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],
     languageOptions: {
       ecmaVersion: 2020,
       sourceType: "module",
-    },
-    plugins: {
-      prettier,
     },
     rules: {
       "@typescript-eslint/interface-name-prefix": "off",
@@ -28,6 +26,7 @@ export default tseslint.config(
           caughtErrorsIgnorePattern: "^_",
         },
       ],
+      "prettier/prettier": "warn",
     },
   }
 );

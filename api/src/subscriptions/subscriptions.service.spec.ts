@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { SubscriptionsService } from "./subscriptions.service";
 import { PrismaService } from "nestjs-prisma";
 import { toPaginatedOutput } from "src/common/utils/pagination";
-import { Course, Prisma } from "@prisma/client";
+import { Course, PaymentRecurrence, Prisma } from "@prisma/client";
 import { randomUUID } from "crypto";
 import { plainToInstance } from "class-transformer";
 import { NotFoundException } from "@nestjs/common";
@@ -16,7 +16,7 @@ describe("SubsriptionsService", () => {
     courseFinalUser: {
       count: jest.fn(),
       findMany: jest.fn(),
-      create: jest.fn(),
+      upsert: jest.fn(),
       delete: jest.fn(),
       deleteMany: jest.fn(),
       findUniqueOrThrow: jest.fn(),
@@ -60,20 +60,19 @@ describe("SubsriptionsService", () => {
 
     const course: Course[] = [
       {
-        name: "",
+        name: "Course name",
         id: uuidCourse,
-        description: "",
-        short_description: "",
-        location: "",
-        instructors: [],
+        description: "Course desc",
+        short_description: "short desc",
+        location: "LOCATION1",
+        instructors: ["A", "B"],
         level: "BASIC",
-        is_free: false,
-        price: new Prisma.Decimal("0"),
-        number_of_payments: 1,
+        price: new Prisma.Decimal("30"),
+        payment_recurrence: PaymentRecurrence.SINGLE,
         is_published: true,
         subscriptions_open: true,
         max_subscribers: 10,
-        tags: [],
+        tags: ["TAG1", "TAG2"],
         created_at: new Date(),
         updated_at: new Date(),
         owner_id: "1",
@@ -159,10 +158,20 @@ describe("SubsriptionsService", () => {
       where: { id: courseId },
     });
 
-    expect(prismaMock.courseFinalUser.create).toHaveBeenCalledWith({
-      data: {
+    expect(prismaMock.courseFinalUser.upsert).toHaveBeenCalledWith({
+      create: {
         course_id: courseId,
         final_user_id: userId,
+        isPending: false,
+      },
+      update: {
+        isPending: false,
+      },
+      where: {
+        course_id_final_user_id: {
+          course_id: courseId,
+          final_user_id: userId,
+        },
       },
     });
   });

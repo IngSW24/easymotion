@@ -1925,6 +1925,7 @@
           }
         },
         "required": [
+          "id",
           "start_time",
           "end_time"
         ]
@@ -1969,20 +1970,20 @@
               "ADVANCED"
             ]
           },
-          "is_free": {
-            "type": "boolean",
-            "description": "Indicates if the course is free"
-          },
           "price": {
             "type": "number",
-            "nullable": true,
-            "minimum": 1,
+            "minimum": 0,
             "description": "Price of the course"
           },
-          "number_of_payments": {
-            "type": "number",
-            "nullable": true,
-            "description": "Amount of payment required"
+          "payment_recurrence": {
+            "type": "string",
+            "description": "Payment recurrence",
+            "enum": [
+              "SINGLE",
+              "PER_SESSION",
+              "MONTHLY",
+              "ANNUAL"
+            ]
           },
           "is_published": {
             "type": "boolean",
@@ -2055,7 +2056,7 @@
           "short_description",
           "instructors",
           "level",
-          "is_free",
+          "payment_recurrence",
           "is_published",
           "subscriptions_open",
           "tags",
@@ -2123,20 +2124,20 @@
               "ADVANCED"
             ]
           },
-          "is_free": {
-            "type": "boolean",
-            "description": "Indicates if the course is free"
-          },
           "price": {
             "type": "number",
-            "nullable": true,
-            "minimum": 1,
+            "minimum": 0,
             "description": "Price of the course"
           },
-          "number_of_payments": {
-            "type": "number",
-            "nullable": true,
-            "description": "Amount of payment required"
+          "payment_recurrence": {
+            "type": "string",
+            "description": "Payment recurrence",
+            "enum": [
+              "SINGLE",
+              "PER_SESSION",
+              "MONTHLY",
+              "ANNUAL"
+            ]
           },
           "is_published": {
             "type": "boolean",
@@ -2185,7 +2186,7 @@
           "short_description",
           "instructors",
           "level",
-          "is_free",
+          "payment_recurrence",
           "is_published",
           "subscriptions_open",
           "tags",
@@ -2254,20 +2255,20 @@
               "ADVANCED"
             ]
           },
-          "is_free": {
-            "type": "boolean",
-            "description": "Indicates if the course is free"
-          },
           "price": {
             "type": "number",
-            "nullable": true,
-            "minimum": 1,
+            "minimum": 0,
             "description": "Price of the course"
           },
-          "number_of_payments": {
-            "type": "number",
-            "nullable": true,
-            "description": "Amount of payment required"
+          "payment_recurrence": {
+            "type": "string",
+            "description": "Payment recurrence",
+            "enum": [
+              "SINGLE",
+              "PER_SESSION",
+              "MONTHLY",
+              "ANNUAL"
+            ]
           },
           "is_published": {
             "type": "boolean",
