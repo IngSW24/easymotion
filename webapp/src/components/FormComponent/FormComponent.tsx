@@ -1,4 +1,11 @@
-import { Box, Paper, Typography, useTheme, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  Paper,
+  Typography,
+  useTheme,
+  useMediaQuery,
+  Container,
+} from "@mui/material";
 
 export interface FieldProps<T> {
   key: keyof T;
@@ -14,69 +21,76 @@ interface FormComponentProps {
 
 export default function FormComponent(props: FormComponentProps) {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
     <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
       sx={{
-        // Subtracting the toolbar height
-        minHeight: `calc(100vh - ${Number(theme.mixins.toolbar.minHeight) * 2}px)`,
+        minHeight: {
+          xs: "calc(100svh - 56px)",
+          sm: "calc(100svh - 64px)",
+        },
         backgroundImage: `url(/hero.jpg)`,
+        justifyContent: "center",
+        display: "flex",
+        alignItems: "center",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
-      <Paper
-        elevation={10}
-        sx={{
-          display: "flex",
-          flexDirection: isMobile ? "column" : "row",
-          maxWidth: "80rem",
-          minHeight: "20rem",
-          zIndex: 1,
-          borderRadius: 3,
-          backgroundColor: "rgba(255, 255, 255)",
-          boxShadow: theme.shadows[4],
-        }}
-      >
-        {/* Left Section */}
-        <Box
-          flex={1}
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          alignItems="center"
-          gap={2}
+      <Container maxWidth="lg">
+        <Paper
+          elevation={10}
           sx={{
-            padding: 4,
-            textAlign: "center",
-            backgroundColor: theme.palette.primary.main,
-            color: theme.palette.primary.contrastText,
+            display: "flex",
+            flexDirection: isMobile ? "column" : "row",
+            zIndex: 1,
+            borderRadius: 3,
+            boxShadow: theme.shadows[4],
+            backgroundColor: "transparent",
           }}
         >
-          <Typography variant="h4" sx={{ fontWeight: "bold" }}>
-            {props.title}
-          </Typography>
+          {/* Left Section */}
+          <Box
+            flex={1}
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
+            alignItems="center"
+            gap={2}
+            sx={{
+              padding: 4,
+              textAlign: "center",
+              backgroundColor: `${theme.palette.primary.main}88`,
+              color: theme.palette.primary.contrastText,
+              backdropFilter: "blur(5rem)",
+            }}
+          >
+            <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+              {props.title}
+            </Typography>
 
-          <Typography variant="body1" sx={{ fontSize: "18px" }}>
-            {props.text}
-          </Typography>
-        </Box>
+            <Typography variant="body1" sx={{ fontSize: "18px" }}>
+              {props.text}
+            </Typography>
+          </Box>
 
-        {/* Right Section */}
-        <Box
-          flex={1}
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          sx={{ padding: 4 }}
-        >
-          {props.children}
-        </Box>
-      </Paper>
+          {/* Right Section */}
+          <Box
+            flex={1}
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
+            sx={{
+              padding: 4,
+              backgroundColor: `rgba(255, 255, 255, 0.7)`,
+              backdropFilter: "blur(300px)",
+            }}
+          >
+            {props.children}
+          </Box>
+        </Paper>
+      </Container>
     </Box>
   );
 }

@@ -1,12 +1,7 @@
 import { Container } from "@mui/material";
 import CourseList from "../components/course/CourseList/CourseList";
-import CreateCourseButton from "../components/atoms/Button/CreateCourseButton";
 import { useAuth } from "@easymotion/auth-context";
 import Hero from "../components/Hero/Hero";
-import { AuthUserDto } from "@easymotion/openapi";
-
-const checkCanEdit = (currentRole?: AuthUserDto["role"]) =>
-  ["ADMIN", "PHYSIOTHERAPIST"].includes(currentRole ?? "");
 
 /**
  * Defines the page to list all courses
@@ -14,8 +9,6 @@ const checkCanEdit = (currentRole?: AuthUserDto["role"]) =>
  */
 export default function CourseListPage() {
   const auth = useAuth();
-
-  const canEdit = checkCanEdit(auth.user?.role);
 
   return (
     <>
@@ -30,8 +23,7 @@ export default function CourseListPage() {
         showSignupButton={!auth.isAuthenticated}
       />
       <Container maxWidth="xl" sx={{ p: 5 }}>
-        <CourseList canEdit={canEdit} />
-        {canEdit && <CreateCourseButton />}
+        <CourseList />
       </Container>
     </>
   );

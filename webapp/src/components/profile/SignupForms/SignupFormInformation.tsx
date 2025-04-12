@@ -1,4 +1,4 @@
-import { Button, Grid2, TextField } from "@mui/material";
+import { Button, Grid, TextField } from "@mui/material";
 import { useState } from "react";
 import PhoneNumberEditor from "../../editors/PhoneNumberEditor/PhoneNumberEditor";
 import { DateField } from "@mui/x-date-pickers";
@@ -86,8 +86,8 @@ export default function PersonalInfoForm(props: SignupFormInformationProps) {
         required
       />
 
-      <Grid2 container spacing={2} sx={{ mt: 2 }}>
-        <Grid2 size={{ xs: 12, sm: 6 }}>
+      <Grid container spacing={2} sx={{ mt: 2 }}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <DateField
             format="dd/MM/yyyy"
             label="Data di nascita"
@@ -96,14 +96,14 @@ export default function PersonalInfoForm(props: SignupFormInformationProps) {
             }
             onChange={(d) => d && setBirthDate(d.toFormat("yyyy-MM-dd"))}
           />
-        </Grid2>
-        <Grid2 size={{ xs: 12, sm: 6 }}>
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <PhoneNumberEditor
             onChange={(v) => setPhoneNumber(v)}
             value={phoneNumber}
           />
-        </Grid2>
-      </Grid2>
+        </Grid>
+      </Grid>
 
       <Button
         fullWidth

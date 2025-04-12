@@ -1,26 +1,17 @@
-import { CourseEntity } from "@easymotion/openapi";
-import { Delete, Visibility } from "@mui/icons-material";
+import { CourseDto } from "@easymotion/openapi";
+import { Delete, Visibility, Edit } from "@mui/icons-material";
 import { Chip, IconButton, Stack, Tooltip } from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
-const categoryColors: Record<string, string> = {
-  CROSSFIT: "#f44336", // red
-  ZUMBA_FITNESS: "#9c27b0", // purple
-  BODYWEIGHT_WORKOUT: "#2196f3", // blue
-  POSTURAL_TRAINING: "#4caf50", // green
-  PILATES: "#ff9800", // orange
-  ACQUAGYM: "#00bcd4", // cyan
-};
-
 type DashboardDataGridProps = {
-  courses: CourseEntity[];
+  courses: CourseDto[];
   nextPageAction: () => void;
   hasNextPage: boolean;
   isFetchingNextPage: boolean;
-  totalItems: number;
   onDelete: (id: string) => void;
+  onEdit: (id: string) => void;
 };
 
 export default function DashboardDataGrid(props: DashboardDataGridProps) {
@@ -29,8 +20,8 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
     nextPageAction,
     hasNextPage,
     isFetchingNextPage,
-    totalItems,
     onDelete,
+    onEdit,
   } = props;
 
   const navigate = useNavigate();
@@ -64,7 +55,7 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
       courseId: value.id,
       courseName: value.name,
       category: value.category,
-      capacity: value.members_capacity,
+      capacity: value.max_subscribers,
     };
   });
 
@@ -79,11 +70,11 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
       minWidth: 100,
       renderCell: (params) => {
         const category = params.value;
-        const color = categoryColors[category] || "#9e9e9e";
+        const color = "#9e9e9e";
 
         return (
           <Chip
-            label={category.replace("_", " ")}
+            label={category.name.replace("_", " ")}
             size="small"
             style={{
               backgroundColor: color,
@@ -121,6 +112,17 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
                 }}
               >
                 <Visibility fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Modifica">
+              <IconButton
+                size="small"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onEdit(params.row.courseId);
+                }}
+              >
+                <Edit fontSize="small" color="primary" />
               </IconButton>
             </Tooltip>
             <Tooltip title="Elimina">
@@ -185,7 +187,6 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
           },
         },
       }}
-      rowCount={totalItems || rows.length}
       paginationModel={paginationModel}
       onPaginationModelChange={handlePaginationModelChange}
       paginationMode="client"

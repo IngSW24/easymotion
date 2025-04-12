@@ -1,16 +1,15 @@
-import { Box, Grid2, Typography } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import useSubscriptions from "../../hooks/useSubscription";
-import { CourseFilters } from "../../components/course/FilterBlock/types";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import CourseCard from "../../components/course/CourseCard/CourseCard";
 import { useAuth } from "@easymotion/auth-context";
+import { CourseFilters } from "../../hooks/useCourses";
 
 export interface SubsProp {
   filters?: CourseFilters;
 }
 
 export default function SubscriptionsPage(props: SubsProp) {
-  const canEdit = false;
   const { filters } = props;
   const auth = useAuth();
   const subsRepo = useSubscriptions({
@@ -27,7 +26,7 @@ export default function SubscriptionsPage(props: SubsProp) {
 
   return (
     <>
-      <Grid2
+      <Grid
         container
         spacing={6}
         columns={{ xs: 1, sm: 1, md: 2, lg: 3, xl: 4 }}
@@ -42,7 +41,7 @@ export default function SubscriptionsPage(props: SubsProp) {
               <LoadingSpinner />
             ) : (
               <>
-                {subsRepo.getSubscription.data?.length === 0 ? (
+                {subsRepo.getSubscription.data?.data.length === 0 ? (
                   <Box sx={{ width: "100%" }}>
                     <Typography
                       align="center"
@@ -59,17 +58,13 @@ export default function SubscriptionsPage(props: SubsProp) {
                   </Box>
                 ) : (
                   <>
-                    {subsRepo.getSubscription.data?.map((e) => (
-                      <Grid2
+                    {subsRepo.getSubscription.data?.data.map((e) => (
+                      <Grid
                         key={e.id}
                         size={{ xs: 1, sm: 1, md: 1, lg: 1, xl: 1 }}
                       >
-                        <CourseCard
-                          course={e}
-                          canEdit={canEdit}
-                          onDelete={() => {}}
-                        />
-                      </Grid2>
+                        <CourseCard course={e} />
+                      </Grid>
                     ))}
                   </>
                 )}
@@ -77,7 +72,7 @@ export default function SubscriptionsPage(props: SubsProp) {
             )}
           </>
         )}
-      </Grid2>
+      </Grid>
     </>
   );
 }

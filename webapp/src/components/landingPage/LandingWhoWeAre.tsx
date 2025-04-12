@@ -1,7 +1,7 @@
 import {
   Box,
   Container,
-  Grid2,
+  Grid,
   List,
   ListItem,
   ListItemIcon,
@@ -20,8 +20,8 @@ export default function LandingWhoWeAreSection() {
   return (
     <Box sx={{ py: 6, backgroundColor: "#CAE2FC" }}>
       <Container maxWidth="lg" sx={{ padding: 0, px: { xs: 0 } }}>
-        <Grid2 container alignItems="center" justifyContent={"center"}>
-          <Grid2 size={{ xs: 12, md: 6 }}>
+        <Grid container alignItems="center" justifyContent={"center"}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Box
               sx={{
                 px: { xs: 5 },
@@ -38,9 +38,9 @@ export default function LandingWhoWeAreSection() {
                 }}
               />
             </Box>
-          </Grid2>
+          </Grid>
 
-          <Grid2 size={{ xs: 12, md: 6 }}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Box
               sx={{
                 textAlign: "left",
@@ -78,8 +78,8 @@ export default function LandingWhoWeAreSection() {
                 ))}
               </List>
             </Box>
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </Container>
     </Box>
   );

@@ -8,18 +8,13 @@ import {
   Chip,
   Stack,
 } from "@mui/material";
-import { Delete, Launch } from "@mui/icons-material";
+import { Launch } from "@mui/icons-material";
 import { Link } from "react-router";
-import { CourseEntity } from "@easymotion/openapi";
-import {
-  courseCategories,
-  courseLevels,
-} from "../../../data/courseEnumerations";
+import { courseLevels } from "../../../data/course-levels";
+import { CourseDto } from "@easymotion/openapi";
 
 export interface CourseCardProps {
-  course: CourseEntity;
-  canEdit?: boolean;
-  onDelete: (id: string) => void;
+  course: CourseDto;
 }
 
 const getLabel = (value: string, options: LiteralUnionDescriptor<string>) =>
@@ -31,7 +26,7 @@ const getLabel = (value: string, options: LiteralUnionDescriptor<string>) =>
  * @returns a react component
  */
 export default function CourseCard(props: CourseCardProps) {
-  const { course, canEdit = false, onDelete } = props;
+  const { course } = props;
   return (
     <Card
       sx={{
@@ -43,10 +38,7 @@ export default function CourseCard(props: CourseCardProps) {
         margin: "auto",
       }}
     >
-      <CardMedia
-        sx={{ height: 180 }}
-        image={`/${course.category.toLowerCase()}.jpg`}
-      />
+      <CardMedia sx={{ height: 180 }} image={`/${course.category.id}.jpg`} />
       <CardContent
         sx={{
           flexGrow: 1,
@@ -54,7 +46,7 @@ export default function CourseCard(props: CourseCardProps) {
         }}
       >
         <Typography variant="body1" fontWeight="fontWeightBold" color="primary">
-          <span>{getLabel(course.category, courseCategories)}</span> {" · "}
+          <span>{course.category.name}</span> {" · "}
           <span>{getLabel(course.level, courseLevels)}</span>
         </Typography>
         <Typography variant="h5" fontWeight="fontWeightBold" gutterBottom>
@@ -76,15 +68,6 @@ export default function CourseCard(props: CourseCardProps) {
         ))}
       </Stack>
       <CardActions sx={{ justifyContent: "right", paddingX: 2 }}>
-        {canEdit && (
-          <Button
-            startIcon={<Delete />}
-            color="error"
-            onClick={() => onDelete(course.id)}
-          >
-            Elimina
-          </Button>
-        )}
         <Button
           startIcon={<Launch />}
           component={Link}

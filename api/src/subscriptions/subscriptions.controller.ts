@@ -67,7 +67,8 @@ export class SubscriptionsController {
   ) {
     return this.subscriptionsService.subscribeFinalUser(
       req.user.sub,
-      subscriptionCreateDto
+      subscriptionCreateDto,
+      false
     );
   }
 
@@ -81,7 +82,8 @@ export class SubscriptionsController {
   subscribeGivenUser(@Body() subscriptionCreateDto: SubscriptionCreateDto) {
     return this.subscriptionsService.subscribeFinalUser(
       subscriptionCreateDto.userId,
-      subscriptionCreateDto
+      subscriptionCreateDto,
+      true
     );
   }
 

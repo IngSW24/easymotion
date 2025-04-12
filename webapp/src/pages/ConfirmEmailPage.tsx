@@ -40,7 +40,7 @@ export default function ConfirmEmailPage() {
       try {
         await auth.updateEmail(email, userId, token);
         setStatus("success");
-      } catch (_e) {
+      } catch (_) {
         setStatus("failed");
       }
     };

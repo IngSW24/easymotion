@@ -1,7 +1,7 @@
 import { ApiProperty, PickType } from "@nestjs/swagger";
 import { Expose, Type } from "class-transformer";
 import { IsDate } from "class-validator";
-import { CourseEntity } from "src/courses/dto/course.dto";
+import { CourseDto } from "src/courses/dto/course.dto";
 import { ApplicationUserDto } from "src/users/dto/application-user.dto";
 
 export class SubscriptionUserDto extends PickType(ApplicationUserDto, [
@@ -12,7 +12,7 @@ export class SubscriptionUserDto extends PickType(ApplicationUserDto, [
   "middleName",
 ]) {}
 
-export class SubscriptionCourseDto extends PickType(CourseEntity, [
+export class SubscriptionCourseDto extends PickType(CourseDto, [
   "id",
   "name",
 ]) {}

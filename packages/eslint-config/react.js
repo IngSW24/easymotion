@@ -4,8 +4,9 @@ import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import jsxA11y from "eslint-plugin-jsx-a11y";
 import globals from "globals";
+import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 
-export default tseslint.config({
+export default tseslint.config(eslintPluginPrettierRecommended, {
   extends: [eslint.configs.recommended, ...tseslint.configs.recommended],
   files: ["**/*.{ts,tsx}"],
   languageOptions: {
@@ -29,9 +30,9 @@ export default tseslint.config({
     },
   },
   rules: {
-    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-explicit-any": "warn",
     "react/react-in-jsx-scope": "off",
-    "react/jsx-uses-react": "off",
+    "react/jsx-uses-react": "warn",
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
     "jsx-a11y/anchor-is-valid": "warn",
@@ -43,5 +44,6 @@ export default tseslint.config({
         caughtErrorsIgnorePattern: "^_",
       },
     ],
+    "prettier/prettier": "warn",
   },
 });

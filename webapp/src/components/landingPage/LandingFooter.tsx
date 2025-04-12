@@ -1,17 +1,17 @@
-import { Box, Container, Grid2, Typography } from "@mui/material";
+import { Box, Container, Grid, Typography } from "@mui/material";
 import { Link } from "react-router";
 
 export default function LandingFooter() {
   return (
     <Box sx={{ py: 6, backgroundColor: "#042343" }}>
       <Container maxWidth="lg">
-        <Grid2
+        <Grid
           container
           spacing={6}
           alignItems="flex-start"
           justifyContent={"space-between"}
         >
-          <Grid2 size={{ xs: 6, md: 3 }}>
+          <Grid size={{ xs: 6, md: 3 }}>
             <img
               src="logo_monochromatic.png"
               alt="Logo monochromatic"
@@ -26,9 +26,9 @@ export default function LandingFooter() {
               Mettiti in contatto con fisioterapisti professionisti per
               migliorare la tua salute e la tua forma fisica.
             </Typography>
-          </Grid2>
+          </Grid>
 
-          <Grid2
+          <Grid
             size={{ xs: 6, md: 3 }}
             sx={{
               display: "flex",
@@ -50,9 +50,9 @@ export default function LandingFooter() {
             <Typography variant="body2" sx={{ color: "#ccc" }}>
               Email: contact@easymotion.it
             </Typography>
-          </Grid2>
+          </Grid>
 
-          <Grid2
+          <Grid
             size={{ xs: 6, md: 3 }}
             sx={{
               display: "flex",
@@ -79,8 +79,8 @@ export default function LandingFooter() {
                 Contact
               </Link>
             </Box>
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </Container>
     </Box>
   );

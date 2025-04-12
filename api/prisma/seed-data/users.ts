@@ -31,6 +31,9 @@ const getUsers = async (): Promise<Prisma.ApplicationUserCreateInput[]> => {
       isEmailVerified: true,
       lastLogin: "2025-01-08T10:00:00.000Z",
       failedLoginAttempts: 0,
+      finalUserData: {
+        create: {},
+      },
     },
     {
       id: "ced013b7-9931-4499-ba6b-64274a1700f6",
@@ -45,6 +48,12 @@ const getUsers = async (): Promise<Prisma.ApplicationUserCreateInput[]> => {
       isEmailVerified: true,
       lastLogin: "2025-01-08T10:00:00.000Z",
       failedLoginAttempts: 0,
+      physiotherapistData: {
+        create: {
+          specialization: "Sports Rehabilitation",
+          publicPhoneNumber: "+393401234567",
+        },
+      },
     },
   ];
 };

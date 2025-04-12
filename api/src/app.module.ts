@@ -9,6 +9,7 @@ import { SubscriptionsModule } from "./subscriptions/subscriptions.module";
 import configurations from "./config";
 import { RequestMiddleware } from "./middlewares/request.middleware";
 import { AuthController } from "./auth/auth.controller";
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { AuthController } from "./auth/auth.controller";
     UsersModule,
     EmailModule,
     SubscriptionsModule,
+    CategoriesModule,
   ],
 })
 export class AppModule {

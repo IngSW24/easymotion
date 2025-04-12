@@ -1,4 +1,4 @@
-import { CourseEntity } from "@easymotion/openapi";
+import { CourseDto } from "@easymotion/openapi";
 import {
   Box,
   Card,
@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 
 export interface CourseCardProps {
-  course: CourseEntity;
+  course: CourseDto;
 }
 
 export default function LandingCourseCard(props: CourseCardProps) {
@@ -29,7 +29,7 @@ export default function LandingCourseCard(props: CourseCardProps) {
     >
       <CardMedia
         component="img"
-        image={`/${course.category.toLowerCase()}.jpg`}
+        image={`/${course.category.id}.jpg`}
         alt={course.name}
         sx={{
           height: 150,
@@ -84,7 +84,7 @@ export default function LandingCourseCard(props: CourseCardProps) {
               display: "block",
             }}
           >
-            scopri di più →
+            {"scopri di più →"}
           </MuiLink>
         </Box>
       </CardContent>
