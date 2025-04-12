@@ -1,9 +1,8 @@
 import { CourseDto } from "@easymotion/openapi";
-import { Delete, Visibility, Edit } from "@mui/icons-material";
+import { Delete, Edit, Group } from "@mui/icons-material";
 import { Chip, IconButton, Stack, Tooltip } from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { useState } from "react";
-import { useNavigate } from "react-router";
 
 type DashboardDataGridProps = {
   courses: CourseDto[];
@@ -12,6 +11,7 @@ type DashboardDataGridProps = {
   isFetchingNextPage: boolean;
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;
+  onCourseUsers: (id: string) => void;
 };
 
 export default function DashboardDataGrid(props: DashboardDataGridProps) {
@@ -22,9 +22,8 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
     isFetchingNextPage,
     onDelete,
     onEdit,
+    onCourseUsers,
   } = props;
-
-  const navigate = useNavigate();
 
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 10,
@@ -103,15 +102,15 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
             justifyContent="center"
             width="100%"
           >
-            <Tooltip title="Visualizza">
+            <Tooltip title="Iscrizioni">
               <IconButton
                 size="small"
                 onClick={(event) => {
                   event.stopPropagation();
-                  navigate(`/details/${params.row.courseId}`);
+                  onCourseUsers(params.row.courseId);
                 }}
               >
-                <Visibility fontSize="small" />
+                <Group fontSize="small" />
               </IconButton>
             </Tooltip>
             <Tooltip title="Modifica">

@@ -10,6 +10,7 @@ import CourseEditModal from "../../components/course/CourseEditor/CourseEditModa
 import { useDialog } from "../../hooks/useDialog";
 import { usePhysiotherapistCourses } from "../../hooks/usePhysiotherapistCourses";
 import { CourseDto } from "@easymotion/openapi";
+import CourseUsersListModal from "../../components/dashboard/CourseUsersListModal";
 
 enum CurrentState {
   "LOADING",
@@ -25,6 +26,10 @@ export default function DashboardHome() {
   const confirm = useDialog();
   const [createOpen, setCreateOpen] = useState(false);
   const [editingCourse, setEditingCourse] = useState<CourseDto | undefined>(
+    undefined
+  );
+  const [courseUsersOpen, setCourseUsersOpen] = useState(false);
+  const [courseUserId, setCourseUserId] = useState<string | undefined>(
     undefined
   );
 
@@ -55,6 +60,15 @@ export default function DashboardHome() {
     },
     [getAll.data?.pages]
   );
+
+  const handleCourseUsersOpen = (courseId: string) => {
+    setCourseUserId(courseId);
+    setCourseUsersOpen(true);
+  };
+  const handleCourseUserClose = () => {
+    setCourseUsersOpen(false);
+    setCourseUserId(undefined);
+  };
 
   useEffect(() => {
     if (getProfile.isError || getAll.isError) {
@@ -118,6 +132,11 @@ export default function DashboardHome() {
                 onClose={handleClose}
                 course={editingCourse}
               />
+              <CourseUsersListModal
+                open={courseUsersOpen}
+                onClose={handleCourseUserClose}
+                courseId={courseUserId}
+              />
             </Box>
 
             <Box sx={{ width: "100%", mb: { xs: 3, lg: 0 } }}>
@@ -137,6 +156,7 @@ export default function DashboardHome() {
                   }
                 }}
                 onEdit={handleEdit}
+                onCourseUsers={(courseId) => handleCourseUsersOpen(courseId)}
               />
             </Box>
           </Grid>
