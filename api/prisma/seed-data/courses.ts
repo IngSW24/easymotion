@@ -31,18 +31,19 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       owner: {
         connect: { applicationUserId: physiotherapist.id },
       },
-      subscription_end_date: new Date(),
+      subscription_start_date: new Date("2025-04-08T20:30:00Z"),
+      subscription_end_date: new Date("2025-08-08T20:30:00Z"),
       sessions: {
         create: [
           {
             id: "s1a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
-            start_time: new Date("2024-04-09T20:30:00Z"),
-            end_time: new Date("2024-04-09T21:30:00Z"),
+            start_time: new Date("2025-04-09T20:30:00Z"),
+            end_time: new Date("2025-04-09T21:30:00Z"),
           },
           {
             id: "s2a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
-            start_time: new Date("2024-04-11T19:00:00Z"),
-            end_time: new Date("2024-04-11T20:00:00Z"),
+            start_time: new Date("2025-04-11T19:00:00Z"),
+            end_time: new Date("2025-04-11T20:00:00Z"),
           },
         ],
       },
@@ -70,23 +71,24 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       owner: {
         connect: { applicationUserId: physiotherapist.id },
       },
-      subscription_end_date: new Date(),
+      subscription_start_date: new Date("2025-04-08T20:30:00Z"),
+      subscription_end_date: new Date("2025-08-08T20:30:00Z"),
       sessions: {
         create: [
           {
             id: "s3a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
-            start_time: new Date("2024-04-08T18:00:00Z"),
-            end_time: new Date("2024-04-08T19:30:00Z"),
+            start_time: new Date("2025-04-08T18:00:00Z"),
+            end_time: new Date("2025-04-08T19:30:00Z"),
           },
           {
             id: "s4a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
-            start_time: new Date("2024-04-10T18:00:00Z"),
-            end_time: new Date("2024-04-10T19:30:00Z"),
+            start_time: new Date("2025-04-10T18:00:00Z"),
+            end_time: new Date("2025-04-10T19:30:00Z"),
           },
           {
             id: "s5a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
-            start_time: new Date("2024-04-12T18:00:00Z"),
-            end_time: new Date("2024-04-12T19:30:00Z"),
+            start_time: new Date("2025-04-12T18:00:00Z"),
+            end_time: new Date("2025-04-12T19:30:00Z"),
           },
         ],
       },
@@ -114,18 +116,19 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       owner: {
         connect: { applicationUserId: physiotherapist.id },
       },
-      subscription_end_date: new Date(),
+      subscription_start_date: new Date("2025-04-08T20:30:00Z"),
+      subscription_end_date: new Date("2025-08-08T20:30:00Z"),
       sessions: {
         create: [
           {
             id: "s6a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
-            start_time: new Date("2024-04-09T10:00:00Z"),
-            end_time: new Date("2024-04-09T12:00:00Z"),
+            start_time: new Date("2025-04-09T10:00:00Z"),
+            end_time: new Date("2025-04-09T12:00:00Z"),
           },
           {
             id: "s7a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
-            start_time: new Date("2024-04-11T10:00:00Z"),
-            end_time: new Date("2024-04-11T12:00:00Z"),
+            start_time: new Date("2025-04-11T10:00:00Z"),
+            end_time: new Date("2025-04-11T12:00:00Z"),
           },
         ],
       },
@@ -152,18 +155,19 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       owner: {
         connect: { applicationUserId: physiotherapist.id },
       },
-      subscription_end_date: new Date(),
+      subscription_start_date: new Date("2025-04-08T20:30:00Z"),
+      subscription_end_date: new Date("2025-08-08T20:30:00Z"),
       sessions: {
         create: [
           {
             id: "s8a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
-            start_time: new Date("2024-04-08T20:30:00Z"),
-            end_time: new Date("2024-04-08T22:00:00Z"),
+            start_time: new Date("2025-04-08T20:30:00Z"),
+            end_time: new Date("2025-04-08T22:00:00Z"),
           },
           {
             id: "s9a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
-            start_time: new Date("2024-04-10T20:30:00Z"),
-            end_time: new Date("2024-04-10T22:00:00Z"),
+            start_time: new Date("2025-04-10T20:30:00Z"),
+            end_time: new Date("2025-04-10T22:00:00Z"),
           },
         ],
       },
@@ -190,18 +194,19 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       owner: {
         connect: { applicationUserId: physiotherapist.id },
       },
-      subscription_end_date: new Date(),
+      subscription_start_date: new Date("2025-04-08T20:30:00Z"),
+      subscription_end_date: new Date("2025-08-08T20:30:00Z"),
       sessions: {
         create: [
           {
             id: "s10a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
-            start_time: new Date("2024-04-09T09:00:00Z"),
-            end_time: new Date("2024-04-09T10:00:00Z"),
+            start_time: new Date("2025-04-09T09:00:00Z"),
+            end_time: new Date("2025-04-09T10:00:00Z"),
           },
           {
             id: "s11a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
-            start_time: new Date("2024-04-11T11:00:00Z"),
-            end_time: new Date("2024-04-11T12:00:00Z"),
+            start_time: new Date("2025-04-11T11:00:00Z"),
+            end_time: new Date("2025-04-11T12:00:00Z"),
           },
         ],
       },
@@ -228,18 +233,19 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       owner: {
         connect: { applicationUserId: physiotherapist.id },
       },
-      subscription_end_date: new Date(),
+      subscription_start_date: new Date("2025-04-08T20:30:00Z"),
+      subscription_end_date: new Date("2025-08-08T20:30:00Z"),
       sessions: {
         create: [
           {
             id: "s12a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
-            start_time: new Date("2024-04-08T18:00:00Z"),
-            end_time: new Date("2024-04-08T20:00:00Z"),
+            start_time: new Date("2025-04-08T18:00:00Z"),
+            end_time: new Date("2025-04-08T20:00:00Z"),
           },
           {
             id: "s13a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
-            start_time: new Date("2024-04-10T18:00:00Z"),
-            end_time: new Date("2024-04-10T20:00:00Z"),
+            start_time: new Date("2025-04-10T18:00:00Z"),
+            end_time: new Date("2025-04-10T20:00:00Z"),
           },
         ],
       },
@@ -266,18 +272,19 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       owner: {
         connect: { applicationUserId: physiotherapist.id },
       },
-      subscription_end_date: new Date(),
+      subscription_start_date: new Date("2025-04-08T20:30:00Z"),
+      subscription_end_date: new Date("2025-08-08T20:30:00Z"),
       sessions: {
         create: [
           {
             id: "s14a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
-            start_time: new Date("2024-04-13T09:30:00Z"),
-            end_time: new Date("2024-04-13T10:15:00Z"),
+            start_time: new Date("2025-04-13T09:30:00Z"),
+            end_time: new Date("2025-04-13T10:15:00Z"),
           },
           {
             id: "s15a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
-            start_time: new Date("2024-04-14T09:30:00Z"),
-            end_time: new Date("2024-04-14T10:15:00Z"),
+            start_time: new Date("2025-04-14T09:30:00Z"),
+            end_time: new Date("2025-04-14T10:15:00Z"),
           },
         ],
       },
@@ -304,18 +311,19 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       owner: {
         connect: { applicationUserId: physiotherapist.id },
       },
-      subscription_end_date: new Date(),
+      subscription_start_date: new Date("2025-04-08T20:30:00Z"),
+      subscription_end_date: new Date("2025-08-08T20:30:00Z"),
       sessions: {
         create: [
           {
             id: "s16a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
-            start_time: new Date("2024-04-09T19:00:00Z"),
-            end_time: new Date("2024-04-09T20:30:00Z"),
+            start_time: new Date("2025-04-09T19:00:00Z"),
+            end_time: new Date("2025-04-09T20:30:00Z"),
           },
           {
             id: "s17a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
-            start_time: new Date("2024-04-11T19:00:00Z"),
-            end_time: new Date("2024-04-11T20:30:00Z"),
+            start_time: new Date("2025-04-11T19:00:00Z"),
+            end_time: new Date("2025-04-11T20:30:00Z"),
           },
         ],
       },
@@ -342,18 +350,19 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       owner: {
         connect: { applicationUserId: physiotherapist.id },
       },
-      subscription_end_date: new Date(),
+      subscription_start_date: new Date("2025-04-08T20:30:00Z"),
+      subscription_end_date: new Date("2025-08-08T20:30:00Z"),
       sessions: {
         create: [
           {
             id: "s18a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
-            start_time: new Date("2024-04-10T20:00:00Z"),
-            end_time: new Date("2024-04-10T21:00:00Z"),
+            start_time: new Date("2025-04-10T20:00:00Z"),
+            end_time: new Date("2025-04-10T21:00:00Z"),
           },
           {
             id: "s19a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
-            start_time: new Date("2024-04-12T20:00:00Z"),
-            end_time: new Date("2024-04-12T21:00:00Z"),
+            start_time: new Date("2025-04-12T20:00:00Z"),
+            end_time: new Date("2025-04-12T21:00:00Z"),
           },
         ],
       },
@@ -380,18 +389,19 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       owner: {
         connect: { applicationUserId: physiotherapist.id },
       },
-      subscription_end_date: new Date(),
+      subscription_start_date: new Date("2025-04-08T20:30:00Z"),
+      subscription_end_date: new Date("2025-08-08T20:30:00Z"),
       sessions: {
         create: [
           {
             id: "s20a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
-            start_time: new Date("2024-04-08T19:00:00Z"),
-            end_time: new Date("2024-04-08T20:30:00Z"),
+            start_time: new Date("2025-04-08T19:00:00Z"),
+            end_time: new Date("2025-04-08T20:30:00Z"),
           },
           {
             id: "s21a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
-            start_time: new Date("2024-04-11T19:00:00Z"),
-            end_time: new Date("2024-04-11T20:30:00Z"),
+            start_time: new Date("2025-04-11T19:00:00Z"),
+            end_time: new Date("2025-04-11T20:30:00Z"),
           },
         ],
       },
