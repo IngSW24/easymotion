@@ -3,7 +3,7 @@ import {
   Card,
   CardActionArea,
   CardContent,
-  IconButton,
+  Icon,
   Typography,
 } from "@mui/material";
 import { ReactNode } from "react";
@@ -59,9 +59,7 @@ export default function OverviewSection(props: OverviewSectionProps) {
                     {card.value}
                   </Typography>
                 </Box>
-                <IconButton color="primary" disableRipple>
-                  {card.icon}
-                </IconButton>
+                <Icon color="primary">{card.icon}</Icon>
               </Box>
             </CardContent>
           </CardActionArea>

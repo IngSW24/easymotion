@@ -12,7 +12,7 @@ import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 
 describe("CoursesService", () => {
   let service: CoursesService;
-  let prisma: PrismaService;
+  //let prisma: PrismaService;
 
   const prismaMock = {
     course: {
@@ -44,7 +44,7 @@ describe("CoursesService", () => {
     }).compile();
 
     service = module.get<CoursesService>(CoursesService);
-    prisma = module.get<PrismaService>(PrismaService);
+    //prisma = module.get<PrismaService>(PrismaService);
 
     // Reset all mocks before each test
     jest.clearAllMocks();
@@ -78,6 +78,8 @@ describe("CoursesService", () => {
         sessions: [
           { start_time: new Date(), end_time: new Date(Date.now() + 3600000) },
         ],
+        subscription_start_date: new Date(),
+        subscription_end_date: new Date(),
       };
 
       const mockCreatedCourse = {
@@ -264,6 +266,8 @@ describe("CoursesService", () => {
         instructors: [],
         owner_id: "owner1",
         category_id: "id1",
+        subscription_start_date: new Date(),
+        subscription_end_date: new Date(),
       };
 
       prismaMock.course.findUniqueOrThrow.mockResolvedValue(mockCourse);

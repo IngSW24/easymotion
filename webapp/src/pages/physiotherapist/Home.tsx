@@ -1,4 +1,4 @@
-import { Box, Button, Grid2, Typography } from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
 import OverviewSection from "../../components/dashboard/OverviewSection";
 import DashboardDataGrid from "../../components/dashboard/CoursesDataGrid";
 import { DateCalendar } from "@mui/x-date-pickers";
@@ -87,9 +87,9 @@ export default function DashboardHome() {
       )}
       {currentPageState === CurrentState.LOADING && <LoadingSpinner />}
       {currentPageState === CurrentState.READY && (
-        <Grid2 container spacing={3}>
+        <Grid container spacing={3}>
           {/* Left column - Overview and DataGrid */}
-          <Grid2 size={{ xs: 12, lg: 9 }}>
+          <Grid size={{ xs: 12, lg: 9 }}>
             {/* Overview section */}
             <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
               Overview
@@ -145,7 +145,6 @@ export default function DashboardHome() {
                 nextPageAction={() => getAll.fetchNextPage()}
                 hasNextPage={!!getAll.hasNextPage}
                 isFetchingNextPage={getAll.isFetchingNextPage}
-                totalItems={getAll.data?.pages[0]?.meta.totalItems || 0}
                 onDelete={async (id) => {
                   const result = await confirm.showConfirmationDialog({
                     title: "Sei sicuro di voler eliminare questo corso?",
@@ -160,10 +159,10 @@ export default function DashboardHome() {
                 onCourseUsers={(courseId) => handleCourseUsersOpen(courseId)}
               />
             </Box>
-          </Grid2>
+          </Grid>
 
           {/* Right column - Calendar */}
-          <Grid2 size={{ xs: 12, lg: 3 }}>
+          <Grid size={{ xs: 12, lg: 3 }}>
             <Box
               sx={{
                 width: "100%",
@@ -180,8 +179,8 @@ export default function DashboardHome() {
                 }}
               />
             </Box>
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       )}
     </Box>
   );

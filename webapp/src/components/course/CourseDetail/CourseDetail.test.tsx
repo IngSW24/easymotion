@@ -35,6 +35,8 @@ describe("CourseDetail GUI test", () => {
     is_free: false,
     is_published: false,
     subscriptions_open: false,
+    subscription_start_date: "",
+    subscription_end_date: "",
   };
 
   it("Check if CourseDetail shows the correct information", () => {

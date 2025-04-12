@@ -4,7 +4,7 @@ import {
   Button,
   Card,
   CardContent,
-  Grid2,
+  Grid,
   TextField,
   Typography,
 } from "@mui/material";
@@ -83,8 +83,8 @@ export default function EmailUpdate() {
           Ti invieremo un'email di conferma per completare l'aggiornamento.
         </Typography>
         <form onSubmit={handleEmailUpdate}>
-          <Grid2 container spacing={2} sx={{ py: 1 }}>
-            <Grid2 size={{ xs: 12, sm: 10 }}>
+          <Grid container spacing={2} sx={{ py: 1 }}>
+            <Grid size={{ xs: 12, sm: 10 }}>
               <TextField
                 label="Nuova email"
                 type="email"
@@ -93,8 +93,8 @@ export default function EmailUpdate() {
                 size="small"
                 onChange={(e) => setNewEmail(e.target.value)}
               />
-            </Grid2>
-            <Grid2 size={{ xs: 12, sm: 2 }}>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 2 }}>
               <Button
                 variant="contained"
                 sx={{ minWidth: 120 }}
@@ -106,8 +106,8 @@ export default function EmailUpdate() {
               >
                 Modifica
               </Button>
-            </Grid2>
-          </Grid2>
+            </Grid>
+          </Grid>
         </form>
         <Box sx={{ mt: 2 }}>
           {message.text && (

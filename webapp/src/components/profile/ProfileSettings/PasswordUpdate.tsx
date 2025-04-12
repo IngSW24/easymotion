@@ -4,7 +4,7 @@ import {
   Button,
   Card,
   CardContent,
-  Grid2,
+  Grid,
   Stack,
   Switch,
   TextField,
@@ -52,7 +52,7 @@ export default function PasswordUpdate() {
           text: "Password aggiornata con successo",
         });
       }
-    } catch (_e) {
+    } catch (_) {
       setMessage({
         type: "error",
         text: "Password errata",
@@ -97,8 +97,8 @@ export default function PasswordUpdate() {
           effettuare la modifica
         </Typography>
         <form onSubmit={onPasswordUpdate}>
-          <Grid2 container spacing={2}>
-            <Grid2 size={{ xs: 12, sm: 5 }}>
+          <Grid container spacing={2}>
+            <Grid size={{ xs: 12, sm: 5 }}>
               <TextField
                 fullWidth
                 label="Password precedente"
@@ -109,8 +109,8 @@ export default function PasswordUpdate() {
                   setPassword((prev) => ({ ...prev, old: e.target.value }))
                 }
               />
-            </Grid2>
-            <Grid2 size={{ xs: 12, sm: 5 }}>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 5 }}>
               <TextField
                 fullWidth
                 label="Nuova password"
@@ -121,8 +121,8 @@ export default function PasswordUpdate() {
                   setPassword((prev) => ({ ...prev, new: e.target.value }))
                 }
               />
-            </Grid2>
-            <Grid2 size={{ xs: 12, sm: 2 }} sx={{ display: "flex" }}>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 2 }} sx={{ display: "flex" }}>
               <Button
                 variant="contained"
                 color="primary"
@@ -136,8 +136,8 @@ export default function PasswordUpdate() {
               >
                 Modifica
               </Button>
-            </Grid2>
-          </Grid2>
+            </Grid>
+          </Grid>
         </form>
         <Stack
           spacing={2}

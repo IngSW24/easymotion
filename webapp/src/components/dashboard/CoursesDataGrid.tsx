@@ -9,7 +9,6 @@ type DashboardDataGridProps = {
   nextPageAction: () => void;
   hasNextPage: boolean;
   isFetchingNextPage: boolean;
-  totalItems: number;
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;
   onCourseUsers: (id: string) => void;
@@ -21,7 +20,6 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
     nextPageAction,
     hasNextPage,
     isFetchingNextPage,
-    totalItems,
     onDelete,
     onEdit,
     onCourseUsers,
@@ -189,7 +187,6 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
           },
         },
       }}
-      rowCount={totalItems || rows.length}
       paginationModel={paginationModel}
       onPaginationModelChange={handlePaginationModelChange}
       paginationMode="client"

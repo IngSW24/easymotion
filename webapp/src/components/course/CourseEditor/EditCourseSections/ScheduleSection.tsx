@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
   Box,
   Button,
@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Grid2,
+  Grid,
   TextField,
   MenuItem,
   FormControl,
@@ -24,15 +24,10 @@ import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
-import EventIcon from "@mui/icons-material/Event";
 import RepeatIcon from "@mui/icons-material/Repeat";
-import { CourseSession } from "../types";
-
-interface ScheduleSectionProps {
-  sessions: CourseSession[];
-  onSessionsChange: (sessions: CourseSession[]) => void;
-  isCreateMode?: boolean; // New prop to determine if we're creating a new course
-}
+import { useFormContext, useFieldArray } from "react-hook-form";
+import type { CourseFormData } from "../schema";
+import { calculateDuration } from "../../../../utils/format";
 
 type SessionFormState = {
   date: DateTime | null;
@@ -48,11 +43,15 @@ type RecurringSessionFormState = {
   count: number;
 };
 
-export default function ScheduleSection({
-  sessions,
-  onSessionsChange,
-  isCreateMode = false,
-}: ScheduleSectionProps) {
+export default function ScheduleSection() {
+  const { control, setValue, watch } = useFormContext<CourseFormData>();
+  const { fields, append, remove, update } = useFieldArray({
+    control,
+    name: "sessions",
+  });
+
+  const courseId = watch("id");
+
   const [open, setOpen] = useState(false);
   const [recurringOpen, setRecurringOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -98,33 +97,25 @@ export default function ScheduleSection({
     count?: string;
   }>({});
 
-  // Format date for display
-  const formatDate = (date: DateTime) => {
-    return date.toFormat("dd/MM/yyyy HH:mm");
-  };
+  const formatDate = (date: DateTime) => date.toFormat("dd/MM/yyyy HH:mm");
 
-  // Calculate duration in hours and minutes
-  const calculateDuration = (start: DateTime, end: DateTime) => {
-    const diff = end.diff(start, ["hours", "minutes"]);
-    const hours = Math.floor(diff.hours);
-    const minutes = Math.floor(diff.minutes);
+  const combineDateTime = (date: DateTime, time: DateTime): DateTime =>
+    date.set({
+      hour: time.hour,
+      minute: time.minute,
+      second: 0,
+      millisecond: 0,
+    });
 
-    if (hours === 0) {
-      return `${minutes} minuti`;
-    } else if (minutes === 0) {
-      return `${hours} ore`;
-    } else {
-      return `${hours} ore e ${minutes} minuti`;
-    }
-  };
+  const handleRemoveSession = (index: number) => remove(index);
 
-  const handleRemoveSession = (index: number) => {
-    const newSessions = [...sessions];
-    newSessions.splice(index, 1);
-    onSessionsChange(sortSessions(newSessions));
-  };
+  const handleClose = () => setOpen(false);
 
-  const handleAddClick = () => {
+  const handleRecurringOpen = () => setRecurringOpen(true);
+
+  const handleRecurringClose = () => setRecurringOpen(false);
+
+  const handleAddClick = useCallback(() => {
     setIsEditing(false);
     setEditingIndex(null);
 
@@ -143,36 +134,29 @@ export default function ScheduleSection({
     });
     setErrors({});
     setOpen(true);
-  };
+  }, []);
 
-  const handleEditClick = (index: number) => {
-    setIsEditing(true);
-    setEditingIndex(index);
+  const handleEditClick = useCallback(
+    (index: number) => {
+      setIsEditing(true);
+      setEditingIndex(index);
 
-    const session = sessions[index];
+      const session = fields[index];
+      const startTime = DateTime.fromISO(session.start_time);
+      const endTime = DateTime.fromISO(session.end_time);
 
-    setSessionForm({
-      date: session.startTime,
-      startTime: session.startTime,
-      endTime: session.endTime,
-    });
-    setErrors({});
-    setOpen(true);
-  };
+      setSessionForm({
+        date: startTime,
+        startTime: startTime,
+        endTime: endTime,
+      });
+      setErrors({});
+      setOpen(true);
+    },
+    [fields]
+  );
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleRecurringOpen = () => {
-    setRecurringOpen(true);
-  };
-
-  const handleRecurringClose = () => {
-    setRecurringOpen(false);
-  };
-
-  const validateSession = () => {
+  const validateSession = useCallback(() => {
     const newErrors: {
       date?: string;
       startTime?: string;
@@ -191,7 +175,6 @@ export default function ScheduleSection({
       newErrors.endTime = "L'ora di fine è obbligatoria";
     }
 
-    // Check if end time is after start time
     if (sessionForm.startTime && sessionForm.endTime) {
       if (sessionForm.endTime < sessionForm.startTime) {
         newErrors.endTime =
@@ -201,9 +184,9 @@ export default function ScheduleSection({
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [sessionForm.date, sessionForm.endTime, sessionForm.startTime]);
 
-  const validateRecurringForm = () => {
+  const validateRecurringForm = useCallback(() => {
     const newErrors: {
       startDate?: string;
       startTime?: string;
@@ -237,26 +220,16 @@ export default function ScheduleSection({
 
     setRecurringErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [
+    recurringForm.startDate,
+    recurringForm.startTime,
+    recurringForm.endTime,
+    recurringForm.count,
+  ]);
 
   // Helper to combine date and time into a single DateTime
-  const combineDateTime = (date: DateTime, time: DateTime): DateTime => {
-    return date.set({
-      hour: time.hour,
-      minute: time.minute,
-      second: 0,
-      millisecond: 0,
-    });
-  };
 
-  // Helper to sort sessions by start time
-  const sortSessions = (sessions: CourseSession[]): CourseSession[] => {
-    return [...sessions].sort(
-      (a, b) => a.startTime.toMillis() - b.startTime.toMillis()
-    );
-  };
-
-  const handleSaveSession = () => {
+  const handleSaveSession = useCallback(() => {
     if (!validateSession()) return;
 
     if (sessionForm.date && sessionForm.startTime && sessionForm.endTime) {
@@ -269,34 +242,25 @@ export default function ScheduleSection({
         sessionForm.endTime
       );
 
-      let updatedSessions: CourseSession[];
-
       if (isEditing && editingIndex !== null) {
         // Update existing session
-        updatedSessions = [...sessions];
-        updatedSessions[editingIndex] = {
-          ...updatedSessions[editingIndex],
-          startTime: startDateTime,
-          endTime: endDateTime,
-        };
+        update(editingIndex, {
+          start_time: startDateTime.toISO() ?? "",
+          end_time: endDateTime.toISO() ?? "",
+        });
       } else {
         // Add new session
-        updatedSessions = [
-          ...sessions,
-          {
-            startTime: startDateTime,
-            endTime: endDateTime,
-          },
-        ];
+        append({
+          start_time: startDateTime.toISO() ?? "",
+          end_time: endDateTime.toISO() ?? "",
+        });
       }
 
-      // Sort sessions by start time
-      onSessionsChange(sortSessions(updatedSessions));
       setOpen(false);
     }
-  };
+  }, [isEditing, editingIndex, sessionForm, validateSession, append, update]);
 
-  const handleCreateRecurringSessions = () => {
+  const handleCreateRecurringSessions = useCallback(() => {
     if (!validateRecurringForm()) return;
 
     if (
@@ -305,7 +269,7 @@ export default function ScheduleSection({
       recurringForm.endTime
     ) {
       const { startDate, startTime, endTime, frequency, count } = recurringForm;
-      const newSessions: CourseSession[] = [];
+      const newSessions: { start_time: string; end_time: string }[] = [];
 
       // Get the duration between start and end time
       const duration = endTime.diff(startTime, ["hours", "minutes"]);
@@ -337,79 +301,73 @@ export default function ScheduleSection({
         });
 
         newSessions.push({
-          startTime: sessionStartTime,
-          endTime: sessionEndTime,
+          start_time: sessionStartTime.toISO() ?? "",
+          end_time: sessionEndTime.toISO() ?? "",
         });
       }
 
-      // Replace all current sessions with these new ones (sorted)
-      onSessionsChange(sortSessions(newSessions));
+      // Replace all current sessions with these new ones
+      setValue("sessions", newSessions);
       setRecurringOpen(false);
     }
-  };
+  }, [validateRecurringForm, recurringForm, setValue]);
 
-  const handleRecurringCountChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const value = parseInt(e.target.value);
-    setRecurringForm((prev) => ({
-      ...prev,
-      count: isNaN(value) ? 1 : Math.max(1, value),
-    }));
-  };
+  const handleRecurringCountChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = parseInt(e.target.value);
+      setRecurringForm((prev) => ({
+        ...prev,
+        count: isNaN(value) ? 1 : Math.max(1, value),
+      }));
+    },
+    []
+  );
 
   return (
-    <Grid2 container spacing={3}>
-      <Grid2 size={{ xs: 12 }}>
-        <Typography
-          variant="h6"
-          sx={{ display: "flex", alignItems: "center", mb: 2 }}
-        >
-          <EventIcon sx={{ mr: 1 }} /> Calendario appuntamenti
-        </Typography>
-
+    <Grid container spacing={3}>
+      <Grid size={{ xs: 12 }}>
         <Stack spacing={2}>
-          {sessions.length > 0 ? (
-            sessions.map((session, index) => (
-              <Paper
-                key={session.id || `new-session-${index}`}
-                elevation={1}
-                sx={{ p: 2 }}
-              >
-                <Box
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
-                >
-                  <Box>
-                    <Typography variant="body1" fontWeight="medium">
-                      {formatDate(session.startTime)}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Durata:{" "}
-                      {calculateDuration(session.startTime, session.endTime)}
-                    </Typography>
+          {fields.length > 0 ? (
+            fields.map((field, index) => {
+              const startTime = DateTime.fromISO(field.start_time);
+              const endTime = DateTime.fromISO(field.end_time);
+
+              return (
+                <Paper key={field.id} elevation={1} sx={{ p: 2 }}>
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                  >
+                    <Box>
+                      <Typography variant="body1" fontWeight="medium">
+                        {formatDate(startTime)}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Durata: {calculateDuration(startTime, endTime)}
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <IconButton
+                        onClick={() => handleEditClick(index)}
+                        color="primary"
+                        size="small"
+                        sx={{ mr: 1 }}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => handleRemoveSession(index)}
+                        color="error"
+                        size="small"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Box>
                   </Box>
-                  <Box>
-                    <IconButton
-                      onClick={() => handleEditClick(index)}
-                      color="primary"
-                      size="small"
-                      sx={{ mr: 1 }}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      onClick={() => handleRemoveSession(index)}
-                      color="error"
-                      size="small"
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </Box>
-                </Box>
-              </Paper>
-            ))
+                </Paper>
+              );
+            })
           ) : (
             <Typography color="text.secondary" align="center">
               Nessun appuntamento programmato
@@ -425,19 +383,18 @@ export default function ScheduleSection({
               Aggiungi appuntamento
             </Button>
 
-            {isCreateMode && (
-              <Button
-                startIcon={<RepeatIcon />}
-                onClick={handleRecurringOpen}
-                variant="outlined"
-                color="secondary"
-              >
-                Crea sessioni ricorrenti
-              </Button>
-            )}
+            <Button
+              startIcon={<RepeatIcon />}
+              onClick={handleRecurringOpen}
+              variant="outlined"
+              color="secondary"
+              disabled={courseId !== undefined}
+            >
+              Crea sessioni ricorrenti
+            </Button>
           </Box>
         </Stack>
-      </Grid2>
+      </Grid>
 
       {/* Single session dialog */}
       <Dialog
@@ -611,6 +568,6 @@ export default function ScheduleSection({
           </Button>
         </DialogActions>
       </Dialog>
-    </Grid2>
+    </Grid>
   );
 }

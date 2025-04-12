@@ -1,147 +1,272 @@
-import { Box, Chip, Grid2, Stack, Typography } from "@mui/material";
-import { CourseDto } from "@easymotion/openapi";
-import ProductCard from "./ProductCard";
-import EventAvailableOutlinedIcon from "@mui/icons-material/EventAvailableOutlined";
-import SubscribeButton from "../../../pages/user/SubscribeButton";
-import { Euro, LocationOn, Person } from "@mui/icons-material";
+import React from "react";
+import {
+  Box,
+  Typography,
+  Chip,
+  Paper,
+  Button,
+  Stack,
+  Avatar,
+  Card,
+  CardContent,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+  Grid,
+} from "@mui/material";
+import EventIcon from "@mui/icons-material/Event";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import PersonIcon from "@mui/icons-material/Person";
+import EuroIcon from "@mui/icons-material/Euro";
 import { DateTime } from "luxon";
 import { getCourseLevelName } from "../../../data/course-levels";
+import {
+  InfoOutlined,
+  CategoryOutlined,
+  GroupOutlined,
+  Delete,
+  Done,
+  QuestionAnswer,
+} from "@mui/icons-material";
+import { CourseDto } from "@easymotion/openapi";
+import { calculateDuration } from "../../../utils/format";
+import { useSubscribeButton } from "./useSubscribeButton";
 
 export interface CourseDetailProps {
   course: CourseDto;
+  hideTitle?: boolean;
 }
 
-/**
- * Defines a react component that displays the details of a course and allows edits
- * @param props the properties for the component, including the course id
- * @returns a react component
- */
-export default function CourseDetail(props: CourseDetailProps) {
-  const { course } = props;
+const CourseDetail: React.FC<CourseDetailProps> = (
+  props: CourseDetailProps
+) => {
+  const { course, hideTitle = false } = props;
+  const subscribeButton = useSubscribeButton({ course });
+
+  const getPaymentDetails = () => {
+    if (course.price === 0) return "Gratuito";
+    if (!course.number_of_payments || course.number_of_payments === 1)
+      return `Pagamento unico: €${course.price?.toFixed(2)}`;
+
+    const installment =
+      course.price && (course.price / course.number_of_payments).toFixed(2);
+    return `${course.number_of_payments} × €${installment} (Totale: €${course.price?.toFixed(2)})`;
+  };
 
   return (
     <>
-      <Grid2 container spacing={4}>
-        <Grid2 container size={12} sx={{ mt: 2, mb: 3 }}>
-          <Grid2
-            size={{ xs: 12, md: 9 }}
-            alignItems="center"
-            textAlign={{ xs: "center", md: "start" }}
-            order={{ xs: 2, md: 1 }}
+      {!hideTitle && (
+        <Box textAlign="center" mb={5}>
+          <Typography
+            variant="h2"
+            fontWeight="bold"
+            gutterBottom
+            color="primary"
+            sx={{
+              fontSize: {
+                xs: "2rem",
+                sm: "3rem",
+                md: "3.75rem",
+              },
+            }}
           >
-            <Stack spacing={3}>
-              <Typography variant="h4" color="primary.dark" fontWeight={500}>
-                {course.short_description}
-              </Typography>
-            </Stack>
-          </Grid2>
-        </Grid2>
-        <Grid2 size={{ xs: 12, md: 8 }}>
-          <Stack spacing={6}>
-            <div>
-              <Typography variant="h4" color="primary.dark" fontWeight="bold">
-                Descrizione
-              </Typography>
-              <Box sx={{ mt: 3 }}>
-                <Typography variant="body1" sx={{ overflowWrap: "break-word" }}>
-                  {course.description}
-                </Typography>
-              </Box>
-            </div>
-            <div>
-              <Typography variant="h4" color="primary.dark" fontWeight="bold">
-                Programma
-              </Typography>
-              <Stack spacing={2} sx={{ mt: 3 }}>
-                {course.sessions.map((item, index) => (
-                  <Stack
-                    key={`schedule-${index}`}
-                    direction="row"
-                    spacing={2}
-                    alignItems="center"
-                  >
-                    <EventAvailableOutlinedIcon
-                      fontSize="large"
-                      color="secondary"
-                    />
-                    <Typography component="div" variant="h5" letterSpacing={1}>
-                      {DateTime.fromISO(item.start_time).toString()}
-                      {DateTime.fromISO(item.end_time).toString()}
-                    </Typography>
-                  </Stack>
+            {course.name}
+          </Typography>
+
+          <Typography
+            variant="h5"
+            color="text.secondary"
+            sx={{
+              fontSize: {
+                xs: "1rem",
+                sm: "1.5rem",
+                md: "1.5rem",
+              },
+            }}
+          >
+            {course.short_description}
+          </Typography>
+        </Box>
+      )}
+
+      <Grid container spacing={4}>
+        <Grid size={{ xs: 12, md: 8 }}>
+          <Card elevation={6} sx={{ borderRadius: 3 }}>
+            <CardContent sx={{ p: 3 }}>
+              <Stack
+                direction="row"
+                spacing={1}
+                flexWrap="wrap"
+                justifyContent="end"
+              >
+                {course.tags?.map((tag, idx) => (
+                  <Chip key={idx} label={tag} color="info" variant="outlined" />
                 ))}
               </Stack>
-            </div>
-            <div>
-              <Typography variant="h4" color="primary.dark" fontWeight="bold">
-                Durata di ogni sessione
-              </Typography>
-            </div>
-            <div>
-              <Typography variant="h4" color="primary.dark" fontWeight="bold">
-                Tags
-              </Typography>
-              <Grid2 container spacing={2} sx={{ mt: 3 }}>
-                {course.tags?.map((item, index) => (
-                  <Grid2 key={`tag-${index}`}>
-                    <Chip
-                      label={
-                        <Typography
-                          component="div"
-                          variant="h6"
-                          letterSpacing={1}
-                        >
-                          {item}
-                        </Typography>
-                      }
-                      color="primary"
-                      variant="outlined" // Optional: Makes the chip outlined
-                    />
-                  </Grid2>
-                ))}
-              </Grid2>
-            </div>
-          </Stack>
-        </Grid2>
-        <Grid2 size={{ xs: 12, md: 4 }}>
+              <Box
+                sx={{ gap: 2, display: "flex", flexDirection: "column", mt: 2 }}
+              >
+                <Typography variant="h5" fontWeight="bold">
+                  Descrizione
+                </Typography>
+                <Typography variant="body1">{course.description}</Typography>
+              </Box>
+
+              <Divider sx={{ my: 3 }} />
+
+              <Box>
+                <Typography variant="h5" fontWeight="bold">
+                  Sessioni
+                </Typography>
+                <List>
+                  {course.sessions.map((session, idx) => {
+                    const start = DateTime.fromISO(session.start_time);
+                    const end = DateTime.fromISO(session.end_time);
+                    return (
+                      <ListItem key={idx}>
+                        <ListItemIcon>
+                          <Avatar sx={{ bgcolor: "primary.main" }}>
+                            <EventIcon />
+                          </Avatar>
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={`${start.toLocaleString(DateTime.DATE_FULL)} – ${end.toLocaleString(DateTime.TIME_SIMPLE)}`}
+                          secondary={calculateDuration(start, end)}
+                          slotProps={{
+                            primary: {
+                              sx: {
+                                fontSize: "1.1rem",
+                                fontWeight: "medium",
+                                mb: 0.5,
+                              },
+                            },
+                            secondary: {
+                              sx: {
+                                fontSize: "0.9rem",
+                              },
+                            },
+                          }}
+                        />
+                      </ListItem>
+                    );
+                  })}
+                </List>
+              </Box>
+
+              <Divider sx={{ my: 3 }} />
+
+              <Box sx={{ textAlign: "center" }}>
+                <Typography
+                  variant="h5"
+                  gutterBottom
+                  sx={{
+                    display: "block",
+                    color: "primary.dark",
+                    fontSmooth: "antialiased",
+                    fontWeight: "bold",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 1,
+                    }}
+                  >
+                    <QuestionAnswer />
+                    Vuoi partecipare? Iscriviti ora
+                  </Box>
+                </Typography>
+                {!subscribeButton.isHidden && (
+                  <Button
+                    startIcon={
+                      subscribeButton.subscribed ? <Delete /> : <Done />
+                    }
+                    variant="contained"
+                    color={subscribeButton.subscribed ? "error" : "primary"}
+                    disabled={subscribeButton.isDisabled}
+                    size="large"
+                    onClick={() =>
+                      subscribeButton.subscribed
+                        ? subscribeButton.handleUnsubscribe()
+                        : subscribeButton.handleSubscribe()
+                    }
+                  >
+                    {subscribeButton.subscribed
+                      ? "Annulla iscrizione"
+                      : "Iscriviti"}
+                  </Button>
+                )}
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid size={{ xs: 12, md: 4 }}>
           <Stack spacing={3}>
-            {/* Product Card (dx screen) */}
-
-            <ProductCard
-              title="Istruttori"
-              value={course.instructors?.join(", ") ?? ""}
-              icon={<Person sx={{ fontSize: 48, color: "secondary.dark" }} />}
-            />
-
-            <ProductCard
-              title="Posizione"
-              value={course.location?.toString() ?? ""}
-              icon={
-                <LocationOn sx={{ fontSize: 48, color: "secondary.dark" }} />
-              }
-            />
-
-            <ProductCard
-              title="Costo"
-              value={course.price?.toString() ?? ""}
-              icon={<Euro sx={{ fontSize: 48, color: "secondary.dark" }} />}
-            />
-
-            <ProductCard title="Categoria" value={course.category.name} />
-
-            <ProductCard
-              title="Livello"
-              value={getCourseLevelName(course.level)}
-            />
+            {[
+              {
+                icon: <PersonIcon />,
+                label:
+                  course.instructors.length > 1 ? "Istruttori" : "Istruttore",
+                value: course.instructors?.join(", "),
+              },
+              {
+                icon: <LocationOnIcon />,
+                label: "Luogo",
+                value: course.location?.toString(),
+              },
+              {
+                icon: <EuroIcon />,
+                label: "Prezzo",
+                value: getPaymentDetails(),
+              },
+              {
+                icon: <CategoryOutlined />,
+                label: "Categoria",
+                value: course.category.name,
+              },
+              {
+                icon: <InfoOutlined />,
+                label: "Livello",
+                value: getCourseLevelName(course.level),
+              },
+              {
+                icon: <GroupOutlined />,
+                label: "Massimo partecipanti",
+                value: course.max_subscribers ?? "Illimitato",
+              },
+            ].map((detail, idx) => (
+              <Paper
+                key={idx}
+                elevation={4}
+                sx={{
+                  p: 2,
+                  display: "flex",
+                  alignItems: "center",
+                  borderLeft: "5px solid",
+                  borderColor: "primary.light",
+                }}
+              >
+                <Avatar sx={{ bgcolor: "primary.main", mr: 2 }}>
+                  {detail.icon}
+                </Avatar>
+                <Box>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    {detail.label}
+                  </Typography>
+                  <Typography variant="body1">{detail.value}</Typography>
+                </Box>
+              </Paper>
+            ))}
           </Stack>
-          <Grid2
-            size={12}
-            sx={{ display: "flex", justifyContent: "flex-end", mt: 4 }}
-          >
-            <SubscribeButton />
-          </Grid2>
-        </Grid2>
-      </Grid2>
+        </Grid>
+      </Grid>
     </>
   );
-}
+};
+
+export default CourseDetail;
