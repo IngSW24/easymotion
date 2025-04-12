@@ -3,7 +3,6 @@ import { Delete, Visibility, Edit } from "@mui/icons-material";
 import { Chip, IconButton, Stack, Tooltip } from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { useState } from "react";
-import { useNavigate } from "react-router";
 
 type DashboardDataGridProps = {
   courses: CourseDto[];
@@ -27,8 +26,6 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
     onEdit,
     onCourseUsers,
   } = props;
-
-  const navigate = useNavigate();
 
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 10,
