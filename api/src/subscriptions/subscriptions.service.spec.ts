@@ -148,7 +148,7 @@ describe("SubsriptionsService", () => {
     prismaMock.course.findUniqueOrThrow.mockResolvedValue(course);
     prismaMock.courseFinalUser.count.mockResolvedValue(2);
 
-    await service.subscribeFinalUser(userId, { courseId }, true);
+    await service.subscribeFinalUser(userId, { courseId }, false);
 
     expect(prismaMock.finalUser.findUniqueOrThrow).toHaveBeenCalledWith({
       where: { applicationUserId: user.applicationUserId },

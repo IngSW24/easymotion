@@ -1,7 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { SubscriptionsController } from "./subscriptions.controller";
 import { SubscriptionsService } from "./subscriptions.service";
-import { PrismaService } from "nestjs-prisma";
 import { BadRequestException, NotFoundException } from "@nestjs/common";
 import { toPaginatedOutput } from "src/common/utils/pagination";
 import { randomUUID } from "crypto";
@@ -18,8 +17,6 @@ describe("SubscriptionsController", () => {
     getCourseSubscriptions: jest.fn(),
   };
 
-  const prismaServiceMockup = {};
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [SubscriptionsController],
@@ -27,10 +24,6 @@ describe("SubscriptionsController", () => {
         {
           provide: SubscriptionsService,
           useValue: subscriptionServiceMockup,
-        },
-        {
-          provide: PrismaService,
-          useValue: prismaServiceMockup,
         },
       ],
     }).compile();
@@ -127,7 +120,7 @@ describe("SubscriptionsController", () => {
     expect(subscriptionServiceMockup.subscribeFinalUser).toHaveBeenCalledWith(
       req.user.sub,
       subscribeDto,
-      false
+      true
     );
 
     expect(result).toBeUndefined();
