@@ -50,7 +50,7 @@ export class SubscriptionsService {
   async subscribeFinalUser(
     finalUserId: string,
     subscriptionCreateDto: SubscriptionCreateDto,
-    forceSubscribe: boolean = false
+    byPatient: boolean = false
   ) {
     const user = await this.prismaService.finalUser.findUniqueOrThrow({
       where: { applicationUserId: finalUserId },
@@ -60,7 +60,7 @@ export class SubscriptionsService {
       where: { id: subscriptionCreateDto.courseId },
     });
 
-    if (!forceSubscribe) {
+    if (byPatient) {
       const numExistingSubscriptions =
         await this.prismaService.courseFinalUser.count({
           where: {
@@ -74,24 +74,33 @@ export class SubscriptionsService {
       ) {
         throw new BadRequestException("Course is full");
       }
-    }
 
-    const now = new Date();
-    if (
-      now.getTime() < course.subscription_start_date.getTime() ||
-      now.getTime() > course.subscription_end_date.getTime()
-    ) {
-      throw new BadRequestException("Subscriptions closed");
+      const now = new Date();
+      if (
+        now.getTime() < course.subscription_start_date.getTime() ||
+        now.getTime() > course.subscription_end_date.getTime()
+      ) {
+        throw new BadRequestException("Subscriptions closed");
+      }
+
+      await this.prismaService.courseFinalUser.create({
+        data: {
+          course_id: course.id,
+          final_user_id: user.applicationUserId,
+          isPending: true,
+        },
+      });
+      return;
     }
 
     await this.prismaService.courseFinalUser.upsert({
       create: {
         course_id: course.id,
         final_user_id: user.applicationUserId,
-        isPending: !forceSubscribe,
+        isPending: false,
       },
       update: {
-        isPending: !forceSubscribe,
+        isPending: false,
       },
       where: {
         course_id_final_user_id: {

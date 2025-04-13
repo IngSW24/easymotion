@@ -6,7 +6,6 @@ import {
   IsEnum,
   IsNumber,
   IsOptional,
-  IsPositive,
   IsString,
   Min,
 } from "class-validator";
@@ -77,11 +76,11 @@ export class CourseDto implements Course {
 
   @ApiProperty({
     description: "Price of the course",
-    required: false,
     type: Number,
   })
   @Transform(({ value }) => value)
   @Type(() => Number)
+  @IsNumber()
   @Min(0)
   @Expose()
   price: Decimal;

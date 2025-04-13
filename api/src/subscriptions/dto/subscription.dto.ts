@@ -24,6 +24,7 @@ export class SubscriptionDto {
   course: SubscriptionCourseDto;
 
   @ApiProperty({ description: "Date of subscription to the course" })
+  @Type(() => Date)
   @IsDate()
   @Expose()
   subscriptionDate: Date;
