@@ -20,9 +20,8 @@ export const courseSchema = z
     instructors: z
       .array(z.string().min(1, "Inserire un istruttore valido"))
       .min(1, "Almeno un istruttore è obbligatorio"),
-    price: z.number().nullable().optional(),
-    is_free: z.boolean(),
-    number_of_payments: z.number().nullable().optional(),
+    price: z.number(),
+    payment_recurrence: z.enum(["SINGLE", "MONTHLY", "ANNUAL", "PER_SESSION"]),
     max_subscribers: z.number().nullable().optional(),
     tags: z.array(z.string()),
     is_published: z.boolean(),
@@ -52,18 +51,6 @@ export const courseSchema = z
     }),
   })
   .superRefine((data, ctx) => {
-    // FIXME: si applica solo dopo aver premuto il tasto Invia
-    if (!data.is_free) {
-      if (data.price === null || data.price === undefined || data.price <= 0) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message:
-            "Il prezzo deve essere maggiore di 0 se il corso non è gratuito",
-          path: ["price"],
-        });
-      }
-    }
-
     if (
       DateTime.fromISO(data.subscription_end_date).diff(
         DateTime.fromISO(data.subscription_start_date)
@@ -102,9 +89,7 @@ export const defaultCourse: CourseFormData = {
   category_id: "",
   level: "BASIC" as const,
   instructors: [],
-  is_free: true,
-  price: null,
-  number_of_payments: null,
+  price: 0,
   max_subscribers: null,
   tags: [],
   is_published: false,
@@ -112,4 +97,5 @@ export const defaultCourse: CourseFormData = {
   sessions: [],
   subscription_start_date: DateTime.now().toISO(),
   subscription_end_date: DateTime.now().toISO(),
+  payment_recurrence: "SINGLE",
 };

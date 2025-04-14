@@ -66,22 +66,15 @@ export default function CourseEditModal(props: CourseEditModalProps) {
 
   const onSubmit: SubmitHandler<CourseFormData> = useCallback(
     async (data) => {
-      // this is temporary until backend logic is changed according to proposal
-      const dataToSubmit = {
-        ...data,
-        price: data.is_free ? null : data.price,
-        number_of_payments: data.is_free ? null : data.number_of_payments,
-      };
-
       try {
         if (course) {
           await update.mutateAsync({
             courseId: course.id,
-            courseData: dataToSubmit,
+            courseData: data,
           });
           snack.showSuccess("Corso aggiornato con successo!");
         } else {
-          await create.mutateAsync(dataToSubmit);
+          await create.mutateAsync(data);
           snack.showSuccess("Corso creato con successo!");
         }
         onClose();

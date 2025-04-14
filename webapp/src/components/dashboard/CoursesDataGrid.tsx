@@ -1,9 +1,8 @@
 import { CourseDto } from "@easymotion/openapi";
 import { Delete, Edit, Group } from "@mui/icons-material";
-import { Chip, IconButton, Stack, Tooltip } from "@mui/material";
+import { Chip, IconButton, Stack, Tooltip, styled } from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { useState } from "react";
-import { styled } from "@mui/system";
 
 type DashboardDataGridProps = {
   courses: CourseDto[];
