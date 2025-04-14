@@ -13,7 +13,7 @@
     "openapi:generate": "pnpm --filter openapi build",
     "api:schema": "pnpm --filter api swagger:generate -- ../openapi/schema.json",
     "api:migrate": "pnpm --filter api prisma:migrate-dev",
-    "api:client": "pnpm --filter api prisma:gen-client",
+    "api:client": "pnpm --filter api prisma:generate-client",
     "api:seed": "pnpm --filter api seed",
     "api:migrate-reset": "pnpm --filter api prisma:migrate-reset",
     "prepare": "husky || true"

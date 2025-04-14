@@ -7,13 +7,13 @@ import { randomUUID } from "crypto";
 import { plainToInstance } from "class-transformer";
 import { NotFoundException } from "@nestjs/common";
 import { applicationUserDtoMock } from "test/mocks/users.mock";
-import { SubscriptionDto } from "./dto/subscription.dto";
+import { SubscriptionDtoWithCourse } from "./dto/subscription.dto";
 
 describe("SubsriptionsService", () => {
   let service: SubscriptionsService;
 
   const prismaMock = {
-    courseFinalUser: {
+    subscription: {
       count: jest.fn(),
       findMany: jest.fn(),
       upsert: jest.fn(),
@@ -24,7 +24,7 @@ describe("SubsriptionsService", () => {
     course: {
       findUniqueOrThrow: jest.fn(),
     },
-    finalUser: {
+    patient: {
       findUnique: jest.fn(),
       findUniqueOrThrow: jest.fn(),
     },
@@ -88,29 +88,30 @@ describe("SubsriptionsService", () => {
         created_at: new Date(),
         updated_at: new Date(),
         course_id: uuidCourse,
-        final_user_id: uuidUser1,
+        patient_id: uuidUser1,
       },
       {
         course: course[0],
         created_at: new Date(),
         updated_at: new Date(),
         course_id: uuidCourse,
-        final_user_id: uuidUser2,
+        patient_id: uuidUser2,
       },
     ];
 
-    prismaMock.courseFinalUser.count.mockResolvedValue(2);
-    prismaMock.courseFinalUser.findMany.mockResolvedValue(courseSubscribers);
+    prismaMock.subscription.count.mockResolvedValue(2);
+    prismaMock.subscription.findMany.mockResolvedValue(courseSubscribers);
 
     const result = await service.getCustomerSubscriptions(userId, pagination);
 
-    expect(prismaMock.courseFinalUser.count).toHaveBeenCalledWith({
-      where: { final_user_id: userId },
+    expect(prismaMock.subscription.count).toHaveBeenCalledWith({
+      where: { patient_id: userId, isPending: false },
     });
 
-    expect(prismaMock.courseFinalUser.findMany).toHaveBeenCalledWith({
-      where: { final_user_id: userId },
+    expect(prismaMock.subscription.findMany).toHaveBeenCalledWith({
+      where: { patient_id: userId, isPending: false },
       include: { course: true },
+      orderBy: { course: { name: "asc" } },
       skip: pagination.page * pagination.perPage,
       take: pagination.perPage,
     });
@@ -118,7 +119,7 @@ describe("SubsriptionsService", () => {
     const expectedResult = toPaginatedOutput(
       courseSubscribers.map((x) =>
         plainToInstance(
-          SubscriptionDto,
+          SubscriptionDtoWithCourse,
           { course: x.course, subscriptionDate: x.created_at },
           { excludeExtraneousValues: true }
         )
@@ -131,144 +132,173 @@ describe("SubsriptionsService", () => {
   });
 
   it("should subscribe a final user to a course", async () => {
-    const userId = "1";
-    const courseId = "2";
+    const patient_id = "1";
+    const course_id = "2";
 
     const user = {
-      applicationUserId: userId,
+      applicationUserId: patient_id,
     };
 
     const course = {
-      id: courseId,
+      id: course_id,
       subscription_start_date: new Date(),
       subscription_end_date: new Date(new Date().getTime() + 60000), // FIXME: add 1 minute (60000 milliseconds)
     };
 
-    prismaMock.finalUser.findUniqueOrThrow.mockResolvedValue(user);
+    prismaMock.patient.findUniqueOrThrow.mockResolvedValue(user);
     prismaMock.course.findUniqueOrThrow.mockResolvedValue(course);
-    prismaMock.courseFinalUser.count.mockResolvedValue(2);
+    prismaMock.subscription.count.mockResolvedValue(2);
 
-    await service.subscribeFinalUser(userId, { courseId }, false);
+    await service.subscribeFinalUser(
+      patient_id,
+      {
+        course_id,
+        patient_id,
+        subscriptionRequestMessage: "MSG1",
+      },
+      false
+    );
 
-    expect(prismaMock.finalUser.findUniqueOrThrow).toHaveBeenCalledWith({
+    expect(prismaMock.patient.findUniqueOrThrow).toHaveBeenCalledWith({
       where: { applicationUserId: user.applicationUserId },
     });
 
     expect(prismaMock.course.findUniqueOrThrow).toHaveBeenCalledWith({
-      where: { id: courseId },
+      where: { id: course_id },
     });
 
-    expect(prismaMock.courseFinalUser.upsert).toHaveBeenCalledWith({
+    expect(prismaMock.subscription.upsert).toHaveBeenCalledWith({
       create: {
-        course_id: courseId,
-        final_user_id: userId,
+        course_id: course_id,
+        patient_id: patient_id,
         isPending: false,
       },
       update: {
         isPending: false,
       },
       where: {
-        course_id_final_user_id: {
-          course_id: courseId,
-          final_user_id: userId,
+        course_id_patient_id: {
+          course_id: course_id,
+          patient_id: patient_id,
         },
       },
     });
   });
 
   it("should throw not found exception if final user does not exist", async () => {
-    const userId = "1";
-    const courseId = "2";
+    const patient_id = "1";
+    const course_id = "2";
 
-    prismaMock.finalUser.findUniqueOrThrow.mockRejectedValue(() => {
-      throw new NotFoundException("User not found");
-    });
-
-    expect(service.subscribeFinalUser(userId, { courseId })).rejects.toThrow(
-      NotFoundException
-    );
-
-    expect(prismaMock.finalUser.findUniqueOrThrow).toHaveBeenCalledWith({
-      where: { applicationUserId: userId },
-    });
-  });
-
-  it("should throw not found exception if attempting to subscribe a physiotherapist", async () => {
-    const userId = "1";
-    const courseId = "2";
-
-    prismaMock.finalUser.findUnique.mockRejectedValue(() => {
+    prismaMock.patient.findUniqueOrThrow.mockRejectedValue(() => {
       throw new NotFoundException("User not found");
     });
 
     expect(
-      service.subscribeFinalUser(userId, { courseId }, true)
+      service.subscribeFinalUser(patient_id, {
+        course_id,
+        patient_id,
+        subscriptionRequestMessage: "MSG2",
+      })
+    ).rejects.toThrow(NotFoundException);
+
+    expect(prismaMock.patient.findUniqueOrThrow).toHaveBeenCalledWith({
+      where: { applicationUserId: patient_id },
+    });
+  });
+
+  it("should throw not found exception if attempting to subscribe a physiotherapist", async () => {
+    const patient_id = "1";
+    const course_id = "2";
+
+    prismaMock.patient.findUnique.mockRejectedValue(() => {
+      throw new NotFoundException("User not found");
+    });
+
+    expect(
+      service.subscribeFinalUser(
+        patient_id,
+        {
+          course_id,
+          patient_id,
+          subscriptionRequestMessage: "MSG3",
+        },
+        true
+      )
     ).rejects.toThrow(NotFoundException);
   });
 
   it("should throw not found exception if course does not exist", async () => {
-    const userId = "1";
-    const courseId = "2";
-    prismaMock.finalUser.findUnique.mockResolvedValue({ userId });
+    const patient_id = "1";
+    const course_id = "2";
+    prismaMock.patient.findUnique.mockResolvedValue({ patient_id });
     prismaMock.course.findUniqueOrThrow.mockRejectedValue(() => {
       throw new NotFoundException("Course not found");
     });
 
-    expect(service.subscribeFinalUser(userId, { courseId })).rejects.toThrow(
-      NotFoundException
-    );
+    expect(
+      service.subscribeFinalUser(patient_id, {
+        course_id,
+        patient_id,
+        subscriptionRequestMessage: "MSG2",
+      })
+    ).rejects.toThrow(NotFoundException);
   });
 
   it("should unsubscribe a final user from a course", async () => {
-    const userId = "1";
-    const courseId = "2";
+    const patient_id = "1";
+    const course_id = "2";
 
-    await service.unsubscribeFinalUser(userId, { courseId });
+    await service.unsubscribeFinalUser(patient_id, course_id);
 
-    expect(prismaMock.courseFinalUser.deleteMany).toHaveBeenCalledWith({
-      where: { course_id: courseId, final_user_id: userId },
+    expect(prismaMock.subscription.deleteMany).toHaveBeenCalledWith({
+      where: { course_id: course_id, patient_id: patient_id },
     });
   });
 
   it("should retrieve subscriptions for a course", async () => {
-    const courseId = randomUUID();
+    const course_id = randomUUID();
     const created_at = new Date();
     const updated_at = new Date();
     const pagination = { page: 1, perPage: 10 };
 
     const userMock = applicationUserDtoMock();
 
-    prismaMock.courseFinalUser.count.mockResolvedValue(1);
-    prismaMock.courseFinalUser.findMany.mockResolvedValue([
+    prismaMock.subscription.count.mockResolvedValue(1);
+    prismaMock.subscription.findMany.mockResolvedValue([
       {
-        course_id: courseId,
-        final_user_id: userMock.id,
+        course_id: course_id,
+        patient_id: userMock.id,
         created_at,
         updated_at,
-        final_user: {
+        patient: {
           applicationUser: {
             ...userMock,
           },
         },
         course: {
-          id: courseId,
+          id: course_id,
           name: "",
         },
       },
     ]);
 
-    const result = await service.getCourseSubscriptions(courseId, pagination);
+    const result = await service.getCourseSubscriptions(
+      pagination,
+      false,
+      course_id
+    );
 
-    expect(prismaMock.courseFinalUser.count).toHaveBeenCalledWith({
-      where: { course_id: courseId },
+    expect(prismaMock.subscription.count).toHaveBeenCalledWith({
+      where: { course_id: course_id },
     });
 
-    expect(prismaMock.courseFinalUser.findMany).toHaveBeenCalledWith({
-      where: { course_id: courseId },
+    expect(prismaMock.subscription.findMany).toHaveBeenCalledWith({
+      where: { course_id: course_id, isPending: false },
       include: {
-        final_user: { include: { applicationUser: true } },
+        patient: { include: { applicationUser: true } },
         course: { select: { id: true, name: true } },
       },
+      orderBy: { patient: { applicationUser: { firstName: "asc" } } },
       skip: pagination.page * pagination.perPage,
       take: pagination.perPage,
     });
@@ -284,11 +314,13 @@ describe("SubsriptionsService", () => {
             middleName: userMock.middleName,
           },
           course: {
-            id: courseId,
+            id: course_id,
             name: "",
           },
 
-          subscriptionDate: created_at,
+          created_at,
+          updated_at,
+          subscriptionRequestMessage: undefined,
         },
       ],
       1,

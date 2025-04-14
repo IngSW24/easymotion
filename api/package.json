@@ -27,12 +27,12 @@
     "prisma:migrate-dev": "prisma migrate dev",
     "prisma:migrate-reset": "prisma migrate reset",
     "prisma:migrate-prod": "prisma migrate deploy",
-    "prisma:gen-client": "prisma generate client",
+    "prisma:generate-client": "prisma format && prisma generate client",
     "swagger:generate": "nest start --entryFile src/generate-schema",
     "generate-initial-user": "nest start --entryFile src/generate-initial-user",
     "prod:generate-initial-user": "node dist/src/generate-initial-user",
     "clean": "rm -rf dist && rm -rf coverage && rm -rf node_modules",
-    "postinstall": "pnpm prisma:gen-client"
+    "postinstall": "pnpm prisma:generate-client"
   },
   "dependencies": {
     "@easymotion/eslint-config": "workspace:^",

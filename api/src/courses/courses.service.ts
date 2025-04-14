@@ -274,14 +274,14 @@ export class CoursesService {
     pagination: PaginationFilter,
     filters: CourseQueryFilter
   ) {
-    const count = await this.prismaService.courseFinalUser.count({
-      where: { final_user_id: userId },
+    const count = await this.prismaService.subscription.count({
+      where: { patient_id: userId },
     });
 
-    const courses = await this.prismaService.courseFinalUser.findMany({
+    const courses = await this.prismaService.subscription.findMany({
       where: {
         AND: [
-          { final_user_id: userId },
+          { patient_id: userId },
           {
             ...(filters.searchText
               ? {

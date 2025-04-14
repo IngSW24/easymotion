@@ -15,7 +15,10 @@ import { ApiPaginatedResponse } from "src/common/decorators/api-paginated-respon
 import { ApiOkResponse } from "@nestjs/swagger";
 import { SubscriptionCreateDto } from "./dto/subscription-create.dto";
 import { SubscriptionDeleteDto } from "./dto/subscription-delete.dto";
-import { SubscriptionDto, UserSubscriptionDto } from "./dto/subscription.dto";
+import {
+  SubscriptionDtoWithCourse,
+  SubscriptionDtoWithUser,
+} from "./dto/subscription.dto";
 import { Role } from "@prisma/client";
 
 @Controller("subscriptions")
@@ -25,9 +28,9 @@ export class SubscriptionsController {
   /**
    * Get the current subscriptions for the logged user
    */
-  @ApiPaginatedResponse(SubscriptionDto)
-  @UseAuth([Role.USER])
   @Get()
+  @UseAuth([Role.USER])
+  @ApiPaginatedResponse(SubscriptionDtoWithCourse)
   getSubscriptionsForLoggedUser(
     @Query() pagination: PaginationFilter,
     @Req() req
@@ -41,9 +44,9 @@ export class SubscriptionsController {
   /**
    * Get the current subscriptions for the given user
    */
-  @ApiPaginatedResponse(SubscriptionDto)
-  @UseAuth()
   @Get(":userId")
+  @UseAuth()
+  @ApiPaginatedResponse(SubscriptionDtoWithCourse)
   getSubscriptionsForGivenUser(
     @Param("userId") userId: string,
     @Query() pagination: PaginationFilter
@@ -52,6 +55,35 @@ export class SubscriptionsController {
       userId,
       pagination
     );
+  }
+
+  /**
+   * Gets all subscribers of a course
+   * @param courseId the course uuid
+   */
+  @Get("course/:course_id")
+  @UseAuth()
+  @ApiPaginatedResponse(SubscriptionDtoWithUser)
+  getSubscribers(
+    @Param("course_id") course_id: string,
+    @Query() pagination: PaginationFilter
+  ) {
+    return this.subscriptionsService.getCourseSubscriptions(
+      pagination,
+      false,
+      course_id
+    );
+  }
+
+  /**
+   * Gets all pending subscribers
+   * @param courseId the course uuid
+   */
+  @Get("course/pending")
+  @UseAuth([Role.ADMIN, Role.PHYSIOTHERAPIST])
+  @ApiPaginatedResponse(SubscriptionDtoWithUser)
+  getPendingSubscribers(@Query() pagination: PaginationFilter) {
+    return this.subscriptionsService.getCourseSubscriptions(pagination, true);
   }
 
   /**
@@ -81,7 +113,7 @@ export class SubscriptionsController {
   @ApiOkResponse()
   subscribeGivenUser(@Body() subscriptionCreateDto: SubscriptionCreateDto) {
     return this.subscriptionsService.subscribeFinalUser(
-      subscriptionCreateDto.userId,
+      subscriptionCreateDto.patient_id,
       subscriptionCreateDto,
       false
     );
@@ -100,7 +132,7 @@ export class SubscriptionsController {
   ) {
     return this.subscriptionsService.unsubscribeFinalUser(
       req.user.sub,
-      subscriptionDeleteDto
+      subscriptionDeleteDto.course_id
     );
   }
 
@@ -113,25 +145,8 @@ export class SubscriptionsController {
   @UseAuth([Role.ADMIN, Role.PHYSIOTHERAPIST])
   unsubscribeGivenUser(@Body() subscriptionDeleteDto: SubscriptionDeleteDto) {
     return this.subscriptionsService.unsubscribeFinalUser(
-      subscriptionDeleteDto.userId,
-      subscriptionDeleteDto
-    );
-  }
-
-  /**
-   * Gets all subscribers of a course
-   * @param courseId the course uuid
-   */
-  @Get("course/:courseId")
-  @UseAuth()
-  @ApiPaginatedResponse(UserSubscriptionDto)
-  getSubscribers(
-    @Param("courseId") courseId: string,
-    @Query() pagination: PaginationFilter
-  ) {
-    return this.subscriptionsService.getCourseSubscriptions(
-      courseId,
-      pagination
+      subscriptionDeleteDto.patient_id, // TODO: can't be null
+      subscriptionDeleteDto.course_id
     );
   }
 }

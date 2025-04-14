@@ -26,7 +26,7 @@ describe("CoursesService", () => {
     courseSession: {
       findMany: jest.fn(),
     },
-    courseFinalUser: {
+    subscription: {
       count: jest.fn(),
       findMany: jest.fn(),
     },
@@ -437,8 +437,8 @@ describe("CoursesService", () => {
 
       const mockCount = 1;
 
-      prismaMock.courseFinalUser.findMany.mockResolvedValue(mockSubscriptions);
-      prismaMock.courseFinalUser.count.mockResolvedValue(mockCount);
+      prismaMock.subscription.findMany.mockResolvedValue(mockSubscriptions);
+      prismaMock.subscription.count.mockResolvedValue(mockCount);
 
       const result = await service.findSubscribedCourses(
         userId,
@@ -446,11 +446,11 @@ describe("CoursesService", () => {
         filters
       );
 
-      expect(prismaMock.courseFinalUser.count).toHaveBeenCalledWith({
-        where: { final_user_id: userId },
+      expect(prismaMock.subscription.count).toHaveBeenCalledWith({
+        where: { patient_id: userId },
       });
 
-      expect(prismaMock.courseFinalUser.findMany).toHaveBeenCalledWith(
+      expect(prismaMock.subscription.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           skip: pagination.page * pagination.perPage,
           take: pagination.perPage,
