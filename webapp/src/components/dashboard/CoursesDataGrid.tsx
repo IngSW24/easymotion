@@ -3,6 +3,7 @@ import { Delete, Edit, Group } from "@mui/icons-material";
 import { Chip, IconButton, Stack, Tooltip } from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { useState } from "react";
+import { styled } from "@mui/system";
 
 type DashboardDataGridProps = {
   courses: CourseDto[];
@@ -13,6 +14,49 @@ type DashboardDataGridProps = {
   onEdit: (id: string) => void;
   onCourseUsers: (id: string) => void;
 };
+
+// Customizing the DataGrid Styling
+const StyledDataGrid = styled(DataGrid)({
+  border: "1px solid #e0e0e0",
+  borderRadius: "8px",
+  "& .MuiDataGrid-columnHeaders": {
+    backgroundColor: "#f5f5f5",
+    textTransform: "uppercase",
+    fontSize: "0.875rem",
+    fontWeight: "bold",
+    color: "#424242",
+    padding: "0",
+    borderBottom: "2px solid #e0e0e0",
+  },
+  "& .MuiDataGrid-columnSeparator": {
+    display: "none",
+  },
+  "& .even": {
+    backgroundColor: "#fafafa",
+  },
+  "& .odd": {
+    backgroundColor: "#ffffff",
+  },
+  "& .MuiDataGrid-row:hover": {
+    backgroundColor: "#e0f7fa",
+  },
+  "& .MuiDataGrid-cell": {
+    display: "flex",
+    alignItems: "center",
+  },
+  "& .MuiDataGrid-footerContainer": {
+    backgroundColor: "#f5f5f5",
+    borderTop: "1px solid #e0e0e0",
+    padding: "8px",
+  },
+  "& .MuiTablePagination-root": {
+    color: "#424242",
+  },
+  "& .MuiTablePagination-actions": {
+    display: "flex",
+    alignItems: "center",
+  },
+});
 
 export default function DashboardDataGrid(props: DashboardDataGridProps) {
   const {
@@ -65,7 +109,7 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
     {
       field: "category",
       headerName: "Categoria",
-      flex: 4,
+      flex: 3,
       minWidth: 100,
       renderCell: (params) => {
         const category = params.value;
@@ -89,7 +133,7 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
       field: "actions",
       headerName: "Azioni",
       flex: 2,
-      minWidth: 70,
+      minWidth: 100,
       sortable: false,
       filterable: false,
       headerAlign: "center",
@@ -142,7 +186,7 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
   ];
 
   return (
-    <DataGrid
+    <StyledDataGrid
       checkboxSelection
       rows={rows}
       columns={columns}
@@ -158,34 +202,7 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
         },
       }}
       pageSizeOptions={[10, 20, 50]}
-      disableColumnResize
       density="compact"
-      slotProps={{
-        filterPanel: {
-          filterFormProps: {
-            logicOperatorInputProps: {
-              variant: "outlined",
-              size: "small",
-            },
-            columnInputProps: {
-              variant: "outlined",
-              size: "small",
-              sx: { mt: "auto" },
-            },
-            operatorInputProps: {
-              variant: "outlined",
-              size: "small",
-              sx: { mt: "auto" },
-            },
-            valueInputProps: {
-              InputComponentProps: {
-                variant: "outlined",
-                size: "small",
-              },
-            },
-          },
-        },
-      }}
       paginationModel={paginationModel}
       onPaginationModelChange={handlePaginationModelChange}
       paginationMode="client"
