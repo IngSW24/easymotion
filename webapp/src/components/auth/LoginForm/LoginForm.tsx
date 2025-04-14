@@ -13,7 +13,10 @@ import {
 import { useState } from "react";
 import { SignInDto } from "@easymotion/openapi";
 import { useApiClient } from "@easymotion/auth-context";
-import { ensurePasswordConstraints, isValidEmail } from "../../../utils/format";
+import { useForm } from "react-hook-form";
+import { LoginFormData, loginSchema } from "./schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
 export interface LoginFormProps {
   onSubmit: (data: SignInDto) => void;
@@ -21,76 +24,74 @@ export interface LoginFormProps {
 
 export default function LoginForm(props: LoginFormProps) {
   const { apiClient } = useApiClient();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+    mode: "onSubmit",
+  });
+
   const [resetEmail, setResetEmail] = useState("");
   const [resetEmailError, setResetEmailError] = useState("");
   const [isResetDialogOpen, setResetDialogOpen] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    let isValid = true;
-    setEmailError("");
-    setPasswordError("");
-
-    if (!isValidEmail(email)) {
-      setEmailError("Email non valida.");
-      isValid = false;
-    }
-
-    if (!password.trim() || !ensurePasswordConstraints(password)) {
-      setPasswordError(
-        "La password è obbligatoria e deve rispettare i requisiti di sicurezza."
-      );
-      isValid = false;
-    }
-
-    if (isValid) {
-      props.onSubmit({ email, password });
-    }
+  const onSubmit = (data: LoginFormData) => {
+    props.onSubmit({
+      email: data.email.trim(),
+      password: data.password.trim(),
+    });
   };
 
   const handleResetPassword = async () => {
     setResetEmailError("");
-    if (!isValidEmail(resetEmail)) {
-      setResetEmailError("Email non valida.");
+
+    const validationResult = z
+      .string()
+      .email("L'indirizzo email deve essere valido.")
+      .safeParse(resetEmail);
+
+    if (!validationResult.success) {
+      setResetEmailError(
+        validationResult.error.errors.map((err) => err.message).join(", ")
+      );
       return;
     }
 
     await apiClient.auth.authControllerRequestPasswordReset({
-      email: resetEmail,
+      email: validationResult.data,
     });
+
     setResetEmailSent(true);
   };
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <TextField
           fullWidth
           label="Email"
-          name="email"
           type="email"
           margin="normal"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          error={!!emailError}
-          helperText={emailError}
+          {...register("email")}
+          error={!!errors.email}
+          helperText={errors.email?.message}
           required
         />
         <TextField
           fullWidth
           label="Password"
-          name="password"
           type="password"
           margin="normal"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          error={!!passwordError}
-          helperText={passwordError}
+          {...register("password")}
+          error={!!errors.password}
+          helperText={errors.password?.message}
           required
         />
 
