@@ -1,7 +1,6 @@
 import React from "react";
 import {
   TextField,
-  Switch,
   FormControlLabel,
   Box,
   Grid,
@@ -9,42 +8,12 @@ import {
   FormLabel,
   Radio,
   RadioGroup,
+  Switch,
   FormHelperText,
 } from "@mui/material";
 import { useFormContext } from "react-hook-form";
 import type { CourseFormData } from "../schema";
-
-type PaymentType = "free" | "single" | "multiple";
-
-function PaymentTypeSelector({
-  value,
-  onChange,
-}: {
-  value: PaymentType;
-  onChange: (type: PaymentType) => void;
-}) {
-  return (
-    <FormControl component="fieldset">
-      <FormLabel component="legend">Opzioni di pagamento</FormLabel>
-      <RadioGroup
-        value={value}
-        onChange={(e) => onChange(e.target.value as PaymentType)}
-      >
-        <FormControlLabel value="free" control={<Radio />} label="Gratuito" />
-        <FormControlLabel
-          value="single"
-          control={<Radio />}
-          label="Pagamento singolo"
-        />
-        <FormControlLabel
-          value="multiple"
-          control={<Radio />}
-          label="Pagamenti multipli"
-        />
-      </RadioGroup>
-    </FormControl>
-  );
-}
+import { paymentRecurrence } from "../../../../data/payment-type";
 
 function PriceInput({
   label,
@@ -52,12 +21,14 @@ function PriceInput({
   onChange,
   error,
   helperText,
+  disabled = false,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   error?: boolean;
   helperText?: string;
+  disabled?: boolean;
 }) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
@@ -91,6 +62,7 @@ function PriceInput({
       error={error}
       helperText={helperText}
       required
+      disabled={disabled}
       slotProps={{
         input: {
           startAdornment: "€",
@@ -153,118 +125,113 @@ function MaxSubscribersInput({
 
 export default function PaymentSection() {
   const {
-    formState: { errors: formErrors },
+    formState: { errors },
     setValue,
     watch,
   } = useFormContext<CourseFormData>();
 
   // Form values
-  const formPrice = watch("price");
-  const formNumPayments = watch("number_of_payments");
-  const formIsFree = watch("is_free");
-  const formMaxSubscribers = watch("max_subscribers");
+  const price = watch("price");
+  const paymentRecurrenceValue = watch("payment_recurrence");
+  const maxSubscribers = watch("max_subscribers");
 
-  // Local state
-  const [paymentType, setPaymentType] = React.useState<PaymentType>(
-    formIsFree
-      ? "free"
-      : formNumPayments && formNumPayments > 1
-        ? "multiple"
-        : "single"
-  );
-  const [price, setPrice] = React.useState<string>(
-    formPrice ? formPrice.toFixed(2).replace(".", ",") : "0,00"
-  );
-  const [numPayments, setNumPayments] = React.useState<number>(
-    formNumPayments || 2
+  // Local state for price formatting
+  const [priceFormatted, setPriceFormatted] = React.useState<string>(
+    price ? price.toFixed(2).replace(".", ",") : "0,00"
   );
 
-  // Update form values when local state changes
-  React.useEffect(() => {
-    setValue("is_free", paymentType === "free");
-    if (paymentType === "single") {
-      setValue("number_of_payments", 1);
+  // Determine if the course is free
+  const isFree = price === 0;
+
+  // Handle free course toggle
+  const handleFreeToggle = (checked: boolean) => {
+    if (checked) {
+      setValue("price", 0, { shouldValidate: true });
+      setPriceFormatted("0,00");
+    } else {
+      setValue("price", 0.01, { shouldValidate: true });
+      setPriceFormatted("0,01");
     }
-  }, [paymentType, setValue]);
-
-  React.useEffect(() => {
-    const numericPrice = Number(price.replace(",", "."));
-    setValue("price", numericPrice, { shouldValidate: true });
-  }, [price, setValue]);
-
-  React.useEffect(() => {
-    setValue("number_of_payments", numPayments);
-  }, [numPayments, setValue]);
-
-  const handlePaymentTypeChange = (type: PaymentType) => {
-    setPaymentType(type);
   };
 
+  // Handle price change
+  React.useEffect(() => {
+    const numericPrice = Number(priceFormatted.replace(",", "."));
+    setValue("price", numericPrice, { shouldValidate: true });
+  }, [priceFormatted, setValue]);
+
+  // Handle payment recurrence change
+  const handleRecurrenceChange = (value: string) => {
+    setValue(
+      "payment_recurrence",
+      value as CourseFormData["payment_recurrence"],
+      {
+        shouldValidate: true,
+      }
+    );
+  };
+
+  // Handle max subscribers change
   const handleMaxSubscribersChange = (value: number | null) => {
-    setValue("max_subscribers", value);
+    setValue("max_subscribers", value, { shouldValidate: true });
   };
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, md: 6 }}>
-          <PaymentTypeSelector
-            value={paymentType}
-            onChange={handlePaymentTypeChange}
+          <FormControlLabel
+            control={
+              <Switch
+                checked={isFree}
+                onChange={(e) => handleFreeToggle(e.target.checked)}
+              />
+            }
+            label="Corso gratuito"
+          />
+
+          <PriceInput
+            label="Prezzo"
+            value={priceFormatted}
+            onChange={setPriceFormatted}
+            error={!!errors.price}
+            helperText={errors.price?.message}
+            disabled={isFree}
           />
         </Grid>
 
-        {paymentType !== "free" && (
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <PriceInput
-                label={
-                  paymentType === "multiple" ? "Prezzo per rata" : "Prezzo"
-                }
-                value={price}
-                onChange={setPrice}
-                error={!!formErrors.price}
-                helperText={formErrors.price?.message}
-              />
-
-              {paymentType === "multiple" && (
-                <>
-                  <TextField
-                    value={numPayments}
-                    onChange={(e) => {
-                      const value = e.target.value
-                        ? Math.max(2, Math.floor(Number(e.target.value)))
-                        : 2;
-                      setNumPayments(value);
-                    }}
-                    label="Numero di rate"
-                    type="number"
-                    error={!!formErrors.number_of_payments}
-                    helperText={formErrors.number_of_payments?.message}
-                    inputProps={{
-                      min: "2",
-                      step: "1",
-                    }}
-                  />
-                  <FormHelperText>
-                    Prezzo totale:{" "}
-                    {(Number(price.replace(",", ".")) * numPayments)
-                      .toFixed(2)
-                      .replace(".", ",")}
-                    €
-                  </FormHelperText>
-                </>
-              )}
-            </Box>
-          </Grid>
-        )}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <FormControl component="fieldset" disabled={isFree}>
+            <FormLabel component="legend">Modalità di pagamento</FormLabel>
+            <RadioGroup
+              value={paymentRecurrenceValue}
+              onChange={(e) => handleRecurrenceChange(e.target.value)}
+            >
+              {paymentRecurrence.map((option) => (
+                <FormControlLabel
+                  key={option.value}
+                  value={option.value}
+                  control={<Radio />}
+                  label={
+                    option.label.charAt(0).toUpperCase() + option.label.slice(1)
+                  }
+                />
+              ))}
+            </RadioGroup>
+            {!isFree && Number(priceFormatted.replace(",", ".")) < 0.01 && (
+              <FormHelperText error>
+                Il prezzo deve essere di almeno 0,01€
+              </FormHelperText>
+            )}
+          </FormControl>
+        </Grid>
       </Grid>
 
       <MaxSubscribersInput
-        value={formMaxSubscribers ?? null}
+        value={maxSubscribers ?? null}
         onChange={handleMaxSubscribersChange}
-        error={!!formErrors.max_subscribers}
-        helperText={formErrors.max_subscribers?.message}
+        error={!!errors.max_subscribers}
+        helperText={errors.max_subscribers?.message}
       />
     </Box>
   );
