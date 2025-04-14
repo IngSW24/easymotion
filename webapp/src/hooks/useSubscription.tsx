@@ -72,7 +72,7 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
   });
 
   const getPendingCourseSubscriptions = useQuery({
-    queryKey: ["pendingSubscriptions", courseId],
+    queryKey: ["pendingSubscriptions", courseId, page, perPage],
     queryFn: async () => {
       const result =
         await api.subscriptions.subscriptionsControllerGetPendingSubscribers(
