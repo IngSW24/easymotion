@@ -1607,7 +1607,7 @@
         "operationId": "SubscriptionsController_getPendingSubscribers",
         "parameters": [
           {
-            "name": "course_id",
+            "name": "courseId",
             "required": true,
             "in": "path",
             "schema": {
