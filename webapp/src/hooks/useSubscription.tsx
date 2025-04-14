@@ -71,6 +71,20 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
     },
   });
 
+  const getPendingCourseSubscriptions = useQuery({
+    queryKey: ["pendingSubscriptions", courseId],
+    queryFn: async () => {
+      const result =
+        await api.subscriptions.subscriptionsControllerGetPendingSubscribers(
+          courseId,
+          { page, perPage }
+        );
+
+      return result.data;
+    },
+    enabled: !!courseId,
+  });
+
   /**
    * Retrieves the subscribers of a specific course (if courseId is provided).
    */
@@ -160,6 +174,7 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
   return {
     getUserSubscriptions,
     getCourseSubscribers,
+    getPendingCourseSubscriptions,
     subscribe,
     unSubscribe,
     getSubscription,
