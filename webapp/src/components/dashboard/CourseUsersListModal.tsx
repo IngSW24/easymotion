@@ -14,13 +14,7 @@ import {
 import useSubscriptions from "../../hooks/useSubscription";
 import { useEffect, useState } from "react";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
-import {
-  ArrowBack,
-  PersonRemove,
-  Check,
-  Close,
-  Search,
-} from "@mui/icons-material";
+import { ArrowBack, Check, Close, Search } from "@mui/icons-material";
 
 enum CurrentState {
   "LOADING",
@@ -88,30 +82,64 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
           justifyContent: "space-between",
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center" }}>
+        <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
           <Avatar
             sx={{
               width: 40,
               height: 40,
               bgcolor: "primary.main",
               mr: 2,
+              flexShrink: 0,
             }}
           >
             {value.user.firstName?.charAt(0) || value.user.email?.charAt(0)}
           </Avatar>
-          <Box>
-            <Typography variant="subtitle1" sx={{ fontWeight: "medium" }}>
-              {value.user.firstName} {value.user.lastName}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {value.user.email}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "100%",
+              overflow: "hidden",
+            }}
+          >
+            <Box sx={{ overflow: "hidden", mr: 2 }}>
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  fontWeight: "medium",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {value.user.firstName} {value.user.lastName}
+              </Typography>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {value.user.email}
+              </Typography>
+            </Box>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{
+                flexShrink: 0,
+                textAlign: "right",
+                ml: 1,
+              }}
+            >
+              {formatDate(value.created_at)}
             </Typography>
           </Box>
         </Box>
-
-        <IconButton size="small" title="Rimuovi iscrizione">
-          <PersonRemove />
-        </IconButton>
       </Box>
     </Box>
   );
@@ -246,7 +274,7 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
           >
             <Box sx={{ mb: 3 }}>
               <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
-                UTENTI ISCRITTI
+                Utenti iscritti
               </Typography>
               <Paper sx={{ p: 1, mb: 3 }}>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -287,14 +315,14 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
           {/* Pending requests - 1/3 width */}
           <Grid size={{ xs: 12, md: 4 }} sx={{ p: 2, bgcolor: "#f9f9f9" }}>
             <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
-              RICHIESTE
+              Richieste
             </Typography>
 
             {getPendingCourseSubscriptions.data?.data.length === 0 ? (
               <Typography
                 sx={{ textAlign: "center", py: 4, color: "text.secondary" }}
               >
-                NESSUNA NUOVA RICHIESTA
+                Nessuna nuova richiesta
               </Typography>
             ) : (
               getPendingCourseSubscriptions.data?.data.map((value, index) =>
