@@ -123,17 +123,21 @@ export class SubscriptionsController {
       subscriptionCreateDto.course_id
     );
 
+    const patient = await this.usersManager.getUserById(req.user.sub);
+
     await this.emailService.sendEmail(
       course.owner.email,
       "Nuova richiesta di iscrizione al corso",
       `Hai ricevuto una nuova richiesta di iscrizione al corso ${course.name}.`
     );
 
-    await this.emailService.sendEmail(
-      req.sub.email,
-      "Nuova richiesta di iscrizione al corso",
-      `La tua richiesta di iscrizione al corso ${course.name} è stata ricevuta. Riceverai conferma al più presto.`
-    );
+    if (isSuccessResult(patient)) {
+      await this.emailService.sendEmail(
+        patient.data.email,
+        "Nuova richiesta di iscrizione al corso",
+        `La tua richiesta di iscrizione al corso ${course.name} è stata ricevuta. Riceverai conferma al più presto.`
+      );
+    }
   }
 
   /**
@@ -194,11 +198,15 @@ export class SubscriptionsController {
       subscriptionDeleteDto.course_id
     );
 
-    await this.emailService.sendEmail(
-      course.owner.email,
-      "Iscrizione al corso",
-      `Il paziente ${req.user.sub} si è disiscritto dal corso ${course.name}.`
-    );
+    const patient = await this.usersManager.getUserById(req.user.sub);
+
+    if (isSuccessResult(patient)) {
+      await this.emailService.sendEmail(
+        patient.data.email,
+        "Iscrizione al corso",
+        `Ti confermiamo che la disiscrizione dal corso ${course.name} è avvenuta con successo.`
+      );
+    }
   }
 
   /**
