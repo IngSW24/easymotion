@@ -12,41 +12,54 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useApiClient, useAuth } from "@easymotion/auth-context";
-import { ensurePasswordConstraints } from "../../../utils/format";
+import { passwordValidationSchema } from "../../../utils/validation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import type { z as zodZ } from "zod";
 
 type Message = {
   type: "success" | "error" | "none";
   text?: string;
 };
 
+const passwordSchema = z
+  .object({
+    old: z.string().min(1, "La password precedente è obbligatoria"),
+    new: passwordValidationSchema,
+  })
+  .refine((data) => data.old !== data.new, {
+    path: ["new"],
+    message: "La nuova password non può essere uguale alla password precedente",
+  });
+
+type PasswordFormData = zodZ.infer<typeof passwordSchema>;
+
 export default function PasswordUpdate() {
   const { apiClient } = useApiClient();
   const auth = useAuth();
-  const [password, setPassword] = useState({
-    old: "",
-    new: "",
-  });
   const [message, setMessage] = useState<Message>({
     type: "none",
   });
 
-  const onPasswordUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: zodResolver(passwordSchema),
+  });
 
-    if (!ensurePasswordConstraints(password.new)) {
-      setMessage({
-        type: "error",
-        text: "La password deve contenere almeno 6 caratteri e un numero",
-      });
-      return;
-    }
-
-    const data = { oldPassword: password.old, newPassword: password.new };
-
+  const onPasswordUpdate = async (data: PasswordFormData) => {
+    const apiData = {
+      oldPassword: data.old,
+      newPassword: data.new,
+    };
     try {
-      const res = await apiClient.auth.authControllerChangePassword(data);
+      const res = await apiClient.auth.authControllerChangePassword(apiData);
       if (res.ok) {
-        setPassword({ old: "", new: "" });
+        reset();
         setMessage({
           type: "success",
           text: "Password aggiornata con successo",
@@ -96,7 +109,7 @@ export default function PasswordUpdate() {
           Inserisci la tua password precedente e la nuova password per
           effettuare la modifica
         </Typography>
-        <form onSubmit={onPasswordUpdate}>
+        <form onSubmit={handleSubmit(onPasswordUpdate)}>
           <Grid container spacing={2}>
             <Grid size={{ xs: 12, sm: 5 }}>
               <TextField
@@ -104,10 +117,9 @@ export default function PasswordUpdate() {
                 label="Password precedente"
                 type="password"
                 size="small"
-                value={password.old}
-                onChange={(e) =>
-                  setPassword((prev) => ({ ...prev, old: e.target.value }))
-                }
+                {...register("old")}
+                error={!!errors.old}
+                helperText={errors.old?.message}
               />
             </Grid>
             <Grid size={{ xs: 12, sm: 5 }}>
@@ -116,20 +128,16 @@ export default function PasswordUpdate() {
                 label="Nuova password"
                 type="password"
                 size="small"
-                value={password.new}
-                onChange={(e) =>
-                  setPassword((prev) => ({ ...prev, new: e.target.value }))
-                }
+                {...register("new")}
+                error={!!errors.new}
+                helperText={errors.new?.message}
               />
             </Grid>
             <Grid size={{ xs: 12, sm: 2 }} sx={{ display: "flex" }}>
               <Button
                 variant="contained"
                 color="primary"
-                disabled={!password.old || !password.new}
-                sx={{
-                  minWidth: 120,
-                }}
+                sx={{ minWidth: 120 }}
                 fullWidth
                 startIcon={<Save />}
                 type="submit"

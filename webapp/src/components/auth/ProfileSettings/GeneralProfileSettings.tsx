@@ -17,9 +17,11 @@ import { AuthUserDto, UpdateAuthUserDto } from "@easymotion/openapi";
 import EmailUpdate from "./EmailUpdate";
 import PasswordUpdate from "./PasswordUpdate";
 import PhoneNumberEditor from "../../editors/PhoneNumberEditor/PhoneNumberEditor";
-import { DateTime } from "luxon";
 import { DateField } from "@mui/x-date-pickers";
-import { useFormValidator } from "../../../hooks/useFormValidator";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { DateTime } from "luxon";
 
 export interface GeneralProfileSettingsProps {
   user: AuthUserDto;
@@ -44,6 +46,17 @@ const mapUserRole = (role: AuthUserDto["role"]) => {
   }
 };
 
+// Define the Zod schema
+const schema = z.object({
+  firstName: z.string().min(3).max(20),
+  middleName: z.string().max(20).optional(),
+  lastName: z.string().min(3).max(20),
+  phoneNumber: z.string().max(13).optional(),
+  birthDate: z.string().optional(),
+});
+
+type Schema = z.infer<typeof schema>;
+
 export default function GeneralProfileSettings(
   props: GeneralProfileSettingsProps
 ) {
@@ -51,38 +64,32 @@ export default function GeneralProfileSettings(
 
   const [hasPendingChanges, setHasPendingChanges] = useState(false);
 
-  const [formData, handleChange, { errors, validate }] = useFormValidator<
-    Partial<AuthUserDto>
-  >(
-    {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue: setValueForm,
+  } = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: {
       firstName: user.firstName,
-      middleName: user.middleName ? user.middleName : "",
+      middleName: user.middleName || "",
       lastName: user.lastName,
-      phoneNumber: user.phoneNumber ? user.phoneNumber : "",
-      birthDate: user.birthDate ? user.birthDate : "",
+      phoneNumber: user.phoneNumber || "",
+      birthDate: user.birthDate || "",
     },
-    {
-      firstName: { required: true, minLength: 3, maxLength: 20 },
-      middleName: { maxLength: 20 },
-      lastName: { required: true, minLength: 3, maxLength: 20 },
-      phoneNumber: { maxLength: 13 },
-      birthDate: {
-        pattern: RegExp(
-          "^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$"
-        ),
-      },
-    }
-  );
+  });
 
-  const parsedBirthDate = DateTime.fromFormat(
-    formData.birthDate ?? "",
-    "yyyy-MM-dd"
-  );
+  const birthDate = watch("birthDate");
 
-  const handleSave = () => {
-    if (!validate()) return;
+  const setValue = (...args: Parameters<typeof setValueForm>) => {
+    setValueForm(...args);
+    setHasPendingChanges(true);
+  };
 
-    onProfileSave(formData);
+  const onSubmit = (data: UpdateAuthUserDto) => {
+    onProfileSave(data);
     setHasPendingChanges(false);
   };
 
@@ -174,15 +181,12 @@ export default function GeneralProfileSettings(
               </Typography>
               <TextField
                 fullWidth
-                value={formData.firstName || ""}
                 size="small"
                 placeholder="Il tuo nome"
-                error={errors.firstName?.e}
-                helperText={errors.firstName?.e ? errors.firstName?.eText : ""}
-                onChange={(e) => {
-                  handleChange("firstName", e.target.value);
-                  setHasPendingChanges(true);
-                }}
+                error={!!errors.firstName}
+                helperText={errors.firstName?.message}
+                value={watch("firstName")}
+                onChange={(e) => setValue("firstName", e.target.value)}
               />
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
@@ -191,17 +195,12 @@ export default function GeneralProfileSettings(
               </Typography>
               <TextField
                 fullWidth
-                value={formData.middleName || ""}
                 size="small"
                 placeholder="Il tuo secondo nome"
-                error={errors.middleName?.e}
-                helperText={
-                  errors.middleName?.e ? errors.middleName?.eText : ""
-                }
-                onChange={(e) => {
-                  handleChange("middleName", e.target.value);
-                  setHasPendingChanges(true);
-                }}
+                error={!!errors.middleName}
+                helperText={errors.middleName?.message}
+                value={watch("middleName")}
+                onChange={(e) => setValue("middleName", e.target.value)}
               />
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
@@ -209,16 +208,14 @@ export default function GeneralProfileSettings(
                 Cognome *
               </Typography>
               <TextField
+                {...register("lastName")}
                 fullWidth
-                value={formData.lastName || ""}
                 size="small"
                 placeholder="Il tuo cognome"
-                error={errors.lastName?.e}
-                helperText={errors.lastName?.e ? errors.lastName?.eText : ""}
-                onChange={(e) => {
-                  handleChange("lastName", e.target.value);
-                  setHasPendingChanges(true);
-                }}
+                error={!!errors.lastName}
+                helperText={errors.lastName?.message}
+                value={watch("lastName")}
+                onChange={(e) => setValue("lastName", e.target.value)}
               />
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
@@ -227,26 +224,26 @@ export default function GeneralProfileSettings(
               </Typography>
               <PhoneNumberEditor
                 height="40px"
-                onChange={(v) => {
-                  handleChange("phoneNumber", v);
-                  setHasPendingChanges(true);
-                }}
-                value={formData.phoneNumber ?? ""}
+                value={watch("phoneNumber") ?? ""}
+                onChange={(e) => setValue("phoneNumber", e)}
               />
             </Grid>
             <Grid size={{ xs: 12 }}>
               <Typography variant="subtitle2" color="text.secondary" mb={1}>
-                Data di nascita *
+                Data di nascita
               </Typography>
               <DateField
                 format="dd/MM/yyyy"
+                value={
+                  !birthDate
+                    ? null
+                    : DateTime.fromFormat(birthDate, "yyyy-MM-dd")
+                }
+                onChange={(v) =>
+                  setValue("birthDate", v?.toFormat("yyyy-MM-dd"))
+                }
                 size="small"
-                value={parsedBirthDate}
-                helperText={errors.birthDate?.e ? errors.birthDate?.eText : ""}
-                onChange={(v) => {
-                  handleChange("birthDate", v ? v.toFormat("yyyy-MM-dd") : "");
-                  setHasPendingChanges(true);
-                }}
+                helperText={errors.birthDate?.message}
               />
             </Grid>
           </Grid>
@@ -265,7 +262,7 @@ export default function GeneralProfileSettings(
               variant="contained"
               color="primary"
               disabled={!hasPendingChanges}
-              onClick={handleSave}
+              onClick={handleSubmit(onSubmit)}
               sx={{ paddingX: 3, marginTop: { xs: 2, sm: 0 } }}
             >
               Salva

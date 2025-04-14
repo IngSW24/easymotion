@@ -1,5 +1,6 @@
 import { AuthUserDto } from "@easymotion/openapi";
 import { DateTime } from "luxon";
+import { z } from "zod";
 
 /**
  * Formats a user's name
@@ -17,26 +18,6 @@ export const formatUserName = (
     .join(" ")
     .trim()
     .replace(/\s+/g, " "); // Replace multiple spaces with a single space
-};
-
-/**
- * Ensures that a password meets the specified constraints
- * @param password - The password to validate
- * @returns True if the password is valid, false otherwise
- */
-export const ensurePasswordConstraints = (password: string) => {
-  const regex = /^(?=.*[0-9]).{6,}$/;
-  return regex.test(password);
-};
-
-/**
- * Validates an email address
- * @param email - The email address to validate
- * @returns True if the email is valid, false otherwise
- */
-export const isValidEmail = (email: string) => {
-  const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  return regex.test(email);
 };
 
 /**
