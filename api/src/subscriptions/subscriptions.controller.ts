@@ -92,7 +92,7 @@ export class SubscriptionsController {
   @UseAuth([Role.ADMIN, Role.PHYSIOTHERAPIST])
   @ApiPaginatedResponse(SubscriptionDtoWithUser)
   getPendingSubscribers(
-    @Param("course_id") courseId: string,
+    @Param("courseId") courseId: string,
     @Query() pagination: PaginationFilter
   ) {
     return this.subscriptionsService.getCourseSubscriptions(
