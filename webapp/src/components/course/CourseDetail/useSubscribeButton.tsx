@@ -30,28 +30,32 @@ export const useSubscribeButton = ({ course }: UseSubscribeButtonProps) => {
   }, [getUserSubscriptions.data, course.id]);
 
   const handleSubscribe = useCallback(() => {
-    if (!course.id) return;
+    if (!course.id || !user?.id) return;
     subscribe.mutate(
-      { courseId: course.id },
+      {
+        course_id: course.id,
+        patient_id: user!.id,
+        subscriptionRequestMessage: "",
+      },
       {
         onSuccess: () => {
           setSubscribed(true);
         },
       }
     );
-  }, [course.id, subscribe]);
+  }, [course.id, subscribe, user]);
 
   const handleUnsubscribe = useCallback(() => {
-    if (!course.id) return;
+    if (!course.id || !user?.id) return;
     unSubscribe.mutate(
-      { courseId: course.id },
+      { course_id: course.id, patient_id: user!.id },
       {
         onSuccess: () => {
           setSubscribed(false);
         },
       }
     );
-  }, [course.id, unSubscribe]);
+  }, [course.id, unSubscribe, user]);
 
   const isHidden = useMemo(
     () => !isAuthenticated || isPhysiotherapist,

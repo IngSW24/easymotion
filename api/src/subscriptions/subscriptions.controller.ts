@@ -70,8 +70,8 @@ export class SubscriptionsController {
   ) {
     return this.subscriptionsService.getCourseSubscriptions(
       pagination,
-      false,
-      course_id
+      course_id,
+      false
     );
   }
 
@@ -79,11 +79,18 @@ export class SubscriptionsController {
    * Gets all pending subscribers
    * @param courseId the course uuid
    */
-  @Get("course/pending")
+  @Get("course/:courseId/pending")
   @UseAuth([Role.ADMIN, Role.PHYSIOTHERAPIST])
   @ApiPaginatedResponse(SubscriptionDtoWithUser)
-  getPendingSubscribers(@Query() pagination: PaginationFilter) {
-    return this.subscriptionsService.getCourseSubscriptions(pagination, true);
+  getPendingSubscribers(
+    @Param("course_id") courseId: string,
+    @Query() pagination: PaginationFilter
+  ) {
+    return this.subscriptionsService.getCourseSubscriptions(
+      pagination,
+      courseId,
+      true
+    );
   }
 
   /**
@@ -114,8 +121,7 @@ export class SubscriptionsController {
   subscribeGivenUser(@Body() subscriptionCreateDto: SubscriptionCreateDto) {
     return this.subscriptionsService.subscribeFinalUser(
       subscriptionCreateDto.patient_id,
-      subscriptionCreateDto,
-      false
+      subscriptionCreateDto
     );
   }
 

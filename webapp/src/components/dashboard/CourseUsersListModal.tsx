@@ -214,7 +214,7 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
                         color="text.secondary"
                         sx={{ mr: 0.5 }}
                       >
-                        {formatDate(value.subscriptionDate)}
+                        {formatDate(value.created_at)}
                       </Typography>
                     </Box>
                     <IconButton size="small">

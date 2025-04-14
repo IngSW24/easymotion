@@ -53,11 +53,13 @@ export class SubscriptionsService {
    */
   async getCourseSubscriptions(
     pagination: PaginationFilter,
-    isPending: boolean,
-    courseId?: string
+    courseId: string,
+    isPending: boolean = false
   ) {
+    console.log("courseId: ", courseId);
+
     const count = await this.prismaService.subscription.count({
-      where: { course_id: courseId },
+      where: { course_id: courseId, isPending },
     });
 
     const paginatedSubscribers = await this.prismaService.subscription.findMany(

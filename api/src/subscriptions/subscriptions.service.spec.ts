@@ -284,8 +284,8 @@ describe("SubsriptionsService", () => {
 
     const result = await service.getCourseSubscriptions(
       pagination,
-      false,
-      course_id
+      course_id,
+      false
     );
 
     expect(prismaMock.subscription.count).toHaveBeenCalledWith({

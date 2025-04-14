@@ -33,6 +33,7 @@ import {
 import { CourseDto } from "@easymotion/openapi";
 import { calculateDuration } from "../../../utils/format";
 import { useSubscribeButton } from "./useSubscribeButton";
+import { getPaymentRecurrenceName } from "../../../data/payment-type";
 
 export interface CourseDetailProps {
   course: CourseDto;
@@ -47,12 +48,7 @@ const CourseDetail: React.FC<CourseDetailProps> = (
 
   const getPaymentDetails = () => {
     if (course.price === 0) return "Gratuito";
-    if (!course.number_of_payments || course.number_of_payments === 1)
-      return `Pagamento unico: €${course.price?.toFixed(2)}`;
-
-    const installment =
-      course.price && (course.price / course.number_of_payments).toFixed(2);
-    return `${course.number_of_payments} × €${installment} (Totale: €${course.price?.toFixed(2)})`;
+    return `Pagamento ${getPaymentRecurrenceName(course.payment_recurrence)}: €${course.price?.toFixed(2)}`;
   };
 
   return (
