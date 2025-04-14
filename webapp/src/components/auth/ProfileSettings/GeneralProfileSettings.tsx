@@ -55,8 +55,6 @@ const schema = z.object({
   birthDate: z.string().optional(),
 });
 
-type Schema = z.infer<typeof schema>;
-
 export default function GeneralProfileSettings(
   props: GeneralProfileSettingsProps
 ) {

@@ -1,6 +1,5 @@
 import { AuthUserDto } from "@easymotion/openapi";
 import { DateTime } from "luxon";
-import { z } from "zod";
 
 /**
  * Formats a user's name
