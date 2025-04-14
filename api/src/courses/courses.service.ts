@@ -9,6 +9,7 @@ import { instanceToPlain, plainToInstance } from "class-transformer";
 import { toPaginatedOutput } from "src/common/utils/pagination";
 import { CourseQueryFilter } from "./dto/filters/course-query-filter.dto";
 import { CourseLevel, Prisma } from "@prisma/client";
+import { ApplicationUserDto } from "src/users/dto/application-user.dto";
 
 @Injectable()
 /**
