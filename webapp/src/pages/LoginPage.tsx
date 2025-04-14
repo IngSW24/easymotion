@@ -2,11 +2,11 @@ import { useNavigate } from "react-router";
 import FormComponent from "../components/FormComponent/FormComponent";
 import { useAuth } from "@easymotion/auth-context";
 import { useSnack } from "../hooks/useSnack";
-import LoginForm from "../components/profile/LoginForm/LoginForm";
 import { SignInDto } from "@easymotion/openapi";
 import { useState } from "react";
 import TwoStepAuthForm from "../components/TwoStepAuthForm/TwoStepAuthForm";
 import { Box, Paper } from "@mui/material";
+import LoginForm from "../components/auth/LoginForm/LoginForm";
 
 export default function LoginPage() {
   const auth = useAuth();
@@ -17,7 +17,7 @@ export default function LoginPage() {
   const onLoginClick = async (authInfo: SignInDto) => {
     if (!authInfo.email || !authInfo.password) return;
     try {
-      const response = await auth.login(authInfo.email, authInfo.password); // Call the login function from useAuth.
+      const response = await auth.login(authInfo.email, authInfo.password);
 
       if (!response.needsOtp) {
         navigate("/");
@@ -26,16 +26,16 @@ export default function LoginPage() {
 
       setIsOtpStage(true);
     } catch (e) {
-      snack.showError(e); // Show the error as a snack message.
+      snack.showError(e);
     }
   };
 
   const onOtpConfirmed = async (otp: string) => {
     try {
-      await auth.loginOtp(otp); // Call the loginOtp function from useAuth.
+      await auth.loginOtp(otp);
       navigate("/");
     } catch (e) {
-      snack.showError(e); // Show the error as a snack message.
+      snack.showError(e);
     }
   };
 
