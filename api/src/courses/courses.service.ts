@@ -275,12 +275,13 @@ export class CoursesService {
     filters: CourseQueryFilter
   ) {
     const count = await this.prismaService.subscription.count({
-      where: { patient_id: userId },
+      where: { patient_id: userId, isPending: false },
     });
 
     const courses = await this.prismaService.subscription.findMany({
       where: {
         AND: [
+          { isPending: false },
           { patient_id: userId },
           {
             ...(filters.searchText

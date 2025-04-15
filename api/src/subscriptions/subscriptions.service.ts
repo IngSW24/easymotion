@@ -3,7 +3,10 @@ import { plainToInstance } from "class-transformer";
 import { PrismaService } from "nestjs-prisma";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { toPaginatedOutput } from "src/common/utils/pagination";
-import { SubscriptionCreateDto } from "./dto/subscription-create.dto";
+import {
+  SubscriptionCreateDto,
+  SubscriptionRequestDto,
+} from "./dto/subscription-create.dto";
 import {
   SubscriptionDtoWithCourse,
   SubscriptionDtoWithUser,
@@ -99,7 +102,7 @@ export class SubscriptionsService {
    */
   async subscribeFinalUser(
     patient_id: string,
-    subscriptionCreateDto: SubscriptionCreateDto,
+    course_id: string,
     byPatient: boolean = false
   ) {
     const user = await this.prismaService.patient.findUniqueOrThrow({
@@ -107,7 +110,7 @@ export class SubscriptionsService {
     });
 
     const course = await this.prismaService.course.findUniqueOrThrow({
-      where: { id: subscriptionCreateDto.course_id },
+      where: { id: course_id },
     });
 
     if (byPatient) {

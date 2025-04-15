@@ -11,10 +11,11 @@ export const useSubscribeButton = ({ course }: UseSubscribeButtonProps) => {
   const [subscribed, setSubscribed] = useState(false);
   const { user, isAuthenticated, isPhysiotherapist } = useAuth();
 
-  const { subscribe, unSubscribe, getUserSubscriptions } = useSubscriptions({
-    userId: user?.id,
-    courseId: course.id,
-  });
+  const { request2Subscribe, unSubscribe, getUserSubscriptions } =
+    useSubscriptions({
+      userId: user?.id,
+      courseId: course.id,
+    });
 
   useEffect(() => {
     if (!course.id) return;
@@ -31,7 +32,7 @@ export const useSubscribeButton = ({ course }: UseSubscribeButtonProps) => {
 
   const handleSubscribe = useCallback(() => {
     if (!course.id || !user?.id) return;
-    subscribe.mutate(
+    request2Subscribe.mutate(
       {
         course_id: course.id,
         patient_id: user!.id,
@@ -43,7 +44,7 @@ export const useSubscribeButton = ({ course }: UseSubscribeButtonProps) => {
         },
       }
     );
-  }, [course.id, subscribe, user]);
+  }, [course.id, request2Subscribe, user]);
 
   const handleUnsubscribe = useCallback(() => {
     if (!course.id || !user?.id) return;

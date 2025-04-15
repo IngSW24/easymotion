@@ -15,6 +15,8 @@ import useSubscriptions from "../../hooks/useSubscription";
 import { useEffect, useState } from "react";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 import { ArrowBack, Check, Close, Search } from "@mui/icons-material";
+import { SubscriptionDtoWithUser } from "@easymotion/openapi";
+import { unsubscribe } from "diagnostics_channel";
 
 enum CurrentState {
   "LOADING",
@@ -32,8 +34,27 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
   const { open, onClose, courseId } = props;
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { getCourseSubscribers, getPendingCourseSubscriptions } =
-    useSubscriptions({ courseId: courseId });
+  const {
+    getCourseSubscribers,
+    getPendingCourseSubscriptions,
+    subscribePhysio,
+    unSubscribe,
+  } = useSubscriptions({ courseId: courseId });
+
+  const confirmSubscription = async (patient_id: string) => {
+    subscribePhysio.mutateAsync({
+      course_id: courseId ?? "", // TODO: empty string
+      patient_id: patient_id,
+      subscriptionRequestMessage: "Test message",
+    });
+  };
+
+  const denySubscription = async (patient_id: string) => {
+    unSubscribe.mutateAsync({
+      course_id: courseId ?? "",
+      patient_id: patient_id,
+    });
+  };
 
   const [currentPageState, setCurrentPageState] = useState(
     CurrentState.LOADING
@@ -145,7 +166,10 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
   );
 
   // Render pending user with accept/decline buttons
-  const renderPendingUserItem = (value: any, index: number) => (
+  const renderPendingUserItem = (
+    value: SubscriptionDtoWithUser,
+    index: number
+  ) => (
     <Box
       key={index}
       sx={{
@@ -185,6 +209,7 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
           color="primary"
           startIcon={<Check />}
           sx={{ flex: 1, mr: 1 }}
+          onClick={() => confirmSubscription(value.patient_id)}
         >
           Accetta
         </Button>
@@ -194,6 +219,7 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
           color="error"
           startIcon={<Close />}
           sx={{ flex: 1 }}
+          onClick={() => denySubscription(value.patient_id)}
         >
           Rifiuta
         </Button>

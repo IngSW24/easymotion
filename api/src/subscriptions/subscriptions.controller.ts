@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -13,7 +14,10 @@ import { SubscriptionsService } from "./subscriptions.service";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { ApiPaginatedResponse } from "src/common/decorators/api-paginated-response.decorator";
 import { ApiOkResponse } from "@nestjs/swagger";
-import { SubscriptionCreateDto } from "./dto/subscription-create.dto";
+import {
+  SubscriptionCreateDto,
+  SubscriptionRequestDto,
+} from "./dto/subscription-create.dto";
 import { SubscriptionDeleteDto } from "./dto/subscription-delete.dto";
 import {
   SubscriptionDtoWithCourse,
@@ -110,17 +114,17 @@ export class SubscriptionsController {
   @UseAuth([Role.USER])
   @ApiOkResponse()
   async subscribeLoggedUser(
-    @Body() subscriptionCreateDto: SubscriptionCreateDto,
+    @Body() subscriptionRequestDto: SubscriptionRequestDto,
     @Req() req
   ) {
     await this.subscriptionsService.subscribeFinalUser(
       req.user.sub,
-      subscriptionCreateDto,
+      subscriptionRequestDto.course_id,
       true
     );
 
     const course = await this.coursesService.findOne(
-      subscriptionCreateDto.course_id
+      subscriptionRequestDto.course_id
     );
 
     const patient = await this.usersManager.getUserById(req.user.sub);
@@ -152,7 +156,7 @@ export class SubscriptionsController {
   ) {
     await this.subscriptionsService.subscribeFinalUser(
       subscriptionCreateDto.patient_id,
-      subscriptionCreateDto
+      subscriptionCreateDto.course_id
     );
 
     const course = await this.coursesService.findOne(
