@@ -1,12 +1,13 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { SubscriptionsController } from "./subscriptions.controller";
 import { SubscriptionsService } from "./subscriptions.service";
-import { PrismaService } from "nestjs-prisma";
 import { BadRequestException, NotFoundException } from "@nestjs/common";
 import { toPaginatedOutput } from "src/common/utils/pagination";
 import { randomUUID } from "crypto";
 import { Role } from "@prisma/client";
-import { UserSubscriptionDto } from "./dto/subscription.dto";
+import { SubscriptionCreateDto } from "./dto/subscription-create.dto";
+import { SubscriptionDeleteDto } from "./dto/subscription-delete.dto";
+import { SubscriptionDtoWithUser } from "./dto/subscription.dto";
 
 describe("SubscriptionsController", () => {
   let controller: SubscriptionsController;
@@ -18,8 +19,6 @@ describe("SubscriptionsController", () => {
     getCourseSubscriptions: jest.fn(),
   };
 
-  const prismaServiceMockup = {};
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [SubscriptionsController],
@@ -27,10 +26,6 @@ describe("SubscriptionsController", () => {
         {
           provide: SubscriptionsService,
           useValue: subscriptionServiceMockup,
-        },
-        {
-          provide: PrismaService,
-          useValue: prismaServiceMockup,
         },
       ],
     }).compile();
@@ -116,9 +111,12 @@ describe("SubscriptionsController", () => {
 
   it("should subscribe a final user to a course", async () => {
     const req = { user: { sub: "1", role: Role.USER } };
-    const courseId = randomUUID();
-    const subscriptionDate = new Date();
-    const subscribeDto = { courseId, userId: "ignored", subscriptionDate };
+    const course_id = randomUUID();
+    const subscribeDto: SubscriptionCreateDto = {
+      course_id,
+      patient_id: "ignored",
+      subscriptionRequestMessage: null,
+    };
 
     const result = await controller.subscribeLoggedUser(subscribeDto, req);
 
@@ -127,16 +125,19 @@ describe("SubscriptionsController", () => {
     expect(subscriptionServiceMockup.subscribeFinalUser).toHaveBeenCalledWith(
       req.user.sub,
       subscribeDto,
-      false
+      true
     );
 
     expect(result).toBeUndefined();
   });
 
   it("should throw bad request is admin attemps subscribe without userId", async () => {
-    const courseId = randomUUID();
-    const subscriptionDate = new Date();
-    const subscribeDto = { courseId, subscriptionDate };
+    const course_id = randomUUID();
+    const subscribeDto: SubscriptionCreateDto = {
+      course_id,
+      patient_id: null,
+      subscriptionRequestMessage: null,
+    };
 
     subscriptionServiceMockup.subscribeFinalUser.mockRejectedValue(() => {
       throw new BadRequestException("User not found");
@@ -148,9 +149,12 @@ describe("SubscriptionsController", () => {
   });
 
   it("should throw bad request is high level priviledged user attempts to subscribe an non customer", async () => {
-    const courseId = randomUUID();
-    const subscriptionDate = new Date();
-    const subscribeDto = { courseId, subscriptionDate };
+    const course_id = randomUUID();
+    const subscribeDto: SubscriptionCreateDto = {
+      course_id,
+      patient_id: null,
+      subscriptionRequestMessage: null,
+    };
 
     subscriptionServiceMockup.subscribeFinalUser.mockRejectedValue(() => {
       throw new BadRequestException("User not found");
@@ -162,9 +166,13 @@ describe("SubscriptionsController", () => {
   });
 
   it("should throw not found exception when user is not found on subscribe", async () => {
-    const req = { user: { sub: "1", role: Role.USER } };
-    const courseId = "1";
-    const subscribeDto = { courseId };
+    const req = { user: { sub: randomUUID(), role: Role.USER } };
+    const course_id = randomUUID();
+    const subscribeDto: SubscriptionCreateDto = {
+      course_id,
+      patient_id: null,
+      subscriptionRequestMessage: null,
+    };
 
     subscriptionServiceMockup.subscribeFinalUser.mockRejectedValue(() => {
       throw new NotFoundException("User not found");
@@ -177,7 +185,7 @@ describe("SubscriptionsController", () => {
 
   it("should unsubscribe a final user from a course", async () => {
     const req = { user: { sub: "1", role: Role.USER } };
-    const deleteDto = { courseId: "1", userId: "ignored" };
+    const deleteDto = { course_id: "1", patient_id: "ignored" };
 
     const result = await controller.unsubscribeLoggedUser(deleteDto, req);
 
@@ -192,15 +200,17 @@ describe("SubscriptionsController", () => {
   });
 
   it("should unsubscribe the given final user from a course if admin", async () => {
-    const userId = randomUUID();
-    const deleteDto = { courseId: "1", userId };
+    const deleteDto: SubscriptionDeleteDto = {
+      course_id: "1",
+      patient_id: randomUUID(),
+    };
 
     const result = await controller.unsubscribeGivenUser(deleteDto);
 
     subscriptionServiceMockup.unsubscribeFinalUser.mockReturnValue(undefined);
 
     expect(subscriptionServiceMockup.unsubscribeFinalUser).toHaveBeenCalledWith(
-      userId,
+      deleteDto.patient_id,
       deleteDto
     );
 
@@ -208,15 +218,14 @@ describe("SubscriptionsController", () => {
   });
 
   it("should unsubscribe the given final user from a course if physiotherapist", async () => {
-    const userId = randomUUID();
-    const deleteDto = { courseId: "1", userId };
+    const patient_id = randomUUID();
+    const deleteDto: SubscriptionDeleteDto = { course_id: "1", patient_id };
 
     const result = await controller.unsubscribeGivenUser(deleteDto);
 
     subscriptionServiceMockup.unsubscribeFinalUser.mockReturnValue(undefined);
 
     expect(subscriptionServiceMockup.unsubscribeFinalUser).toHaveBeenCalledWith(
-      userId,
       deleteDto
     );
 
@@ -224,7 +233,10 @@ describe("SubscriptionsController", () => {
   });
 
   it("should throw exception if admin attempts to unsubscribe without userId", async () => {
-    const deleteDto = { courseId: "1" };
+    const deleteDto: SubscriptionDeleteDto = {
+      course_id: "1",
+      patient_id: "2",
+    };
 
     subscriptionServiceMockup.unsubscribeFinalUser.mockRejectedValue(() => {
       throw new NotFoundException("User not found");
@@ -236,7 +248,10 @@ describe("SubscriptionsController", () => {
   });
 
   it("should throw not found exception when user is not found on unsubscribe", async () => {
-    const deleteDto = { courseId: "1", userId: randomUUID() };
+    const deleteDto: SubscriptionDeleteDto = {
+      course_id: "1",
+      patient_id: randomUUID(),
+    };
 
     subscriptionServiceMockup.unsubscribeFinalUser.mockRejectedValue(() => {
       throw new NotFoundException("User not found");
@@ -248,7 +263,7 @@ describe("SubscriptionsController", () => {
   });
 
   it("should get the list of subscriptions for a course", async () => {
-    const subscribers: UserSubscriptionDto[] = [
+    const subscribers: SubscriptionDtoWithUser[] = [
       {
         course: null,
         user: {
@@ -258,8 +273,12 @@ describe("SubscriptionsController", () => {
           lastName: "b",
           middleName: "c",
         },
-
-        subscriptionDate: new Date(),
+        created_at: new Date(),
+        updated_at: new Date(),
+        course_id: "1",
+        patient_id: "2",
+        isPending: false,
+        subscriptionRequestMessage: "MSG1",
       },
     ];
 

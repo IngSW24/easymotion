@@ -71,6 +71,20 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
     },
   });
 
+  const getPendingCourseSubscriptions = useQuery({
+    queryKey: ["pendingSubscriptions", courseId, page, perPage],
+    queryFn: async () => {
+      const result =
+        await api.subscriptions.subscriptionsControllerGetPendingSubscribers(
+          courseId,
+          { page, perPage }
+        );
+
+      return result.data;
+    },
+    enabled: !!courseId,
+  });
+
   /**
    * Retrieves the subscribers of a specific course (if courseId is provided).
    */
@@ -92,7 +106,7 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
    * Subscribes a user to a specific course.
    * @mutationFn SubscriptionsController.subscribe
    */
-  const subscribe = useMutation({
+  const request2Subscribe = useMutation({
     mutationFn: async (dto: SubscriptionCreateDto) => {
       return await api.subscriptions.subscriptionsControllerSubscribeLoggedUser(
         dto
@@ -101,10 +115,35 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
     onSuccess: () => {
       // Invalidate queries so that data is refreshed
       queryClient.invalidateQueries({
-        queryKey: ["subscriptions"],
+        queryKey: [
+          "subscriptions",
+          "course-subscribers",
+          "pendingSubscriptions",
+        ],
       });
+      snack.showSuccess("Richiesta di iscrizione inviata!");
+    },
+    onError: (error) => snack.showError(error),
+  });
+
+  /**
+   * Subscribes a user to a specific course.
+   * @mutationFn SubscriptionsController.subscribe
+   */
+  const subscribePhysio = useMutation({
+    mutationFn: async (dto: SubscriptionCreateDto) => {
+      return await api.subscriptions.subscriptionsControllerSubscribeGivenUser(
+        dto
+      );
+    },
+    onSuccess: () => {
+      // Invalidate queries so that data is refreshed
       queryClient.invalidateQueries({
-        queryKey: ["course-subscribers"],
+        queryKey: [
+          "subscriptions",
+          "course-subscribers",
+          "pendingSubscriptions",
+        ],
       });
       snack.showSuccess("Iscrizione avvenuta con successo!");
     },
@@ -123,10 +162,7 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["subscriptions"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["course-subscribers"],
+        queryKey: ["subscriptions", "course-subscribers"],
       });
       snack.showSuccess("Disiscrizione avvenuta con successo!");
     },
@@ -160,7 +196,9 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
   return {
     getUserSubscriptions,
     getCourseSubscribers,
-    subscribe,
+    getPendingCourseSubscriptions,
+    request2Subscribe,
+    subscribePhysio,
     unSubscribe,
     getSubscription,
   };

@@ -5,7 +5,7 @@ import { CourseDto } from "./dto/course.dto";
 import { CreateCourseDto } from "./dto/create-course.dto";
 import { UpdateCourseDto } from "./dto/update-course.dto";
 import { Decimal } from "@prisma/client/runtime/library";
-import { CourseLevel } from "@prisma/client";
+import { CourseLevel, PaymentRecurrence } from "@prisma/client";
 import { plainToInstance } from "class-transformer";
 import { randomUUID } from "crypto";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
@@ -26,7 +26,7 @@ describe("CoursesService", () => {
     courseSession: {
       findMany: jest.fn(),
     },
-    courseFinalUser: {
+    subscription: {
       count: jest.fn(),
       findMany: jest.fn(),
     },
@@ -67,9 +67,8 @@ describe("CoursesService", () => {
         location: "Online",
         instructors: ["John Doe"],
         level: CourseLevel.BASIC,
-        is_free: false,
         price: new Decimal(100),
-        number_of_payments: 2,
+        payment_recurrence: PaymentRecurrence.SINGLE,
         is_published: true,
         subscriptions_open: true,
         max_subscribers: 20,
@@ -90,9 +89,8 @@ describe("CoursesService", () => {
         location: createDto.location,
         instructors: createDto.instructors,
         level: createDto.level,
-        is_free: createDto.is_free,
         price: createDto.price,
-        number_of_payments: createDto.number_of_payments,
+        payment_recurrence: createDto.payment_recurrence,
         is_published: createDto.is_published,
         subscriptions_open: createDto.subscriptions_open,
         max_subscribers: createDto.max_subscribers,
@@ -116,10 +114,8 @@ describe("CoursesService", () => {
         },
         sessions: [
           {
-            id: randomUUID(),
             start_time: createDto.sessions[0].start_time,
             end_time: createDto.sessions[0].end_time,
-            course_id: "course-id",
           },
         ],
       };
@@ -137,7 +133,6 @@ describe("CoursesService", () => {
           short_description: createDto.short_description,
           instructors: createDto.instructors,
           level: createDto.level,
-          is_free: createDto.is_free,
           sessions: {
             create: createDto.sessions,
           },
@@ -442,8 +437,8 @@ describe("CoursesService", () => {
 
       const mockCount = 1;
 
-      prismaMock.courseFinalUser.findMany.mockResolvedValue(mockSubscriptions);
-      prismaMock.courseFinalUser.count.mockResolvedValue(mockCount);
+      prismaMock.subscription.findMany.mockResolvedValue(mockSubscriptions);
+      prismaMock.subscription.count.mockResolvedValue(mockCount);
 
       const result = await service.findSubscribedCourses(
         userId,
@@ -451,11 +446,11 @@ describe("CoursesService", () => {
         filters
       );
 
-      expect(prismaMock.courseFinalUser.count).toHaveBeenCalledWith({
-        where: { final_user_id: userId },
+      expect(prismaMock.subscription.count).toHaveBeenCalledWith({
+        where: { patient_id: userId },
       });
 
-      expect(prismaMock.courseFinalUser.findMany).toHaveBeenCalledWith(
+      expect(prismaMock.subscription.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           skip: pagination.page * pagination.perPage,
           take: pagination.perPage,

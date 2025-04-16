@@ -33,6 +33,9 @@ import {
 import { CourseDto } from "@easymotion/openapi";
 import { calculateDuration } from "../../../utils/format";
 import { useSubscribeButton } from "./useSubscribeButton";
+import { getPaymentRecurrenceName } from "../../../data/payment-type";
+import { useAuth } from "@easymotion/auth-context";
+import { Link } from "react-router";
 
 export interface CourseDetailProps {
   course: CourseDto;
@@ -43,16 +46,12 @@ const CourseDetail: React.FC<CourseDetailProps> = (
   props: CourseDetailProps
 ) => {
   const { course, hideTitle = false } = props;
+  const { isAuthenticated, isPhysiotherapist } = useAuth();
   const subscribeButton = useSubscribeButton({ course });
 
   const getPaymentDetails = () => {
     if (course.price === 0) return "Gratuito";
-    if (!course.number_of_payments || course.number_of_payments === 1)
-      return `Pagamento unico: €${course.price?.toFixed(2)}`;
-
-    const installment =
-      course.price && (course.price / course.number_of_payments).toFixed(2);
-    return `${course.number_of_payments} × €${installment} (Totale: €${course.price?.toFixed(2)})`;
+    return `Pagamento ${getPaymentRecurrenceName(course.payment_recurrence)}: €${course.price?.toFixed(2)}`;
   };
 
   return (
@@ -158,29 +157,70 @@ const CourseDetail: React.FC<CourseDetailProps> = (
               <Divider sx={{ my: 3 }} />
 
               <Box sx={{ textAlign: "center" }}>
-                <Typography
-                  variant="h5"
-                  gutterBottom
-                  sx={{
-                    display: "block",
-                    color: "primary.dark",
-                    fontSmooth: "antialiased",
-                    fontWeight: "bold",
-                  }}
-                >
-                  <Box
+                {isAuthenticated && !isPhysiotherapist && (
+                  <Typography
+                    variant="h5"
+                    gutterBottom
                     sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: 1,
+                      display: "block",
+                      color: "primary.dark",
+                      fontSmooth: "antialiased",
+                      fontWeight: "bold",
                     }}
                   >
-                    <QuestionAnswer />
-                    Vuoi partecipare? Iscriviti ora
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 1,
+                      }}
+                    >
+                      <QuestionAnswer />
+                      Vuoi partecipare?
+                    </Box>
+                  </Typography>
+                )}
+                {!isAuthenticated && (
+                  <Box sx={{ mt: 2 }}>
+                    <Typography
+                      component={Link}
+                      to="/login"
+                      variant="body1"
+                      sx={{
+                        textDecoration: "none",
+                        color: "primary.main",
+                        fontWeight: "bold",
+                        "&:hover": {
+                          color: "primary.dark",
+                          textDecoration: "underline",
+                        },
+                      }}
+                    >
+                      Accedi
+                    </Typography>
+                    <Typography component="span" sx={{ mx: 1 }}>
+                      oppure
+                    </Typography>
+                    <Typography
+                      component={Link}
+                      to="/signup"
+                      variant="body1"
+                      sx={{
+                        textDecoration: "none",
+                        color: "primary.main",
+                        fontWeight: "bold",
+                        "&:hover": {
+                          color: "primary.dark",
+                          textDecoration: "underline",
+                        },
+                      }}
+                    >
+                      Entra a far parte di EasyMotion!
+                    </Typography>
                   </Box>
-                </Typography>
-                {!subscribeButton.isHidden && (
+                )}
+                {isAuthenticated && !subscribeButton.isHidden && (
                   <Button
                     startIcon={
                       subscribeButton.subscribed ? <Delete /> : <Done />

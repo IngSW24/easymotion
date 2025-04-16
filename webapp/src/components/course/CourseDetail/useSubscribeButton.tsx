@@ -11,10 +11,11 @@ export const useSubscribeButton = ({ course }: UseSubscribeButtonProps) => {
   const [subscribed, setSubscribed] = useState(false);
   const { user, isAuthenticated, isPhysiotherapist } = useAuth();
 
-  const { subscribe, unSubscribe, getUserSubscriptions } = useSubscriptions({
-    userId: user?.id,
-    courseId: course.id,
-  });
+  const { request2Subscribe, unSubscribe, getUserSubscriptions } =
+    useSubscriptions({
+      userId: user?.id,
+      courseId: course.id,
+    });
 
   useEffect(() => {
     if (!course.id) return;
@@ -30,28 +31,32 @@ export const useSubscribeButton = ({ course }: UseSubscribeButtonProps) => {
   }, [getUserSubscriptions.data, course.id]);
 
   const handleSubscribe = useCallback(() => {
-    if (!course.id) return;
-    subscribe.mutate(
-      { courseId: course.id },
+    if (!course.id || !user?.id) return;
+    request2Subscribe.mutate(
+      {
+        course_id: course.id,
+        patient_id: user!.id,
+        subscriptionRequestMessage: "",
+      },
       {
         onSuccess: () => {
           setSubscribed(true);
         },
       }
     );
-  }, [course.id, subscribe]);
+  }, [course.id, request2Subscribe, user]);
 
   const handleUnsubscribe = useCallback(() => {
-    if (!course.id) return;
+    if (!course.id || !user?.id) return;
     unSubscribe.mutate(
-      { courseId: course.id },
+      { course_id: course.id, patient_id: user!.id },
       {
         onSuccess: () => {
           setSubscribed(false);
         },
       }
     );
-  }, [course.id, unSubscribe]);
+  }, [course.id, unSubscribe, user]);
 
   const isHidden = useMemo(
     () => !isAuthenticated || isPhysiotherapist,

@@ -8,7 +8,7 @@ import { CourseDto } from "./dto/course.dto";
 import { Decimal } from "@prisma/client/runtime/library";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { randomUUID } from "node:crypto";
-import { Course, CourseLevel } from "@prisma/client";
+import { Course, CourseLevel, PaymentRecurrence } from "@prisma/client";
 import { plainToInstance } from "class-transformer";
 
 describe("CoursesController", () => {
@@ -57,9 +57,8 @@ describe("CoursesController", () => {
       level: CourseLevel.BASIC,
       tags: ["aa", "bb"],
       location: "",
-      is_free: false,
       price: new Decimal(100),
-      number_of_payments: 0,
+      payment_recurrence: PaymentRecurrence.SINGLE,
       is_published: false,
       subscriptions_open: false,
       max_subscribers: 0,
@@ -92,9 +91,8 @@ describe("CoursesController", () => {
         level: CourseLevel.BASIC,
         tags: dto.tags,
         location: "",
-        is_free: false,
         price: new Decimal(100),
-        number_of_payments: 0,
+        payment_recurrence: PaymentRecurrence.SINGLE,
         is_published: false,
         subscriptions_open: false,
         max_subscribers: 0,
@@ -147,9 +145,8 @@ describe("CoursesController", () => {
         created_at: new Date(),
         updated_at: new Date(),
         location: "",
-        is_free: false,
         price: new Decimal(0),
-        number_of_payments: 0,
+        payment_recurrence: PaymentRecurrence.SINGLE,
         is_published: false,
         subscriptions_open: false,
         max_subscribers: 0,
@@ -225,9 +222,8 @@ describe("CoursesController", () => {
       created_at: new Date(),
       updated_at: new Date(),
       location: "",
-      is_free: false,
       price: new Decimal(10),
-      number_of_payments: 0,
+      payment_recurrence: PaymentRecurrence.SINGLE,
       is_published: false,
       subscriptions_open: false,
       max_subscribers: 0,
@@ -281,8 +277,7 @@ describe("CoursesController", () => {
       short_description: "Updated Short Description",
       location: "Updated Location",
       level: CourseLevel.MEDIUM,
-      is_free: false,
-      number_of_payments: 3,
+      payment_recurrence: PaymentRecurrence.SINGLE,
       is_published: true,
       subscriptions_open: true,
       max_subscribers: 20,
@@ -298,9 +293,8 @@ describe("CoursesController", () => {
       instructors: dto.instructors,
       location: dto.location,
       level: dto.level,
-      is_free: dto.is_free,
       price: dto.price,
-      number_of_payments: dto.number_of_payments,
+      payment_recurrence: dto.payment_recurrence,
       is_published: dto.is_published,
       subscriptions_open: dto.subscriptions_open,
       max_subscribers: dto.max_subscribers,
@@ -342,8 +336,7 @@ describe("CoursesController", () => {
     expect(updateData.instructors).toEqual(dto.instructors);
     expect(updateData.location).toBe(dto.location);
     expect(updateData.level).toBe(dto.level);
-    expect(updateData.is_free).toBe(dto.is_free);
-    expect(updateData.number_of_payments).toBe(dto.number_of_payments);
+    expect(updateData.payment_recurrence).toBe(dto.payment_recurrence);
     expect(updateData.is_published).toBe(dto.is_published);
     expect(updateData.subscriptions_open).toBe(dto.subscriptions_open);
     expect(updateData.max_subscribers).toBe(dto.max_subscribers);

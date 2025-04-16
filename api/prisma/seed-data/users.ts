@@ -31,7 +31,7 @@ const getUsers = async (): Promise<Prisma.ApplicationUserCreateInput[]> => {
       isEmailVerified: true,
       lastLogin: "2025-01-08T10:00:00.000Z",
       failedLoginAttempts: 0,
-      finalUserData: {
+      patient: {
         create: {},
       },
     },
@@ -48,7 +48,7 @@ const getUsers = async (): Promise<Prisma.ApplicationUserCreateInput[]> => {
       isEmailVerified: true,
       lastLogin: "2025-01-08T10:00:00.000Z",
       failedLoginAttempts: 0,
-      physiotherapistData: {
+      physiotherapist: {
         create: {
           specialization: "Sports Rehabilitation",
           publicPhoneNumber: "+393401234567",

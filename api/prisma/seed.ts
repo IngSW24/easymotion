@@ -17,7 +17,7 @@ async function main() {
       });
 
       if (e.role === "USER") {
-        await tx.finalUser.upsert({
+        await tx.patient.upsert({
           where: { applicationUserId: e.id },
           update: {},
           create: {

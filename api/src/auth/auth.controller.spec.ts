@@ -9,8 +9,6 @@ describe("AuthController", () => {
   let controller: AuthController;
   let serviceMock: Partial<AuthService>;
 
-  let clearRefreshTokenCookieMock: jest.Mock;
-
   beforeEach(async () => {
     serviceMock = {
       validateUser: jest.fn(),
@@ -20,8 +18,6 @@ describe("AuthController", () => {
       updateUserProfile: jest.fn(),
       deleteUserProfile: jest.fn(),
     };
-
-    clearRefreshTokenCookieMock = jest.fn();
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
