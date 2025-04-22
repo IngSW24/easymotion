@@ -521,6 +521,51 @@
         ]
       }
     },
+    "/courses/{id}/picture": {
+      "post": {
+        "operationId": "CoursesController_uploadCoursePicture",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Upload a course picture",
+        "tags": [
+          "Courses"
+        ]
+      }
+    },
     "/auth/login": {
       "post": {
         "operationId": "AuthController_userLogin",
