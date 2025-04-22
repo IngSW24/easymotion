@@ -8,21 +8,37 @@ import {
   Put,
   Query,
   Req,
+  UploadedFile,
+  UseInterceptors,
+  Inject,
+  BadRequestException,
+  ParseFilePipeBuilder,
 } from "@nestjs/common";
 import { CoursesService } from "./courses.service";
 import { CreateCourseDto } from "./dto/create-course.dto";
 import { UpdateCourseDto } from "./dto/update-course.dto";
 import { CourseDto } from "./dto/course.dto";
-import { ApiCreatedResponse, ApiOkResponse } from "@nestjs/swagger";
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiCreatedResponse,
+  ApiOkResponse,
+} from "@nestjs/swagger";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { ApiPaginatedResponse } from "src/common/decorators/api-paginated-response.decorator";
 import UseAuth from "src/auth/decorators/auth-with-role.decorator";
 import { Role } from "@prisma/client";
 import { CourseQueryFilter } from "./dto/filters/course-query-filter.dto";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { AssetsService } from "src/assets/assets.service";
+import { ApiFileBody } from "src/common/decorators/api-file-body.decorator";
 
 @Controller("courses")
 export class CoursesController {
-  constructor(private readonly coursesService: CoursesService) {}
+  constructor(
+    private readonly coursesService: CoursesService,
+    private readonly assetsService: AssetsService
+  ) {}
 
   /**
    * Find all courses
@@ -116,5 +132,36 @@ export class CoursesController {
   @UseAuth([Role.PHYSIOTHERAPIST, Role.ADMIN])
   remove(@Param("id") id: string) {
     return this.coursesService.remove(id);
+  }
+
+  /**
+   * Upload a course picture
+   * @param id the course uuid
+   * @param file the image file
+   */
+  @Post(":id/picture")
+  @UseInterceptors(FileInterceptor("file"))
+  @UseAuth([Role.PHYSIOTHERAPIST, Role.ADMIN])
+  @ApiConsumes("multipart/form-data")
+  @ApiFileBody()
+  async uploadCoursePicture(
+    @Param("id") id: string,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addMaxSizeValidator({ maxSize: 1024 * 1024 * 5 })
+        .addFileTypeValidator({ fileType: "image" })
+        .build()
+    )
+    file: Express.Multer.File
+  ) {
+    if (!["image/jpeg", "image/png", "image/gif"].includes(file.mimetype)) {
+      throw new BadRequestException("Only image files are allowed!");
+    }
+    await this.assetsService.uploadBuffer(
+      file.buffer,
+      "course",
+      id,
+      file.mimetype
+    );
   }
 }
