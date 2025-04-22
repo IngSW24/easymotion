@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Typography,
@@ -36,6 +36,7 @@ import { useSubscribeButton } from "./useSubscribeButton";
 import { getPaymentRecurrenceName } from "../../../data/payment-type";
 import { useAuth } from "@easymotion/auth-context";
 import { Link } from "react-router";
+import SubscriptionRequestForm from "./SubscriptionRequest";
 
 export interface CourseDetailProps {
   course: CourseDto;
@@ -46,8 +47,10 @@ const CourseDetail: React.FC<CourseDetailProps> = (
   props: CourseDetailProps
 ) => {
   const { course, hideTitle = false } = props;
-  const { isAuthenticated, isPhysiotherapist } = useAuth();
+  const { isAuthenticated, isPhysiotherapist, user } = useAuth();
   const subscribeButton = useSubscribeButton({ course });
+
+  const [openSubReqModal, setOpenSubReqModal] = useState(false);
 
   const getPaymentDetails = () => {
     if (course.price === 0) return "Gratuito";
@@ -181,6 +184,12 @@ const CourseDetail: React.FC<CourseDetailProps> = (
                     </Box>
                   </Typography>
                 )}
+                <SubscriptionRequestForm
+                  open={openSubReqModal}
+                  setOpen={setOpenSubReqModal}
+                  courseId={course.id}
+                  userId={user?.id}
+                />
                 {!isAuthenticated && (
                   <Box sx={{ mt: 2 }}>
                     <Typography
@@ -229,10 +238,11 @@ const CourseDetail: React.FC<CourseDetailProps> = (
                     color={subscribeButton.subscribed ? "error" : "primary"}
                     disabled={subscribeButton.isDisabled}
                     size="large"
-                    onClick={() =>
-                      subscribeButton.subscribed
-                        ? subscribeButton.handleUnsubscribe()
-                        : subscribeButton.handleSubscribe()
+                    onClick={
+                      () => setOpenSubReqModal(true)
+                      // subscribeButton.subscribed
+                      //   ? subscribeButton.handleUnsubscribe()
+                      //   : subscribeButton.handleSubscribe()
                     }
                   >
                     {subscribeButton.subscribed

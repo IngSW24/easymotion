@@ -2,7 +2,7 @@ import { Container, Typography } from "@mui/material";
 import FilterBlock from "../../components/course/FilterBlock/FilterBlock";
 import { useState } from "react";
 import { CourseFilters } from "../../hooks/useCourses";
-import SubscriptionsPage from "./SubscriptionsPage";
+import SubscriptionsPage from "./MyCourses";
 
 export default function UserArea() {
   const [filters, setFilters] = useState<CourseFilters | undefined>(undefined);

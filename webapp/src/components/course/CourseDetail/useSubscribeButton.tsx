@@ -1,5 +1,5 @@
 import { useAuth } from "@easymotion/auth-context";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useSubscriptions from "../../../hooks/useSubscription";
 import { CourseDto } from "@easymotion/openapi";
 
@@ -11,11 +11,10 @@ export const useSubscribeButton = ({ course }: UseSubscribeButtonProps) => {
   const [subscribed, setSubscribed] = useState(false);
   const { user, isAuthenticated, isPhysiotherapist } = useAuth();
 
-  const { request2Subscribe, unSubscribe, getUserSubscriptions } =
-    useSubscriptions({
-      userId: user?.id,
-      courseId: course.id,
-    });
+  const { getUserSubscriptions } = useSubscriptions({
+    userId: user?.id,
+    courseId: course.id,
+  });
 
   useEffect(() => {
     if (!course.id) return;
@@ -23,40 +22,14 @@ export const useSubscribeButton = ({ course }: UseSubscribeButtonProps) => {
     const subsData = getUserSubscriptions.data;
     if (!subsData) return;
 
+    console.log("subsData: ", subsData);
+
     const alreadySubscribed = subsData.data.some(
       (sub) => sub.course.id === course.id
     );
 
     setSubscribed(alreadySubscribed);
   }, [getUserSubscriptions.data, course.id]);
-
-  const handleSubscribe = useCallback(() => {
-    if (!course.id || !user?.id) return;
-    request2Subscribe.mutate(
-      {
-        course_id: course.id,
-        patient_id: user!.id,
-        subscriptionRequestMessage: "",
-      },
-      {
-        onSuccess: () => {
-          setSubscribed(true);
-        },
-      }
-    );
-  }, [course.id, request2Subscribe, user]);
-
-  const handleUnsubscribe = useCallback(() => {
-    if (!course.id || !user?.id) return;
-    unSubscribe.mutate(
-      { course_id: course.id, patient_id: user!.id },
-      {
-        onSuccess: () => {
-          setSubscribed(false);
-        },
-      }
-    );
-  }, [course.id, unSubscribe, user]);
 
   const isHidden = useMemo(
     () => !isAuthenticated || isPhysiotherapist,
@@ -70,8 +43,6 @@ export const useSubscribeButton = ({ course }: UseSubscribeButtonProps) => {
 
   return {
     subscribed,
-    handleSubscribe,
-    handleUnsubscribe,
     isDisabled,
     isHidden,
   };
