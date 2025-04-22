@@ -4,6 +4,7 @@ import { useSnack } from "./useSnack";
 import {
   SubscriptionCreateDto,
   SubscriptionDeleteDto,
+  SubscriptionRequestDto,
 } from "@easymotion/openapi";
 import { CourseFilters } from "./useCourses";
 
@@ -49,25 +50,32 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
    *  - a specified user (if userId is provided).
    */
   const getUserSubscriptions = useQuery({
-    queryKey: ["subscriptions", userId, page, perPage],
+    queryKey: ["userSubscriptions", userId, page, perPage],
     queryFn: async () => {
-      if (!userId) {
-        const resp =
-          await api.subscriptions.subscriptionsControllerGetSubscriptionsForLoggedUser(
-            {
-              page,
-              perPage,
-            }
-          );
-        return resp.data;
-      } else {
-        const resp =
-          await api.subscriptions.subscriptionsControllerGetSubscriptionsForGivenUser(
-            userId,
-            { page, perPage }
-          );
-        return resp.data;
-      }
+      const resp =
+        await api.subscriptions.subscriptionsControllerGetSubscriptionsForLoggedUser(
+          {
+            pending: "false",
+            page,
+            perPage,
+          }
+        );
+      return resp.data;
+    },
+  });
+
+  const getUserPendingSubscriptions = useQuery({
+    queryKey: ["userPendingSubscriptions", page, perPage],
+    queryFn: async () => {
+      const resp =
+        await api.subscriptions.subscriptionsControllerGetSubscriptionsForLoggedUser(
+          {
+            pending: "true",
+            page,
+            perPage,
+          }
+        );
+      return resp.data;
     },
   });
 
@@ -95,7 +103,7 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
       const resp =
         await api.subscriptions.subscriptionsControllerGetSubscribers(
           courseId,
-          { page, perPage }
+          { page, perPage, pending: "false" }
         );
       return resp.data;
     },
@@ -107,8 +115,8 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
    * @mutationFn SubscriptionsController.subscribe
    */
   const request2Subscribe = useMutation({
-    mutationFn: async (dto: SubscriptionCreateDto) => {
-      return await api.subscriptions.subscriptionsControllerSubscribeLoggedUser(
+    mutationFn: async (dto: SubscriptionRequestDto) => {
+      return await api.subscriptions.subscriptionsControllerSendSubscriptionRequest(
         dto
       );
     },
@@ -156,7 +164,7 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
    */
   const unSubscribe = useMutation({
     mutationFn: async (dto: SubscriptionDeleteDto) => {
-      return await api.subscriptions.subscriptionsControllerUnsubscribeLoggedUser(
+      return await api.subscriptions.subscriptionsControllerUnsubscribeGivenUser(
         dto
       );
     },
@@ -195,6 +203,7 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
 
   return {
     getUserSubscriptions,
+    getUserPendingSubscriptions,
     getCourseSubscribers,
     getPendingCourseSubscriptions,
     request2Subscribe,

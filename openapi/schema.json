@@ -1263,6 +1263,14 @@
               "default": 10,
               "type": "number"
             }
+          },
+          {
+            "name": "pending",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -1331,66 +1339,7 @@
             "bearer": []
           }
         ],
-        "summary": "Get the current subscriptions for the logged user",
-        "tags": [
-          "Subscriptions"
-        ]
-      },
-      "post": {
-        "operationId": "SubscriptionsController_subscribeLoggedUser",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SubscriptionCreateDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          },
-          "201": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Subscribe the logged in final user to a course",
-        "tags": [
-          "Subscriptions"
-        ]
-      },
-      "delete": {
-        "operationId": "SubscriptionsController_unsubscribeLoggedUser",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SubscriptionDeleteDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Unsubscribe the logged in final user from a course",
+        "summary": "Get the current (pending) subscriptions for the logged user",
         "tags": [
           "Subscriptions"
         ]
@@ -1425,6 +1374,14 @@
               "default": 10,
               "type": "number"
             }
+          },
+          {
+            "name": "pending",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -1493,7 +1450,7 @@
             "bearer": []
           }
         ],
-        "summary": "Get the current subscriptions for the given user",
+        "summary": "Get the current (pending) subscriptions for the given user",
         "tags": [
           "Subscriptions"
         ]
@@ -1527,6 +1484,14 @@
             "schema": {
               "default": 10,
               "type": "number"
+            }
+          },
+          {
+            "name": "pending",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -1596,7 +1561,7 @@
             "bearer": []
           }
         ],
-        "summary": "Gets all subscribers of a course",
+        "summary": "Gets current (pending) subscription for the given course",
         "tags": [
           "Subscriptions"
         ]
@@ -1699,7 +1664,39 @@
             "bearer": []
           }
         ],
-        "summary": "Gets all pending subscribers",
+        "summary": "[Admin & Physiotherapist] Gets all pending subscribers",
+        "tags": [
+          "Subscriptions"
+        ]
+      }
+    },
+    "/subscriptions/request/send": {
+      "post": {
+        "operationId": "SubscriptionsController_sendSubscriptionRequest",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubscriptionRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Subscriptions"
         ]
@@ -1732,7 +1729,7 @@
             "bearer": []
           }
         ],
-        "summary": "Subscribe the given final user to a course (for admins and physiotherapists)",
+        "summary": "[Admin & Physiotherapist] Subscribe the given final user to a course",
         "tags": [
           "Subscriptions"
         ]
@@ -1760,7 +1757,7 @@
             "bearer": []
           }
         ],
-        "summary": "Unsubscribe the given final user from a course (for admins and physiotherapists)",
+        "summary": "[Admin & Physiotherapist] Force-unsubscribe the given final user from a course",
         "tags": [
           "Subscriptions"
         ]
@@ -3122,6 +3119,23 @@
           "isPending"
         ]
       },
+      "SubscriptionRequestDto": {
+        "type": "object",
+        "properties": {
+          "course_id": {
+            "type": "string",
+            "description": "Course ID of the subscription request"
+          },
+          "subscriptionRequestMessage": {
+            "type": "string",
+            "description": "Subscription request message"
+          }
+        },
+        "required": [
+          "course_id",
+          "subscriptionRequestMessage"
+        ]
+      },
       "SubscriptionCreateDto": {
         "type": "object",
         "properties": {
@@ -3132,16 +3146,11 @@
           "patient_id": {
             "type": "string",
             "description": "Subscribed user ID"
-          },
-          "subscriptionRequestMessage": {
-            "type": "string",
-            "description": "Subscription request message"
           }
         },
         "required": [
           "course_id",
-          "patient_id",
-          "subscriptionRequestMessage"
+          "patient_id"
         ]
       },
       "SubscriptionDeleteDto": {

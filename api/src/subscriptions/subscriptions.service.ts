@@ -4,10 +4,6 @@ import { PrismaService } from "nestjs-prisma";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { toPaginatedOutput } from "src/common/utils/pagination";
 import {
-  SubscriptionCreateDto,
-  SubscriptionRequestDto,
-} from "./dto/subscription-create.dto";
-import {
   SubscriptionDtoWithCourse,
   SubscriptionDtoWithUser,
 } from "./dto/subscription.dto";
@@ -18,14 +14,15 @@ export class SubscriptionsService {
 
   async getCustomerSubscriptions(
     customerId: string,
-    pagination: PaginationFilter
+    pagination: PaginationFilter,
+    isPending: boolean = false
   ) {
     const count = await this.prismaService.subscription.count({
       where: { patient_id: customerId },
     });
 
     const courses = await this.prismaService.subscription.findMany({
-      where: { patient_id: customerId, isPending: false },
+      where: { patient_id: customerId, isPending },
       include: { course: { select: { id: true, name: true } } },
       orderBy: { course: { name: "asc" } },
       skip: pagination.page * pagination.perPage,

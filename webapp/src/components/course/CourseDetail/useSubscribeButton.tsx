@@ -9,27 +9,28 @@ export interface UseSubscribeButtonProps {
 
 export const useSubscribeButton = ({ course }: UseSubscribeButtonProps) => {
   const [subscribed, setSubscribed] = useState(false);
-  const { user, isAuthenticated, isPhysiotherapist } = useAuth();
+  const { isAuthenticated, isPhysiotherapist } = useAuth();
 
-  const { getUserSubscriptions } = useSubscriptions({
-    userId: user?.id,
-    courseId: course.id,
-  });
+  const { getUserSubscriptions, getUserPendingSubscriptions } =
+    useSubscriptions({});
 
   useEffect(() => {
     if (!course.id) return;
 
-    const subsData = getUserSubscriptions.data;
-    if (!subsData) return;
+    const approvedSubscriptions = getUserSubscriptions.data?.data || [];
+    const pendingSubscriptions = getUserPendingSubscriptions.data?.data || [];
 
-    console.log("subsData: ", subsData);
+    const allSubscriptions = [
+      ...approvedSubscriptions,
+      ...pendingSubscriptions,
+    ];
 
-    const alreadySubscribed = subsData.data.some(
+    const alreadySubscribed = allSubscriptions.some(
       (sub) => sub.course.id === course.id
     );
 
     setSubscribed(alreadySubscribed);
-  }, [getUserSubscriptions.data, course.id]);
+  }, [getUserSubscriptions.data, getUserPendingSubscriptions.data, course.id]);
 
   const isHidden = useMemo(
     () => !isAuthenticated || isPhysiotherapist,

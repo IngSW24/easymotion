@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -39,39 +38,45 @@ export class SubscriptionsController {
   ) {}
 
   /**
-   * Get the current subscriptions for the logged user
+   * Get the current (pending) subscriptions for the logged user
    */
   @Get()
   @UseAuth([Role.USER])
   @ApiPaginatedResponse(SubscriptionDtoWithCourse)
   getSubscriptionsForLoggedUser(
     @Query() pagination: PaginationFilter,
-    @Req() req
+    @Req() req,
+    @Query("pending") pending?: string
   ) {
+    const isPending = pending === "true";
     return this.subscriptionsService.getCustomerSubscriptions(
       req.user.sub,
-      pagination
+      pagination,
+      isPending
     );
   }
 
   /**
-   * Get the current subscriptions for the given user
+   * Get the current (pending) subscriptions for the given user
    */
   @Get(":userId")
   @UseAuth()
   @ApiPaginatedResponse(SubscriptionDtoWithCourse)
   getSubscriptionsForGivenUser(
     @Param("userId") userId: string,
-    @Query() pagination: PaginationFilter
+    @Query() pagination: PaginationFilter,
+    @Query("pending") pending?: string
   ) {
+    const isPending = pending === "true";
     return this.subscriptionsService.getCustomerSubscriptions(
       userId,
-      pagination
+      pagination,
+      isPending
     );
   }
 
   /**
-   * Gets all subscribers of a course
+   * Gets current (pending) subscription for the given course
    * @param courseId the course uuid
    */
   @Get("course/:course_id")
@@ -79,17 +84,19 @@ export class SubscriptionsController {
   @ApiPaginatedResponse(SubscriptionDtoWithUser)
   getSubscribers(
     @Param("course_id") course_id: string,
-    @Query() pagination: PaginationFilter
+    @Query() pagination: PaginationFilter,
+    @Query("pending") pending?: string
   ) {
+    const isPending = pending === "true";
     return this.subscriptionsService.getCourseSubscriptions(
       pagination,
       course_id,
-      false
+      isPending
     );
   }
 
   /**
-   * Gets all pending subscribers
+   * [Admin & Physiotherapist] Gets all pending subscribers
    * @param courseId the course uuid
    */
   @Get("course/:courseId/pending")
@@ -106,46 +113,22 @@ export class SubscriptionsController {
     );
   }
 
-  /**
-   * Subscribe the logged in final user to a course
-   * @param courseId the course uuid
-   */
-  @Post()
-  @UseAuth([Role.USER])
+  @Post("request/send")
+  @UseAuth()
   @ApiOkResponse()
-  async subscribeLoggedUser(
-    @Body() subscriptionRequestDto: SubscriptionRequestDto,
+  async sendSubscriptionRequest(
+    @Body() subscriptionInviteDto: SubscriptionRequestDto,
     @Req() req
   ) {
     await this.subscriptionsService.subscribeFinalUser(
       req.user.sub,
-      subscriptionRequestDto.course_id,
+      subscriptionInviteDto.course_id,
       true
     );
-
-    const course = await this.coursesService.findOne(
-      subscriptionRequestDto.course_id
-    );
-
-    const patient = await this.usersManager.getUserById(req.user.sub);
-
-    await this.emailService.sendEmail(
-      course.owner.email,
-      "Nuova richiesta di iscrizione al corso",
-      `Hai ricevuto una nuova richiesta di iscrizione al corso ${course.name}.`
-    );
-
-    if (isSuccessResult(patient)) {
-      await this.emailService.sendEmail(
-        patient.data.email,
-        "Nuova richiesta di iscrizione al corso",
-        `La tua richiesta di iscrizione al corso ${course.name} è stata ricevuta. Riceverai conferma al più presto.`
-      );
-    }
   }
 
   /**
-   * Subscribe the given final user to a course (for admins and physiotherapists)
+   * [Admin & Physiotherapist] Subscribe the given final user to a course
    * @param courseId the course uuid
    */
   @Post("user")
@@ -156,7 +139,8 @@ export class SubscriptionsController {
   ) {
     await this.subscriptionsService.subscribeFinalUser(
       subscriptionCreateDto.patient_id,
-      subscriptionCreateDto.course_id
+      subscriptionCreateDto.course_id,
+      false
     );
 
     const course = await this.coursesService.findOne(
@@ -183,38 +167,7 @@ export class SubscriptionsController {
   }
 
   /**
-   * Unsubscribe the logged in final user from a course
-   * @param courseId the course uuid
-   */
-  @Delete()
-  @ApiOkResponse()
-  @UseAuth([Role.USER])
-  async unsubscribeLoggedUser(
-    @Body() subscriptionDeleteDto: SubscriptionDeleteDto,
-    @Req() req
-  ) {
-    await this.subscriptionsService.unsubscribeFinalUser(
-      req.user.sub,
-      subscriptionDeleteDto.course_id
-    );
-
-    const course = await this.coursesService.findOne(
-      subscriptionDeleteDto.course_id
-    );
-
-    const patient = await this.usersManager.getUserById(req.user.sub);
-
-    if (isSuccessResult(patient)) {
-      await this.emailService.sendEmail(
-        patient.data.email,
-        "Iscrizione al corso",
-        `Ti confermiamo che la disiscrizione dal corso ${course.name} è avvenuta con successo.`
-      );
-    }
-  }
-
-  /**
-   * Unsubscribe the given final user from a course (for admins and physiotherapists)
+   * [Admin & Physiotherapist] Force-unsubscribe the given final user from a course
    * @param courseId the course uuid
    */
   @Delete("user")

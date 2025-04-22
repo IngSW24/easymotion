@@ -16,7 +16,6 @@ import { useEffect, useState } from "react";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 import { ArrowBack, Check, Close, Search } from "@mui/icons-material";
 import { SubscriptionDtoWithUser } from "@easymotion/openapi";
-import { unsubscribe } from "diagnostics_channel";
 
 enum CurrentState {
   "LOADING",
@@ -45,7 +44,7 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
     subscribePhysio.mutateAsync({
       course_id: courseId ?? "", // TODO: empty string
       patient_id: patient_id,
-      subscriptionRequestMessage: "Test message",
+      // subscriptionRequestMessage: "Test message",
     });
   };
 

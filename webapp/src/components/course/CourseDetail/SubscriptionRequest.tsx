@@ -52,7 +52,6 @@ export default function SubscriptionRequest(props: CourseDetailProps) {
   const handleSubscriptionRequest = async () => {
     request2Subscribe.mutateAsync({
       course_id: courseId || "",
-      patient_id: userId || "",
       subscriptionRequestMessage: textLetter,
     });
     setIsReqSended(true);

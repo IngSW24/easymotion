@@ -4,7 +4,6 @@ import {
   Typography,
   Chip,
   Paper,
-  Button,
   Stack,
   Avatar,
   Card,
@@ -26,17 +25,14 @@ import {
   InfoOutlined,
   CategoryOutlined,
   GroupOutlined,
-  Delete,
-  Done,
-  QuestionAnswer,
 } from "@mui/icons-material";
 import { CourseDto } from "@easymotion/openapi";
 import { calculateDuration } from "../../../utils/format";
-import { useSubscribeButton } from "./useSubscribeButton";
 import { getPaymentRecurrenceName } from "../../../data/payment-type";
 import { useAuth } from "@easymotion/auth-context";
 import { Link } from "react-router";
 import SubscriptionRequestForm from "./SubscriptionRequest";
+import SubscribeSection from "./SubscribeSection";
 
 export interface CourseDetailProps {
   course: CourseDto;
@@ -48,7 +44,6 @@ const CourseDetail: React.FC<CourseDetailProps> = (
 ) => {
   const { course, hideTitle = false } = props;
   const { isAuthenticated, isPhysiotherapist, user } = useAuth();
-  const subscribeButton = useSubscribeButton({ course });
 
   const [openSubReqModal, setOpenSubReqModal] = useState(false);
 
@@ -161,28 +156,10 @@ const CourseDetail: React.FC<CourseDetailProps> = (
 
               <Box sx={{ textAlign: "center" }}>
                 {isAuthenticated && !isPhysiotherapist && (
-                  <Typography
-                    variant="h5"
-                    gutterBottom
-                    sx={{
-                      display: "block",
-                      color: "primary.dark",
-                      fontSmooth: "antialiased",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: 1,
-                      }}
-                    >
-                      <QuestionAnswer />
-                      Vuoi partecipare?
-                    </Box>
-                  </Typography>
+                  <SubscribeSection
+                    course={course}
+                    onSubscribeClick={() => setOpenSubReqModal(true)}
+                  />
                 )}
                 <SubscriptionRequestForm
                   open={openSubReqModal}
@@ -228,27 +205,6 @@ const CourseDetail: React.FC<CourseDetailProps> = (
                       Entra a far parte di EasyMotion!
                     </Typography>
                   </Box>
-                )}
-                {isAuthenticated && !subscribeButton.isHidden && (
-                  <Button
-                    startIcon={
-                      subscribeButton.subscribed ? <Delete /> : <Done />
-                    }
-                    variant="contained"
-                    color={subscribeButton.subscribed ? "error" : "primary"}
-                    disabled={subscribeButton.isDisabled}
-                    size="large"
-                    onClick={
-                      () => setOpenSubReqModal(true)
-                      // subscribeButton.subscribed
-                      //   ? subscribeButton.handleUnsubscribe()
-                      //   : subscribeButton.handleSubscribe()
-                    }
-                  >
-                    {subscribeButton.subscribed
-                      ? "Annulla iscrizione"
-                      : "Iscriviti"}
-                  </Button>
                 )}
               </Box>
             </CardContent>
