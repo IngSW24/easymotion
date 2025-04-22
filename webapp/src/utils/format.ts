@@ -53,3 +53,12 @@ export const calculateDuration = (start: DateTime, end: DateTime) => {
     }`;
   }
 };
+
+/**
+ * Gets the URL of a course image
+ * @param courseId - The ID of the course
+ * @returns The URL of the course image
+ */
+export const getCourseImageUrl = (courseId: string) => {
+  return `${import.meta.env.VITE_STATIC_URL}/course/${courseId}`;
+};
