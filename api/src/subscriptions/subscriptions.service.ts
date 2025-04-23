@@ -12,13 +12,20 @@ import {
 export class SubscriptionsService {
   constructor(private readonly prismaService: PrismaService) {}
 
+  /**
+   * Retrieves subscriptions for a specific customer with pagination.
+   * @param customerId Unique identifier of the customer.
+   * @param pagination Pagination filter containing the page and perPage parameters.
+   * @param isPending Whether to return pending subscriptions only.
+   * @returns A paginated output with subscription data and metadata.
+   */
   async getCustomerSubscriptions(
     customerId: string,
     pagination: PaginationFilter,
     isPending: boolean = false
   ) {
     const count = await this.prismaService.subscription.count({
-      where: { patient_id: customerId },
+      where: { patient_id: customerId, isPending },
     });
 
     const courses = await this.prismaService.subscription.findMany({
@@ -47,8 +54,9 @@ export class SubscriptionsService {
 
   /**
    * Retrieves all subscribers to a course with pagination.
-   * @param courseId Unique identifier of the course.
    * @param pagination Pagination filter containing the page and perPage parameters.
+   * @param courseId Unique identifier of the course.
+   * @param isPending Whether to return pending subscriptions only.
    * @returns A paginated output with subscriber data and metadata.
    */
   async getCourseSubscriptions(
@@ -56,8 +64,6 @@ export class SubscriptionsService {
     courseId: string,
     isPending: boolean = false
   ) {
-    console.log("courseId: ", courseId);
-
     const count = await this.prismaService.subscription.count({
       where: { course_id: courseId, isPending },
     });
@@ -93,15 +99,12 @@ export class SubscriptionsService {
   }
 
   /**
-   * Subscribes a final user to a course.
-   * @param finalUserId Unique identifier of the final user.
-   * @param courseId Unique identifier of the course.
+   * Creates a subscription request from a patient to a course.
+   * @param patient_id Unique identifier of the patient.
+   * @param course_id Unique identifier of the course.
+   * @throws BadRequestException if course is full or subscriptions are closed.
    */
-  async subscribeFinalUser(
-    patient_id: string,
-    course_id: string,
-    byPatient: boolean = false
-  ) {
+  async createSubscriptionRequest(patient_id: string, course_id: string) {
     const user = await this.prismaService.patient.findUniqueOrThrow({
       where: { applicationUserId: patient_id },
     });
@@ -110,38 +113,50 @@ export class SubscriptionsService {
       where: { id: course_id },
     });
 
-    if (byPatient) {
-      const numExistingSubscriptions =
-        await this.prismaService.subscription.count({
-          where: {
-            course_id: course.id,
-          },
-        });
-
-      if (
-        numExistingSubscriptions >= course.max_subscribers ||
-        !course.subscriptions_open
-      ) {
-        throw new BadRequestException("Course is full");
-      }
-
-      const now = new Date();
-      if (
-        now.getTime() < course.subscription_start_date.getTime() ||
-        now.getTime() > course.subscription_end_date.getTime()
-      ) {
-        throw new BadRequestException("Subscriptions closed");
-      }
-
-      await this.prismaService.subscription.create({
-        data: {
+    const numExistingSubscriptions =
+      await this.prismaService.subscription.count({
+        where: {
           course_id: course.id,
-          patient_id: user.applicationUserId,
-          isPending: true,
         },
       });
-      return;
+
+    if (
+      numExistingSubscriptions >= course.max_subscribers ||
+      !course.subscriptions_open
+    ) {
+      throw new BadRequestException("Course is full");
     }
+
+    const now = new Date();
+    if (
+      now.getTime() < course.subscription_start_date.getTime() ||
+      now.getTime() > course.subscription_end_date.getTime()
+    ) {
+      throw new BadRequestException("Subscriptions closed");
+    }
+
+    await this.prismaService.subscription.create({
+      data: {
+        course_id: course.id,
+        patient_id: user.applicationUserId,
+        isPending: true,
+      },
+    });
+  }
+
+  /**
+   * Creates a direct subscription for a patient to a course (admin action).
+   * @param patient_id Unique identifier of the patient.
+   * @param course_id Unique identifier of the course.
+   */
+  async createDirectSubscription(patient_id: string, course_id: string) {
+    const user = await this.prismaService.patient.findUniqueOrThrow({
+      where: { applicationUserId: patient_id },
+    });
+
+    const course = await this.prismaService.course.findUniqueOrThrow({
+      where: { id: course_id },
+    });
 
     await this.prismaService.subscription.upsert({
       create: {
@@ -162,8 +177,45 @@ export class SubscriptionsService {
   }
 
   /**
-   * Unsubscribes a final user from a course.
-   * @param finalUserId Unique identifier of the final user.
+   * Accepts a pending subscription request.
+   * @param patient_id Unique identifier of the patient.
+   * @param course_id Unique identifier of the course.
+   * @throws BadRequestException if no pending subscription exists.
+   */
+  async acceptSubscriptionRequest(patient_id: string, course_id: string) {
+    const subscription = await this.prismaService.subscription.findUnique({
+      where: {
+        course_id_patient_id: {
+          course_id,
+          patient_id,
+        },
+      },
+    });
+
+    if (!subscription) {
+      throw new BadRequestException("Subscription request not found");
+    }
+
+    if (!subscription.isPending) {
+      throw new BadRequestException("Subscription is already active");
+    }
+
+    await this.prismaService.subscription.update({
+      where: {
+        course_id_patient_id: {
+          course_id,
+          patient_id,
+        },
+      },
+      data: {
+        isPending: false,
+      },
+    });
+  }
+
+  /**
+   * Unsubscribes a patient from a course.
+   * @param patientId Unique identifier of the patient.
    * @param courseId Unique identifier of the course.
    */
   async unsubscribeFinalUser(patientId: string, courseId: string) {
