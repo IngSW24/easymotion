@@ -14,6 +14,9 @@ import { AssetsModule } from "./assets/assets.module";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { join } from "path";
 
+const shouldServeStaticFiles =
+  process.env.NODE_ENV === "development" && process.env.USE_S3 !== "true";
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -39,7 +42,7 @@ import { join } from "path";
       inject: [ConfigService],
     }),
     // Serve static files in development mode to provide s3 alternative
-    ...(process.env.NODE_ENV === "development"
+    ...(shouldServeStaticFiles
       ? [
           ServeStaticModule.forRoot({
             rootPath: join(__dirname, "..", "..", "uploads"),

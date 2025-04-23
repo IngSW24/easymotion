@@ -10,26 +10,16 @@ import { ConfigType } from "@nestjs/config";
 import s3Config from "src/config/s3.config";
 import { Readable } from "stream";
 import IAssetsService from "./assets.interface";
+import { S3_CLIENT } from "./assets.module";
 
 @Injectable()
 export class S3AssetsService implements IAssetsService {
-  private s3: S3Client;
-  private bucket: string;
-
   constructor(
     @Inject(s3Config.KEY)
-    private readonly config: ConfigType<typeof s3Config>
-  ) {
-    const { accessKeyId, secretAccessKey, region } = this.config;
-    this.bucket = this.config.bucket;
-    this.s3 = new S3Client({
-      region,
-      credentials: {
-        accessKeyId,
-        secretAccessKey,
-      },
-    });
-  }
+    private readonly config: ConfigType<typeof s3Config>,
+    @Inject(S3_CLIENT)
+    private readonly s3: S3Client
+  ) {}
 
   /**
    * List all buckets in S3
@@ -39,7 +29,7 @@ export class S3AssetsService implements IAssetsService {
   async listBuckets(prefix: string = "") {
     return this.s3.send(
       new ListObjectsV2Command({
-        Bucket: this.bucket,
+        Bucket: this.config.bucket,
         Prefix: prefix,
       })
     );
@@ -64,7 +54,7 @@ export class S3AssetsService implements IAssetsService {
     try {
       await this.s3.send(
         new PutObjectCommand({
-          Bucket: this.bucket,
+          Bucket: this.config.bucket,
           Key: key,
           Body: buffer,
           ContentType: contentType,
@@ -84,7 +74,7 @@ export class S3AssetsService implements IAssetsService {
   async deleteFile(key: string): Promise<void> {
     await this.s3.send(
       new DeleteObjectCommand({
-        Bucket: this.bucket,
+        Bucket: this.config.bucket,
         Key: key,
       })
     );
@@ -97,7 +87,7 @@ export class S3AssetsService implements IAssetsService {
    */
   async getFileStream(key: string): Promise<Readable> {
     const command = new GetObjectCommand({
-      Bucket: this.bucket,
+      Bucket: this.config.bucket,
       Key: key,
     });
 

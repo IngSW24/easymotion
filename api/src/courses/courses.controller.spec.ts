@@ -10,6 +10,7 @@ import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { randomUUID } from "node:crypto";
 import { Course, CourseLevel } from "@prisma/client";
 import { plainToInstance } from "class-transformer";
+import { ImageCompressionService } from "src/assets/image-compression.service";
 
 describe("CoursesController", () => {
   let controller: CoursesController;
@@ -31,6 +32,16 @@ describe("CoursesController", () => {
       },
     };
 
+    const mockupCompressionService = {
+      compressImage: jest.fn(),
+    };
+
+    const mockupAssetsService = {
+      uploadBuffer: jest.fn(),
+      deleteFile: jest.fn(),
+      getFileStream: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [CoursesController],
       providers: [
@@ -38,6 +49,14 @@ describe("CoursesController", () => {
         {
           provide: PrismaService,
           useValue: prismaMock, // Mock PrismaService
+        },
+        {
+          provide: "IAssetsService",
+          useValue: mockupAssetsService,
+        },
+        {
+          provide: ImageCompressionService,
+          useValue: mockupCompressionService,
         },
       ],
     }).compile();

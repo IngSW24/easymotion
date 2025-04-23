@@ -31,11 +31,13 @@ import { CourseQueryFilter } from "./dto/filters/course-query-filter.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiFileBody } from "src/common/decorators/api-file-body.decorator";
 import IAssetsService from "src/assets/assets.interface";
+import { ImageCompressionService } from "src/assets/image-compression.service";
 
 @Controller("courses")
 export class CoursesController {
   constructor(
     private readonly coursesService: CoursesService,
+    private readonly imageCompressionService: ImageCompressionService,
     @Inject("IAssetsService")
     private readonly assetsService: IAssetsService
   ) {}
@@ -149,14 +151,18 @@ export class CoursesController {
     @Param("id") id: string,
     @UploadedFile(
       new ParseFilePipeBuilder()
-        .addMaxSizeValidator({ maxSize: 1024 * 1024 * 5 })
+        .addMaxSizeValidator({ maxSize: 1024 * 1024 * 10 })
         .addFileTypeValidator({ fileType: "image" })
         .build()
     )
     file: Express.Multer.File
   ) {
+    const compressedBuffer = await this.imageCompressionService.compressImage(
+      file.buffer
+    );
+
     const imagePath = await this.assetsService.uploadBuffer(
-      file.buffer,
+      compressedBuffer,
       "course",
       id,
       file.mimetype

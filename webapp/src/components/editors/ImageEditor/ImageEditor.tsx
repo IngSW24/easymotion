@@ -83,6 +83,9 @@ export default function ImageEditor({
   const [completedCrop, setCompletedCrop] = useState<Crop | null>(null);
   const [isCropDialogOpen, setIsCropDialogOpen] = useState(false);
   const [imageLoadError, setImageLoadError] = useState(false);
+  const [originalImagePreview, setOriginalImagePreview] = useState<
+    string | null
+  >(initialImageUrl || null);
 
   const imgRef = useRef<HTMLImageElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -99,41 +102,49 @@ export default function ImageEditor({
     }
   }, [initialImageUrl]);
 
-  const onSelectFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setError(null);
-    setImageLoadError(false);
+  // Update original image preview when initialImageUrl changes
+  useEffect(() => {
+    setOriginalImagePreview(initialImageUrl || null);
+  }, [initialImageUrl]);
 
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
+  const onSelectFile = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setError(null);
+      setImageLoadError(false);
 
-      if (!allowedFileTypes.includes(file.type)) {
-        setError(
-          `Il tipo ${file.type} non è supportato. Tipi supportati: ${allowedFileTypes.join(", ")}`
-        );
-        return;
+      if (e.target.files && e.target.files.length > 0) {
+        const file = e.target.files[0];
+
+        if (!allowedFileTypes.includes(file.type)) {
+          setError(
+            `Il tipo ${file.type} non è supportato. Tipi supportati: ${allowedFileTypes.join(", ")}`
+          );
+          return;
+        }
+
+        if (file.size > maxFileSize) {
+          setError(
+            `La dimensione del file supera il massimo consentito di ${
+              maxFileSize / (1024 * 1024)
+            }MB`
+          );
+          return;
+        }
+
+        setOriginalFile(file);
+        const reader = new FileReader();
+
+        reader.addEventListener("load", () => {
+          const imageUrl = reader.result as string;
+          setImagePreview(imageUrl);
+          setIsCropDialogOpen(true);
+        });
+
+        reader.readAsDataURL(file);
       }
-
-      if (file.size > maxFileSize) {
-        setError(
-          `La dimensione del file supera il massimo consentito di ${
-            maxFileSize / (1024 * 1024)
-          }MB`
-        );
-        return;
-      }
-
-      setOriginalFile(file);
-      const reader = new FileReader();
-
-      reader.addEventListener("load", () => {
-        const imageUrl = reader.result as string;
-        setImagePreview(imageUrl);
-        setIsCropDialogOpen(true);
-      });
-
-      reader.readAsDataURL(file);
-    }
-  };
+    },
+    [allowedFileTypes, maxFileSize]
+  );
 
   const onImageLoad = useCallback(
     (e: React.SyntheticEvent<HTMLImageElement>) => {
@@ -230,15 +241,18 @@ export default function ImageEditor({
     inputRef.current?.click();
   };
 
-  const handleCloseCropDialog = () => {
+  const handleCloseCropDialog = useCallback(() => {
     setIsCropDialogOpen(false);
 
     // If we're uploading for the first time and cancel, clear the preview
     if (!initialImageUrl && imagePreview) {
       setImagePreview(initialImageUrl || null);
       setOriginalFile(null);
+    } else {
+      // Revert to original image preview if crop is discarded
+      setImagePreview(originalImagePreview);
     }
-  };
+  }, [initialImageUrl, imagePreview, originalImagePreview]);
 
   return (
     <Box sx={{ width, height }}>

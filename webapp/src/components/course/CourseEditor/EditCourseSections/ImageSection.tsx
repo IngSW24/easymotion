@@ -1,5 +1,5 @@
 import { Box, Typography, Alert, CircularProgress } from "@mui/material";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useCourseImageUpload } from "../../../../hooks/useCourseImageUpload";
 import ImageEditor from "../../../editors/ImageEditor/ImageEditor";
 import { useFormContext } from "react-hook-form";
@@ -17,6 +17,12 @@ export default function ImageSection(props: ImageSectionProps) {
 
   const { watch } = useFormContext<CourseFormData>();
   const courseId = watch("id");
+
+  const courseImageUrl = useMemo(() => {
+    return props.course?.image_path
+      ? getCourseImageUrl({ course: props.course, ignoreCache: true })
+      : undefined;
+  }, [props.course]);
 
   const uploadImage = useCourseImageUpload();
 
@@ -49,16 +55,11 @@ export default function ImageSection(props: ImageSectionProps) {
       {courseId && (
         <>
           <Typography variant="body1" color="text.secondary">
-            L'immagine apparirà nelle pagine del corso. Si consiglia di
-            utilizzare un'immagine con proporzioni 16:9.
+            L'immagine apparirà nelle pagine del corso.
           </Typography>
 
           <ImageEditor
-            initialImageUrl={
-              props.course && props.course.image_path
-                ? getCourseImageUrl({ course: props.course, ignoreCache: true })
-                : undefined
-            }
+            initialImageUrl={courseImageUrl}
             aspectRatio={16 / 9} // 16:9 aspect ratio
             onImageReady={(file) => handleImageReady(file)}
             maxFileSize={5 * 1024 * 1024} // 5MB
