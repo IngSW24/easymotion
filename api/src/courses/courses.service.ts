@@ -266,6 +266,18 @@ export class CoursesService {
   }
 
   /**
+   * Sets the image path for a course.
+   * @param id - Unique identifier of the course.
+   * @param imagePath - The path to the image file.
+   */
+  async setImagePath(id: string, imagePath: string | null) {
+    await this.prismaService.course.update({
+      where: { id },
+      data: { image_path: imagePath },
+    });
+  }
+
+  /**
    * Find courses to which the given userId is subscribed
    * @param userId the id of the logged in user
    * @param pagination the pagination filter

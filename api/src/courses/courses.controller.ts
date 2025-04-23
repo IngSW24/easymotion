@@ -19,7 +19,6 @@ import { CreateCourseDto } from "./dto/create-course.dto";
 import { UpdateCourseDto } from "./dto/update-course.dto";
 import { CourseDto } from "./dto/course.dto";
 import {
-  ApiBody,
   ApiConsumes,
   ApiCreatedResponse,
   ApiOkResponse,
@@ -30,14 +29,15 @@ import UseAuth from "src/auth/decorators/auth-with-role.decorator";
 import { Role } from "@prisma/client";
 import { CourseQueryFilter } from "./dto/filters/course-query-filter.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { AssetsService } from "src/assets/assets.service";
 import { ApiFileBody } from "src/common/decorators/api-file-body.decorator";
+import IAssetsService from "src/assets/assets.interface";
 
 @Controller("courses")
 export class CoursesController {
   constructor(
     private readonly coursesService: CoursesService,
-    private readonly assetsService: AssetsService
+    @Inject("IAssetsService")
+    private readonly assetsService: IAssetsService
   ) {}
 
   /**
@@ -142,6 +142,7 @@ export class CoursesController {
   @Post(":id/picture")
   @UseInterceptors(FileInterceptor("file"))
   @UseAuth([Role.PHYSIOTHERAPIST, Role.ADMIN])
+  @ApiOkResponse({ type: CourseDto })
   @ApiConsumes("multipart/form-data")
   @ApiFileBody()
   async uploadCoursePicture(
@@ -154,14 +155,19 @@ export class CoursesController {
     )
     file: Express.Multer.File
   ) {
-    if (!["image/jpeg", "image/png", "image/gif"].includes(file.mimetype)) {
-      throw new BadRequestException("Only image files are allowed!");
-    }
-    await this.assetsService.uploadBuffer(
+    const imagePath = await this.assetsService.uploadBuffer(
       file.buffer,
       "course",
       id,
       file.mimetype
     );
+
+    if (!imagePath) {
+      throw new BadRequestException("Failed to upload image!");
+    }
+
+    await this.coursesService.setImagePath(id, imagePath);
+
+    return this.coursesService.findOne(id);
   }
 }

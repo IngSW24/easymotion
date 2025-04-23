@@ -11,6 +11,8 @@ import { RequestMiddleware } from "./middlewares/request.middleware";
 import { AuthController } from "./auth/auth.controller";
 import { CategoriesModule } from "./categories/categories.module";
 import { AssetsModule } from "./assets/assets.module";
+import { ServeStaticModule } from "@nestjs/serve-static";
+import { join } from "path";
 
 @Module({
   imports: [
@@ -36,6 +38,15 @@ import { AssetsModule } from "./assets/assets.module";
       },
       inject: [ConfigService],
     }),
+    // Serve static files in development mode to provide s3 alternative
+    ...(process.env.NODE_ENV === "development"
+      ? [
+          ServeStaticModule.forRoot({
+            rootPath: join(__dirname, "..", "..", "uploads"),
+            serveRoot: "/uploads",
+          }),
+        ]
+      : []),
     AuthModule,
     UsersModule,
     EmailModule,

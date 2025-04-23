@@ -29,7 +29,7 @@ const getLabel = (value: string, options: LiteralUnionDescriptor<string>) =>
  */
 export default function CourseCard(props: CourseCardProps) {
   const { course } = props;
-  const [imageUrl, setImageUrl] = useState(getCourseImageUrl(course.id));
+  const [imageUrl, setImageUrl] = useState(getCourseImageUrl({ course }));
 
   return (
     <Card

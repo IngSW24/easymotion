@@ -14,6 +14,7 @@ describe("CourseDetail GUI test", () => {
     location: "sample_location",
     price: 235478236,
     name: "sample_name",
+    image_path: "sample_image_path",
     short_description: "sample_short_description",
     sessions: [
       {

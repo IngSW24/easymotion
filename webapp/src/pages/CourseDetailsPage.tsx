@@ -26,7 +26,9 @@ export default function CourseDetailsPage() {
         opacity={0.5}
         title={courseRepo.getSingle.data?.name ?? ""}
         subtitle={courseRepo.getSingle.data?.short_description ?? ""}
-        backgroundImage={getCourseImageUrl(courseRepo.getSingle.data?.id ?? "")}
+        backgroundImage={getCourseImageUrl({
+          course: courseRepo.getSingle.data,
+        })}
         fallbackImage={`/hero.jpg`}
       />
       <Container sx={{ my: 5 }}>

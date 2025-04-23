@@ -1,56 +1,24 @@
 import { Box, Typography, Alert, CircularProgress } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useCourseImageUpload } from "../../../../hooks/useCourseImageUpload";
 import ImageEditor from "../../../editors/ImageEditor/ImageEditor";
 import { useFormContext } from "react-hook-form";
 import { CourseFormData } from "../schema";
-import { DateTime } from "luxon";
+import { CourseDto } from "@easymotion/openapi";
+import { getCourseImageUrl } from "../../../../utils/format";
 
-const getStaticUrl = (courseId: string) => {
-  const timestamp = DateTime.now().toMillis();
-  return `${import.meta.env.VITE_STATIC_URL}/course/${courseId}?t=${timestamp}`;
-};
+export interface ImageSectionProps {
+  course: CourseDto | null | undefined;
+}
 
-export interface ImageSectionProps {}
-
-export default function ImageSection() {
+export default function ImageSection(props: ImageSectionProps) {
   const [isUploading, setIsUploading] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [imageError, setImageError] = useState(false);
 
   const { watch } = useFormContext<CourseFormData>();
   const courseId = watch("id");
 
   const uploadImage = useCourseImageUpload();
-
-  // Determine the initial course image URL if available
-  useEffect(() => {
-    if (!courseId) return;
-
-    const abortController = new AbortController();
-    setImageError(false);
-
-    const prefetchUrl = async () => {
-      const url = getStaticUrl(courseId);
-      try {
-        await fetch(url, {
-          method: "HEAD",
-          signal: abortController?.signal,
-          mode: "no-cors",
-        });
-
-        setPreviewUrl(url);
-        setImageError(false);
-      } catch (error) {
-        setPreviewUrl(null);
-        setImageError(true);
-      }
-    };
-
-    prefetchUrl();
-
-    return () => abortController.abort();
-  }, [courseId]);
 
   const handleImageReady = async (file: File) => {
     if (!courseId) {
@@ -62,8 +30,6 @@ export default function ImageSection() {
 
     try {
       await uploadImage.mutateAsync({ courseId, file });
-      // After successful upload, update the preview URL with a new timestamp to force reload
-      setPreviewUrl(getStaticUrl(courseId));
     } catch (err) {
       console.error("Error uploading image:", err);
       setImageError(true);
@@ -88,7 +54,11 @@ export default function ImageSection() {
           </Typography>
 
           <ImageEditor
-            initialImageUrl={previewUrl || undefined}
+            initialImageUrl={
+              props.course && props.course.image_path
+                ? getCourseImageUrl({ course: props.course, ignoreCache: true })
+                : undefined
+            }
             aspectRatio={16 / 9} // 16:9 aspect ratio
             onImageReady={(file) => handleImageReady(file)}
             maxFileSize={5 * 1024 * 1024} // 5MB

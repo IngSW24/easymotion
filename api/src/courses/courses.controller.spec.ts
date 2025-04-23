@@ -135,6 +135,7 @@ describe("CoursesController", () => {
       {
         id: "",
         name: "",
+        image_path: "",
         description: "",
         short_description: "",
         instructors: [],
@@ -216,6 +217,7 @@ describe("CoursesController", () => {
       description: "Test Description",
       short_description: "Short Description",
       instructors: [],
+      image_path: "",
       category: {
         id: randomUUID(),
         name: "Category",

@@ -1,4 +1,4 @@
-import { AuthUserDto } from "@easymotion/openapi";
+import { AuthUserDto, CourseDto } from "@easymotion/openapi";
 import { DateTime } from "luxon";
 
 /**
@@ -59,6 +59,22 @@ export const calculateDuration = (start: DateTime, end: DateTime) => {
  * @param courseId - The ID of the course
  * @returns The URL of the course image
  */
-export const getCourseImageUrl = (courseId: string) => {
-  return `${import.meta.env.VITE_STATIC_URL}/course/${courseId}`;
+interface GetCourseImageUrlProps {
+  course: CourseDto | null | undefined;
+  fallbackImage?: string;
+  staticUrl?: string;
+  ignoreCache?: boolean;
+}
+
+export const getCourseImageUrl = ({
+  course,
+  fallbackImage = "/hero.jpg",
+  staticUrl = import.meta.env.VITE_STATIC_URL,
+  ignoreCache = false,
+}: GetCourseImageUrlProps) => {
+  if (!course || !course.image_path) {
+    return fallbackImage;
+  }
+
+  return `${staticUrl}/${course.image_path}${ignoreCache ? `?t=${DateTime.now().toMillis()}` : ""}`;
 };

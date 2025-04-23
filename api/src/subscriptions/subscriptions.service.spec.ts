@@ -64,6 +64,7 @@ describe("SubsriptionsService", () => {
         id: uuidCourse,
         description: "",
         short_description: "",
+        image_path: "",
         location: "",
         instructors: [],
         level: "BASIC",

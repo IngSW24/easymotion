@@ -551,8 +551,25 @@
           }
         },
         "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseDto"
+                }
+              }
+            }
+          },
           "201": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1981,6 +1998,11 @@
             "type": "string",
             "description": "The id of the course"
           },
+          "image_path": {
+            "type": "string",
+            "nullable": true,
+            "description": "The image path of the course"
+          },
           "name": {
             "type": "string",
             "description": "The name of the course"
@@ -2095,6 +2117,7 @@
         },
         "required": [
           "id",
+          "image_path",
           "name",
           "description",
           "short_description",

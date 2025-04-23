@@ -141,7 +141,7 @@ export default function CourseEditModal(props: CourseEditModalProps) {
                       Immagine
                     </Typography>
                   </Box>
-                  <ImageSection />
+                  <ImageSection course={course} />
                 </Paper>
               </Grid>
               <Grid size={{ xs: 12 }}>

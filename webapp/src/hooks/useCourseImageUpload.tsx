@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useApiClient } from "@easymotion/auth-context";
 import { useSnack } from "./useSnack";
 
@@ -11,16 +11,11 @@ export function useCourseImageUpload(
   options: UseCourseImageUploadOptions = {}
 ) {
   const { apiClient } = useApiClient();
+  const queryClient = useQueryClient();
   const snack = useSnack();
 
   return useMutation({
-    mutationFn: async ({
-      courseId,
-      file,
-    }: {
-      courseId: string;
-      file: File;
-    }) => {
+    mutationFn: ({ courseId, file }: { courseId: string; file: File }) => {
       const formData = new FormData();
       formData.append("file", file);
 
@@ -29,6 +24,7 @@ export function useCourseImageUpload(
       });
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["courses"] });
       snack.showSuccess("Immagine caricata con successo!");
       options.onSuccess?.();
     },

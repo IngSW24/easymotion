@@ -140,7 +140,7 @@ export default function ImageEditor({
       const { width, height } = e.currentTarget;
 
       // Initialize with centered crop
-      let initialCrop = centerCrop(
+      const initialCrop = centerCrop(
         makeAspectCrop(
           {
             unit: "%",
