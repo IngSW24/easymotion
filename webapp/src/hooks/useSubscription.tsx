@@ -22,13 +22,10 @@ export interface UseSubscriptionsProps {
  *  - Fetch subscriptions for the logged user or a specific user
  *  - Fetch subscribers for a given course
  *  - Subscribe/unsubscribe a user to/from a course
+ *  - Handle pending subscription requests
  *
  * @param {UseSubscriptionsProps} props - Configuration options for fetching subscriptions
- * @returns {object} An object containing:
- *  - **getUserSubscriptions** (useQuery): retrieves user subscriptions
- *  - **getCourseSubscribers** (useQuery): retrieves course subscribers
- *  - **subscribe** (useMutation): subscribes a user to a course
- *  - **unsubscribe** (useMutation): unsubscribes a user from a course
+ * @returns {object} An object containing hooks for subscription management
  */
 export default function useSubscriptions(props: UseSubscriptionsProps) {
   const {
@@ -45,9 +42,7 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
   const queryClient = useQueryClient();
 
   /**
-   * Retrieves subscriptions for either:
-   *  - the logged-in user (if userId is not provided), or
-   *  - a specified user (if userId is provided).
+   * Retrieves active subscriptions for the logged-in user
    */
   const getUserSubscriptions = useQuery({
     queryKey: ["userSubscriptions", userId, page, perPage],
@@ -55,7 +50,6 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
       const resp =
         await api.subscriptions.subscriptionsControllerGetSubscriptionsForLoggedUser(
           {
-            pending: "false",
             page,
             perPage,
           }
@@ -64,13 +58,15 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
     },
   });
 
+  /**
+   * Retrieves pending subscription requests for the logged-in user
+   */
   const getUserPendingSubscriptions = useQuery({
     queryKey: ["userPendingSubscriptions", page, perPage],
     queryFn: async () => {
       const resp =
-        await api.subscriptions.subscriptionsControllerGetSubscriptionsForLoggedUser(
+        await api.subscriptions.subscriptionsControllerGetPendingSubscriptionsForLoggedUser(
           {
-            pending: "true",
             page,
             perPage,
           }
@@ -79,11 +75,14 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
     },
   });
 
+  /**
+   * Retrieves pending subscription requests for a specific course
+   */
   const getPendingCourseSubscriptions = useQuery({
     queryKey: ["pendingSubscriptions", courseId, page, perPage],
     queryFn: async () => {
       const result =
-        await api.subscriptions.subscriptionsControllerGetPendingSubscribers(
+        await api.subscriptions.subscriptionsControllerGetPendingSubscribersForCourse(
           courseId,
           { page, perPage }
         );
@@ -94,16 +93,16 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
   });
 
   /**
-   * Retrieves the subscribers of a specific course (if courseId is provided).
+   * Retrieves active subscribers for a specific course
    */
   const getCourseSubscribers = useQuery({
     queryKey: ["course-subscribers", courseId, page, perPage],
     queryFn: async () => {
       if (!courseId) return null;
       const resp =
-        await api.subscriptions.subscriptionsControllerGetSubscribers(
+        await api.subscriptions.subscriptionsControllerGetSubscribersForCourse(
           courseId,
-          { page, perPage, pending: "false" }
+          { page, perPage }
         );
       return resp.data;
     },
@@ -111,8 +110,7 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
   });
 
   /**
-   * Subscribes a user to a specific course.
-   * @mutationFn SubscriptionsController.subscribe
+   * Sends a subscription request for approval
    */
   const request2Subscribe = useMutation({
     mutationFn: async (dto: SubscriptionRequestDto) => {
@@ -123,11 +121,7 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
     onSuccess: () => {
       // Invalidate queries so that data is refreshed
       queryClient.invalidateQueries({
-        queryKey: [
-          "subscriptions",
-          "course-subscribers",
-          "pendingSubscriptions",
-        ],
+        queryKey: ["userPendingSubscriptions", "pendingSubscriptions"],
       });
       snack.showSuccess("Richiesta di iscrizione inviata!");
     },
@@ -135,23 +129,18 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
   });
 
   /**
-   * Subscribes a user to a specific course.
-   * @mutationFn SubscriptionsController.subscribe
+   * Creates a direct subscription for a user (admin/physiotherapist action)
    */
   const subscribePhysio = useMutation({
     mutationFn: async (dto: SubscriptionCreateDto) => {
-      return await api.subscriptions.subscriptionsControllerSubscribeGivenUser(
+      return await api.subscriptions.subscriptionsControllerCreateSubscription(
         dto
       );
     },
     onSuccess: () => {
       // Invalidate queries so that data is refreshed
       queryClient.invalidateQueries({
-        queryKey: [
-          "subscriptions",
-          "course-subscribers",
-          "pendingSubscriptions",
-        ],
+        queryKey: ["userSubscriptions", "course-subscribers"],
       });
       snack.showSuccess("Iscrizione avvenuta con successo!");
     },
@@ -159,28 +148,53 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
   });
 
   /**
-   * Unsubscribes a user from a specific course.
-   * @mutationFn SubscriptionsController.unsubscribe
+   * Accepts a pending subscription request (admin/physiotherapist action)
    */
-  const unSubscribe = useMutation({
-    mutationFn: async (dto: SubscriptionDeleteDto) => {
-      return await api.subscriptions.subscriptionsControllerUnsubscribeGivenUser(
+  const acceptSubscriptionRequest = useMutation({
+    mutationFn: async (dto: SubscriptionCreateDto) => {
+      return await api.subscriptions.subscriptionsControllerAcceptSubscriptionRequest(
         dto
       );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["subscriptions", "course-subscribers"],
+        queryKey: [
+          "pendingSubscriptions",
+          "userPendingSubscriptions",
+          "userSubscriptions",
+          "course-subscribers",
+        ],
+      });
+      snack.showSuccess("Richiesta di iscrizione accettata!");
+    },
+    onError: (error) => snack.showError(error),
+  });
+
+  /**
+   * Unsubscribes a user from a specific course
+   */
+  const unSubscribe = useMutation({
+    mutationFn: async (dto: SubscriptionDeleteDto) => {
+      return await api.subscriptions.subscriptionsControllerDeleteSubscription(
+        dto
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["userSubscriptions", "course-subscribers"],
       });
       snack.showSuccess("Disiscrizione avvenuta con successo!");
     },
     onError: (error) => snack.showError(error),
   });
 
+  /**
+   * Retrieves courses that a user is subscribed to
+   */
   const getSubscription = useQuery({
     queryKey: !filters
-      ? ["courses", { page, perPage }]
-      : ["courses", { page, perPage }, { filters }],
+      ? ["courses", userId, { page, perPage }]
+      : ["courses", userId, { page, perPage }, { filters }],
     queryFn: async () => {
       const response =
         await api.courses.coursesControllerFindSubscribedCoursesForUserId(
@@ -198,7 +212,7 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
         );
       return response.data;
     },
-    enabled: fetchAll,
+    enabled: fetchAll && !!userId,
   });
 
   return {
@@ -208,6 +222,7 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
     getPendingCourseSubscriptions,
     request2Subscribe,
     subscribePhysio,
+    acceptSubscriptionRequest,
     unSubscribe,
     getSubscription,
   };
