@@ -562,14 +562,7 @@
             }
           },
           "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CourseDto"
-                }
-              }
-            }
+            "description": ""
           }
         },
         "security": [
