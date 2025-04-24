@@ -10,7 +10,7 @@ import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { randomUUID } from "node:crypto";
 import { Course, CourseLevel } from "@prisma/client";
 import { plainToInstance } from "class-transformer";
-import { ImageCompressionService } from "src/assets/image-compression.service";
+import { CompressionService } from "src/assets/utilities/compression.service";
 import { ASSETS_SERVICE } from "src/assets/assets.interface";
 
 describe("CoursesController", () => {
@@ -56,7 +56,7 @@ describe("CoursesController", () => {
           useValue: mockupAssetsService,
         },
         {
-          provide: ImageCompressionService,
+          provide: CompressionService,
           useValue: mockupCompressionService,
         },
       ],

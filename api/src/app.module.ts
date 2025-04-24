@@ -13,7 +13,7 @@ import { CategoriesModule } from "./categories/categories.module";
 import { AssetsModule } from "./assets/assets.module";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { join } from "path";
-import { S3Module } from "./s3/s3.module";
+import { AwsModule } from "./aws/aws.module";
 import dbConfig from "./config/db.config";
 
 const shouldServeStaticFiles =
@@ -58,7 +58,7 @@ const shouldServeStaticFiles =
     SubscriptionsModule,
     CategoriesModule,
     AssetsModule,
-    S3Module,
+    AwsModule,
   ],
 })
 export class AppModule {

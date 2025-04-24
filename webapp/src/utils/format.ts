@@ -63,22 +63,20 @@ interface GetCourseImageUrlProps {
   course: CourseDto | null | undefined;
   fallbackImage?: string;
   staticUrl?: string;
-  ignoreCache?: boolean;
 }
 
 export const getCourseImageUrl = ({
   course,
   fallbackImage = "/hero.jpg",
   staticUrl = import.meta.env.VITE_STATIC_URL,
-  ignoreCache = false,
 }: GetCourseImageUrlProps) => {
   if (!course || !course.image_path) {
     return fallbackImage;
   }
 
-  return `${staticUrl}/${course.image_path}${ignoreCache ? `?t=${DateTime.now().toMillis()}` : ""}`;
+  return `${staticUrl}/${course.image_path}`;
 };
 
-export const getProfilePictureUrl = (picturePath: string) => {
+export const getStaticImageUrl = (picturePath: string) => {
   return `${import.meta.env.VITE_STATIC_URL}/${picturePath}`;
 };

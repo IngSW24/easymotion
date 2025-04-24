@@ -5,7 +5,7 @@ import { AuthResponseDto } from "./dto/auth-user/auth-response.dto";
 import { UpdateAuthUserDto } from "./dto/auth-user/update-auth-user.dto";
 import { CustomRequest } from "src/common/types/custom-request";
 import IAssetsService, { ASSETS_SERVICE } from "src/assets/assets.interface";
-import { ImageCompressionService } from "src/assets/image-compression.service";
+import { CompressionService } from "src/assets/utilities/compression.service";
 import assetsConfig from "src/config/assets.config";
 import { BadRequestException } from "@nestjs/common";
 
@@ -13,7 +13,7 @@ describe("AuthController", () => {
   let controller: AuthController;
   let serviceMock: Partial<AuthService>;
   let assetsServiceMock: Partial<IAssetsService>;
-  let imageCompressionServiceMock: Partial<ImageCompressionService>;
+  let imageCompressionServiceMock: Partial<CompressionService>;
 
   beforeEach(async () => {
     serviceMock = {
@@ -48,7 +48,7 @@ describe("AuthController", () => {
           useValue: assetsServiceMock,
         },
         {
-          provide: ImageCompressionService,
+          provide: CompressionService,
           useValue: imageCompressionServiceMock,
         },
         {
@@ -302,77 +302,15 @@ describe("AuthController", () => {
   });
 
   it("should clear refresh token cookie and call deleteUserProfile", async () => {
-    const req = { user: { sub: "user123" } }; // Simula la richiesta con l'ID dell'utente
-    const res = { send: jest.fn(), clearCookie: jest.fn() }; // Mock della risposta
+    const req = { user: { sub: "user123" } }; // Simulate the request with the user's ID
+    const res = { send: jest.fn(), clearCookie: jest.fn() }; // Mock the response
 
     await controller.deleteUserProfile(req, res);
 
-    // Verifica che il metodo `deleteUserProfile` del servizio venga chiamato con l'ID corretto
+    // Verify that the `deleteUserProfile` method of the service is called with the correct ID
     expect(serviceMock.deleteUserProfile).toHaveBeenCalledWith("user123");
 
-    // Verifica che il metodo clearCookie sia stato invocato
+    // Ensure the refresh token cookie is cleared
     expect(res.clearCookie).toHaveBeenCalledWith("refreshToken");
-  });
-
-  it("should update user profile picture", async () => {
-    const req = { user: { sub: "user123" } };
-
-    const mockFile: Express.Multer.File = {
-      fieldname: "file",
-      originalname: "test.png",
-      encoding: "7bit",
-      mimetype: "image/png",
-      size: 1024,
-      stream: undefined,
-      destination: "",
-      filename: "",
-      path: "",
-      buffer: Buffer.from("mock file content"),
-    };
-
-    serviceMock.updateUserPicture = jest.fn().mockResolvedValue({
-      id: "user123",
-      firstName: "Test User",
-      lastName: "Test User",
-      email: "test@test.com",
-      picturePath: "profile/user123",
-    });
-
-    assetsServiceMock.uploadBuffer = jest
-      .fn()
-      .mockResolvedValue("profile/user123");
-
-    const result = await controller.updateProfilePicture(req, mockFile);
-
-    expect(serviceMock.updateUserPicture).toHaveBeenCalledWith(
-      req.user.sub,
-      "profile/user123"
-    );
-    expect(result.id).toEqual("user123");
-    expect(result.picturePath).toEqual("profile/user123");
-  });
-
-  it("should throw bad request if the image upload fails", async () => {
-    const req = { user: { sub: "user123" } };
-    const mockFile: Express.Multer.File = {
-      fieldname: "file",
-      originalname: "test.png",
-      encoding: "7bit",
-      mimetype: "image/png",
-      size: 1024,
-      stream: undefined,
-      destination: "",
-      filename: "",
-      path: "",
-      buffer: Buffer.from("mock file content"),
-    };
-
-    assetsServiceMock.uploadBuffer = jest.fn().mockResolvedValue(null);
-
-    await expect(
-      controller.updateProfilePicture(req, mockFile)
-    ).rejects.toThrow(BadRequestException);
-
-    expect(serviceMock.updateUserPicture).not.toHaveBeenCalled();
   });
 });

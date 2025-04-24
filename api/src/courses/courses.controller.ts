@@ -25,14 +25,14 @@ import { Role } from "@prisma/client";
 import { CourseQueryFilter } from "./dto/filters/course-query-filter.dto";
 import { ApiFileBody } from "src/common/decorators/api-file-body.decorator";
 import IAssetsService, { ASSETS_SERVICE } from "src/assets/assets.interface";
-import { ImageCompressionService } from "src/assets/image-compression.service";
+import { CompressionService } from "src/assets/utilities/compression.service";
 import { DateTime } from "luxon";
 
 @Controller("courses")
 export class CoursesController {
   constructor(
     private readonly coursesService: CoursesService,
-    private readonly imageCompressionService: ImageCompressionService,
+    private readonly imageCompressionService: CompressionService,
     @Inject(ASSETS_SERVICE)
     private readonly assetsService: IAssetsService
   ) {}
@@ -154,21 +154,6 @@ export class CoursesController {
       file.buffer
     );
 
-    const fileName = `${id}-${DateTime.now().toMillis()}`;
-
-    const imagePath = await this.assetsService.uploadBuffer(
-      compressedBuffer,
-      "course",
-      fileName,
-      file.mimetype
-    );
-
-    if (!imagePath) {
-      throw new BadRequestException("Failed to upload image!");
-    }
-
-    await this.coursesService.setImagePath(id, imagePath);
-
-    return this.coursesService.findOne(id);
+    return this.coursesService.updateImage(id, compressedBuffer, file.mimetype);
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable } from "@nestjs/common";
 import { CreateCourseDto } from "./dto/create-course.dto";
 import { UpdateCourseDto } from "./dto/update-course.dto";
 import { CourseDto } from "./dto/course.dto";
@@ -9,6 +9,8 @@ import { instanceToPlain, plainToInstance } from "class-transformer";
 import { toPaginatedOutput } from "src/common/utils/pagination";
 import { CourseQueryFilter } from "./dto/filters/course-query-filter.dto";
 import { CourseLevel, Prisma } from "@prisma/client";
+import { DateTime } from "luxon";
+import IAssetsService, { ASSETS_SERVICE } from "src/assets/assets.interface";
 
 @Injectable()
 /**
@@ -21,7 +23,10 @@ export class CoursesService {
    * Constructor injects the PrismaService for database access.
    * @param prismaService - Service to interact with the Prisma Client.
    */
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    @Inject(ASSETS_SERVICE) private readonly assetsService: IAssetsService
+  ) {}
 
   /**
    * Creates a new course in the database.
@@ -270,11 +275,42 @@ export class CoursesService {
    * @param id - Unique identifier of the course.
    * @param imagePath - The path to the image file.
    */
-  async setImagePath(id: string, imagePath: string | null) {
-    await this.prismaService.course.update({
+  setImagePath(id: string, imagePath: string | null) {
+    this.prismaService.course.update({
       where: { id },
       data: { image_path: imagePath },
     });
+  }
+
+  async updateImage(
+    id: string,
+    buffer: Buffer,
+    mimeType: string,
+    uniqueTimestamp: string | number | null = null
+  ) {
+    const course = await this.findOne(id);
+
+    const previousImagePath = course.image_path;
+    const fileName = `${course.id}-${!uniqueTimestamp ? DateTime.now().toMillis() : uniqueTimestamp}`;
+
+    if (previousImagePath) {
+      await this.assetsService.deleteFile(previousImagePath);
+    }
+
+    const imagePath = await this.assetsService.uploadBuffer(
+      buffer,
+      "course",
+      fileName,
+      mimeType
+    );
+
+    if (!imagePath) {
+      throw new BadRequestException("Failed to upload image!");
+    }
+
+    await this.setImagePath(id, imagePath);
+
+    return { ...course, image_path: imagePath };
   }
 
   /**

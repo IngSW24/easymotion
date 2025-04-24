@@ -22,7 +22,7 @@ import { z } from "zod";
 import { DateTime } from "luxon";
 import ProfileAvatar from "../../Layout/ProfileAvatar";
 import { useEffect, useState } from "react";
-import { getProfilePictureUrl } from "../../../utils/format";
+import { getStaticImageUrl } from "../../../utils/format";
 import AvatarUploadDialog from "./AvatarUploadDialog";
 
 export interface GeneralProfileSettingsProps {
@@ -298,7 +298,7 @@ export default function GeneralProfileSettings(
         open={isAvatarDialogOpen}
         onClose={() => setIsAvatarDialogOpen(false)}
         avatarUrl={
-          user.picturePath ? getProfilePictureUrl(user.picturePath) : undefined
+          user.picturePath ? getStaticImageUrl(user.picturePath) : undefined
         }
       />
     </>

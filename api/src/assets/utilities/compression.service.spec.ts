@@ -1,14 +1,14 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import assetsConfig from "src/config/assets.config";
-import { ImageCompressionService } from "./image-compression.service";
+import { CompressionService } from "./compression.service";
 
-describe("ImageCompressionService", () => {
-  let service: ImageCompressionService;
+describe("CompressionService", () => {
+  let service: CompressionService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        ImageCompressionService,
+        CompressionService,
         {
           provide: assetsConfig.KEY,
           useValue: {
@@ -19,7 +19,7 @@ describe("ImageCompressionService", () => {
       ],
     }).compile();
 
-    service = module.get<ImageCompressionService>(ImageCompressionService);
+    service = module.get<CompressionService>(CompressionService);
   });
 
   it("should be defined", () => {

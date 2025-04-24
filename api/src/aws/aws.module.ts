@@ -24,4 +24,4 @@ export const S3_CLIENT = "S3_CLIENT";
   ],
   exports: [S3_CLIENT],
 })
-export class S3Module {}
+export class AwsModule {}

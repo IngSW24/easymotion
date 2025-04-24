@@ -4,7 +4,7 @@ import * as sharp from "sharp";
 import assetsConfig from "src/config/assets.config";
 
 @Injectable()
-export class ImageCompressionService {
+export class CompressionService {
   private maxSize: number;
   private compressionFactor: number;
 

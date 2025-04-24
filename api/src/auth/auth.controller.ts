@@ -43,7 +43,7 @@ import { AuthResponseDto } from "./dto/auth-user/auth-response.dto";
 import { ApplicationUserDto } from "src/users/dto/application-user.dto";
 import { ApiFileBody } from "src/common/decorators/api-file-body.decorator";
 import IAssetsService, { ASSETS_SERVICE } from "src/assets/assets.interface";
-import { ImageCompressionService } from "src/assets/image-compression.service";
+import { CompressionService } from "src/assets/utilities/compression.service";
 
 // avoids having to bloat the code with the same multiple decorators
 const ApiLoginResponse = (description: string = "Successful login") =>
@@ -60,7 +60,7 @@ const ApiLoginResponse = (description: string = "Successful login") =>
 export class AuthController {
   constructor(
     private authService: AuthService,
-    private readonly imageCompressionService: ImageCompressionService,
+    private readonly imageCompressionService: CompressionService,
     @Inject(ASSETS_SERVICE) private readonly assetsService: IAssetsService
   ) {}
 
@@ -212,20 +212,11 @@ export class AuthController {
       file.buffer
     );
 
-    const fileName = `${userId}-${DateTime.now().toMillis()}`;
-
-    const imagePath = await this.assetsService.uploadBuffer(
+    return this.authService.updateUserPicture(
+      userId,
       compressedBuffer,
-      "profile",
-      fileName,
       file.mimetype
     );
-
-    if (!imagePath) {
-      throw new BadRequestException("Failed to upload image!");
-    }
-
-    return this.authService.updateUserPicture(userId, imagePath);
   }
 
   /**

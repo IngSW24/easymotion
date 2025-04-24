@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import IAssetsService from "./assets.interface";
+import IAssetsService from "../assets.interface";
 import { Readable } from "stream";
 
 @Injectable()
@@ -12,9 +12,11 @@ export class MockAssetsService implements IAssetsService {
   ): Promise<string | null> {
     return Promise.resolve(`${folder}/${filename}`);
   }
+
   deleteFile(_key: string): Promise<void> {
-    throw new Error("Method not implemented.");
+    return;
   }
+
   getFileStream(_key: string): Promise<Readable> {
     throw new Error("Method not implemented.");
   }

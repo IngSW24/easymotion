@@ -9,8 +9,8 @@ import { Inject, Injectable } from "@nestjs/common";
 import { ConfigType } from "@nestjs/config";
 import s3Config from "src/config/s3.config";
 import { Readable } from "stream";
-import IAssetsService from "./assets.interface";
-import { S3_CLIENT } from "src/s3/s3.module";
+import IAssetsService from "../assets.interface";
+import { S3_CLIENT } from "src/aws/aws.module";
 
 @Injectable()
 export class S3AssetsService implements IAssetsService {
@@ -72,12 +72,16 @@ export class S3AssetsService implements IAssetsService {
    * @param key the key of the file to delete
    */
   async deleteFile(key: string): Promise<void> {
-    await this.s3.send(
-      new DeleteObjectCommand({
-        Bucket: this.config.bucket,
-        Key: key,
-      })
-    );
+    try {
+      await this.s3.send(
+        new DeleteObjectCommand({
+          Bucket: this.config.bucket,
+          Key: key,
+        })
+      );
+    } catch (e) {
+      console.error(`Error deleting file ${key} from S3: ${e}`);
+    }
   }
 
   /**
