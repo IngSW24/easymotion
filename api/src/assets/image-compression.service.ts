@@ -21,7 +21,6 @@ export class ImageCompressionService {
     const metadata = await image.metadata();
 
     if (metadata.size && metadata.size > (maxSize ?? this.maxSize)) {
-      console.log("Compressing image");
       return image
         .resize({
           width: Math.floor(metadata.width * this.compressionFactor),

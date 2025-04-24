@@ -1,48 +1,24 @@
 import { Module } from "@nestjs/common";
 import { S3AssetsService } from "./s3.service";
 import { ModuleRef } from "@nestjs/core";
-import { ConfigService, ConfigType } from "@nestjs/config";
-import LocalAssetsService from "./local.service";
+import { ConfigType } from "@nestjs/config";
 import { ImageCompressionService } from "./image-compression.service";
-import s3Config from "src/config/s3.config";
-import { S3Client } from "@aws-sdk/client-s3";
-
-export const S3_CLIENT = "S3_CLIENT";
+import { S3Module } from "src/s3/s3.module";
+import { ASSETS_SERVICE } from "./assets.interface";
+import assetsConfig from "src/config/assets.config";
+import { MockAssetsService } from "./mock.service";
 
 @Module({
+  imports: [S3Module],
   providers: [
     S3AssetsService,
-    LocalAssetsService,
+    MockAssetsService,
     ImageCompressionService,
     {
-      provide: "IAssetsService",
-      inject: [ConfigService, ModuleRef],
-      useFactory: (configService: ConfigService, moduleRef: ModuleRef) => {
-        const useS3 = configService.get<boolean>("USE_S3");
-        const token = useS3 ? S3AssetsService : LocalAssetsService;
-        return moduleRef.get(token, { strict: false });
-      },
-    },
-    {
-      provide: S3_CLIENT,
-      useFactory: (config: ConfigType<typeof s3Config>) => {
-        return new S3Client({
-          region: config.region,
-          credentials: {
-            accessKeyId: config.accessKeyId,
-            secretAccessKey: config.secretAccessKey,
-          },
-        });
-      },
-      inject: [s3Config.KEY],
+      provide: ASSETS_SERVICE,
+      useClass: process.env.USE_S3 ? S3AssetsService : MockAssetsService,
     },
   ],
-  exports: [
-    S3AssetsService,
-    LocalAssetsService,
-    "IAssetsService",
-    ImageCompressionService,
-    S3_CLIENT,
-  ],
+  exports: [ASSETS_SERVICE, ImageCompressionService],
 })
 export class AssetsModule {}

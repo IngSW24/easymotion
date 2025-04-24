@@ -10,7 +10,7 @@ import { ConfigType } from "@nestjs/config";
 import s3Config from "src/config/s3.config";
 import { Readable } from "stream";
 import IAssetsService from "./assets.interface";
-import { S3_CLIENT } from "./assets.module";
+import { S3_CLIENT } from "src/s3/s3.module";
 
 @Injectable()
 export class S3AssetsService implements IAssetsService {

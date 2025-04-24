@@ -78,3 +78,7 @@ export const getCourseImageUrl = ({
 
   return `${staticUrl}/${course.image_path}${ignoreCache ? `?t=${DateTime.now().toMillis()}` : ""}`;
 };
+
+export const getProfilePictureUrl = (picturePath: string) => {
+  return `${import.meta.env.VITE_STATIC_URL}/${picturePath}`;
+};

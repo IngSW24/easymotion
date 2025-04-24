@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { S3AssetsService } from "./s3.service";
 import s3Config from "src/config/s3.config";
-import { S3_CLIENT } from "./assets.module";
+import { S3_CLIENT } from "src/s3/s3.module";
 
 describe("S3AssetsService", () => {
   let service: S3AssetsService;

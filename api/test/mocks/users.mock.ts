@@ -58,6 +58,7 @@ export const applicationUserDtoMock = (): ApplicationUserDto => ({
   twoFactorExpiry: new Date(),
   twoFactorEnabled: false,
   failedLoginAttempts: 0,
+  picturePath: "",
 });
 
 export const applicationUsersList = () => [

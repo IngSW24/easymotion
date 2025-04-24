@@ -11,6 +11,7 @@ import { randomUUID } from "node:crypto";
 import { Course, CourseLevel } from "@prisma/client";
 import { plainToInstance } from "class-transformer";
 import { ImageCompressionService } from "src/assets/image-compression.service";
+import { ASSETS_SERVICE } from "src/assets/assets.interface";
 
 describe("CoursesController", () => {
   let controller: CoursesController;
@@ -51,7 +52,7 @@ describe("CoursesController", () => {
           useValue: prismaMock, // Mock PrismaService
         },
         {
-          provide: "IAssetsService",
+          provide: ASSETS_SERVICE,
           useValue: mockupAssetsService,
         },
         {

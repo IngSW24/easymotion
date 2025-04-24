@@ -1,5 +1,6 @@
 import { Readable } from "stream";
 
+export const ASSETS_SERVICE = "ASSETS_SERVICE";
 export default interface IAssetsService {
   uploadBuffer(
     buffer: Buffer,

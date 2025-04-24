@@ -92,6 +92,26 @@ export class AuthService {
   }
 
   /**
+   * Updates the user's profile picture path.
+   * @param userId the ID of the user to update the profile picture for
+   * @param filePath the path of the new profile picture
+   * @returns the updated user profile as an AuthUserDto
+   */
+  async updateUserPicture(userId: string, filePath: string) {
+    const result = await this.userManager.updateUser(userId, {
+      picturePath: filePath,
+    });
+
+    if (!isSuccessResult(result)) {
+      throw resultToHttpException(result);
+    }
+
+    return plainToInstance(AuthUserDto, result.data, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  /**
    * Creates a login response for the user containing an access token and a refresh token
    * together with user information.
    * @param user the user to create the response for

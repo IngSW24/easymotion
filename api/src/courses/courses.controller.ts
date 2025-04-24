@@ -9,7 +9,6 @@ import {
   Query,
   Req,
   UploadedFile,
-  UseInterceptors,
   Inject,
   BadRequestException,
   ParseFilePipeBuilder,
@@ -18,27 +17,23 @@ import { CoursesService } from "./courses.service";
 import { CreateCourseDto } from "./dto/create-course.dto";
 import { UpdateCourseDto } from "./dto/update-course.dto";
 import { CourseDto } from "./dto/course.dto";
-import {
-  ApiConsumes,
-  ApiCreatedResponse,
-  ApiOkResponse,
-} from "@nestjs/swagger";
+import { ApiCreatedResponse, ApiOkResponse } from "@nestjs/swagger";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { ApiPaginatedResponse } from "src/common/decorators/api-paginated-response.decorator";
 import UseAuth from "src/auth/decorators/auth-with-role.decorator";
 import { Role } from "@prisma/client";
 import { CourseQueryFilter } from "./dto/filters/course-query-filter.dto";
-import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiFileBody } from "src/common/decorators/api-file-body.decorator";
-import IAssetsService from "src/assets/assets.interface";
+import IAssetsService, { ASSETS_SERVICE } from "src/assets/assets.interface";
 import { ImageCompressionService } from "src/assets/image-compression.service";
+import { DateTime } from "luxon";
 
 @Controller("courses")
 export class CoursesController {
   constructor(
     private readonly coursesService: CoursesService,
     private readonly imageCompressionService: ImageCompressionService,
-    @Inject("IAssetsService")
+    @Inject(ASSETS_SERVICE)
     private readonly assetsService: IAssetsService
   ) {}
 
@@ -142,10 +137,8 @@ export class CoursesController {
    * @param file the image file
    */
   @Post(":id/picture")
-  @UseInterceptors(FileInterceptor("file"))
   @UseAuth([Role.PHYSIOTHERAPIST, Role.ADMIN])
   @ApiOkResponse({ type: CourseDto })
-  @ApiConsumes("multipart/form-data")
   @ApiFileBody()
   async uploadCoursePicture(
     @Param("id") id: string,
@@ -161,10 +154,12 @@ export class CoursesController {
       file.buffer
     );
 
+    const fileName = `${id}-${DateTime.now().toMillis()}`;
+
     const imagePath = await this.assetsService.uploadBuffer(
       compressedBuffer,
       "course",
-      id,
+      fileName,
       file.mimetype
     );
 

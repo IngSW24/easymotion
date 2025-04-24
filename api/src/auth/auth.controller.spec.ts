@@ -4,12 +4,16 @@ import { AuthService } from "./auth.service";
 import { AuthResponseDto } from "./dto/auth-user/auth-response.dto";
 import { UpdateAuthUserDto } from "./dto/auth-user/update-auth-user.dto";
 import { CustomRequest } from "src/common/types/custom-request";
+import IAssetsService, { ASSETS_SERVICE } from "src/assets/assets.interface";
+import { ImageCompressionService } from "src/assets/image-compression.service";
+import assetsConfig from "src/config/assets.config";
+import { BadRequestException } from "@nestjs/common";
 
 describe("AuthController", () => {
   let controller: AuthController;
   let serviceMock: Partial<AuthService>;
-
-  let clearRefreshTokenCookieMock: jest.Mock;
+  let assetsServiceMock: Partial<IAssetsService>;
+  let imageCompressionServiceMock: Partial<ImageCompressionService>;
 
   beforeEach(async () => {
     serviceMock = {
@@ -19,9 +23,18 @@ describe("AuthController", () => {
       getUserProfile: jest.fn(),
       updateUserProfile: jest.fn(),
       deleteUserProfile: jest.fn(),
+      updateUserPicture: jest.fn(),
     };
 
-    clearRefreshTokenCookieMock = jest.fn();
+    assetsServiceMock = {
+      uploadBuffer: jest.fn(),
+      deleteFile: jest.fn(),
+      getFileStream: jest.fn(),
+    };
+
+    imageCompressionServiceMock = {
+      compressImage: jest.fn(),
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
@@ -30,11 +43,27 @@ describe("AuthController", () => {
           provide: AuthService,
           useValue: serviceMock,
         },
+        {
+          provide: ASSETS_SERVICE,
+          useValue: assetsServiceMock,
+        },
+        {
+          provide: ImageCompressionService,
+          useValue: imageCompressionServiceMock,
+        },
+        {
+          provide: assetsConfig.KEY,
+          useValue: {
+            maxSize: 1024 * 1024 * 10,
+            compressionFactor: 0.5,
+          },
+        },
       ],
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
   });
+
   it("should send OTP response if requiresOtp is true in userLogin", async () => {
     const req: CustomRequest = {
       user: { requiresOtp: true },
@@ -136,6 +165,7 @@ describe("AuthController", () => {
       user: {
         id: "user123",
         birthDate: "",
+        picturePath: null,
         email: "",
         firstName: "",
         middleName: "",
@@ -215,6 +245,7 @@ describe("AuthController", () => {
         firstName: "Admin 123",
         middleName: "",
         lastName: "",
+        picturePath: null,
         phoneNumber: "",
         role: "USER",
         isEmailVerified: false,
@@ -281,5 +312,67 @@ describe("AuthController", () => {
 
     // Verifica che il metodo clearCookie sia stato invocato
     expect(res.clearCookie).toHaveBeenCalledWith("refreshToken");
+  });
+
+  it("should update user profile picture", async () => {
+    const req = { user: { sub: "user123" } };
+
+    const mockFile: Express.Multer.File = {
+      fieldname: "file",
+      originalname: "test.png",
+      encoding: "7bit",
+      mimetype: "image/png",
+      size: 1024,
+      stream: undefined,
+      destination: "",
+      filename: "",
+      path: "",
+      buffer: Buffer.from("mock file content"),
+    };
+
+    serviceMock.updateUserPicture = jest.fn().mockResolvedValue({
+      id: "user123",
+      firstName: "Test User",
+      lastName: "Test User",
+      email: "test@test.com",
+      picturePath: "profile/user123",
+    });
+
+    assetsServiceMock.uploadBuffer = jest
+      .fn()
+      .mockResolvedValue("profile/user123");
+
+    const result = await controller.updateProfilePicture(req, mockFile);
+
+    expect(serviceMock.updateUserPicture).toHaveBeenCalledWith(
+      req.user.sub,
+      "profile/user123"
+    );
+    expect(result.id).toEqual("user123");
+    expect(result.picturePath).toEqual("profile/user123");
+  });
+
+  it("should throw bad request if the image upload fails", async () => {
+    const req = { user: { sub: "user123" } };
+    const mockFile: Express.Multer.File = {
+      fieldname: "file",
+      originalname: "test.png",
+      encoding: "7bit",
+      mimetype: "image/png",
+      size: 1024,
+      stream: undefined,
+      destination: "",
+      filename: "",
+      path: "",
+      buffer: Buffer.from("mock file content"),
+    };
+
+    assetsServiceMock.uploadBuffer = jest.fn().mockResolvedValue(null);
+
+    await expect(
+      controller.updateProfilePicture(req, mockFile)
+    ).rejects.toThrow(BadRequestException);
+
+    expect(serviceMock.updateUserPicture).not.toHaveBeenCalled();
   });
 });

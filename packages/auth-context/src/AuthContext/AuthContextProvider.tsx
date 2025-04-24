@@ -144,6 +144,26 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
     }
   };
 
+  const updateProfilePicture = async (file: File) => {
+    const response = await apiInstance.authControllerUpdateProfilePicture(
+      {
+        file,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`, // Include the access token for authenticated logout
+        },
+      }
+    );
+
+    if (response.ok && response.data) {
+      setUser(response.data);
+      return response.data.picturePath;
+    }
+
+    return null;
+  };
+
   /**
    * Handles user signup by sending the signup information to the server.
    * @param signupInfo - User's signup information
@@ -165,6 +185,7 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
         updateOtpStatus,
         updateEmail,
         signup,
+        updateProfilePicture,
         updateUser: setUser,
         initialized,
       }}

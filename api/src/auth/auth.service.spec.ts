@@ -162,6 +162,7 @@ describe("AuthService - validateUser", () => {
     const mockUser: AuthUserDto = {
       id: "user123",
       firstName: "Test User",
+      picturePath: null,
       lastName: "Test surname",
       birthDate: "",
       email: "",
