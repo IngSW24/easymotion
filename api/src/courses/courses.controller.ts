@@ -10,7 +10,6 @@ import {
   Req,
   UploadedFile,
   Inject,
-  BadRequestException,
   ParseFilePipeBuilder,
 } from "@nestjs/common";
 import { CoursesService } from "./courses.service";
@@ -24,17 +23,13 @@ import UseAuth from "src/auth/decorators/auth-with-role.decorator";
 import { Role } from "@prisma/client";
 import { CourseQueryFilter } from "./dto/filters/course-query-filter.dto";
 import { ApiFileBody } from "src/common/decorators/api-file-body.decorator";
-import IAssetsService, { ASSETS_SERVICE } from "src/assets/assets.interface";
 import { CompressionService } from "src/assets/utilities/compression.service";
-import { DateTime } from "luxon";
 
 @Controller("courses")
 export class CoursesController {
   constructor(
     private readonly coursesService: CoursesService,
-    private readonly imageCompressionService: CompressionService,
-    @Inject(ASSETS_SERVICE)
-    private readonly assetsService: IAssetsService
+    private readonly imageCompressionService: CompressionService
   ) {}
 
   /**

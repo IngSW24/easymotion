@@ -7,7 +7,6 @@ import { CustomRequest } from "src/common/types/custom-request";
 import IAssetsService, { ASSETS_SERVICE } from "src/assets/assets.interface";
 import { CompressionService } from "src/assets/utilities/compression.service";
 import assetsConfig from "src/config/assets.config";
-import { BadRequestException } from "@nestjs/common";
 
 describe("AuthController", () => {
   let controller: AuthController;
