@@ -1,5 +1,5 @@
 import { MiddlewareConsumer, Module } from "@nestjs/common";
-import { ConfigModule, ConfigService, ConfigType } from "@nestjs/config";
+import { ConfigModule, ConfigType } from "@nestjs/config";
 import { CourseModule } from "./courses/courses.module";
 import { PrismaModule } from "nestjs-prisma";
 import { AuthModule } from "./auth/auth.module";

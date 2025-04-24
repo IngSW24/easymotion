@@ -9,7 +9,6 @@ import {
   Alert,
   Grid,
   TextField,
-  IconButton,
 } from "@mui/material";
 import { Person, PhotoCamera } from "@mui/icons-material";
 import { AuthUserDto, UpdateAuthUserDto } from "@easymotion/openapi";
