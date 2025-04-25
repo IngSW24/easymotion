@@ -276,7 +276,7 @@ export class CoursesService {
    * @param imagePath - The path to the image file.
    */
   setImagePath(id: string, imagePath: string | null) {
-    this.prismaService.course.update({
+    return this.prismaService.course.update({
       where: { id },
       data: { image_path: imagePath },
     });
@@ -290,11 +290,12 @@ export class CoursesService {
   ) {
     const course = await this.findOne(id);
 
-    const previousImagePath = course.image_path;
-    const fileName = `${course.id}-${!uniqueTimestamp ? DateTime.now().toMillis() : uniqueTimestamp}`;
+    const timestamp = uniqueTimestamp ?? DateTime.utc().toMillis().toString();
 
-    if (previousImagePath) {
-      await this.assetsService.deleteFile(previousImagePath);
+    const fileName = `${course.id}-${timestamp}`;
+
+    if (course.image_path) {
+      await this.assetsService.deleteFile(course.image_path);
     }
 
     const imagePath = await this.assetsService.uploadBuffer(
