@@ -9,7 +9,6 @@ import {
   Query,
   Req,
   UploadedFile,
-  Inject,
   ParseFilePipeBuilder,
 } from "@nestjs/common";
 import { CoursesService } from "./courses.service";
