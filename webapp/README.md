@@ -2,4 +2,10 @@
 
 ## Environment variables
 
-- `VITE_API_URL`: base URL of the API
+### API
+
+- `VITE_API_URL`: base URL for the api instance
+
+### Static Assets
+
+- `VITE_STATIC_URL`: base URL for static assets lookup

@@ -21,6 +21,7 @@ import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import PublicIcon from "@mui/icons-material/Public";
 import { useAuth } from "@easymotion/auth-context";
 import { formatUserName } from "../../../utils/format";
+import ImageSection from "./EditCourseSections/ImageSection";
 
 export interface CourseEditModalProps {
   open: boolean;
@@ -132,6 +133,17 @@ export default function CourseEditModal(props: CourseEditModalProps) {
             }}
           >
             <Grid container spacing={3}>
+              <Grid size={{ xs: 12 }}>
+                <Paper elevation={1} sx={{ p: 3 }}>
+                  <Box sx={sectionCardStyle}>
+                    <InfoIcon sx={{ mr: 1, color: "primary.main" }} />
+                    <Typography variant="h5" sx={{ fontWeight: 500 }}>
+                      Immagine
+                    </Typography>
+                  </Box>
+                  <ImageSection course={course} />
+                </Paper>
+              </Grid>
               <Grid size={{ xs: 12 }}>
                 <Paper elevation={1} sx={{ p: 3 }}>
                   <Box sx={sectionCardStyle}>

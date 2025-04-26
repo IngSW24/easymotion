@@ -4,6 +4,10 @@ import { UserManager } from "src/users/user.manager";
 import { EmailService } from "src/email/email.service";
 import { JwtService } from "@nestjs/jwt";
 import { AuthUserDto } from "./dto/auth-user/auth-user.dto";
+import jwtConfig from "src/config/jwt.config";
+import frontendConfig from "src/config/frontend.config";
+import { ASSETS_SERVICE } from "src/assets/assets.interface";
+import { MockAssetsService } from "src/assets/implementations/mock.service";
 
 describe("AuthService - validateUser", () => {
   let service: AuthService;
@@ -40,7 +44,7 @@ describe("AuthService - validateUser", () => {
           useValue: jwtServiceMock,
         },
         {
-          provide: "CONFIGURATION(jwt)",
+          provide: jwtConfig.KEY,
           useValue: {
             secret: "test-secret",
             expiresIn: "1h",
@@ -50,12 +54,16 @@ describe("AuthService - validateUser", () => {
           },
         },
         {
-          provide: "CONFIGURATION(frontend)",
+          provide: frontendConfig.KEY,
           useValue: {},
         },
         {
           provide: EmailService,
           useValue: emailServiceMock,
+        },
+        {
+          provide: ASSETS_SERVICE,
+          useClass: MockAssetsService,
         },
       ],
     }).compile();
@@ -162,6 +170,7 @@ describe("AuthService - validateUser", () => {
     const mockUser: AuthUserDto = {
       id: "user123",
       firstName: "Test User",
+      picturePath: null,
       lastName: "Test surname",
       birthDate: "",
       email: "",
@@ -237,5 +246,35 @@ describe("AuthService - validateUser", () => {
 
     await service.deleteUserProfile("user123");
     expect(userManagerMock.deleteUser).toHaveBeenCalledWith("user123");
+  });
+
+  it("should update user profile picture", async () => {
+    const userId = "user123";
+    const buffer = Buffer.from("test");
+    const mimeType = "image/jpeg";
+
+    userManagerMock.getUserById = jest.fn().mockResolvedValue({
+      success: true,
+      data: { id: userId, picturePath: "path1" },
+    });
+
+    userManagerMock.updateUser = jest.fn().mockResolvedValue({
+      success: true,
+      data: { id: userId, picturePath: "profile/user123-123" },
+    });
+
+    const result = await service.updateUserPicture(
+      userId,
+      buffer,
+      mimeType,
+      "123"
+    );
+
+    expect(userManagerMock.updateUser).toHaveBeenCalledWith(userId, {
+      picturePath: "profile/user123-123",
+    });
+    expect(result).toBeDefined();
+    expect(result.picturePath).toBeDefined();
+    expect(result.picturePath).toBe("profile/user123-123");
   });
 });

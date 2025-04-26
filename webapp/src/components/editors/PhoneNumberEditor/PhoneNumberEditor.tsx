@@ -2,7 +2,7 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
 
 export interface PhoneNumberEditorProps {
-  value: string;
+  value?: string;
   height?: string;
   label?: string;
   onChange: (value: string) => void;
@@ -12,7 +12,7 @@ export default function PhoneNumberEditor(props: PhoneNumberEditorProps) {
   return (
     <PhoneInput
       country={"us"}
-      value={props.value}
+      value={props.value ?? ""}
       specialLabel={props.label || ""}
       onChange={props.onChange}
       inputProps={{

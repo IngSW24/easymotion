@@ -12,6 +12,7 @@ export interface AuthContextProps {
   updateEmail: (email: string, userId: string, token: string) => Promise<void>;
   updateUser: (user: AuthUserDto) => void;
   updateOtpStatus: (otpEnabled: boolean) => Promise<void>;
+  updateProfilePicture: (file: File) => Promise<string | null>;
   initialized: boolean;
 }
 

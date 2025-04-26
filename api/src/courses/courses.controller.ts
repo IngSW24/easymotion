@@ -8,6 +8,8 @@ import {
   Put,
   Query,
   Req,
+  UploadedFile,
+  ParseFilePipeBuilder,
 } from "@nestjs/common";
 import { CoursesService } from "./courses.service";
 import { CreateCourseDto } from "./dto/create-course.dto";
@@ -19,10 +21,15 @@ import { ApiPaginatedResponse } from "src/common/decorators/api-paginated-respon
 import UseAuth from "src/auth/decorators/auth-with-role.decorator";
 import { Role } from "@prisma/client";
 import { CourseQueryFilter } from "./dto/filters/course-query-filter.dto";
+import { ApiFileBody } from "src/common/decorators/api-file-body.decorator";
+import { CompressionService } from "src/assets/utilities/compression.service";
 
 @Controller("courses")
 export class CoursesController {
-  constructor(private readonly coursesService: CoursesService) {}
+  constructor(
+    private readonly coursesService: CoursesService,
+    private readonly imageCompressionService: CompressionService
+  ) {}
 
   /**
    * Find all courses
@@ -116,5 +123,31 @@ export class CoursesController {
   @UseAuth([Role.PHYSIOTHERAPIST, Role.ADMIN])
   remove(@Param("id") id: string) {
     return this.coursesService.remove(id);
+  }
+
+  /**
+   * Upload a course picture
+   * @param id the course uuid
+   * @param file the image file
+   */
+  @Post(":id/picture")
+  @UseAuth([Role.PHYSIOTHERAPIST, Role.ADMIN])
+  @ApiOkResponse({ type: CourseDto })
+  @ApiFileBody()
+  async uploadCoursePicture(
+    @Param("id") id: string,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addMaxSizeValidator({ maxSize: 1024 * 1024 * 10 })
+        .addFileTypeValidator({ fileType: "image" })
+        .build()
+    )
+    file: Express.Multer.File
+  ) {
+    const compressedBuffer = await this.imageCompressionService.compressImage(
+      file.buffer
+    );
+
+    return this.coursesService.updateImage(id, compressedBuffer, file.mimetype);
   }
 }

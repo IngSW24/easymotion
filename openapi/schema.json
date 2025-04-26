@@ -521,6 +521,61 @@
         ]
       }
     },
+    "/courses/{id}/picture": {
+      "post": {
+        "operationId": "CoursesController_uploadCoursePicture",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseDto"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Upload a course picture",
+        "tags": [
+          "Courses"
+        ]
+      }
+    },
     "/auth/login": {
       "post": {
         "operationId": "AuthController_userLogin",
@@ -796,6 +851,59 @@
           }
         ],
         "summary": "Deletes the profile of the currently authenticated user.",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/profile/picture": {
+      "post": {
+        "operationId": "AuthController_updateProfilePicture",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationUserDto"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthUserDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Updates the profile picture of the currently authenticated user.",
         "tags": [
           "Auth"
         ]
@@ -1936,6 +2044,11 @@
             "type": "string",
             "description": "The id of the course"
           },
+          "image_path": {
+            "type": "string",
+            "nullable": true,
+            "description": "The image path of the course"
+          },
           "name": {
             "type": "string",
             "description": "The name of the course"
@@ -2050,6 +2163,7 @@
         },
         "required": [
           "id",
+          "image_path",
           "name",
           "description",
           "short_description",
@@ -2389,6 +2503,11 @@
             "default": false,
             "example": false
           },
+          "picturePath": {
+            "type": "string",
+            "nullable": true,
+            "description": "Profile picture path"
+          },
           "twoFactorEnabled": {
             "type": "boolean",
             "description": "Indicates if two-factor authentication is enabled",
@@ -2402,6 +2521,7 @@
           "lastName",
           "role",
           "isEmailVerified",
+          "picturePath",
           "twoFactorEnabled"
         ]
       },
@@ -2513,6 +2633,107 @@
             "default": false
           }
         }
+      },
+      "ApplicationUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique user identifier (UUID)",
+            "example": "b3bf4d18-8dd0-43a1-b1da-fd3f7b9553a1"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the user",
+            "example": "user@example.com"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "User first name",
+            "example": "John"
+          },
+          "middleName": {
+            "type": "string",
+            "nullable": true,
+            "description": "User middle name",
+            "example": "Alexander"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "User last name",
+            "example": "Doe"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true,
+            "description": "User phone number",
+            "example": "+1234567890"
+          },
+          "birthDate": {
+            "type": "string",
+            "nullable": true,
+            "description": "User birth date",
+            "example": "1990-01-01"
+          },
+          "role": {
+            "type": "string",
+            "description": "User role in the system",
+            "enum": [
+              "USER",
+              "ADMIN",
+              "PHYSIOTHERAPIST"
+            ],
+            "default": "USER"
+          },
+          "isEmailVerified": {
+            "type": "boolean",
+            "description": "Indicates if the user email has been verified",
+            "default": false,
+            "example": false
+          },
+          "lastLogin": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Timestamp of the user last login",
+            "example": "2025-12-31T23:59:59.999Z"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Timestamp of when the user was created",
+            "example": "2025-01-01T00:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Timestamp of the user last update",
+            "example": "2025-01-10T10:00:00.000Z"
+          },
+          "picturePath": {
+            "type": "string",
+            "nullable": true,
+            "description": "Profile picture path"
+          },
+          "twoFactorEnabled": {
+            "type": "boolean",
+            "description": "Indicates if two-factor authentication is enabled",
+            "default": false
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "firstName",
+          "lastName",
+          "role",
+          "isEmailVerified",
+          "lastLogin",
+          "createdAt",
+          "updatedAt",
+          "picturePath",
+          "twoFactorEnabled"
+        ]
       },
       "SignUpDto": {
         "type": "object",
@@ -2708,101 +2929,6 @@
           "isEmailVerified",
           "firstName",
           "lastName"
-        ]
-      },
-      "ApplicationUserDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Unique user identifier (UUID)",
-            "example": "b3bf4d18-8dd0-43a1-b1da-fd3f7b9553a1"
-          },
-          "email": {
-            "type": "string",
-            "format": "email",
-            "description": "Email address of the user",
-            "example": "user@example.com"
-          },
-          "firstName": {
-            "type": "string",
-            "description": "User first name",
-            "example": "John"
-          },
-          "middleName": {
-            "type": "string",
-            "nullable": true,
-            "description": "User middle name",
-            "example": "Alexander"
-          },
-          "lastName": {
-            "type": "string",
-            "description": "User last name",
-            "example": "Doe"
-          },
-          "phoneNumber": {
-            "type": "string",
-            "nullable": true,
-            "description": "User phone number",
-            "example": "+1234567890"
-          },
-          "birthDate": {
-            "type": "string",
-            "nullable": true,
-            "description": "User birth date",
-            "example": "1990-01-01"
-          },
-          "role": {
-            "type": "string",
-            "description": "User role in the system",
-            "enum": [
-              "USER",
-              "ADMIN",
-              "PHYSIOTHERAPIST"
-            ],
-            "default": "USER"
-          },
-          "isEmailVerified": {
-            "type": "boolean",
-            "description": "Indicates if the user email has been verified",
-            "default": false,
-            "example": false
-          },
-          "lastLogin": {
-            "format": "date-time",
-            "type": "string",
-            "description": "Timestamp of the user last login",
-            "example": "2025-12-31T23:59:59.999Z"
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string",
-            "description": "Timestamp of when the user was created",
-            "example": "2025-01-01T00:00:00.000Z"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string",
-            "description": "Timestamp of the user last update",
-            "example": "2025-01-10T10:00:00.000Z"
-          },
-          "twoFactorEnabled": {
-            "type": "boolean",
-            "description": "Indicates if two-factor authentication is enabled",
-            "default": false
-          }
-        },
-        "required": [
-          "id",
-          "email",
-          "firstName",
-          "lastName",
-          "role",
-          "isEmailVerified",
-          "lastLogin",
-          "createdAt",
-          "updatedAt",
-          "twoFactorEnabled"
         ]
       },
       "UpdateUserDto": {
