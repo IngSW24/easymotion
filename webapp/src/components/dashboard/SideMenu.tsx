@@ -4,6 +4,11 @@ import MenuContent from "./MenuContent";
 
 const drawerWidth = 240;
 
+export interface SideMenuProps {
+  activeSection: string;
+  setActiveSection: (sectionId: string) => void;
+}
+
 const Drawer = styled(MuiDrawer)({
   width: drawerWidth,
   flexShrink: 0,
@@ -17,7 +22,8 @@ const Drawer = styled(MuiDrawer)({
   },
 });
 
-export default function SideMenu() {
+export default function SideMenu(props: SideMenuProps) {
+  const { activeSection, setActiveSection } = props;
   return (
     <Drawer
       variant="permanent"
@@ -34,7 +40,10 @@ export default function SideMenu() {
           flexDirection: "column",
         }}
       >
-        <MenuContent />
+        <MenuContent
+          activeSection={activeSection}
+          setActiveSection={setActiveSection}
+        />
       </Box>
     </Drawer>
   );
