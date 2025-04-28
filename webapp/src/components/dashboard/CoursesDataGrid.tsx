@@ -7,9 +7,11 @@ import {
   Box,
   Typography,
   Chip,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 type DashboardDataGridProps = {
   courses: CourseDto[];
@@ -40,6 +42,10 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
     pageSize: pageNumer,
     page: 0,
   });
+
+  // Aggiungi theme e media query per il responsive
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const currentDisplayedRows =
     paginationModel.page * paginationModel.pageSize + paginationModel.pageSize;
@@ -82,21 +88,21 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
             display: "flex",
             alignItems: "center",
             gap: 2,
-            width: "100%", // Utilizziamo l'intera larghezza disponibile
-            overflow: "hidden", // Nascondiamo il contenuto che eccede
+            width: "100%",
+            overflow: "hidden",
           }}
         >
           <Box
             sx={{
               width: 40,
               height: 40,
-              minWidth: 40, // Imposta una larghezza minima fissa per l'icona
+              minWidth: 40,
               backgroundColor: "#E8F0FE",
               borderRadius: 1,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              flexShrink: 0, // Impedisce all'icona di rimpicciolirsi
+              flexShrink: 0,
             }}
           >
             <Article sx={{ color: "primary.main" }} />
@@ -111,7 +117,7 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
             <Typography
               variant="subtitle1"
               fontWeight={500}
-              noWrap // Impedisce il wrapping del testo
+              noWrap
               sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
             >
               {params.value}
@@ -238,14 +244,37 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
     },
   ];
 
+  const visibleColumns = useMemo(() => {
+    let filteredColumns = [...columns];
+
+    if (onAction) {
+      filteredColumns = filteredColumns.filter(
+        (col) => col.field !== "is_published"
+      );
+    } else {
+      filteredColumns = filteredColumns.filter(
+        (col) => col.field !== "actions"
+      );
+    }
+
+    if (isMobile) {
+      const firstCol = filteredColumns.find(
+        (col) => col.field === "courseName"
+      );
+      const lastCol = onAction
+        ? filteredColumns.find((col) => col.field === "actions")
+        : filteredColumns.find((col) => col.field === "is_published");
+
+      filteredColumns = [firstCol, lastCol].filter(Boolean) as GridColDef[];
+    }
+
+    return filteredColumns;
+  }, [columns, onAction, isMobile]);
+
   return (
     <DataGrid
       rows={rows}
-      columns={
-        onAction
-          ? columns.filter((col) => col.field !== "is_published")
-          : columns.filter((col) => col.field !== "actions")
-      }
+      columns={visibleColumns}
       getRowClassName={(params) =>
         params.indexRelativeToCurrentPage % 2 === 0 ? "even" : "odd"
       }
@@ -267,6 +296,9 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
         },
         "& .MuiDataGrid-row": {
           borderRadius: 1,
+        },
+        "& .MuiDataGrid-columnHeaderTitle": {
+          fontWeight: "bold",
         },
       }}
       slotProps={{
