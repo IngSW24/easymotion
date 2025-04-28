@@ -27,7 +27,7 @@ const queryClient = new QueryClient({
  */
 export default function App() {
   return (
-    <LocalizationProvider dateAdapter={AdapterLuxon}>
+    <LocalizationProvider dateAdapter={AdapterLuxon} adapterLocale="it">
       <ApiContextProvider apiBaseUrl={import.meta.env.VITE_API_URL}>
         <AuthContextProvider apiBaseUrl={import.meta.env.VITE_API_URL}>
           <QueryClientProvider client={queryClient}>
