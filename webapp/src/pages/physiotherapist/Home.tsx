@@ -1,186 +1,209 @@
-import { Box, Button, Grid, Typography } from "@mui/material";
+import { Box, Paper, Typography } from "@mui/material";
 import OverviewSection from "../../components/dashboard/OverviewSection";
-import DashboardDataGrid from "../../components/dashboard/CoursesDataGrid";
 import { DateCalendar } from "@mui/x-date-pickers";
 import { useProfile } from "../../hooks/useProfile";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
-import { Add, FitnessCenter } from "@mui/icons-material";
-import CourseEditModal from "../../components/course/CourseEditor/CourseEditModal";
+import { FitnessCenter } from "@mui/icons-material";
 import { useDialog } from "../../hooks/useDialog";
 import { usePhysiotherapistCourses } from "../../hooks/usePhysiotherapistCourses";
-import { CourseDto } from "@easymotion/openapi";
-import CourseUsersListModal from "../../components/dashboard/CourseUsersListModal";
+import DashboardDataGrid from "../../components/dashboard/CoursesDataGrid";
 
-enum CurrentState {
+enum PageState {
   "LOADING",
   "ERROR",
   "READY",
 }
 
 export default function DashboardHome() {
-  const [currentPageState, setCurrentPageState] = useState(
-    CurrentState.LOADING
-  );
+  const [pageState, setPageState] = useState(PageState.LOADING);
 
   const confirm = useDialog();
-  const [createOpen, setCreateOpen] = useState(false);
-  const [editingCourse, setEditingCourse] = useState<CourseDto | undefined>(
-    undefined
-  );
-  const [courseUsersOpen, setCourseUsersOpen] = useState(false);
-  const [courseUserId, setCourseUserId] = useState<string | undefined>(
-    undefined
-  );
-
   const { get: getProfile } = useProfile();
   const { getAll, remove } = usePhysiotherapistCourses({
     perPage: 10,
   });
 
-  const handleOpen = useCallback(() => {
-    setEditingCourse(undefined);
-    setCreateOpen(true);
-  }, []);
+  // Handle course deletion
+  const handleDelete = async (id: string) => {
+    const result = await confirm.showConfirmationDialog({
+      title: "Sei sicuro di voler eliminare questo corso?",
+      content: "Questa azione è irreversibile.",
+    });
 
-  const handleClose = useCallback(() => {
-    setCreateOpen(false);
-    setEditingCourse(undefined);
-  }, []);
+    if (result) {
+      await remove.mutateAsync(id);
+    }
+  };
 
-  const handleEdit = useCallback(
-    (courseId: string) => {
-      const course = getAll.data?.pages
-        .flatMap((page) => page.data)
-        .find((course) => course.id === courseId);
-      if (course) {
-        setEditingCourse(course);
-        setCreateOpen(true);
-      }
-    },
-    [getAll.data?.pages]
-  );
-
+  // Handle course users view
   const handleCourseUsersOpen = (courseId: string) => {
-    setCourseUserId(courseId);
-    setCourseUsersOpen(true);
-  };
-  const handleCourseUserClose = () => {
-    setCourseUsersOpen(false);
-    setCourseUserId(undefined);
+    // Implement if needed in the future
+    console.info("Course users view requested for:", courseId);
   };
 
+  // Update page state based on API calls
   useEffect(() => {
     if (getProfile.isError || getAll.isError) {
-      setCurrentPageState(CurrentState.ERROR);
+      setPageState(PageState.ERROR);
     } else if (getProfile.isSuccess && getAll.isSuccess) {
-      setCurrentPageState(CurrentState.READY);
+      setPageState(PageState.READY);
     } else {
-      setCurrentPageState(CurrentState.LOADING);
+      setPageState(PageState.LOADING);
     }
-  }, [getProfile, getAll]);
+  }, [
+    getProfile.isError,
+    getProfile.isSuccess,
+    getAll.isError,
+    getAll.isSuccess,
+  ]);
+
+  // Calculate counts for overview
+  const activeCourses =
+    getAll.data?.pages
+      .flatMap((page) => page.data)
+      .filter((course) => course.is_published) || [];
+
+  const archivedCourses =
+    getAll.data?.pages
+      .flatMap((page) => page.data)
+      .filter((course) => !course.is_published) || [];
+
+  const allCourses = getAll.data?.pages.flatMap((page) => page.data) || [];
 
   return (
     <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" }, px: 2 }}>
-      {currentPageState === CurrentState.ERROR && (
-        <Typography>Error ....</Typography>
-      )}
-      {currentPageState === CurrentState.LOADING && <LoadingSpinner />}
-      {currentPageState === CurrentState.READY && (
-        <Grid container spacing={3}>
-          {/* Left column - Overview and DataGrid */}
-          <Grid size={{ xs: 12, lg: 9 }}>
-            {/* Overview section */}
-            <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
-              Overview
-            </Typography>
-            <OverviewSection
-              cards={[
-                {
-                  title: "Corsi totali",
-                  value: getAll.data?.pages[0]?.meta.totalItems || 0,
-                  icon: <FitnessCenter />,
-                },
-              ]}
-            />
+      {pageState === PageState.ERROR && <Typography>Error ....</Typography>}
+      {pageState === PageState.LOADING && <LoadingSpinner />}
+      {pageState === PageState.READY && (
+        <>
+          {/* Overview section - Full width */}
+          <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
+            Overview
+          </Typography>
+          <OverviewSection
+            cards={[
+              {
+                title: "Corsi Attivi",
+                value: activeCourses.length,
+                icon: <FitnessCenter />,
+              },
+              {
+                title: "Corsi Archiviati",
+                value: archivedCourses.length,
+                icon: <FitnessCenter />,
+              },
+            ]}
+          />
 
-            {/* Courses section */}
+          {/* Content container with flexbox */}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", md: "row" },
+              gap: 2,
+              mt: 3,
+              height: "100%",
+            }}
+          >
+            {/* Left side - DataGrid - Ridotta */}
             <Box
               sx={{
+                width: { xs: "100%", md: "65%" },
                 display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                mb: 2,
-                pt: 4,
+                flexDirection: "column",
               }}
             >
-              <Typography component="h2" variant="h6">
-                I miei corsi
-              </Typography>
-
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<Add />}
-                size="small"
-                onClick={handleOpen}
-              >
-                Crea corso
-              </Button>
-              <CourseEditModal
-                open={createOpen}
-                onClose={handleClose}
-                course={editingCourse}
-              />
-              <CourseUsersListModal
-                open={courseUsersOpen}
-                onClose={handleCourseUserClose}
-                courseId={courseUserId}
-              />
-            </Box>
-
-            <Box sx={{ width: "100%", mb: { xs: 3, lg: 0 } }}>
               <DashboardDataGrid
-                courses={getAll.data?.pages.flatMap((page) => page.data) || []}
+                courses={allCourses}
+                pageNumer={5}
                 nextPageAction={() => getAll.fetchNextPage()}
                 hasNextPage={!!getAll.hasNextPage}
                 isFetchingNextPage={getAll.isFetchingNextPage}
-                onDelete={async (id) => {
-                  const result = await confirm.showConfirmationDialog({
-                    title: "Sei sicuro di voler eliminare questo corso?",
-                    content: "Questa azione è irreversibile.",
-                  });
-
-                  if (result) {
-                    await remove.mutateAsync(id);
-                  }
-                }}
-                onEdit={handleEdit}
-                onCourseUsers={(courseId) => handleCourseUsersOpen(courseId)}
+                onAction={false}
+                onDelete={handleDelete}
+                onEdit={() => {}} // No edit functionality needed in dashboard
+                onCourseUsers={handleCourseUsersOpen}
               />
             </Box>
-          </Grid>
 
-          {/* Right column - Calendar */}
-          <Grid size={{ xs: 12, lg: 3 }}>
+            {/* Right side - Calendar */}
             <Box
               sx={{
-                width: "100%",
+                width: { xs: "100%", md: "35%" },
+                height: "100%",
                 display: "flex",
                 flexDirection: "column",
-                alignItems: { xs: "center", lg: "flex-start" },
-                mt: { xs: 2, lg: 0 },
               }}
             >
-              <DateCalendar
+              <Paper
+                elevation={1}
                 sx={{
-                  bgcolor: "background.paper",
-                  zIndex: 0,
+                  width: "100%",
+                  borderRadius: 2,
+                  overflow: "hidden",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
                 }}
-              />
+              >
+                {/* Intestazione del calendario */}
+                <Typography
+                  variant="subtitle1"
+                  fontWeight="medium"
+                  sx={{
+                    p: 2,
+                    borderBottom: "1px solid",
+                    borderColor: "divider",
+                  }}
+                >
+                  Calendario
+                </Typography>
+
+                {/* Calendario - occupa tutto lo spazio disponibile */}
+                <Box
+                  sx={{
+                    flexGrow: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "flex-start",
+                    pb: 8,
+                  }}
+                >
+                  <DateCalendar
+                    sx={{
+                      width: "100%",
+                      height: "100%",
+                      "& .MuiPickersCalendarHeader-root": {
+                        paddingLeft: 2,
+                        paddingRight: 2,
+                        fontSize: "1.1rem",
+                      },
+                      "& .MuiDayCalendar-header": {
+                        justifyContent: "space-around",
+                        "& .MuiTypography-root": {
+                          fontSize: "1rem",
+                        },
+                      },
+                      "& .MuiDayCalendar-weekContainer": {
+                        justifyContent: "space-around",
+                        "& .MuiButtonBase-root": {
+                          fontSize: "1rem",
+                        },
+                      },
+                      "& .MuiDayCalendar-monthContainer": {
+                        height: "100%",
+                      },
+                    }}
+                    views={["day"]}
+                    showDaysOutsideCurrentMonth
+                  />
+                </Box>
+              </Paper>
             </Box>
-          </Grid>
-        </Grid>
+          </Box>
+        </>
       )}
     </Box>
   );
