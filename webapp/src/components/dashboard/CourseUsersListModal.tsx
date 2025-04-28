@@ -36,22 +36,22 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
   const {
     getCourseSubscribers,
     getPendingCourseSubscriptions,
-    subscribePhysio,
-    unSubscribe,
+    acceptSubscriptionRequest,
+    unsubscribe,
   } = useSubscriptions({ courseId: courseId });
 
-  const confirmSubscription = async (patient_id: string) => {
-    subscribePhysio.mutateAsync({
-      course_id: courseId ?? "", // TODO: empty string
-      patient_id: patient_id,
-      // subscriptionRequestMessage: "Test message",
+  const confirmSubscription = async (patientId: string) => {
+    console.log(courseId, patientId);
+    acceptSubscriptionRequest.mutateAsync({
+      course_id: courseId!,
+      patient_id: patientId,
     });
   };
 
-  const denySubscription = async (patient_id: string) => {
-    unSubscribe.mutateAsync({
-      course_id: courseId ?? "",
-      patient_id: patient_id,
+  const denySubscription = async (patientId: string) => {
+    unsubscribe.mutateAsync({
+      course_id: courseId!,
+      patient_id: patientId,
     });
   };
 
@@ -208,7 +208,7 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
           color="primary"
           startIcon={<Check />}
           sx={{ flex: 1, mr: 1 }}
-          onClick={() => confirmSubscription(value.patient_id)}
+          onClick={() => confirmSubscription(value.user.id)}
         >
           Accetta
         </Button>
@@ -218,7 +218,7 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
           color="error"
           startIcon={<Close />}
           sx={{ flex: 1 }}
-          onClick={() => denySubscription(value.patient_id)}
+          onClick={() => denySubscription(value.user.id)}
         >
           Rifiuta
         </Button>

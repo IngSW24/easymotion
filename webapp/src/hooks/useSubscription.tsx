@@ -173,7 +173,7 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
   /**
    * Unsubscribes a user from a specific course
    */
-  const unSubscribe = useMutation({
+  const unsubscribe = useMutation({
     mutationFn: async (dto: SubscriptionDeleteDto) => {
       return await api.subscriptions.subscriptionsControllerDeleteSubscription(
         dto
@@ -223,7 +223,7 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
     request2Subscribe,
     subscribePhysio,
     acceptSubscriptionRequest,
-    unSubscribe,
+    unsubscribe,
     getSubscription,
   };
 }
