@@ -113,7 +113,7 @@ export default function Corsi() {
     setCourseUserId(undefined);
   };
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: TabType) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: TabType) => {
     setActiveTab(newValue);
   };
 

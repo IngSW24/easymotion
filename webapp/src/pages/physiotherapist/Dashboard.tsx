@@ -1,7 +1,7 @@
 import { Box, Stack } from "@mui/material";
 import { useState } from "react";
 import SideMenu from "../../components/dashboard/SideMenu";
-import DashboardHeader from "../../components/dashboard/DashboardHeader";
+//import DashboardHeader from "../../components/dashboard/DashboardHeader";
 import DashboardHome from "./Home";
 import CoursesDashboard from "./CoursesDashboard";
 
