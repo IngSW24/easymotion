@@ -30,7 +30,7 @@ enum CurrentState {
   "READY",
 }
 
-export default function Corsi() {
+export default function CoursesDashboard() {
   // Stato per il tab correntemente attivo
   const [activeTab, setActiveTab] = useState<TabType>(TabType.ACTIVE);
   const [currentPageState, setCurrentPageState] = useState(
