@@ -134,7 +134,7 @@ export default function Corsi() {
   const archivedCoursesTotal = archivedCourses.length;
 
   return (
-    <Box sx={{ width: "93%" }}>
+    <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" }, px: 2 }}>
       {/* Header con titolo e pulsante crea */}
       <Box
         sx={{

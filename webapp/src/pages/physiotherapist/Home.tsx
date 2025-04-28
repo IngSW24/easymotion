@@ -1,4 +1,4 @@
-import { Box, Paper, Typography } from "@mui/material";
+import { Box, Container, Paper, Typography } from "@mui/material";
 import OverviewSection from "../../components/dashboard/OverviewSection";
 import { DateCalendar } from "@mui/x-date-pickers";
 import { useProfile } from "../../hooks/useProfile";
@@ -78,9 +78,34 @@ export default function DashboardHome() {
       {pageState === PageState.READY && (
         <>
           {/* Overview section - Full width */}
-          <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
-            Overview
-          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 2,
+            }}
+          >
+            <Container maxWidth="xl" sx={{ ml: -3 }}>
+              <Typography
+                variant="h3"
+                component="h3"
+                align="left"
+                fontWeight="bold"
+                sx={{ paddingTop: 3, textAlign: "left" }}
+              >
+                Overview
+              </Typography>
+              <Typography
+                variant="h5"
+                component="h5"
+                align="left"
+                sx={{ paddingTop: 1, paddingBottom: 3, textAlign: "left" }}
+              >
+                Una visualizzazione generale dei tuoi serivizi sulla piattaforma
+              </Typography>
+            </Container>
+          </Box>
           <OverviewSection
             cards={[
               {

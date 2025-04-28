@@ -40,7 +40,7 @@ export default function Dashboard() {
             mt: { xs: 8, md: 0 },
           }}
         >
-          <DashboardHeader />
+          {/**<DashboardHeader />*/}
           {/* Render del contenuto dinamico */}
           {renderContent()}
         </Stack>

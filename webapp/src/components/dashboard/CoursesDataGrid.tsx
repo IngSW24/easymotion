@@ -77,22 +77,43 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
       flex: 4,
       minWidth: 200,
       renderCell: (params: GridRenderCellParams) => (
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+            width: "100%", // Utilizziamo l'intera larghezza disponibile
+            overflow: "hidden", // Nascondiamo il contenuto che eccede
+          }}
+        >
           <Box
             sx={{
               width: 40,
               height: 40,
+              minWidth: 40, // Imposta una larghezza minima fissa per l'icona
               backgroundColor: "#E8F0FE",
               borderRadius: 1,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              flexShrink: 0, // Impedisce all'icona di rimpicciolirsi
             }}
           >
             <Article sx={{ color: "primary.main" }} />
           </Box>
-          <Box>
-            <Typography variant="subtitle1" fontWeight={500}>
+          <Box
+            sx={{
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              width: "calc(100% - 56px)",
+            }}
+          >
+            <Typography
+              variant="subtitle1"
+              fontWeight={500}
+              noWrap // Impedisce il wrapping del testo
+              sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
+            >
               {params.value}
             </Typography>
           </Box>
@@ -105,7 +126,7 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
       headerAlign: "center",
       align: "center",
       flex: 2,
-      minWidth: 120,
+      minWidth: 80,
       display: "flex",
       renderCell: (params: GridRenderCellParams) => (
         <Box>
@@ -144,7 +165,7 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
       headerName: "STATO",
       headerAlign: "center",
       align: "center",
-      flex: 3,
+      flex: 2,
       display: "flex",
       renderCell: (params) => {
         const course = courses.find((c) => c.id === params.row.courseId);
