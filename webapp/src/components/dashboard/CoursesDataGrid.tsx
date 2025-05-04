@@ -75,6 +75,7 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
     };
   });
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const columns: GridColDef[] = [
     {
       field: "courseName",

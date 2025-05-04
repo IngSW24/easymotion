@@ -132,7 +132,7 @@ const CourseDetail: React.FC<CourseDetailProps> = (
                           </Avatar>
                         </ListItemIcon>
                         <ListItemText
-                          primary={`${start.toLocaleString(DateTime.DATE_FULL)} – ${end.toLocaleString(DateTime.TIME_SIMPLE)}`}
+                          primary={`${start.toLocaleString(DateTime.DATE_FULL, { locale: "it" })} – ${end.toLocaleString(DateTime.TIME_SIMPLE, { locale: "it" })}`}
                           secondary={calculateDuration(start, end)}
                           slotProps={{
                             primary: {

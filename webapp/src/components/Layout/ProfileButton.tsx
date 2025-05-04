@@ -38,7 +38,7 @@ export default function ProfileButton() {
     {
       label: "Dashboard",
       icon: <SpaceDashboard />,
-      action: () => navigate("/physiotherapist/dashboard"),
+      action: () => navigate("/dashboard"),
       targetRoles: ["PHYSIOTHERAPIST"],
     },
     {
