@@ -1,13 +1,13 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { SubscriptionsService } from "./subscriptions.service";
 import { PrismaService } from "nestjs-prisma";
-import { toPaginatedOutput } from "src/common/utils/pagination";
 import { Course, Prisma } from "@prisma/client";
 import { randomUUID } from "crypto";
 import { plainToInstance } from "class-transformer";
 import { NotFoundException } from "@nestjs/common";
 import { applicationUserDtoMock } from "test/mocks/users.mock";
 import { SubscriptionDto } from "./dto/subscription.dto";
+import { toPaginatedOutput } from "src/common/prisma/pagination";
 
 describe("SubsriptionsService", () => {
   let service: SubscriptionsService;

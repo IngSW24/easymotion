@@ -59,6 +59,17 @@ export const applicationUserDtoMock = (): ApplicationUserDto => ({
   twoFactorEnabled: false,
   failedLoginAttempts: 0,
   picturePath: "",
+  physiotherapistData: {
+    bio: "Physiotherapist 1",
+    specialization: "",
+    publicPhoneNumber: "",
+    publicEmail: "",
+    publicAddress: "",
+    website: "",
+    socialMediaLinks: [],
+    applicationUser: undefined,
+    applicationUserId: "",
+  },
 });
 
 export const applicationUsersList = () => [

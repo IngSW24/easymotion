@@ -1243,6 +1243,143 @@
         ]
       }
     },
+    "/users/physiotherapist": {
+      "get": {
+        "operationId": "UsersController_findAllPhysiotherapists",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "searchText",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "PaginatedResponseOfPhysiotherapistDto",
+                  "allOf": [
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/PhysiotherapistDto"
+                          }
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ]
+                    },
+                    {
+                      "properties": {
+                        "meta": {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "number"
+                            },
+                            "hasNextPage": {
+                              "type": "boolean"
+                            },
+                            "currentPage": {
+                              "type": "number"
+                            },
+                            "totalItems": {
+                              "type": "number"
+                            },
+                            "totalPages": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "items",
+                            "hasNextPage",
+                            "currentPage",
+                            "totalItems",
+                            "totalPages"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "meta"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/physiotherapist/{id}": {
+      "get": {
+        "operationId": "UsersController_findPhysiotherapist",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhysiotherapistDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Users"
+        ]
+      }
+    },
     "/users/{id}": {
       "get": {
         "operationId": "UsersController_findOne",
@@ -2929,6 +3066,76 @@
           "isEmailVerified",
           "firstName",
           "lastName"
+        ]
+      },
+      "PhysiotherapistDto": {
+        "type": "object",
+        "properties": {
+          "bio": {
+            "type": "string",
+            "nullable": true,
+            "description": "The bio of the physiotherapist",
+            "example": "I am a physiotherapist with a passion for helping people"
+          },
+          "specialization": {
+            "type": "string",
+            "description": "The specialization of the physiotherapist",
+            "example": "I am a physiotherapist with a passion for helping people"
+          },
+          "publicPhoneNumber": {
+            "type": "string",
+            "description": "The public phone number of the physiotherapist",
+            "example": "1234567890"
+          },
+          "publicEmail": {
+            "type": "string",
+            "description": "The public email of the physiotherapist",
+            "example": "physio@example.com"
+          },
+          "publicAddress": {
+            "type": "string",
+            "description": "The public address of the physiotherapist",
+            "example": "123 Main St, Anytown, USA"
+          },
+          "website": {
+            "type": "string",
+            "description": "The website of the physiotherapist",
+            "example": "https://www.physio.com"
+          },
+          "socialMediaLinks": {
+            "description": "The social media links of the physiotherapist",
+            "example": [
+              "https://www.facebook.com/physio",
+              "https://www.instagram.com/physio"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "applicationUser": {
+            "description": "The application user of the physiotherapist",
+            "example": {},
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ApplicationUserDto"
+              }
+            ]
+          },
+          "applicationUserId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "bio",
+          "specialization",
+          "publicPhoneNumber",
+          "publicEmail",
+          "publicAddress",
+          "website",
+          "socialMediaLinks",
+          "applicationUser",
+          "applicationUserId"
         ]
       },
       "UpdateUserDto": {

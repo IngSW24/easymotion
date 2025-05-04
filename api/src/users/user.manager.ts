@@ -1,4 +1,9 @@
-import { HttpStatus, Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  ConflictException,
+  HttpStatus,
+  Injectable,
+} from "@nestjs/common";
 import { ApplicationUser, Prisma, Role } from "@prisma/client";
 import { ResultPromise, isSuccessResult } from "src/common/types/result";
 import * as argon2 from "argon2";
@@ -6,6 +11,8 @@ import { DateTime } from "luxon";
 import { randomBytes, randomInt } from "node:crypto";
 import { v4 as uuidv4 } from "uuid";
 import { PrismaService } from "nestjs-prisma";
+import { ApplicationUserDto } from "./dto/application-user.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
 
 @Injectable()
 export class UserManager {
@@ -21,17 +28,13 @@ export class UserManager {
   async createUser(
     newUser: Prisma.ApplicationUserCreateInput,
     password: string
-  ): ResultPromise<ApplicationUser> {
+  ) {
     const existingUser = await this.prisma.applicationUser.findFirst({
       where: { email: newUser.email },
     });
 
     if (existingUser) {
-      return {
-        success: false,
-        errors: ["User with this email already exists"],
-        code: HttpStatus.CONFLICT,
-      };
+      throw new ConflictException("User with this email already exists");
     }
 
     const hashedPassword = await this.hashPassword(password);
@@ -68,7 +71,7 @@ export class UserManager {
       return createdUser;
     });
 
-    return { success: true, data: createdUser };
+    return createdUser;
   }
 
   /**
@@ -77,23 +80,11 @@ export class UserManager {
    * @returns A promise that resolves with a success Result if the user is found,
    *          or an error Result if not found.
    */
-  async getUserById(
-    userId: string,
-    roles: Role[] = undefined
-  ): ResultPromise<ApplicationUser> {
-    const user = await this.prisma.applicationUser.findUnique({
+  async getUserById(userId: string, roles: Role[] = undefined) {
+    return this.prisma.applicationUser.findUniqueOrThrow({
       where: { id: userId, ...(roles && { role: { in: roles } }) },
+      include: { physiotherapistData: true, finalUserData: true },
     });
-
-    if (!user) {
-      return {
-        success: false,
-        errors: ["User not found"],
-        code: HttpStatus.NOT_FOUND,
-      };
-    }
-
-    return { success: true, data: user };
   }
 
   /**
@@ -102,23 +93,11 @@ export class UserManager {
    * @returns A promise that resolves with a success Result if the user is found,
    *          or an error Result if not found.
    */
-  async getUserByEmail(
-    email: string,
-    roles: Role[] = undefined
-  ): ResultPromise<ApplicationUser> {
-    const user = await this.prisma.applicationUser.findUnique({
+  async getUserByEmail(email: string, roles: Role[] = undefined) {
+    return this.prisma.applicationUser.findUniqueOrThrow({
       where: { email, ...(roles && { role: { in: roles } }) },
+      include: { physiotherapistData: true, finalUserData: true },
     });
-
-    if (!user) {
-      return {
-        success: false,
-        errors: ["User not found"],
-        code: HttpStatus.NOT_FOUND,
-      };
-    }
-
-    return { success: true, data: user };
   }
 
   /**
@@ -137,19 +116,27 @@ export class UserManager {
    * @param data - The fields to update on the user.
    * @returns A promise that resolves with a success Result containing the updated user.
    */
-  async updateUser(
-    userId: string,
-    data: Prisma.ApplicationUserUpdateInput
-  ): ResultPromise<ApplicationUser> {
+  async updateUser(userId: string, data: UpdateUserDto) {
     const user = await this.getUserById(userId); // ensures user exists
-    if (!isSuccessResult(user)) return user;
 
-    const updatedUser = await this.prisma.applicationUser.update({
-      where: { id: userId },
-      data,
+    if (user.role !== Role.PHYSIOTHERAPIST && !!data.physiotherapistData) {
+      throw new BadRequestException(
+        "Physiotherapist data can only be updated for physiotherapists"
+      );
+    }
+
+    const updateData: Prisma.ApplicationUserUpdateInput = {
+      ...data,
+      physiotherapistData: {
+        update: data.physiotherapistData,
+      },
+    };
+
+    return this.prisma.applicationUser.update({
+      where: { id: user.id },
+      include: { physiotherapistData: true },
+      data: updateData,
     });
-
-    return { success: true, data: updatedUser };
   }
 
   /**
@@ -158,12 +145,10 @@ export class UserManager {
    * @returns A promise that resolves with a success Result if deletion is successful,
    *          or an error Result if there's a server error or user not found.
    */
-  async deleteUser(userId: string): ResultPromise<void> {
+  async deleteUser(userId: string) {
     await this.prisma.applicationUser.delete({
       where: { id: userId },
     });
-
-    return { success: true, data: null };
   }
 
   /**
@@ -175,7 +160,7 @@ export class UserManager {
     const resetToken = randomBytes(32).toString("hex");
     const expiryDate = DateTime.now().plus({ hours: 1 });
 
-    await this.prisma.applicationUser.update({
+    const updatedUser = await this.prisma.applicationUser.update({
       where: { id: userId },
       data: {
         passwordResetToken: resetToken,
@@ -183,7 +168,7 @@ export class UserManager {
       },
     });
 
-    return resetToken;
+    return updatedUser.passwordResetToken;
   }
 
   /**
@@ -193,7 +178,7 @@ export class UserManager {
    */
   async setNewPassword(userId: string, password: string) {
     const hashedPassword = await this.hashPassword(password);
-    this.prisma.applicationUser.update({
+    return this.prisma.applicationUser.update({
       where: { id: userId },
       data: {
         passwordHash: hashedPassword,
@@ -216,11 +201,8 @@ export class UserManager {
     newPassword: string
   ): ResultPromise<void> {
     const userResult = await this.getUserById(userId);
-
-    if (!isSuccessResult(userResult)) return userResult;
-
     const isPasswordValid = await this.verifyPassword(
-      userResult.data.passwordHash,
+      userResult.passwordHash,
       oldPassword
     );
 
@@ -258,7 +240,7 @@ export class UserManager {
     resetToken: string,
     newPassword: string
   ): ResultPromise<void> {
-    const user = await this.prisma.applicationUser.findUnique({
+    const user = await this.prisma.applicationUser.findUniqueOrThrow({
       where: {
         id: userId,
         passwordResetTokenExpiry: {
@@ -267,20 +249,8 @@ export class UserManager {
       },
     });
 
-    if (!user) {
-      return {
-        success: false,
-        errors: ["Invalid or expired reset token"],
-        code: HttpStatus.BAD_REQUEST,
-      };
-    }
-
     if (user.passwordResetToken !== resetToken) {
-      return {
-        success: false,
-        errors: ["Invalid reset token"],
-        code: HttpStatus.BAD_REQUEST,
-      };
+      throw new BadRequestException("Invalid reset token");
     }
 
     const hashedPassword = await this.hashPassword(newPassword);
@@ -306,7 +276,7 @@ export class UserManager {
     const confirmationToken = uuidv4();
     const expiryDate = DateTime.now().plus({ days: 1 }).toJSDate();
 
-    await this.prisma.applicationUser.update({
+    const updatedUser = await this.prisma.applicationUser.update({
       where: { id: userId },
       data: {
         emailConfirmationToken: confirmationToken,
@@ -314,7 +284,7 @@ export class UserManager {
       },
     });
 
-    return confirmationToken;
+    return updatedUser.emailConfirmationToken;
   }
 
   /**
@@ -324,12 +294,8 @@ export class UserManager {
    * @param newEmail - The new email address to set.
    * @returns A promise that resolves to the updated ApplicationUser.
    */
-  async resetEmail(
-    userId: string,
-    resetToken: string,
-    newEmail: string
-  ): ResultPromise<void> {
-    const result = await this.prisma.applicationUser.findUnique({
+  async resetEmail(userId: string, resetToken: string, newEmail: string) {
+    const user = await this.prisma.applicationUser.findUniqueOrThrow({
       where: {
         id: userId,
         emailConfirmationToken: resetToken,
@@ -337,16 +303,8 @@ export class UserManager {
       },
     });
 
-    if (!result) {
-      return {
-        success: false,
-        errors: ["Invalid or expired confirmation token"],
-        code: HttpStatus.BAD_REQUEST,
-      };
-    }
-
     await this.prisma.applicationUser.update({
-      where: { id: userId },
+      where: { id: user.id },
       data: {
         email: newEmail,
         isEmailVerified: true,
@@ -354,8 +312,6 @@ export class UserManager {
         emailConfirmationTokenExpiry: null,
       },
     });
-
-    return { success: true, data: null };
   }
 
   /**
@@ -364,7 +320,7 @@ export class UserManager {
    * @param token The email confirmation token.
    * @returns A promise that resolves with a success Result on success or an error Result on failure.
    */
-  async confirmEmail(userId: string, token: string): ResultPromise<void> {
+  async confirmEmail(userId: string, token: string) {
     const result = await this.prisma.applicationUser.update({
       where: {
         id: userId,
@@ -379,14 +335,8 @@ export class UserManager {
     });
 
     if (!result) {
-      return {
-        success: false,
-        errors: ["Invalid or expired confirmation token"],
-        code: HttpStatus.BAD_REQUEST,
-      };
+      throw new BadRequestException("Invalid or expired confirmation token");
     }
-
-    return { success: true, data: null };
   }
 
   /**
@@ -435,7 +385,7 @@ export class UserManager {
       .plus({ minutes: 5 })
       .toJSDate();
 
-    await this.prisma.applicationUser.update({
+    const updatedUser = await this.prisma.applicationUser.update({
       where: { id: userId, twoFactorEnabled: true },
       data: {
         twoFactorCode: otp,
@@ -443,7 +393,7 @@ export class UserManager {
       },
     });
 
-    return otp;
+    return updatedUser.twoFactorCode;
   }
 
   /**
@@ -453,11 +403,7 @@ export class UserManager {
    * @returns A boolean indicating if the OTP was valid and not expired.
    */
   async validateTwoFactor(userId: string, code: string): Promise<boolean> {
-    const userResult = await this.getUserById(userId);
-
-    if (!isSuccessResult(userResult)) return false;
-
-    const { data: user } = userResult;
+    const user = await this.getUserById(userId);
 
     if (user.twoFactorCode !== code) return false;
 

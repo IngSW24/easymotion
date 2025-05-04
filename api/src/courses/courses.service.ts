@@ -6,11 +6,11 @@ import { PrismaService } from "nestjs-prisma";
 import { PaginatedOutput } from "src/common/dto/paginated-output.dto";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { instanceToPlain, plainToInstance } from "class-transformer";
-import { toPaginatedOutput } from "src/common/utils/pagination";
 import { CourseQueryFilter } from "./dto/filters/course-query-filter.dto";
 import { CourseLevel, Prisma } from "@prisma/client";
 import { DateTime } from "luxon";
 import IAssetsService, { ASSETS_SERVICE } from "src/assets/assets.interface";
+import { toPaginatedOutput } from "src/common/prisma/pagination";
 
 @Injectable()
 /**

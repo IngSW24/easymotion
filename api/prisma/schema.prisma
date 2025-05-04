@@ -117,11 +117,16 @@ model ApplicationUser {
 }
 
 model Physiotherapist {
-  applicationUserId String          @id
-  applicationUser   ApplicationUser @relation(fields: [applicationUserId], references: [id])
-
+  bio               String?
   specialization    String?
   publicPhoneNumber String?
+  publicEmail       String?
+  publicAddress     String? 
+  website           String?
+  socialMediaLinks  String[] @default([])
+
+  applicationUserId String          @id
+  applicationUser   ApplicationUser @relation(fields: [applicationUserId], references: [id])
   courses           Course[]
 }
 

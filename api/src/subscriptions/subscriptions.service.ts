@@ -6,10 +6,10 @@ import {
 import { plainToInstance } from "class-transformer";
 import { PrismaService } from "nestjs-prisma";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
-import { toPaginatedOutput } from "src/common/utils/pagination";
 import { SubscriptionCreateDto } from "./dto/subscription-create.dto";
 import { SubscriptionDeleteDto } from "./dto/subscription-delete.dto";
 import { SubscriptionDto, UserSubscriptionDto } from "./dto/subscription.dto";
+import { toPaginatedOutput } from "src/common/prisma/pagination";
 
 @Injectable()
 export class SubscriptionsService {

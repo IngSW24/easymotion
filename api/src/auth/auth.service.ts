@@ -54,13 +54,7 @@ export class AuthService {
     password: string,
     roles: Role[] = undefined
   ) {
-    const result = await this.userManager.getUserByEmail(email, roles);
-
-    if (!isSuccessResult(result)) {
-      return null;
-    }
-
-    const user = result.data;
+    const user = await this.userManager.getUserByEmail(email, roles);
 
     if (!this.userManager.canUserLogin(user)) {
       return null;
@@ -109,12 +103,8 @@ export class AuthService {
   ) {
     const user = await this.userManager.getUserById(userId);
 
-    if (!isSuccessResult(user)) {
-      throw resultToHttpException(user);
-    }
-
-    if (user.data.picturePath) {
-      await this.assetsService.deleteFile(user.data.picturePath);
+    if (user.picturePath) {
+      await this.assetsService.deleteFile(user.picturePath);
     }
 
     const fileName = `${userId}-${!uniqueTimestamp ? DateTime.now().toMillis() : uniqueTimestamp}`;
@@ -130,15 +120,11 @@ export class AuthService {
       throw new BadRequestException("Failed to upload image!");
     }
 
-    const result = await this.userManager.updateUser(userId, {
+    const updatedUser = await this.userManager.updateUser(userId, {
       picturePath: imagePath,
     });
 
-    if (!isSuccessResult(result)) {
-      throw resultToHttpException(result);
-    }
-
-    return plainToInstance(AuthUserDto, result.data, {
+    return plainToInstance(AuthUserDto, updatedUser, {
       excludeExtraneousValues: true,
     });
   }
@@ -154,11 +140,7 @@ export class AuthService {
   ): Promise<AuthResponseDto> {
     const result = await this.userManager.getUserById(userId);
 
-    if (!isSuccessResult(result)) {
-      return null;
-    }
-
-    const user = plainToInstance(AuthUserDto, result.data, {
+    const user = plainToInstance(AuthUserDto, result, {
       excludeExtraneousValues: true,
     });
 
@@ -192,11 +174,8 @@ export class AuthService {
    */
   async getUserProfile(userId: string) {
     const result = await this.userManager.getUserById(userId);
-    if (!isSuccessResult(result)) {
-      throw resultToHttpException(result);
-    }
 
-    return plainToInstance(AuthUserDto, result.data, {
+    return plainToInstance(AuthUserDto, result, {
       excludeExtraneousValues: true,
     });
   }
@@ -211,13 +190,9 @@ export class AuthService {
     userId: string,
     updateAuthUserDto: UpdateAuthUserDto
   ) {
-    const result = await this.userManager.updateUser(userId, updateAuthUserDto);
+    const user = await this.userManager.updateUser(userId, updateAuthUserDto);
 
-    if (!isSuccessResult(result)) {
-      throw resultToHttpException(result);
-    }
-
-    return plainToInstance(AuthUserDto, result.data, {
+    return plainToInstance(AuthUserDto, user, {
       excludeExtraneousValues: true,
     });
   }
@@ -227,11 +202,7 @@ export class AuthService {
    * @param userId the ID of the user to delete the profile for
    */
   async deleteUserProfile(userId: string) {
-    const result = await this.userManager.deleteUser(userId);
-
-    if (!isSuccessResult(result)) {
-      throw resultToHttpException(result);
-    }
+    return this.userManager.deleteUser(userId);
   }
 
   /**
@@ -269,24 +240,20 @@ export class AuthService {
       );
     }
 
-    const result = await this.userManager.createUser(newUser, password);
-
-    if (!isSuccessResult(result)) {
-      throw resultToHttpException(result);
-    }
+    const createdUser = await this.userManager.createUser(newUser, password);
 
     const emailToken = await this.userManager.generateEmailConfirmationToken(
-      result.data.id
+      createdUser.id
     );
 
     await this.emailService.sendEmail(
-      result.data.email,
+      newUser.email,
       "Completa la registrazione in EasyMotion",
       generateEmailConfirmMessage(
         this.frontendConfigService.url,
         emailToken,
-        result.data.id,
-        result.data.email
+        createdUser.id,
+        createdUser.email
       )
     );
   }
@@ -330,21 +297,17 @@ export class AuthService {
   async requestResetPassword(requestDto: EmailDto): Promise<void> {
     const user = await this.userManager.getUserByEmail(requestDto.email);
 
-    if (!isSuccessResult(user)) {
-      return; // no exception thrown if user not found to prevent user enumeration
-    }
-
     const resetToken = await this.userManager.generatePasswordResetToken(
-      user.data.id
+      user.id
     );
 
     await this.emailService.sendEmail(
-      user.data.email,
+      user.email,
       "Modifica la tua password di EasyMotion",
       generatePasswordResetMessage(
         this.frontendConfigService.url,
         resetToken,
-        user.data.id
+        user.id
       )
     );
   }
@@ -394,16 +357,12 @@ export class AuthService {
 
     const result = await this.userManager.getUserByEmail(email);
 
-    if (!isSuccessResult(result)) {
-      throw resultToHttpException(result);
-    }
-
     const validationResult = await this.userManager.validateTwoFactor(
-      result.data.id,
+      result.id,
       otp
     );
 
-    return validationResult ? result.data : null;
+    return validationResult ? result : null;
   }
 
   /**
@@ -469,12 +428,6 @@ export class AuthService {
    * @returns A promise that resolves with the user if found.
    */
   private async getUserByIdOrThrow(userId: string) {
-    const user = await this.userManager.getUserById(userId);
-
-    if (!isSuccessResult(user)) {
-      throw resultToHttpException(user);
-    }
-
-    return user.data;
+    return this.userManager.getUserById(userId);
   }
 }

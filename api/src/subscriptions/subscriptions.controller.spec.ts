@@ -3,10 +3,10 @@ import { SubscriptionsController } from "./subscriptions.controller";
 import { SubscriptionsService } from "./subscriptions.service";
 import { PrismaService } from "nestjs-prisma";
 import { BadRequestException, NotFoundException } from "@nestjs/common";
-import { toPaginatedOutput } from "src/common/utils/pagination";
 import { randomUUID } from "crypto";
 import { Role } from "@prisma/client";
 import { UserSubscriptionDto } from "./dto/subscription.dto";
+import { toPaginatedOutput } from "src/common/prisma/pagination";
 
 describe("SubscriptionsController", () => {
   let controller: SubscriptionsController;
