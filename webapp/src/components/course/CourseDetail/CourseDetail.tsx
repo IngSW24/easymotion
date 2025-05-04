@@ -111,7 +111,9 @@ const CourseDetail: React.FC<CourseDetailProps> = (
                 <Typography variant="h5" fontWeight="bold">
                   Descrizione
                 </Typography>
-                <Typography variant="body1">{course.description}</Typography>
+                <Typography variant="body1" flexWrap="wrap">
+                  {course.description}
+                </Typography>
               </Box>
 
               <Divider sx={{ my: 3 }} />

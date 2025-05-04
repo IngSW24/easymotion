@@ -14,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useEffect } from "react";
 import { Person } from "@mui/icons-material";
+import PhoneNumberEditor from "../../editors/PhoneNumberEditor/PhoneNumberEditor";
 
 export interface PhysiotherapistSettingsProps {
   physiotherapistData: PhysiotherapistDto | null;
@@ -63,6 +64,8 @@ export default function PhysiotherapistSettings(
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors, isDirty },
     reset,
   } = useForm<FormData>({
@@ -154,6 +157,7 @@ export default function PhysiotherapistSettings(
               Specializzazione *
             </Typography>
             <TextField
+              size="small"
               fullWidth
               placeholder="La tua specializzazione"
               error={!!errors.specialization}
@@ -166,12 +170,13 @@ export default function PhysiotherapistSettings(
             <Typography variant="subtitle2" color="text.secondary" mb={1}>
               Numero di telefono pubblico *
             </Typography>
-            <TextField
-              fullWidth
-              placeholder="Numero di telefono pubblico"
-              error={!!errors.publicPhoneNumber}
-              helperText={errors.publicPhoneNumber?.message}
-              {...register("publicPhoneNumber")}
+
+            <PhoneNumberEditor
+              height="40px"
+              onChange={(value) =>
+                setValue("publicPhoneNumber", value, { shouldDirty: true })
+              }
+              value={watch("publicPhoneNumber") ?? ""}
             />
           </Grid>
 
@@ -181,6 +186,7 @@ export default function PhysiotherapistSettings(
             </Typography>
             <TextField
               fullWidth
+              size="small"
               placeholder="Email pubblica"
               error={!!errors.publicEmail}
               helperText={errors.publicEmail?.message}
@@ -194,6 +200,7 @@ export default function PhysiotherapistSettings(
             </Typography>
             <TextField
               fullWidth
+              size="small"
               placeholder="Indirizzo pubblico"
               error={!!errors.publicAddress}
               helperText={errors.publicAddress?.message}
@@ -207,6 +214,7 @@ export default function PhysiotherapistSettings(
             </Typography>
             <TextField
               fullWidth
+              size="small"
               placeholder="https://www.example.com"
               error={!!errors.website}
               helperText={errors.website?.message}
