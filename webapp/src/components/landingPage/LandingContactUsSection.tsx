@@ -51,8 +51,8 @@ export default function LandingContactUsSection() {
               {/* Email */}
               <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
                 <Email sx={{ color: "#0a4b87", mr: 1.5, fontSize: 24 }} />
-                <Link to="mailto:contact@easymotion.com" color="text.primary">
-                  contact@easymotion.it
+                <Link to="mailto:info@easymotion.it" color="text.primary">
+                  info@easymotion.it
                 </Link>
               </Box>
 
