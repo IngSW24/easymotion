@@ -1,13 +1,17 @@
-import { Container } from "@mui/material";
+import { Container, Grid } from "@mui/material";
 import { useProfile } from "../hooks/useProfile";
 import LoadingSpinner from "../components/LoadingSpinner/LoadingSpinner";
 import GeneralProfileSettings from "../components/auth/ProfileSettings/GeneralProfileSettings";
+import EmailUpdate from "../components/auth/ProfileSettings/EmailUpdate";
+import PasswordUpdate from "../components/auth/ProfileSettings/PasswordUpdate";
+import PhysiotherapistSettings from "../components/auth/ProfileSettings/PhysiotherapistSettings";
 
 export default function ProfilePage() {
   const profile = useProfile();
 
   return (
     <Container
+      maxWidth="lg"
       sx={{
         padding: 4,
         display: "flex",
@@ -19,12 +23,37 @@ export default function ProfilePage() {
       {profile.get.isLoading && <LoadingSpinner />}
       {profile.get.isError && <div>Errore</div>}
       {profile.get.isSuccess && (
-        <GeneralProfileSettings
-          user={profile.get.data}
-          onProfileSave={(updatedProfile) =>
-            profile.update.mutate(updatedProfile)
-          }
-        />
+        <Grid container spacing={4} justifyContent="center">
+          <Grid size={{ xs: 12 }}>
+            <GeneralProfileSettings
+              user={profile.get.data}
+              onProfileSave={(updatedProfile) =>
+                profile.update.mutate(updatedProfile)
+              }
+            />
+          </Grid>
+
+          <Grid size={{ xs: 12, md: 6 }}>
+            <EmailUpdate />
+          </Grid>
+
+          <Grid size={{ xs: 12, md: 6 }}>
+            <PasswordUpdate />
+          </Grid>
+
+          {profile.get.data.role === "PHYSIOTHERAPIST" && (
+            <Grid size={{ xs: 12 }}>
+              <PhysiotherapistSettings
+                physiotherapistData={profile.get.data.physiotherapistData}
+                onProfileSave={(updatedProfile) =>
+                  profile.updatePhysiotherapistData.mutate(
+                    updatedProfile.physiotherapistData
+                  )
+                }
+              />
+            </Grid>
+          )}
+        </Grid>
       )}
     </Container>
   );

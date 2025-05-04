@@ -40,12 +40,6 @@ export const useProfile = () => {
       });
       return response.data;
     },
-    onSuccess: (d: AuthUserDto) => {
-      queryClient.invalidateQueries({
-        queryKey: ["profile", user?.id ?? ""],
-      });
-      updateUser(d);
-    },
   });
 
   const remove = useMutation({

@@ -5,6 +5,7 @@ import {
   Card,
   CardContent,
   Grid,
+  Stack,
   TextField,
   Typography,
 } from "@mui/material";
@@ -56,11 +57,9 @@ export default function EmailUpdate() {
     <Card
       sx={{
         width: "100%",
-        maxWidth: 800,
         boxShadow: 3,
         borderRadius: 3,
         padding: 3,
-        marginTop: 4,
       }}
     >
       <CardContent>
@@ -83,31 +82,27 @@ export default function EmailUpdate() {
           Ti invieremo un'email di conferma per completare l'aggiornamento.
         </Typography>
         <form onSubmit={handleEmailUpdate}>
-          <Grid container spacing={2} sx={{ py: 1 }}>
-            <Grid size={{ xs: 12, sm: 10 }}>
-              <TextField
-                label="Nuova email"
-                type="email"
-                fullWidth
-                value={newEmail}
-                size="small"
-                onChange={(e) => setNewEmail(e.target.value)}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 2 }}>
-              <Button
-                variant="contained"
-                sx={{ minWidth: 120 }}
-                startIcon={<Save />}
-                fullWidth
-                disabled={!newEmail || !isValidEmail(newEmail)}
-                type="submit"
-                color="primary"
-              >
-                Modifica
-              </Button>
-            </Grid>
-          </Grid>
+          <Stack direction="column" spacing={2} gap={2} flexWrap="wrap">
+            <TextField
+              label="Nuova email"
+              type="email"
+              fullWidth
+              value={newEmail}
+              size="small"
+              onChange={(e) => setNewEmail(e.target.value)}
+            />
+            <Button
+              variant="contained"
+              sx={{ minWidth: 120 }}
+              startIcon={<Save />}
+              fullWidth
+              disabled={!newEmail || !isValidEmail(newEmail)}
+              type="submit"
+              color="primary"
+            >
+              Modifica
+            </Button>
+          </Stack>
         </form>
         <Box sx={{ mt: 2 }}>
           {message.text && (
