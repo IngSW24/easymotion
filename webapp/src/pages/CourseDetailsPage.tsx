@@ -4,6 +4,7 @@ import CourseDetail from "../components/course/CourseDetail/CourseDetail";
 import { useCourses } from "../hooks/useCourses";
 import LoadingSpinner from "../components/LoadingSpinner/LoadingSpinner";
 import Hero from "../components/Hero/Hero";
+import { getCourseImageUrl } from "../utils/format";
 
 /**
  * Defines the page to view and edit details of a course
@@ -25,7 +26,10 @@ export default function CourseDetailsPage() {
         opacity={0.5}
         title={courseRepo.getSingle.data?.name ?? ""}
         subtitle={courseRepo.getSingle.data?.short_description ?? ""}
-        backgroundImage={`/${courseRepo.getSingle.data?.category.id ?? "hero"}.jpg`}
+        backgroundImage={getCourseImageUrl({
+          course: courseRepo.getSingle.data,
+        })}
+        fallbackImage={`/hero.jpg`}
       />
       <Container sx={{ my: 5 }}>
         {courseRepo.getSingle.data && (

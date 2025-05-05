@@ -7,6 +7,7 @@ export class AuthUserDto extends PickType(ApplicationUserDto, [
   "email",
   "firstName",
   "middleName",
+  "picturePath",
   "lastName",
   "phoneNumber",
   "role",

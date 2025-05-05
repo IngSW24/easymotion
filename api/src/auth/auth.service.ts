@@ -26,6 +26,8 @@ import {
 } from "./email-messages/email-confirm.message";
 import frontendConfig from "src/config/frontend.config";
 import { AuthResponseDto } from "./dto/auth-user/auth-response.dto";
+import IAssetsService, { ASSETS_SERVICE } from "src/assets/assets.interface";
+import { DateTime } from "luxon";
 
 @Injectable()
 export class AuthService {
@@ -36,7 +38,9 @@ export class AuthService {
     @Inject(jwtConfig.KEY)
     private readonly configService: ConfigType<typeof jwtConfig>,
     @Inject(frontendConfig.KEY)
-    private readonly frontendConfigService: ConfigType<typeof frontendConfig>
+    private readonly frontendConfigService: ConfigType<typeof frontendConfig>,
+    @Inject(ASSETS_SERVICE)
+    private readonly assetsService: IAssetsService
   ) {}
 
   /**
@@ -89,6 +93,54 @@ export class AuthService {
       "Effettua il login in EasyMotion",
       `Il tuo codice di verifica per accedere ad EasyMotion è ${code}`
     );
+  }
+
+  /**
+   * Updates the user's profile picture path.
+   * @param userId the ID of the user to update the profile picture for
+   * @param filePath the path of the new profile picture
+   * @returns the updated user profile as an AuthUserDto
+   */
+  async updateUserPicture(
+    userId: string,
+    buffer: Buffer,
+    mimetype: string,
+    uniqueTimestamp: string | number | null = null
+  ) {
+    const user = await this.userManager.getUserById(userId);
+
+    if (!isSuccessResult(user)) {
+      throw resultToHttpException(user);
+    }
+
+    if (user.data.picturePath) {
+      await this.assetsService.deleteFile(user.data.picturePath);
+    }
+
+    const fileName = `${userId}-${!uniqueTimestamp ? DateTime.now().toMillis() : uniqueTimestamp}`;
+
+    const imagePath = await this.assetsService.uploadBuffer(
+      buffer,
+      "profile",
+      fileName,
+      mimetype
+    );
+
+    if (!imagePath) {
+      throw new BadRequestException("Failed to upload image!");
+    }
+
+    const result = await this.userManager.updateUser(userId, {
+      picturePath: imagePath,
+    });
+
+    if (!isSuccessResult(result)) {
+      throw resultToHttpException(result);
+    }
+
+    return plainToInstance(AuthUserDto, result.data, {
+      excludeExtraneousValues: true,
+    });
   }
 
   /**

@@ -1,5 +1,4 @@
 import {
-  Avatar,
   Box,
   Button,
   Card,
@@ -11,27 +10,25 @@ import {
   Grid,
   TextField,
 } from "@mui/material";
-import { useState } from "react";
-import { Person } from "@mui/icons-material";
+import { Person, PhotoCamera } from "@mui/icons-material";
 import { AuthUserDto, UpdateAuthUserDto } from "@easymotion/openapi";
 import EmailUpdate from "./EmailUpdate";
 import PasswordUpdate from "./PasswordUpdate";
 import PhoneNumberEditor from "../../editors/PhoneNumberEditor/PhoneNumberEditor";
 import { DateField } from "@mui/x-date-pickers";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { DateTime } from "luxon";
+import ProfileAvatar from "../../Layout/ProfileAvatar";
+import { useEffect, useState } from "react";
+import { getStaticImageUrl } from "../../../utils/format";
+import AvatarUploadDialog from "./AvatarUploadDialog";
 
 export interface GeneralProfileSettingsProps {
   user: AuthUserDto;
   onProfileSave: (user: UpdateAuthUserDto) => void;
 }
-
-const getInitials = (user: AuthUserDto | undefined) => {
-  if (!user) return "";
-  return `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`;
-};
 
 const mapUserRole = (role: AuthUserDto["role"]) => {
   switch (role) {
@@ -59,15 +56,16 @@ export default function GeneralProfileSettings(
   props: GeneralProfileSettingsProps
 ) {
   const { user, onProfileSave } = props;
-
-  const [hasPendingChanges, setHasPendingChanges] = useState(false);
+  const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
     watch,
-    setValue: setValueForm,
+    setValue,
+    control,
+    reset,
   } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -79,17 +77,25 @@ export default function GeneralProfileSettings(
     },
   });
 
-  const birthDate = watch("birthDate");
-
-  const setValue = (...args: Parameters<typeof setValueForm>) => {
-    setValueForm(...args);
-    setHasPendingChanges(true);
-  };
+  const birthDate = useWatch({
+    control,
+    name: "birthDate",
+  });
 
   const onSubmit = (data: UpdateAuthUserDto) => {
     onProfileSave(data);
-    setHasPendingChanges(false);
   };
+
+  // Reset the form when the user is updated
+  useEffect(() => {
+    reset({
+      firstName: props.user.firstName,
+      middleName: props.user.middleName || "",
+      lastName: props.user.lastName,
+      phoneNumber: props.user.phoneNumber || "",
+      birthDate: props.user.birthDate || "",
+    });
+  }, [props.user, reset]);
 
   return (
     <>
@@ -128,17 +134,32 @@ export default function GeneralProfileSettings(
                   alignItems: "center",
                 }}
               >
-                <Avatar
+                <Box
                   sx={{
-                    bgcolor: "primary.main",
-                    width: 80,
-                    height: 80,
-                    fontSize: 32,
-                    marginBottom: { xs: 2, sm: 0 },
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
                   }}
                 >
-                  {getInitials(user)}
-                </Avatar>
+                  <ProfileAvatar
+                    sx={{
+                      bgcolor: "primary.main",
+                      width: 80,
+                      height: 80,
+                      fontSize: 32,
+                      marginBottom: { xs: 1, sm: 1 },
+                    }}
+                  />
+                  <Button
+                    size="small"
+                    startIcon={<PhotoCamera />}
+                    onClick={() => setIsAvatarDialogOpen(true)}
+                    sx={{ mb: { xs: 2, sm: 0 } }}
+                  >
+                    Cambia
+                  </Button>
+                </Box>
+
                 <Box sx={{ marginLeft: 2 }}>
                   <Typography variant="h5" fontWeight="bold">
                     {user.firstName}
@@ -183,8 +204,7 @@ export default function GeneralProfileSettings(
                 placeholder="Il tuo nome"
                 error={!!errors.firstName}
                 helperText={errors.firstName?.message}
-                value={watch("firstName")}
-                onChange={(e) => setValue("firstName", e.target.value)}
+                {...register("firstName")}
               />
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
@@ -197,8 +217,7 @@ export default function GeneralProfileSettings(
                 placeholder="Il tuo secondo nome"
                 error={!!errors.middleName}
                 helperText={errors.middleName?.message}
-                value={watch("middleName")}
-                onChange={(e) => setValue("middleName", e.target.value)}
+                {...register("middleName")}
               />
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
@@ -212,8 +231,6 @@ export default function GeneralProfileSettings(
                 placeholder="Il tuo cognome"
                 error={!!errors.lastName}
                 helperText={errors.lastName?.message}
-                value={watch("lastName")}
-                onChange={(e) => setValue("lastName", e.target.value)}
               />
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
@@ -222,8 +239,10 @@ export default function GeneralProfileSettings(
               </Typography>
               <PhoneNumberEditor
                 height="40px"
-                value={watch("phoneNumber") ?? ""}
-                onChange={(e) => setValue("phoneNumber", e)}
+                onChange={(value) =>
+                  setValue("phoneNumber", value, { shouldDirty: true })
+                }
+                value={watch("phoneNumber")}
               />
             </Grid>
             <Grid size={{ xs: 12 }}>
@@ -238,7 +257,9 @@ export default function GeneralProfileSettings(
                     : DateTime.fromFormat(birthDate, "yyyy-MM-dd")
                 }
                 onChange={(v) =>
-                  setValue("birthDate", v?.toFormat("yyyy-MM-dd"))
+                  setValue("birthDate", v?.toFormat("yyyy-MM-dd"), {
+                    shouldDirty: true,
+                  })
                 }
                 size="small"
                 helperText={errors.birthDate?.message}
@@ -259,7 +280,7 @@ export default function GeneralProfileSettings(
             <Button
               variant="contained"
               color="primary"
-              disabled={!hasPendingChanges}
+              disabled={!isDirty}
               onClick={handleSubmit(onSubmit)}
               sx={{ paddingX: 3, marginTop: { xs: 2, sm: 0 } }}
             >
@@ -272,6 +293,14 @@ export default function GeneralProfileSettings(
       <EmailUpdate />
 
       <PasswordUpdate />
+
+      <AvatarUploadDialog
+        open={isAvatarDialogOpen}
+        onClose={() => setIsAvatarDialogOpen(false)}
+        avatarUrl={
+          user.picturePath ? getStaticImageUrl(user.picturePath) : undefined
+        }
+      />
     </>
   );
 }

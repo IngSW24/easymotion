@@ -39,6 +39,11 @@ export class CourseDto implements Course {
   @Expose()
   id: string;
 
+  @ApiProperty({ description: "The image path of the course" })
+  @IsString()
+  @Expose()
+  image_path: string | null;
+
   @ApiProperty({ description: "The name of the course" })
   @IsString()
   @Expose()

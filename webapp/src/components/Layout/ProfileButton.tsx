@@ -1,5 +1,4 @@
 import {
-  Avatar,
   Box,
   IconButton,
   Menu,
@@ -13,6 +12,7 @@ import { useAuth } from "@easymotion/auth-context";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Explore, Logout, Settings, SpaceDashboard } from "@mui/icons-material";
 import { AuthUserDto } from "@easymotion/openapi";
+import ProfileAvatar from "./ProfileAvatar";
 
 type ProfileButtonActionProps = {
   label: string;
@@ -83,10 +83,7 @@ export default function ProfileButton() {
     <Box sx={{ flexGrow: 0 }}>
       <Tooltip title="Utente">
         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-          <Avatar>
-            {auth.user?.firstName.charAt(0).toUpperCase()}
-            {auth.user?.lastName.charAt(0).toUpperCase()}
-          </Avatar>
+          <ProfileAvatar />
         </IconButton>
       </Tooltip>
       <Menu

@@ -19,6 +19,7 @@ describe("SubscriptionsService", () => {
       findUniqueOrThrow: jest.fn(),
       findUnique: jest.fn(),
       update: jest.fn(),
+      create: jest.fn(),
     },
     course: {
       findUniqueOrThrow: jest.fn(),
@@ -73,6 +74,7 @@ describe("SubscriptionsService", () => {
         short_description: "short desc",
         location: "LOCATION1",
         instructors: ["A", "B"],
+        image_path: "",
         level: "BASIC",
         price: new Prisma.Decimal("30"),
         payment_recurrence: PaymentRecurrence.SINGLE,
@@ -196,7 +198,6 @@ describe("SubscriptionsService", () => {
     it("should create a subscription request", async () => {
       const patientId = "patient-1";
       const courseId = "course-1";
-      const requestMessage = "Please approve my request";
 
       const course = {
         id: courseId,
@@ -206,22 +207,23 @@ describe("SubscriptionsService", () => {
         subscriptions_open: true,
       };
 
+      const patient = {
+        applicationUserId: patientId,
+      };
+
       prismaMock.course.findUniqueOrThrow.mockResolvedValue(course);
+      prismaMock.patient.findUniqueOrThrow.mockResolvedValue(patient);
       prismaMock.subscription.count.mockResolvedValue(5); // 5 < 10 max subscribers
-      prismaMock.subscription.findUnique.mockResolvedValue(null); // no existing subscription
 
       await service.createSubscriptionRequest(patientId, courseId);
 
-      expect(prismaMock.course.findUniqueOrThrow).toHaveBeenCalledWith({
-        where: { id: courseId },
+      expect(prismaMock.subscription.create).toHaveBeenCalledWith({
+        data: {
+          course_id: courseId,
+          patient_id: patientId,
+          isPending: true,
+        },
       });
-
-      expect(createDirectSubscriptionSpy).toHaveBeenCalledWith(
-        patientId,
-        courseId,
-        true,
-        requestMessage
-      );
     });
 
     it("should throw BadRequestException when course is closed for subscriptions", async () => {
@@ -296,36 +298,44 @@ describe("SubscriptionsService", () => {
 
       const patientId = "patient-1";
       const courseId = "course-1";
-      const isPending = false;
-      const requestMessage = "Test message";
+
+      const patient = {
+        applicationUserId: patientId,
+      };
+
+      const course = {
+        id: courseId,
+      };
+
+      prismaMock.patient.findUniqueOrThrow.mockResolvedValue(patient);
+      prismaMock.course.findUniqueOrThrow.mockResolvedValue(course);
 
       prismaMock.subscription.upsert.mockImplementation((args) => {
         return Promise.resolve({
           course_id: args.create.course_id,
           patient_id: args.create.patient_id,
           isPending: args.create.isPending,
-          subscriptionRequestMessage: args.create.subscriptionRequestMessage,
         });
       });
 
       await service.createDirectSubscription(patientId, courseId);
 
-      expect(prismaMock.subscription.upsert).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: {
-            course_id_patient_id: {
-              course_id: courseId,
-              patient_id: patientId,
-            },
+      expect(prismaMock.subscription.upsert).toHaveBeenCalledWith({
+        create: {
+          course_id: courseId,
+          patient_id: patientId,
+          isPending: false,
+        },
+        update: {
+          isPending: false,
+        },
+        where: {
+          course_id_patient_id: {
+            course_id: courseId,
+            patient_id: patientId,
           },
-          update: {
-            isPending,
-            ...(requestMessage
-              ? { subscriptionRequestMessage: requestMessage }
-              : {}),
-          },
-        })
-      );
+        },
+      });
     });
   });
 

@@ -3,28 +3,45 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
 import { AnimatedButton, ContentWrapper, HeroSection } from "./styled";
 import { PersonAdd } from "@mui/icons-material";
+import { useEffect, useState } from "react";
 
 export interface HeroProps {
   title?: string;
   subtitle?: string;
   backgroundImage: string;
+  fallbackImage?: string;
   showSignupButton?: boolean;
   minHeight?: string | number;
   opacity?: number;
 }
 
 export default function Hero(props: HeroProps) {
-  const { title, subtitle, backgroundImage, showSignupButton = false } = props;
+  const {
+    title,
+    subtitle,
+    backgroundImage,
+    fallbackImage,
+    showSignupButton = false,
+  } = props;
 
   const navigate = useNavigate();
 
   const handleRegisterClick = () => navigate("/signup");
 
+  const [bgImage, setBgImage] = useState(backgroundImage);
+
+  useEffect(() => {
+    if (!fallbackImage) return;
+    const img = new Image();
+    img.src = backgroundImage;
+    img.onerror = () => setBgImage(fallbackImage);
+  }, [backgroundImage, fallbackImage]);
+
   return (
     <HeroSection
       opacity={props.opacity}
       sx={{
-        backgroundImage: `url('${backgroundImage}')`,
+        backgroundImage: `url('${bgImage}')`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         minHeight: props.minHeight || "25rem",

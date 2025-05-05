@@ -6,11 +6,14 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
+  ParseFilePipeBuilder,
   Post,
   Put,
   Query,
   Req,
   Res,
+  UploadedFile,
   UseGuards,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
@@ -20,7 +23,7 @@ import { PasswordUpdateDto } from "./dto/actions/password-update.dto";
 import { PasswordChangeDto } from "./dto/actions/password-change.dto";
 import { OtpLoginDto } from "./dto/actions/otp-login.dto";
 import { EmailConfirmDto } from "./dto/actions/email-confirm.dto";
-import { ApiBody, ApiResponse } from "@nestjs/swagger";
+import { ApiBody, ApiOkResponse, ApiResponse } from "@nestjs/swagger";
 import { SignInDto } from "./dto/actions/sign-in.dto";
 import { DateTime } from "luxon";
 import { RefreshGuard } from "./guards/refresh.guard";
@@ -36,6 +39,10 @@ import {
   UserLocalAuthGuard,
 } from "./guards/local-auth.guard";
 import { AuthResponseDto } from "./dto/auth-user/auth-response.dto";
+import { ApplicationUserDto } from "src/users/dto/application-user.dto";
+import { ApiFileBody } from "src/common/decorators/api-file-body.decorator";
+import IAssetsService, { ASSETS_SERVICE } from "src/assets/assets.interface";
+import { CompressionService } from "src/assets/utilities/compression.service";
 
 // avoids having to bloat the code with the same multiple decorators
 const ApiLoginResponse = (description: string = "Successful login") =>
@@ -50,7 +57,11 @@ const ApiLoginResponse = (description: string = "Successful login") =>
 
 @Controller("auth")
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private readonly imageCompressionService: CompressionService,
+    @Inject(ASSETS_SERVICE) private readonly assetsService: IAssetsService
+  ) {}
 
   private async login(req: CustomRequest, res: any) {
     if (req.user.requiresOtp) {
@@ -173,6 +184,38 @@ export class AuthController {
   async deleteUserProfile(@Req() req, @Res() res) {
     this.clearRefreshTokenCookie(res);
     await this.authService.deleteUserProfile(req.user.sub);
+  }
+
+  /**
+   * Updates the profile picture of the currently authenticated user.
+   * @param req The request object, containing the user's ID.
+   * @param file The file to update the profile picture with.
+   */
+  @UseAuth()
+  @Post("profile/picture")
+  @ApiOkResponse({ type: ApplicationUserDto })
+  @ApiFileBody()
+  async updateProfilePicture(
+    @Req() req,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addMaxSizeValidator({ maxSize: 1024 * 1024 * 10 })
+        .addFileTypeValidator({ fileType: "image" })
+        .build()
+    )
+    file: Express.Multer.File
+  ) {
+    const userId = req.user.sub;
+
+    const compressedBuffer = await this.imageCompressionService.compressImage(
+      file.buffer
+    );
+
+    return this.authService.updateUserPicture(
+      userId,
+      compressedBuffer,
+      file.mimetype
+    );
   }
 
   /**

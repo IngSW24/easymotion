@@ -16,6 +16,7 @@ export class CreateCourseDto extends OmitType(CourseDto, [
   "category",
   "sessions",
   "category_id",
+  "image_path",
 ]) {
   @ApiProperty({ description: "id of the existent category" })
   @IsString()

@@ -19,6 +19,7 @@ describe("CourseCard GUI test", () => {
     instructors: [],
     category: { id: "category id", name: "ACQUAGYM" },
     level: "BASIC",
+    image_path: "sample_image_path",
     tags: ["sample_tag1", "sample_tag2"],
     created_at: "",
     updated_at: "",

@@ -9,6 +9,8 @@ import { CourseLevel, PaymentRecurrence } from "@prisma/client";
 import { plainToInstance } from "class-transformer";
 import { randomUUID } from "crypto";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
+import { ASSETS_SERVICE } from "src/assets/assets.interface";
+import { MockAssetsService } from "src/assets/implementations/mock.service";
 
 describe("CoursesService", () => {
   let service: CoursesService;
@@ -39,6 +41,10 @@ describe("CoursesService", () => {
         {
           provide: PrismaService,
           useValue: prismaMock,
+        },
+        {
+          provide: ASSETS_SERVICE,
+          useClass: MockAssetsService,
         },
       ],
     }).compile();
@@ -447,7 +453,7 @@ describe("CoursesService", () => {
       );
 
       expect(prismaMock.subscription.count).toHaveBeenCalledWith({
-        where: { patient_id: userId },
+        where: { patient_id: userId, isPending: false },
       });
 
       expect(prismaMock.subscription.findMany).toHaveBeenCalledWith(
@@ -542,5 +548,16 @@ describe("CoursesService", () => {
     const courseDto = plainToInstance(CourseDto, course);
 
     expect(Number(courseDto.price)).toBe(100);
+  });
+
+  it("should update image", async () => {
+    const courseId = randomUUID();
+    const buffer = Buffer.from("test");
+    const mimeType = "image/jpeg";
+
+    const result = await service.updateImage(courseId, buffer, mimeType);
+
+    expect(result).toBeDefined();
+    expect(result.image_path).toBeDefined();
   });
 });

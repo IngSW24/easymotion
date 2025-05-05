@@ -1,14 +1,26 @@
 import { CourseDto } from "@easymotion/openapi";
-import { Delete, Edit, Group } from "@mui/icons-material";
-import { Chip, IconButton, Stack, Tooltip, styled } from "@mui/material";
+import { Article, Delete, Edit, Group } from "@mui/icons-material";
+import {
+  IconButton,
+  Stack,
+  Tooltip,
+  Box,
+  Typography,
+  Chip,
+  useTheme,
+  useMediaQuery,
+  styled,
+} from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 type DashboardDataGridProps = {
   courses: CourseDto[];
+  pageNumer: number;
   nextPageAction: () => void;
   hasNextPage: boolean;
   isFetchingNextPage: boolean;
+  onAction: boolean;
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;
   onCourseUsers: (id: string) => void;
@@ -60,18 +72,24 @@ const StyledDataGrid = styled(DataGrid)({
 export default function DashboardDataGrid(props: DashboardDataGridProps) {
   const {
     courses,
+    pageNumer,
     nextPageAction,
     hasNextPage,
     isFetchingNextPage,
+    onAction,
     onDelete,
     onEdit,
     onCourseUsers,
   } = props;
 
   const [paginationModel, setPaginationModel] = useState({
-    pageSize: 10,
+    pageSize: pageNumer,
     page: 0,
   });
+
+  // Aggiungi theme e media query per il responsive
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const currentDisplayedRows =
     paginationModel.page * paginationModel.pageSize + paginationModel.pageSize;
@@ -102,17 +120,82 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
   });
 
   const columns: GridColDef[] = [
-    { field: "id", headerName: "ID", flex: 1, minWidth: 10 },
-    { field: "courseId" },
-    { field: "courseName", headerName: "Nome corso", flex: 4, minWidth: 100 },
+    {
+      field: "courseName",
+      headerName: "CORSO",
+      headerAlign: "center",
+      flex: 4,
+      minWidth: 200,
+      renderCell: (params: GridRenderCellParams) => (
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+            width: "100%",
+            overflow: "hidden",
+          }}
+        >
+          <Box
+            sx={{
+              width: 40,
+              height: 40,
+              minWidth: 40,
+              backgroundColor: "#E8F0FE",
+              borderRadius: 1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            <Article sx={{ color: "primary.main" }} />
+          </Box>
+          <Box
+            sx={{
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              width: "calc(100% - 56px)",
+            }}
+          >
+            <Typography
+              variant="subtitle1"
+              fontWeight={500}
+              noWrap
+              sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
+            >
+              {params.value}
+            </Typography>
+          </Box>
+        </Box>
+      ),
+    },
+    {
+      field: "capacity",
+      headerName: "MAX PAZIENTI",
+      headerAlign: "center",
+      align: "center",
+      flex: 2,
+      minWidth: 80,
+      display: "flex",
+      renderCell: (params: GridRenderCellParams) => (
+        <Box>
+          <Typography variant="body2" color="text.secondary">
+            {params.value}
+          </Typography>
+        </Box>
+      ),
+    },
     {
       field: "category",
-      headerName: "Categoria",
+      headerName: "CATEGORIA",
+      headerAlign: "center",
+      align: "center",
       flex: 3,
-      minWidth: 100,
+      display: "flex",
       renderCell: (params) => {
         const category = params.value;
-        const color = "#9e9e9e";
+        const color = "#094D95";
 
         return (
           <Chip
@@ -127,12 +210,33 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
         );
       },
     },
-    { field: "capacity", headerName: "Max Pazienti", flex: 2, minWidth: 50 },
+    {
+      field: "is_published",
+      headerName: "STATO",
+      headerAlign: "center",
+      align: "center",
+      flex: 2,
+      display: "flex",
+      renderCell: (params) => {
+        const course = courses.find((c) => c.id === params.row.courseId);
+        return (
+          <Chip
+            label={course?.is_published ? "ATTIVO" : "ARCHIVIATO"}
+            size="small"
+            style={{
+              backgroundColor: course?.is_published ? "#4CAF50" : "#F44336",
+              color: "white",
+              fontWeight: "bold",
+            }}
+          />
+        );
+      },
+    },
     {
       field: "actions",
-      headerName: "Azioni",
+      headerName: "AZIONI",
       flex: 2,
-      minWidth: 100,
+      minWidth: 130,
       sortable: false,
       filterable: false,
       headerAlign: "center",
@@ -164,7 +268,7 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
                   onEdit(params.row.courseId);
                 }}
               >
-                <Edit fontSize="small" color="primary" />
+                <Edit fontSize="small" />
               </IconButton>
             </Tooltip>
             <Tooltip title="Elimina">
@@ -175,7 +279,7 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
                   onDelete(params.row.courseId);
                 }}
               >
-                <Delete fontSize="small" color="error" />
+                <Delete fontSize="small" />
               </IconButton>
             </Tooltip>
           </Stack>
@@ -184,11 +288,37 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
     },
   ];
 
+  const visibleColumns = useMemo(() => {
+    let filteredColumns = [...columns];
+
+    if (onAction) {
+      filteredColumns = filteredColumns.filter(
+        (col) => col.field !== "is_published"
+      );
+    } else {
+      filteredColumns = filteredColumns.filter(
+        (col) => col.field !== "actions"
+      );
+    }
+
+    if (isMobile) {
+      const firstCol = filteredColumns.find(
+        (col) => col.field === "courseName"
+      );
+      const lastCol = onAction
+        ? filteredColumns.find((col) => col.field === "actions")
+        : filteredColumns.find((col) => col.field === "is_published");
+
+      filteredColumns = [firstCol, lastCol].filter(Boolean) as GridColDef[];
+    }
+
+    return filteredColumns;
+  }, [columns, onAction, isMobile]);
+
   return (
-    <StyledDataGrid
-      checkboxSelection
+    <DataGrid
       rows={rows}
-      columns={columns}
+      columns={visibleColumns}
       getRowClassName={(params) =>
         params.indexRelativeToCurrentPage % 2 === 0 ? "even" : "odd"
       }
@@ -196,12 +326,51 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
         pagination: { paginationModel: { pageSize: 10 } },
         columns: {
           columnVisibilityModel: {
+            id: false,
             courseId: false,
           },
         },
       }}
       pageSizeOptions={[10, 20, 50]}
-      density="compact"
+      disableColumnResize
+      density="comfortable"
+      sx={{
+        "& .MuiDataGrid-cell": {
+          padding: "16px",
+        },
+        "& .MuiDataGrid-row": {
+          borderRadius: 1,
+        },
+        "& .MuiDataGrid-columnHeaderTitle": {
+          fontWeight: "bold",
+        },
+      }}
+      slotProps={{
+        filterPanel: {
+          filterFormProps: {
+            logicOperatorInputProps: {
+              variant: "outlined",
+              size: "small",
+            },
+            columnInputProps: {
+              variant: "outlined",
+              size: "small",
+              sx: { mt: "auto" },
+            },
+            operatorInputProps: {
+              variant: "outlined",
+              size: "small",
+              sx: { mt: "auto" },
+            },
+            valueInputProps: {
+              InputComponentProps: {
+                variant: "outlined",
+                size: "small",
+              },
+            },
+          },
+        },
+      }}
       paginationModel={paginationModel}
       onPaginationModelChange={handlePaginationModelChange}
       paginationMode="client"

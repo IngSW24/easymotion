@@ -1,4 +1,4 @@
-import { PaymentRecurrence, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import getUsers from "./users";
 import { getCategories } from "./categories";
 
@@ -19,7 +19,6 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       instructors: ["Anna Bianchi"],
       level: "BASIC",
       price: 15.99,
-      payment_recurrence: PaymentRecurrence.SINGLE,
       is_published: true,
       subscriptions_open: true,
       max_subscribers: 20,
@@ -46,6 +45,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
           },
         ],
       },
+      payment_recurrence: "SINGLE",
     },
     {
       id: "2f60f825-fc2e-45bd-ab1b-5f26d8eef27f",
@@ -58,7 +58,6 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       instructors: ["Marco Conti"],
       level: "ADVANCED",
       price: 25.0,
-      payment_recurrence: PaymentRecurrence.SINGLE,
       is_published: true,
       subscriptions_open: true,
       max_subscribers: 15,
@@ -90,6 +89,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
           },
         ],
       },
+      payment_recurrence: "SINGLE",
     },
     {
       id: "3e3af945-973d-4851-8a69-d7e3f11acfc2",
@@ -102,7 +102,6 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       instructors: ["Giulia Galli"],
       level: "MEDIUM",
       price: 20.0,
-      payment_recurrence: PaymentRecurrence.SINGLE,
       is_published: true,
       subscriptions_open: true,
       max_subscribers: 12,
@@ -129,6 +128,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
           },
         ],
       },
+      payment_recurrence: "SINGLE",
     },
     {
       id: "8566fabc-8609-477d-8e02-a806a5862807",
@@ -140,7 +140,6 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       instructors: ["Elisa Ferri"],
       level: "BASIC",
       price: 15.0,
-      payment_recurrence: PaymentRecurrence.SINGLE,
       is_published: true,
       subscriptions_open: true,
       max_subscribers: 25,
@@ -167,6 +166,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
           },
         ],
       },
+      payment_recurrence: "SINGLE",
     },
     {
       id: "8592b446-4d83-4524-adc1-4f85abee7a14",
@@ -178,7 +178,6 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       instructors: ["Mario Rossi"],
       level: "BASIC",
       price: 18.0,
-      payment_recurrence: PaymentRecurrence.SINGLE,
       is_published: true,
       subscriptions_open: true,
       max_subscribers: 10,
@@ -205,6 +204,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
           },
         ],
       },
+      payment_recurrence: "SINGLE",
     },
     {
       id: "55e2604c-2d43-4130-998d-544b69402071",
@@ -216,7 +216,6 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       instructors: ["Luca Verdi"],
       level: "MEDIUM",
       price: 12.0,
-      payment_recurrence: PaymentRecurrence.SINGLE,
       is_published: true,
       subscriptions_open: true,
       max_subscribers: 20,
@@ -243,6 +242,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
           },
         ],
       },
+      payment_recurrence: "SINGLE",
     },
     {
       id: "1334ea30-beeb-4545-93eb-bfc9b99dedd2",
@@ -254,7 +254,6 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       instructors: ["Chiara De Luca"],
       level: "BASIC",
       price: 10.0,
-      payment_recurrence: PaymentRecurrence.SINGLE,
       is_published: true,
       subscriptions_open: true,
       max_subscribers: 20,
@@ -281,6 +280,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
           },
         ],
       },
+      payment_recurrence: "SINGLE",
     },
     {
       id: "5b8faeeb-00c5-4bc3-851a-60ceb8420e6a",
@@ -292,7 +292,6 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       instructors: ["Simone Neri"],
       level: "ADVANCED",
       price: 15.0,
-      payment_recurrence: PaymentRecurrence.SINGLE,
       is_published: true,
       subscriptions_open: true,
       max_subscribers: 15,
@@ -319,6 +318,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
           },
         ],
       },
+      payment_recurrence: "SINGLE",
     },
     {
       id: "2025f71d-14cc-4ab1-b11e-1f9dd56dc034",
@@ -330,7 +330,6 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       instructors: ["Elena Russo"],
       level: "BASIC",
       price: 12.0,
-      payment_recurrence: PaymentRecurrence.SINGLE,
       is_published: true,
       subscriptions_open: true,
       max_subscribers: 25,
@@ -357,6 +356,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
           },
         ],
       },
+      payment_recurrence: "SINGLE",
     },
     {
       id: "18f39116-bff7-424a-8687-8b3bba2ee4db",
@@ -368,7 +368,6 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
       instructors: ["Giorgio Bassi"],
       level: "MEDIUM",
       price: 18.0,
-      payment_recurrence: PaymentRecurrence.SINGLE,
       is_published: true,
       subscriptions_open: true,
       max_subscribers: 20,
@@ -395,6 +394,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
           },
         ],
       },
+      payment_recurrence: "SINGLE",
     },
   ];
 };

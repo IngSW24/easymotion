@@ -46,6 +46,8 @@ model Course {
   subscriptions_open Boolean
   max_subscribers    Int?
 
+  image_path String?
+
   tags String[]
 
   created_at DateTime @default(now()) @db.Timestamptz(3)
@@ -124,8 +126,9 @@ model ApplicationUser {
   physiotherapist     Physiotherapist?
   patient             Patient?
 
-  createdAt DateTime @default(now()) @db.Timestamptz(3)
-  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(3)
+  picturePath String?
 }
 
 model Physiotherapist {

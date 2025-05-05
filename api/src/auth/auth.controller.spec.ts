@@ -4,10 +4,15 @@ import { AuthService } from "./auth.service";
 import { AuthResponseDto } from "./dto/auth-user/auth-response.dto";
 import { UpdateAuthUserDto } from "./dto/auth-user/update-auth-user.dto";
 import { CustomRequest } from "src/common/types/custom-request";
+import IAssetsService, { ASSETS_SERVICE } from "src/assets/assets.interface";
+import { CompressionService } from "src/assets/utilities/compression.service";
+import assetsConfig from "src/config/assets.config";
 
 describe("AuthController", () => {
   let controller: AuthController;
   let serviceMock: Partial<AuthService>;
+  let assetsServiceMock: Partial<IAssetsService>;
+  let imageCompressionServiceMock: Partial<CompressionService>;
 
   beforeEach(async () => {
     serviceMock = {
@@ -17,6 +22,17 @@ describe("AuthController", () => {
       getUserProfile: jest.fn(),
       updateUserProfile: jest.fn(),
       deleteUserProfile: jest.fn(),
+      updateUserPicture: jest.fn(),
+    };
+
+    assetsServiceMock = {
+      uploadBuffer: jest.fn(),
+      deleteFile: jest.fn(),
+      getFileStream: jest.fn(),
+    };
+
+    imageCompressionServiceMock = {
+      compressImage: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -26,11 +42,27 @@ describe("AuthController", () => {
           provide: AuthService,
           useValue: serviceMock,
         },
+        {
+          provide: ASSETS_SERVICE,
+          useValue: assetsServiceMock,
+        },
+        {
+          provide: CompressionService,
+          useValue: imageCompressionServiceMock,
+        },
+        {
+          provide: assetsConfig.KEY,
+          useValue: {
+            maxSize: 1024 * 1024 * 10,
+            compressionFactor: 0.5,
+          },
+        },
       ],
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
   });
+
   it("should send OTP response if requiresOtp is true in userLogin", async () => {
     const req: CustomRequest = {
       user: { requiresOtp: true },
@@ -132,6 +164,7 @@ describe("AuthController", () => {
       user: {
         id: "user123",
         birthDate: "",
+        picturePath: null,
         email: "",
         firstName: "",
         middleName: "",
@@ -211,6 +244,7 @@ describe("AuthController", () => {
         firstName: "Admin 123",
         middleName: "",
         lastName: "",
+        picturePath: null,
         phoneNumber: "",
         role: "USER",
         isEmailVerified: false,
@@ -267,15 +301,15 @@ describe("AuthController", () => {
   });
 
   it("should clear refresh token cookie and call deleteUserProfile", async () => {
-    const req = { user: { sub: "user123" } }; // Simula la richiesta con l'ID dell'utente
-    const res = { send: jest.fn(), clearCookie: jest.fn() }; // Mock della risposta
+    const req = { user: { sub: "user123" } }; // Simulate the request with the user's ID
+    const res = { send: jest.fn(), clearCookie: jest.fn() }; // Mock the response
 
     await controller.deleteUserProfile(req, res);
 
-    // Verifica che il metodo `deleteUserProfile` del servizio venga chiamato con l'ID corretto
+    // Verify that the `deleteUserProfile` method of the service is called with the correct ID
     expect(serviceMock.deleteUserProfile).toHaveBeenCalledWith("user123");
 
-    // Verifica che il metodo clearCookie sia stato invocato
+    // Ensure the refresh token cookie is cleared
     expect(res.clearCookie).toHaveBeenCalledWith("refreshToken");
   });
 });

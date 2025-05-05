@@ -12,6 +12,8 @@ import { Launch } from "@mui/icons-material";
 import { Link } from "react-router";
 import { courseLevels } from "../../../data/course-levels";
 import { CourseDto } from "@easymotion/openapi";
+import { getCourseImageUrl } from "../../../utils/format";
+import { useState } from "react";
 
 export interface CourseCardProps {
   course: CourseDto;
@@ -27,6 +29,8 @@ const getLabel = (value: string, options: LiteralUnionDescriptor<string>) =>
  */
 export default function CourseCard(props: CourseCardProps) {
   const { course } = props;
+  const [imageUrl, setImageUrl] = useState(getCourseImageUrl({ course }));
+
   return (
     <Card
       sx={{
@@ -38,7 +42,12 @@ export default function CourseCard(props: CourseCardProps) {
         margin: "auto",
       }}
     >
-      <CardMedia sx={{ height: 180 }} image={`/${course.category.id}.jpg`} />
+      <CardMedia
+        sx={{ height: 180 }}
+        component="img"
+        image={imageUrl}
+        onError={() => setImageUrl("/hero.jpg")}
+      />
       <CardContent
         sx={{
           flexGrow: 1,

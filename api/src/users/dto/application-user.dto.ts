@@ -119,6 +119,11 @@ export class ApplicationUserDto implements Readonly<ApplicationUser> {
   @Expose()
   updatedAt: Date;
 
+  @ApiProperty({ description: "Profile picture path" })
+  @IsString()
+  @Expose()
+  picturePath: string | null;
+
   @ApiProperty({
     description: "Indicates if two-factor authentication is enabled",
     default: false,

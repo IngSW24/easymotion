@@ -10,6 +10,8 @@ import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { randomUUID } from "node:crypto";
 import { Course, CourseLevel, PaymentRecurrence } from "@prisma/client";
 import { plainToInstance } from "class-transformer";
+import { CompressionService } from "src/assets/utilities/compression.service";
+import { ASSETS_SERVICE } from "src/assets/assets.interface";
 
 describe("CoursesController", () => {
   let controller: CoursesController;
@@ -31,6 +33,16 @@ describe("CoursesController", () => {
       },
     };
 
+    const mockupCompressionService = {
+      compressImage: jest.fn(),
+    };
+
+    const mockupAssetsService = {
+      uploadBuffer: jest.fn(),
+      deleteFile: jest.fn(),
+      getFileStream: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [CoursesController],
       providers: [
@@ -38,6 +50,14 @@ describe("CoursesController", () => {
         {
           provide: PrismaService,
           useValue: prismaMock, // Mock PrismaService
+        },
+        {
+          provide: ASSETS_SERVICE,
+          useValue: mockupAssetsService,
+        },
+        {
+          provide: CompressionService,
+          useValue: mockupCompressionService,
         },
       ],
     }).compile();
@@ -133,6 +153,7 @@ describe("CoursesController", () => {
       {
         id: "",
         name: "",
+        image_path: "",
         description: "",
         short_description: "",
         instructors: [],
@@ -213,6 +234,7 @@ describe("CoursesController", () => {
       description: "Test Description",
       short_description: "Short Description",
       instructors: [],
+      image_path: "",
       category: {
         id: randomUUID(),
         name: "Category",
