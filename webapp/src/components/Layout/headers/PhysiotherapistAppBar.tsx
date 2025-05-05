@@ -1,8 +1,15 @@
 import { AppBar, Box, Toolbar, Typography } from "@mui/material";
 import ProfileButton from "../ProfileButton";
 import { Link } from "react-router";
+import { ReactNode } from "react";
 
-export default function PhysiotherapistAppBar() {
+interface PhysiotherapistAppBarProps {
+  searchButton?: ReactNode;
+}
+
+export default function PhysiotherapistAppBar({
+  searchButton,
+}: PhysiotherapistAppBarProps) {
   return (
     <AppBar position="fixed" sx={{ backgroundColor: "primary.main" }}>
       <Toolbar>
@@ -15,6 +22,7 @@ export default function PhysiotherapistAppBar() {
           EasyMotion
         </Typography>
         <Box sx={{ flexGrow: 1 }} />
+        {searchButton}
         <ProfileButton />
       </Toolbar>
     </AppBar>

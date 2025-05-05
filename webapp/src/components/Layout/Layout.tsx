@@ -1,4 +1,5 @@
 import MenuIcon from "@mui/icons-material/Menu";
+import SearchIcon from "@mui/icons-material/Search";
 import { Outlet, useLocation } from "react-router";
 import {
   AppBar,
@@ -26,6 +27,7 @@ import AuthButtons from "./AuthButtons";
 import { AuthUserDto } from "@easymotion/openapi";
 import PhysiotherapistAppBar from "./headers/PhysiotherapistAppBar";
 import UserHeader from "./headers/UserHeaders";
+import SearchDialog from "../search/SearchDialog";
 
 export type MenuEntry = {
   label: string;
@@ -59,15 +61,24 @@ const getAppbarEntries = (
     .filter((x) => !x.showIn || x.showIn === "appbar" || x.showIn === "both");
 };
 
+const SearchButton = ({ onClick }: { onClick: () => void }) => (
+  <IconButton color="inherit" onClick={onClick} sx={{ mr: 2 }}>
+    <SearchIcon />
+  </IconButton>
+);
+
 export default function Layout(props: LayoutProps) {
   const { entries } = props;
   const location = useLocation();
   const auth = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const currentRole = auth.user?.role;
 
   const handleDrawerToggle = () => setMobileOpen((prevState) => !prevState);
+  const handleSearchOpen = () => setSearchOpen(true);
+  const handleSearchClose = () => setSearchOpen(false);
 
   const isPhysiotherapistArea = location.pathname.match("/(physiotherapist)/");
   const isUserArea = location.pathname.match("/(user)/");
@@ -122,9 +133,21 @@ export default function Layout(props: LayoutProps) {
         <AppBar component="nav" sx={{ backgroundColor: "primary.main" }}>
           {/* Conditional headers rendering. */}
           {isPhysiotherapistArea ? (
-            <PhysiotherapistAppBar />
+            <PhysiotherapistAppBar
+              searchButton={
+                auth.isAuthenticated && (
+                  <SearchButton onClick={handleSearchOpen} />
+                )
+              }
+            />
           ) : isUserArea ? (
-            <UserHeader />
+            <UserHeader
+              searchButton={
+                auth.isAuthenticated && (
+                  <SearchButton onClick={handleSearchOpen} />
+                )
+              }
+            />
           ) : (
             <Toolbar>
               <IconButton // mobile-only
@@ -163,6 +186,10 @@ export default function Layout(props: LayoutProps) {
 
               <Box sx={{ flexGrow: 1 }} />
 
+              {auth.isAuthenticated && (
+                <SearchButton onClick={handleSearchOpen} />
+              )}
+
               {auth.isAuthenticated ? <ProfileButton /> : <AuthButtons />}
             </Toolbar>
           )}
@@ -188,6 +215,8 @@ export default function Layout(props: LayoutProps) {
             <Outlet />
           </div>
         </Box>
+
+        <SearchDialog open={searchOpen} onClose={handleSearchClose} />
       </Box>
     </ThemeProvider>
   );

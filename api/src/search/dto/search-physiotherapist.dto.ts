@@ -37,4 +37,11 @@ export class SearchPhysiotherapistDto {
   })
   @IsNumber()
   numberOfCourses: number;
+
+  @Expose()
+  @ApiProperty({
+    description: "The picture path of the physiotherapist",
+  })
+  @IsString()
+  picturePath: string | null;
 }

@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { SearchController } from "./search.controller";
 import { SearchService } from "./search.service";
 import { SearchFilter } from "./dto/search-filter.dto";
-import { SearchResult } from "./dto/search-result.dto";
+import { SearchResultDto } from "./dto/search-result.dto";
 
 describe("SearchController", () => {
   let controller: SearchController;
@@ -35,7 +35,7 @@ describe("SearchController", () => {
     it("should return search results", async () => {
       // Arrange
       const mockFilter: SearchFilter = { query: "test" };
-      const mockResult: SearchResult = {
+      const mockResult: SearchResultDto = {
         physiotherapists: [
           {
             id: "1",
@@ -43,6 +43,7 @@ describe("SearchController", () => {
             specialization: "Sports",
             address: "123 Main St",
             numberOfCourses: 5,
+            picturePath: "",
           },
         ],
         courses: [
@@ -59,7 +60,7 @@ describe("SearchController", () => {
       mockSearchService.searchMatchingEntities.mockResolvedValue(mockResult);
 
       // Act
-      const result = await controller.searchPhysiotherapist(mockFilter);
+      const result = await controller.searchAll(mockFilter);
 
       // Assert
       expect(result).toEqual(mockResult);
@@ -71,7 +72,7 @@ describe("SearchController", () => {
     it("should handle empty search results", async () => {
       // Arrange
       const mockFilter: SearchFilter = { query: "nonexistent" };
-      const mockResult: SearchResult = {
+      const mockResult: SearchResultDto = {
         physiotherapists: [],
         courses: [],
       };
@@ -79,7 +80,7 @@ describe("SearchController", () => {
       mockSearchService.searchMatchingEntities.mockResolvedValue(mockResult);
 
       // Act
-      const result = await controller.searchPhysiotherapist(mockFilter);
+      const result = await controller.searchAll(mockFilter);
 
       // Assert
       expect(result).toEqual(mockResult);
@@ -95,9 +96,7 @@ describe("SearchController", () => {
       mockSearchService.searchMatchingEntities.mockRejectedValue(error);
 
       // Act & Assert
-      await expect(
-        controller.searchPhysiotherapist(mockFilter)
-      ).rejects.toThrow(error);
+      await expect(controller.searchAll(mockFilter)).rejects.toThrow(error);
       expect(searchService.searchMatchingEntities).toHaveBeenCalledWith(
         mockFilter
       );

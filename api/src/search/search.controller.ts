@@ -9,7 +9,7 @@ export class SearchController {
 
   @Get()
   @UseAuth()
-  searchPhysiotherapist(@Query() filter: SearchFilter) {
+  searchAll(@Query() filter: SearchFilter) {
     return this.searchService.searchMatchingEntities(filter);
   }
 }

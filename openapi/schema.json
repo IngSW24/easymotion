@@ -2380,7 +2380,7 @@
     },
     "/search": {
       "get": {
-        "operationId": "SearchController_searchPhysiotherapist",
+        "operationId": "SearchController_searchAll",
         "parameters": [
           {
             "name": "query",
@@ -2397,7 +2397,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SearchResult"
+                  "$ref": "#/components/schemas/SearchResultDto"
                 }
               }
             }
@@ -3958,6 +3958,11 @@
           "numberOfCourses": {
             "type": "number",
             "description": "The number of courses the physiotherapist is involved in"
+          },
+          "picturePath": {
+            "type": "string",
+            "nullable": true,
+            "description": "The picture path of the physiotherapist"
           }
         },
         "required": [
@@ -3965,7 +3970,8 @@
           "fullName",
           "specialization",
           "address",
-          "numberOfCourses"
+          "numberOfCourses",
+          "picturePath"
         ]
       },
       "SearchCourseDto": {
@@ -4001,7 +4007,7 @@
           "subscriptionCount"
         ]
       },
-      "SearchResult": {
+      "SearchResultDto": {
         "type": "object",
         "properties": {
           "physiotherapists": {

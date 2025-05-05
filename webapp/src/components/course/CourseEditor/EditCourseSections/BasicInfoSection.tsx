@@ -1,11 +1,13 @@
 import { Box, TextField } from "@mui/material";
 import { useFormContext } from "react-hook-form";
 import type { CourseFormData } from "../schema";
+import MarkdownTextField from "../../../atoms/MarkdownTextField/MarkdownTextField";
 
 export default function BasicInfoSection() {
   const {
     register,
     formState: { errors },
+    watch,
   } = useFormContext<CourseFormData>();
 
   return (
@@ -26,14 +28,15 @@ export default function BasicInfoSection() {
         multiline
         rows={2}
       />
-      <TextField
+      <MarkdownTextField
         {...register("description")}
+        placeholder="Usa il formato markdown per arricchire la formattazione"
+        previewValue={watch("description")}
         label="Descrizione"
         error={!!errors.description}
         helperText={errors.description?.message}
         fullWidth
         multiline
-        rows={4}
       />
       <TextField
         {...register("location")}

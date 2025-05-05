@@ -115,12 +115,12 @@ export default function SubscriptionRequest(props: CourseDetailProps) {
             <Box mb={3}>
               <Typography fontWeight="bold" sx={{ fontSize: 20 }}>
                 Stato iscrizioni
-                {courseRepo.getSingle.data?.subscriptions_open ? (
-                  <Typography color="green">APERTE</Typography>
-                ) : (
-                  <Typography color="error">CHIUSE</Typography>
-                )}
               </Typography>
+              {courseRepo.getSingle.data?.subscriptions_open ? (
+                <Typography sx={{ color: "green" }}>APERTE</Typography>
+              ) : (
+                <Typography color="error">CHIUSE</Typography>
+              )}
             </Box>
             <Box mb={3}>
               <Typography fontWeight="bold" sx={{ fontSize: 20 }}>

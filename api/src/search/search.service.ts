@@ -5,7 +5,7 @@ import {
 } from "src/common/prisma/pagination";
 import { SearchFilter } from "./dto/search-filter.dto";
 import { ApplicationUser } from "@prisma/client";
-import { SearchResult } from "./dto/search-result.dto";
+import { SearchResultDto } from "./dto/search-result.dto";
 
 @Injectable()
 export class SearchService {
@@ -27,7 +27,7 @@ export class SearchService {
       this.searchCourses(query),
     ]);
 
-    const result: SearchResult = {
+    const result: SearchResultDto = {
       physiotherapists: physiotherapists.map((physiotherapist) => ({
         id: physiotherapist.applicationUser.id,
         fullName: SearchService.getPhysiotherapistName(
@@ -36,6 +36,7 @@ export class SearchService {
         address: physiotherapist.publicAddress,
         specialization: physiotherapist.specialization,
         numberOfCourses: physiotherapist._count.courses,
+        picturePath: physiotherapist.applicationUser.picturePath,
       })),
       courses: courses.map((course) => ({
         id: course.id,
@@ -78,9 +79,11 @@ export class SearchService {
             OR: [
               {
                 applicationUser: {
-                  firstName: { contains: query, mode: "insensitive" },
-                  middleName: { contains: query, mode: "insensitive" },
-                  lastName: { contains: query, mode: "insensitive" },
+                  OR: [
+                    { firstName: { contains: query, mode: "insensitive" } },
+                    { middleName: { contains: query, mode: "insensitive" } },
+                    { lastName: { contains: query, mode: "insensitive" } },
+                  ],
                 },
               },
               {

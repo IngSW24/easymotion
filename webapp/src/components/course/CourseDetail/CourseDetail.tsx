@@ -33,6 +33,7 @@ import { useAuth } from "@easymotion/auth-context";
 import { Link } from "react-router";
 import SubscriptionRequestForm from "./SubscriptionRequest";
 import SubscribeSection from "./SubscribeSection";
+import MarkdownBlock from "../../atoms/MarkdownBlock/MarkdownBlock";
 
 export interface CourseDetailProps {
   course: CourseDto;
@@ -108,9 +109,7 @@ const CourseDetail: React.FC<CourseDetailProps> = (
                 <Typography variant="h5" fontWeight="bold">
                   Descrizione
                 </Typography>
-                <Typography variant="body1" flexWrap="wrap">
-                  {course.description}
-                </Typography>
+                <MarkdownBlock content={course.description} />
               </Box>
 
               <Divider sx={{ my: 3 }} />
