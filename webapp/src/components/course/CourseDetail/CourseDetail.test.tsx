@@ -33,11 +33,11 @@ describe("CourseDetail GUI test", () => {
     created_at: "",
     updated_at: "",
     owner: { id: "", email: "", firstName: "", lastName: "", middleName: "" },
-    is_free: false,
     is_published: false,
     subscriptions_open: false,
     subscription_start_date: "",
     subscription_end_date: "",
+    payment_recurrence: "SINGLE",
   };
 
   it("Check if CourseDetail shows the correct information", () => {

@@ -10,6 +10,10 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
 import { ErrorBoundary } from "react-error-boundary";
 import { GlobalErrorFallback } from "./components/fallbacks/GlobalErrorFallback";
+import { Settings } from "luxon";
+
+// Set the default luxon locale to Italian
+Settings.defaultLocale = "it";
 
 const queryClient = new QueryClient({
   defaultOptions: {

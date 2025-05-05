@@ -55,7 +55,7 @@ export class UserManager {
           });
           break;
         case Role.USER:
-          await tx.finalUser.create({
+          await tx.patient.create({
             data: {
               applicationUser: { connect: { id: createdUser.id } },
             },

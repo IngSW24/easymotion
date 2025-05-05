@@ -24,12 +24,12 @@ describe("CourseCard GUI test", () => {
     created_at: "",
     updated_at: "",
     owner: { id: "", email: "", firstName: "", lastName: "", middleName: "" },
-    is_free: false,
     is_published: false,
     subscriptions_open: false,
     sessions: [],
     subscription_start_date: "",
     subscription_end_date: "",
+    payment_recurrence: "SINGLE",
   };
 
   it("Check if CourseCard shows the correct information", () => {

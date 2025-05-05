@@ -1379,14 +1379,14 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "PaginatedResponseOfSubscriptionDto",
+                  "title": "PaginatedResponseOfSubscriptionDtoWithCourse",
                   "allOf": [
                     {
                       "properties": {
                         "data": {
                           "type": "array",
                           "items": {
-                            "$ref": "#/components/schemas/SubscriptionDto"
+                            "$ref": "#/components/schemas/SubscriptionDtoWithCourse"
                           }
                         }
                       },
@@ -1439,13 +1439,13 @@
             "bearer": []
           }
         ],
-        "summary": "Get the current subscriptions for the logged user",
+        "summary": "Get the current active subscriptions for the logged user",
         "tags": [
           "Subscriptions"
         ]
       },
       "post": {
-        "operationId": "SubscriptionsController_subscribeLoggedUser",
+        "operationId": "SubscriptionsController_createSubscription",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1470,13 +1470,13 @@
             "bearer": []
           }
         ],
-        "summary": "Subscribe the logged in final user to a course",
+        "summary": "[ADMIN & PHYSIOTHERAPIST] Create a direct subscription for a user to a course",
         "tags": [
           "Subscriptions"
         ]
       },
       "delete": {
-        "operationId": "SubscriptionsController_unsubscribeLoggedUser",
+        "operationId": "SubscriptionsController_deleteSubscription",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1498,7 +1498,135 @@
             "bearer": []
           }
         ],
-        "summary": "Unsubscribe the logged in final user from a course",
+        "summary": "[ADMIN & PHYSIOTHERAPIST] Delete a subscription for a user from a course",
+        "tags": [
+          "Subscriptions"
+        ]
+      }
+    },
+    "/subscriptions/pending": {
+      "get": {
+        "operationId": "SubscriptionsController_getPendingSubscriptionsForLoggedUser",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "PaginatedResponseOfSubscriptionDtoWithCourse",
+                  "allOf": [
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/SubscriptionDtoWithCourse"
+                          }
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ]
+                    },
+                    {
+                      "properties": {
+                        "meta": {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "number"
+                            },
+                            "hasNextPage": {
+                              "type": "boolean"
+                            },
+                            "currentPage": {
+                              "type": "number"
+                            },
+                            "totalItems": {
+                              "type": "number"
+                            },
+                            "totalPages": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "items",
+                            "hasNextPage",
+                            "currentPage",
+                            "totalItems",
+                            "totalPages"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "meta"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get the pending subscriptions for the logged user",
+        "tags": [
+          "Subscriptions"
+        ]
+      }
+    },
+    "/subscriptions/request": {
+      "post": {
+        "operationId": "SubscriptionsController_sendSubscriptionRequest",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubscriptionRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Send a subscription request to a course",
         "tags": [
           "Subscriptions"
         ]
@@ -1541,14 +1669,14 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "PaginatedResponseOfSubscriptionDto",
+                  "title": "PaginatedResponseOfSubscriptionDtoWithCourse",
                   "allOf": [
                     {
                       "properties": {
                         "data": {
                           "type": "array",
                           "items": {
-                            "$ref": "#/components/schemas/SubscriptionDto"
+                            "$ref": "#/components/schemas/SubscriptionDtoWithCourse"
                           }
                         }
                       },
@@ -1601,68 +1729,110 @@
             "bearer": []
           }
         ],
-        "summary": "Get the current subscriptions for the given user",
+        "summary": "[ADMIN & PHYSIOTHERAPIST] Get the active subscriptions for a specific user",
         "tags": [
           "Subscriptions"
         ]
       }
     },
-    "/subscriptions/user": {
-      "post": {
-        "operationId": "SubscriptionsController_subscribeGivenUser",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SubscriptionCreateDto"
-              }
+    "/subscriptions/{userId}/pending": {
+      "get": {
+        "operationId": "SubscriptionsController_getPendingSubscriptionsForGivenUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
             }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
           },
-          "201": {
-            "description": ""
-          }
-        },
-        "security": [
           {
-            "bearer": []
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
           }
         ],
-        "summary": "Subscribe the given final user to a course (for admins and physiotherapists)",
-        "tags": [
-          "Subscriptions"
-        ]
-      },
-      "delete": {
-        "operationId": "SubscriptionsController_unsubscribeGivenUser",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SubscriptionDeleteDto"
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "PaginatedResponseOfSubscriptionDtoWithCourse",
+                  "allOf": [
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/SubscriptionDtoWithCourse"
+                          }
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ]
+                    },
+                    {
+                      "properties": {
+                        "meta": {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "number"
+                            },
+                            "hasNextPage": {
+                              "type": "boolean"
+                            },
+                            "currentPage": {
+                              "type": "number"
+                            },
+                            "totalItems": {
+                              "type": "number"
+                            },
+                            "totalPages": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "items",
+                            "hasNextPage",
+                            "currentPage",
+                            "totalItems",
+                            "totalPages"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "meta"
+                      ]
+                    }
+                  ]
+                }
               }
             }
           }
         },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
         "security": [
           {
             "bearer": []
           }
         ],
-        "summary": "Unsubscribe the given final user from a course (for admins and physiotherapists)",
+        "summary": "[ADMIN & PHYSIOTHERAPIST] Get the pending subscriptions for a specific user",
         "tags": [
           "Subscriptions"
         ]
@@ -1670,7 +1840,7 @@
     },
     "/subscriptions/course/{courseId}": {
       "get": {
-        "operationId": "SubscriptionsController_getSubscribers",
+        "operationId": "SubscriptionsController_getSubscribersForCourse",
         "parameters": [
           {
             "name": "courseId",
@@ -1705,14 +1875,14 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "PaginatedResponseOfUserSubscriptionDto",
+                  "title": "PaginatedResponseOfSubscriptionDtoWithUser",
                   "allOf": [
                     {
                       "properties": {
                         "data": {
                           "type": "array",
                           "items": {
-                            "$ref": "#/components/schemas/UserSubscriptionDto"
+                            "$ref": "#/components/schemas/SubscriptionDtoWithUser"
                           }
                         }
                       },
@@ -1765,7 +1935,140 @@
             "bearer": []
           }
         ],
-        "summary": "Gets all subscribers of a course",
+        "summary": "[ADMIN & PHYSIOTHERAPIST] Get all active subscribers for a course",
+        "tags": [
+          "Subscriptions"
+        ]
+      }
+    },
+    "/subscriptions/course/{courseId}/pending": {
+      "get": {
+        "operationId": "SubscriptionsController_getPendingSubscribersForCourse",
+        "parameters": [
+          {
+            "name": "courseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "PaginatedResponseOfSubscriptionDtoWithUser",
+                  "allOf": [
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/SubscriptionDtoWithUser"
+                          }
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ]
+                    },
+                    {
+                      "properties": {
+                        "meta": {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "number"
+                            },
+                            "hasNextPage": {
+                              "type": "boolean"
+                            },
+                            "currentPage": {
+                              "type": "number"
+                            },
+                            "totalItems": {
+                              "type": "number"
+                            },
+                            "totalPages": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "items",
+                            "hasNextPage",
+                            "currentPage",
+                            "totalItems",
+                            "totalPages"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "meta"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "[ADMIN & PHYSIOTHERAPIST] Get all pending subscribers for a course",
+        "tags": [
+          "Subscriptions"
+        ]
+      }
+    },
+    "/subscriptions/request/accept": {
+      "put": {
+        "operationId": "SubscriptionsController_acceptSubscriptionRequest",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubscriptionCreateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "[ADMIN & PHYSIOTHERAPIST] Accept a pending subscription request",
         "tags": [
           "Subscriptions"
         ]
@@ -2033,6 +2336,7 @@
           }
         },
         "required": [
+          "id",
           "start_time",
           "end_time"
         ]
@@ -2082,20 +2386,20 @@
               "ADVANCED"
             ]
           },
-          "is_free": {
-            "type": "boolean",
-            "description": "Indicates if the course is free"
-          },
           "price": {
             "type": "number",
-            "nullable": true,
-            "minimum": 1,
+            "minimum": 0,
             "description": "Price of the course"
           },
-          "number_of_payments": {
-            "type": "number",
-            "nullable": true,
-            "description": "Amount of payment required"
+          "payment_recurrence": {
+            "type": "string",
+            "description": "Payment recurrence",
+            "enum": [
+              "SINGLE",
+              "PER_SESSION",
+              "MONTHLY",
+              "ANNUAL"
+            ]
           },
           "is_published": {
             "type": "boolean",
@@ -2169,7 +2473,8 @@
           "short_description",
           "instructors",
           "level",
-          "is_free",
+          "price",
+          "payment_recurrence",
           "is_published",
           "subscriptions_open",
           "tags",
@@ -2237,20 +2542,20 @@
               "ADVANCED"
             ]
           },
-          "is_free": {
-            "type": "boolean",
-            "description": "Indicates if the course is free"
-          },
           "price": {
             "type": "number",
-            "nullable": true,
-            "minimum": 1,
+            "minimum": 0,
             "description": "Price of the course"
           },
-          "number_of_payments": {
-            "type": "number",
-            "nullable": true,
-            "description": "Amount of payment required"
+          "payment_recurrence": {
+            "type": "string",
+            "description": "Payment recurrence",
+            "enum": [
+              "SINGLE",
+              "PER_SESSION",
+              "MONTHLY",
+              "ANNUAL"
+            ]
           },
           "is_published": {
             "type": "boolean",
@@ -2299,7 +2604,8 @@
           "short_description",
           "instructors",
           "level",
-          "is_free",
+          "price",
+          "payment_recurrence",
           "is_published",
           "subscriptions_open",
           "tags",
@@ -2368,20 +2674,20 @@
               "ADVANCED"
             ]
           },
-          "is_free": {
-            "type": "boolean",
-            "description": "Indicates if the course is free"
-          },
           "price": {
             "type": "number",
-            "nullable": true,
-            "minimum": 1,
+            "minimum": 0,
             "description": "Price of the course"
           },
-          "number_of_payments": {
-            "type": "number",
-            "nullable": true,
-            "description": "Amount of payment required"
+          "payment_recurrence": {
+            "type": "string",
+            "description": "Payment recurrence",
+            "enum": [
+              "SINGLE",
+              "PER_SESSION",
+              "MONTHLY",
+              "ANNUAL"
+            ]
           },
           "is_published": {
             "type": "boolean",
@@ -3005,63 +3311,66 @@
           "name"
         ]
       },
-      "SubscriptionDto": {
+      "SubscriptionDtoWithCourse": {
         "type": "object",
         "properties": {
+          "created_at": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Creation date"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Update date"
+          },
+          "subscriptionRequestMessage": {
+            "type": "string",
+            "description": "Subscription request message"
+          },
           "course": {
-            "description": "Course to which the user is subscribed",
+            "description": "Course id and name",
             "allOf": [
               {
                 "$ref": "#/components/schemas/SubscriptionCourseDto"
               }
             ]
           },
-          "subscriptionDate": {
-            "format": "date-time",
-            "type": "string",
-            "description": "Date of subscription to the course"
+          "course_id": {
+            "type": "string"
+          },
+          "patient_id": {
+            "type": "string"
+          },
+          "isPending": {
+            "type": "boolean"
           }
         },
         "required": [
+          "created_at",
+          "updated_at",
+          "subscriptionRequestMessage",
           "course",
-          "subscriptionDate"
+          "course_id",
+          "patient_id",
+          "isPending"
         ]
       },
-      "SubscriptionCreateDto": {
+      "SubscriptionRequestDto": {
         "type": "object",
         "properties": {
-          "subscriptionDate": {
-            "format": "date-time",
+          "course_id": {
             "type": "string",
-            "description": "Date of subscription to the course"
+            "description": "Course ID of the subscription request"
           },
-          "courseId": {
+          "subscriptionRequestMessage": {
             "type": "string",
-            "description": "Subscribed course id"
-          },
-          "userId": {
-            "type": "string",
-            "description": "Id of the user to subscribe (only for admins)"
+            "description": "Subscription request message"
           }
         },
         "required": [
-          "courseId"
-        ]
-      },
-      "SubscriptionDeleteDto": {
-        "type": "object",
-        "properties": {
-          "courseId": {
-            "type": "string",
-            "description": "Subscribed course id"
-          },
-          "userId": {
-            "type": "string",
-            "description": "Id of the user to subscribe (only for admins)"
-          }
-        },
-        "required": [
-          "courseId"
+          "course_id",
+          "subscriptionRequestMessage"
         ]
       },
       "SubscriptionUserDto": {
@@ -3102,21 +3411,30 @@
           "lastName"
         ]
       },
-      "UserSubscriptionDto": {
+      "SubscriptionDtoWithUser": {
         "type": "object",
         "properties": {
+          "created_at": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Creation date"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Update date"
+          },
+          "subscriptionRequestMessage": {
+            "type": "string",
+            "description": "Subscription request message"
+          },
           "course": {
-            "description": "Course to which the user is subscribed",
+            "description": "Course id and name",
             "allOf": [
               {
                 "$ref": "#/components/schemas/SubscriptionCourseDto"
               }
             ]
-          },
-          "subscriptionDate": {
-            "format": "date-time",
-            "type": "string",
-            "description": "Date of subscription to the course"
           },
           "user": {
             "description": "Subscribed user",
@@ -3125,12 +3443,60 @@
                 "$ref": "#/components/schemas/SubscriptionUserDto"
               }
             ]
+          },
+          "course_id": {
+            "type": "string"
+          },
+          "patient_id": {
+            "type": "string"
+          },
+          "isPending": {
+            "type": "boolean"
           }
         },
         "required": [
+          "created_at",
+          "updated_at",
+          "subscriptionRequestMessage",
           "course",
-          "subscriptionDate",
-          "user"
+          "user",
+          "course_id",
+          "patient_id",
+          "isPending"
+        ]
+      },
+      "SubscriptionCreateDto": {
+        "type": "object",
+        "properties": {
+          "course_id": {
+            "type": "string",
+            "description": "Subscribed course ID"
+          },
+          "patient_id": {
+            "type": "string",
+            "description": "Subscribed user ID"
+          }
+        },
+        "required": [
+          "course_id",
+          "patient_id"
+        ]
+      },
+      "SubscriptionDeleteDto": {
+        "type": "object",
+        "properties": {
+          "course_id": {
+            "type": "string",
+            "description": "Subscribed course ID"
+          },
+          "patient_id": {
+            "type": "string",
+            "description": "Subscribed user ID"
+          }
+        },
+        "required": [
+          "course_id",
+          "patient_id"
         ]
       },
       "CreateCourseCategoryDto": {

@@ -42,9 +42,8 @@ export class CoursesService {
         location: newCourse.location,
         instructors: newCourse.instructors,
         level: newCourse.level,
-        is_free: newCourse.is_free,
         price: newCourse.price,
-        number_of_payments: newCourse.number_of_payments,
+        payment_recurrence: newCourse.payment_recurrence,
         is_published: newCourse.is_published,
         subscriptions_open: newCourse.subscriptions_open,
         max_subscribers: newCourse.max_subscribers,
@@ -324,14 +323,15 @@ export class CoursesService {
     pagination: PaginationFilter,
     filters: CourseQueryFilter
   ) {
-    const count = await this.prismaService.courseFinalUser.count({
-      where: { final_user_id: userId },
+    const count = await this.prismaService.subscription.count({
+      where: { patient_id: userId, isPending: false },
     });
 
-    const courses = await this.prismaService.courseFinalUser.findMany({
+    const courses = await this.prismaService.subscription.findMany({
       where: {
         AND: [
-          { final_user_id: userId },
+          { isPending: false },
+          { patient_id: userId },
           {
             ...(filters.searchText
               ? {

@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Query,
   Req,
 } from "@nestjs/common";
@@ -12,126 +13,246 @@ import UseAuth from "src/auth/decorators/auth-with-role.decorator";
 import { SubscriptionsService } from "./subscriptions.service";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { ApiPaginatedResponse } from "src/common/decorators/api-paginated-response.decorator";
-import { ApiOkResponse } from "@nestjs/swagger";
-import { SubscriptionCreateDto } from "./dto/subscription-create.dto";
+import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import {
+  SubscriptionCreateDto,
+  SubscriptionRequestDto,
+} from "./dto/subscription-create.dto";
 import { SubscriptionDeleteDto } from "./dto/subscription-delete.dto";
-import { SubscriptionDto, UserSubscriptionDto } from "./dto/subscription.dto";
+import {
+  SubscriptionDtoWithCourse,
+  SubscriptionDtoWithUser,
+} from "./dto/subscription.dto";
 import { Role } from "@prisma/client";
+import { EmailService } from "src/email/email.service";
+import { CoursesService } from "src/courses/courses.service";
+import { UserManager } from "src/users/user.manager";
+import { isSuccessResult } from "src/common/types/result";
 
+@ApiTags("Subscriptions")
 @Controller("subscriptions")
 export class SubscriptionsController {
-  constructor(private readonly subscriptionsService: SubscriptionsService) {}
+  constructor(
+    private readonly subscriptionsService: SubscriptionsService,
+    private readonly emailService: EmailService,
+    private readonly coursesService: CoursesService,
+    private readonly usersManager: UserManager
+  ) {}
 
   /**
-   * Get the current subscriptions for the logged user
+   * Get the current active subscriptions for the logged user
    */
-  @ApiPaginatedResponse(SubscriptionDto)
-  @UseAuth([Role.USER])
   @Get()
+  @UseAuth()
+  @ApiPaginatedResponse(SubscriptionDtoWithCourse)
   getSubscriptionsForLoggedUser(
     @Query() pagination: PaginationFilter,
     @Req() req
   ) {
     return this.subscriptionsService.getCustomerSubscriptions(
       req.user.sub,
-      pagination
+      pagination,
+      false
     );
   }
 
   /**
-   * Get the current subscriptions for the given user
+   * Get the pending subscriptions for the logged user
    */
-  @ApiPaginatedResponse(SubscriptionDto)
+  @Get("pending")
   @UseAuth()
+  @ApiPaginatedResponse(SubscriptionDtoWithCourse)
+  getPendingSubscriptionsForLoggedUser(
+    @Query() pagination: PaginationFilter,
+    @Req() req
+  ) {
+    return this.subscriptionsService.getCustomerSubscriptions(
+      req.user.sub,
+      pagination,
+      true
+    );
+  }
+
+  /**
+   * Send a subscription request to a course
+   */
+  @Post("request")
+  @UseAuth()
+  @ApiOkResponse()
+  async sendSubscriptionRequest(
+    @Body() subscriptionRequestDto: SubscriptionRequestDto,
+    @Req() req
+  ) {
+    await this.subscriptionsService.createSubscriptionRequest(
+      req.user.sub,
+      subscriptionRequestDto.course_id
+    );
+  }
+
+  /**
+   * [ADMIN & PHYSIOTHERAPIST] Get the active subscriptions for a specific user
+   */
   @Get(":userId")
+  @UseAuth([Role.ADMIN, Role.PHYSIOTHERAPIST])
+  @ApiPaginatedResponse(SubscriptionDtoWithCourse)
   getSubscriptionsForGivenUser(
     @Param("userId") userId: string,
     @Query() pagination: PaginationFilter
   ) {
     return this.subscriptionsService.getCustomerSubscriptions(
       userId,
-      pagination
-    );
-  }
-
-  /**
-   * Subscribe the logged in final user to a course
-   * @param courseId the course uuid
-   */
-  @Post()
-  @UseAuth([Role.USER])
-  @ApiOkResponse()
-  subscribeLoggedUser(
-    @Body() subscriptionCreateDto: SubscriptionCreateDto,
-    @Req() req
-  ) {
-    return this.subscriptionsService.subscribeFinalUser(
-      req.user.sub,
-      subscriptionCreateDto,
+      pagination,
       false
     );
   }
 
   /**
-   * Subscribe the given final user to a course (for admins and physiotherapists)
-   * @param courseId the course uuid
+   * [ADMIN & PHYSIOTHERAPIST] Get the pending subscriptions for a specific user
    */
-  @Post("user")
+  @Get(":userId/pending")
   @UseAuth([Role.ADMIN, Role.PHYSIOTHERAPIST])
-  @ApiOkResponse()
-  subscribeGivenUser(@Body() subscriptionCreateDto: SubscriptionCreateDto) {
-    return this.subscriptionsService.subscribeFinalUser(
-      subscriptionCreateDto.userId,
-      subscriptionCreateDto,
+  @ApiPaginatedResponse(SubscriptionDtoWithCourse)
+  getPendingSubscriptionsForGivenUser(
+    @Param("userId") userId: string,
+    @Query() pagination: PaginationFilter
+  ) {
+    return this.subscriptionsService.getCustomerSubscriptions(
+      userId,
+      pagination,
       true
     );
   }
 
   /**
-   * Unsubscribe the logged in final user from a course
-   * @param courseId the course uuid
-   */
-  @Delete()
-  @ApiOkResponse()
-  @UseAuth([Role.USER])
-  unsubscribeLoggedUser(
-    @Body() subscriptionDeleteDto: SubscriptionDeleteDto,
-    @Req() req
-  ) {
-    return this.subscriptionsService.unsubscribeFinalUser(
-      req.user.sub,
-      subscriptionDeleteDto
-    );
-  }
-
-  /**
-   * Unsubscribe the given final user from a course (for admins and physiotherapists)
-   * @param courseId the course uuid
-   */
-  @Delete("user")
-  @ApiOkResponse()
-  @UseAuth([Role.ADMIN, Role.PHYSIOTHERAPIST])
-  unsubscribeGivenUser(@Body() subscriptionDeleteDto: SubscriptionDeleteDto) {
-    return this.subscriptionsService.unsubscribeFinalUser(
-      subscriptionDeleteDto.userId,
-      subscriptionDeleteDto
-    );
-  }
-
-  /**
-   * Gets all subscribers of a course
-   * @param courseId the course uuid
+   * [ADMIN & PHYSIOTHERAPIST] Get all active subscribers for a course
    */
   @Get("course/:courseId")
-  @UseAuth()
-  @ApiPaginatedResponse(UserSubscriptionDto)
-  getSubscribers(
+  @UseAuth([Role.ADMIN, Role.PHYSIOTHERAPIST])
+  @ApiPaginatedResponse(SubscriptionDtoWithUser)
+  getSubscribersForCourse(
     @Param("courseId") courseId: string,
     @Query() pagination: PaginationFilter
   ) {
     return this.subscriptionsService.getCourseSubscriptions(
+      pagination,
       courseId,
-      pagination
+      false
     );
+  }
+
+  /**
+   * [ADMIN & PHYSIOTHERAPIST] Get all pending subscribers for a course
+   */
+  @Get("course/:courseId/pending")
+  @UseAuth([Role.ADMIN, Role.PHYSIOTHERAPIST])
+  @ApiPaginatedResponse(SubscriptionDtoWithUser)
+  getPendingSubscribersForCourse(
+    @Param("courseId") courseId: string,
+    @Query() pagination: PaginationFilter
+  ) {
+    return this.subscriptionsService.getCourseSubscriptions(
+      pagination,
+      courseId,
+      true
+    );
+  }
+
+  /**
+   * [ADMIN & PHYSIOTHERAPIST] Accept a pending subscription request
+   */
+  @Put("request/accept")
+  @UseAuth([Role.ADMIN, Role.PHYSIOTHERAPIST])
+  @ApiOkResponse()
+  async acceptSubscriptionRequest(
+    @Body() subscriptionCreateDto: SubscriptionCreateDto
+  ) {
+    await this.subscriptionsService.acceptSubscriptionRequest(
+      subscriptionCreateDto.patient_id,
+      subscriptionCreateDto.course_id
+    );
+
+    const course = await this.coursesService.findOne(
+      subscriptionCreateDto.course_id
+    );
+
+    const user = await this.usersManager.getUserById(
+      subscriptionCreateDto.patient_id
+    );
+
+    if (isSuccessResult(user)) {
+      await this.emailService.sendEmail(
+        user.data.email,
+        "Richiesta di iscrizione accettata",
+        `La tua richiesta di iscrizione al corso ${course.name} è stata accettata.`
+      );
+    }
+  }
+
+  /**
+   * [ADMIN & PHYSIOTHERAPIST] Create a direct subscription for a user to a course
+   */
+  @Post()
+  @UseAuth([Role.ADMIN, Role.PHYSIOTHERAPIST])
+  @ApiOkResponse()
+  async createSubscription(
+    @Body() subscriptionCreateDto: SubscriptionCreateDto
+  ) {
+    await this.subscriptionsService.createDirectSubscription(
+      subscriptionCreateDto.patient_id,
+      subscriptionCreateDto.course_id
+    );
+
+    const course = await this.coursesService.findOne(
+      subscriptionCreateDto.course_id
+    );
+
+    const patient = await this.usersManager.getUserById(
+      subscriptionCreateDto.patient_id
+    );
+
+    await this.emailService.sendEmail(
+      course.owner.email,
+      "Nuova iscrizione al corso",
+      `Il paziente ${subscriptionCreateDto.patient_id} è stato iscritto al corso ${course.name}.`
+    );
+
+    if (isSuccessResult(patient)) {
+      await this.emailService.sendEmail(
+        patient.data.email,
+        "Iscrizione al corso",
+        `Sei stato iscritto al corso ${course.name}.`
+      );
+    }
+  }
+
+  /**
+   * [ADMIN & PHYSIOTHERAPIST] Delete a subscription for a user from a course
+   */
+  @Delete()
+  @ApiOkResponse()
+  @UseAuth([Role.ADMIN, Role.PHYSIOTHERAPIST])
+  async deleteSubscription(
+    @Body() subscriptionDeleteDto: SubscriptionDeleteDto
+  ) {
+    await this.subscriptionsService.unsubscribeFinalUser(
+      subscriptionDeleteDto.patient_id,
+      subscriptionDeleteDto.course_id
+    );
+
+    const course = await this.coursesService.findOne(
+      subscriptionDeleteDto.course_id
+    );
+
+    const patient = await this.usersManager.getUserById(
+      subscriptionDeleteDto.patient_id
+    );
+
+    if (isSuccessResult(patient)) {
+      await this.emailService.sendEmail(
+        patient.data.email,
+        "Rimozione dal corso",
+        `Sei stato rimosso dal corso ${course.name}.`
+      );
+    }
   }
 }

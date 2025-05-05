@@ -20,6 +20,13 @@ enum CourseLevel {
   ADVANCED
 }
 
+enum PaymentRecurrence {
+  SINGLE
+  PER_SESSION
+  MONTHLY
+  ANNUAL
+}
+
 model Course {
   id   String @id @default(uuid())
   name String
@@ -32,9 +39,8 @@ model Course {
 
   level CourseLevel
 
-  is_free            Boolean
-  price              Decimal?
-  number_of_payments Int?
+  price              Decimal
+  payment_recurrence PaymentRecurrence
 
   is_published       Boolean
   subscriptions_open Boolean
@@ -47,11 +53,11 @@ model Course {
   created_at DateTime @default(now()) @db.Timestamptz(3)
   updated_at DateTime @updatedAt @db.Timestamptz(3)
 
-  category_id String
-  category    CourseCategory    @relation(fields: [category_id], references: [id])
-  owner_id    String
-  owner       Physiotherapist   @relation(fields: [owner_id], references: [applicationUserId])
-  subscribers CourseFinalUser[]
+  category_id   String
+  category      CourseCategory  @relation(fields: [category_id], references: [id])
+  owner_id      String
+  owner         Physiotherapist @relation(fields: [owner_id], references: [applicationUserId])
+  subscriptions Subscription[]
 
   subscription_start_date DateTime        @default(now()) @db.Timestamptz(3)
   subscription_end_date   DateTime        @db.Timestamptz(3)
@@ -72,15 +78,18 @@ model CourseSession {
   course_id  String
 }
 
-model CourseFinalUser {
-  course_id     String
-  final_user_id String
-  course        Course    @relation(fields: [course_id], references: [id])
-  final_user    FinalUser @relation(fields: [final_user_id], references: [applicationUserId])
-  created_at    DateTime  @default(now()) @db.Timestamptz(3)
-  updated_at    DateTime  @updatedAt @db.Timestamptz(3)
+model Subscription {
+  course_id                  String
+  patient_id                 String
+  course                     Course  @relation(fields: [course_id], references: [id])
+  patient                    Patient @relation(fields: [patient_id], references: [applicationUserId])
+  isPending                  Boolean
+  subscriptionRequestMessage String?
 
-  @@id([course_id, final_user_id])
+  created_at DateTime @default(now()) @db.Timestamptz(3)
+  updated_at DateTime @updatedAt @db.Timestamptz(3)
+
+  @@id([course_id, patient_id])
 }
 
 enum Role {
@@ -90,30 +99,36 @@ enum Role {
 }
 
 model ApplicationUser {
-  id                           String           @id @default(uuid())
-  email                        String           @unique
-  isEmailVerified              Boolean          @default(false)
+  id    String @id @default(uuid())
+  email String @unique
+  role  Role   @default(USER)
+
+  isEmailVerified              Boolean   @default(false)
   emailConfirmationToken       String?
   emailConfirmationTokenExpiry DateTime?
-  passwordHash                 String           @default("")
-  passwordResetToken           String?
-  passwordResetTokenExpiry     DateTime?
-  twoFactorCode                String?
-  twoFactorExpiry              DateTime?
-  twoFactorEnabled             Boolean          @default(false)
-  firstName                    String
-  middleName                   String?
-  lastName                     String
-  phoneNumber                  String?
-  birthDate                    String?
-  role                         Role             @default(USER)
-  lastLogin                    DateTime?
-  failedLoginAttempts          Int              @default(0)
-  createdAt                    DateTime         @default(now()) @db.Timestamptz(3)
-  updatedAt                    DateTime         @updatedAt @db.Timestamptz(3)
-  physiotherapistData          Physiotherapist?
-  finalUserData                FinalUser?
-  picturePath                  String?
+
+  passwordHash             String    @default("")
+  passwordResetToken       String?
+  passwordResetTokenExpiry DateTime?
+
+  twoFactorCode    String?
+  twoFactorExpiry  DateTime?
+  twoFactorEnabled Boolean   @default(false)
+
+  firstName   String
+  middleName  String?
+  lastName    String
+  phoneNumber String?
+  birthDate   String?
+
+  lastLogin           DateTime?
+  failedLoginAttempts Int              @default(0)
+  physiotherapist     Physiotherapist?
+  patient             Patient?
+
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(3)
+  picturePath String?
 }
 
 model Physiotherapist {
@@ -125,10 +140,10 @@ model Physiotherapist {
   courses           Course[]
 }
 
-model FinalUser {
-  applicationUserId String            @id
-  applicationUser   ApplicationUser   @relation(fields: [applicationUserId], references: [id])
-  courses           CourseFinalUser[]
+model Patient {
+  applicationUserId String          @id
+  applicationUser   ApplicationUser @relation(fields: [applicationUserId], references: [id])
+  subscriptions     Subscription[]
 
   // TODO: Specify body measurements
   // bodyWeight                Decimal?
