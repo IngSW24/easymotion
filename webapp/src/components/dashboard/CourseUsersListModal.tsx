@@ -86,7 +86,10 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
   }, [getCourseSubscribers, getPendingCourseSubscriptions, courseId]);
 
   // Render already subscribed user (simplified)
-  const renderSubscribedUserItem = (value: any, index: number) => (
+  const renderSubscribedUserItem = (
+    value: SubscriptionDtoWithUser,
+    index: number
+  ) => (
     <Box
       key={index}
       sx={{
