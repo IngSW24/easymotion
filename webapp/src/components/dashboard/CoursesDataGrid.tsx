@@ -1,5 +1,5 @@
 import { CourseDto } from "@easymotion/openapi";
-import { Delete, Edit, Group, Article } from "@mui/icons-material";
+import { Article, Delete, Edit, Group } from "@mui/icons-material";
 import {
   IconButton,
   Stack,
@@ -24,6 +24,176 @@ type DashboardDataGridProps = {
   onEdit: (id: string) => void;
   onCourseUsers: (id: string) => void;
 };
+
+// Move columns definition outside component
+const createColumns = (
+  courses: CourseDto[],
+  onCourseUsers: (id: string) => void,
+  onEdit: (id: string) => void,
+  onDelete: (id: string) => void
+): GridColDef[] => [
+  {
+    field: "courseName",
+    headerName: "CORSO",
+    headerAlign: "center",
+    flex: 4,
+    minWidth: 200,
+    renderCell: (params: GridRenderCellParams) => (
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 2,
+          width: "100%",
+          overflow: "hidden",
+        }}
+      >
+        <Box
+          sx={{
+            width: 40,
+            height: 40,
+            minWidth: 40,
+            backgroundColor: "#E8F0FE",
+            borderRadius: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+          }}
+        >
+          <Article sx={{ color: "primary.main" }} />
+        </Box>
+        <Box
+          sx={{
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            width: "calc(100% - 56px)",
+          }}
+        >
+          <Typography
+            variant="subtitle1"
+            fontWeight={500}
+            noWrap
+            sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
+          >
+            {params.value}
+          </Typography>
+        </Box>
+      </Box>
+    ),
+  },
+  {
+    field: "capacity",
+    headerName: "MAX PAZIENTI",
+    headerAlign: "center",
+    align: "center",
+    flex: 2,
+    minWidth: 80,
+    display: "flex",
+    renderCell: (params: GridRenderCellParams) => (
+      <Box>
+        <Typography variant="body2" color="text.secondary">
+          {params.value}
+        </Typography>
+      </Box>
+    ),
+  },
+  {
+    field: "category",
+    headerName: "CATEGORIA",
+    headerAlign: "center",
+    align: "center",
+    flex: 3,
+    display: "flex",
+    renderCell: (params) => {
+      const category = params.value;
+      const color = "#094D95";
+
+      return (
+        <Chip
+          label={category.name.replace("_", " ")}
+          size="small"
+          style={{
+            backgroundColor: color,
+            color: "white",
+            fontWeight: "bold",
+          }}
+        />
+      );
+    },
+  },
+  {
+    field: "is_published",
+    headerName: "STATO",
+    headerAlign: "center",
+    align: "center",
+    flex: 2,
+    display: "flex",
+    renderCell: (params) => {
+      const course = courses.find((c) => c.id === params.row.courseId);
+      return (
+        <Chip
+          label={course?.is_published ? "ATTIVO" : "ARCHIVIATO"}
+          size="small"
+          style={{
+            backgroundColor: course?.is_published ? "#4CAF50" : "#F44336",
+            color: "white",
+            fontWeight: "bold",
+          }}
+        />
+      );
+    },
+  },
+  {
+    field: "actions",
+    headerName: "AZIONI",
+    flex: 2,
+    minWidth: 130,
+    sortable: false,
+    filterable: false,
+    headerAlign: "center",
+    align: "right",
+    renderCell: (params: GridRenderCellParams) => {
+      return (
+        <Stack direction="row" spacing={1} justifyContent="center" width="100%">
+          <Tooltip title="Iscrizioni">
+            <IconButton
+              size="small"
+              onClick={(event) => {
+                event.stopPropagation();
+                onCourseUsers(params.row.courseId);
+              }}
+            >
+              <Group fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Modifica">
+            <IconButton
+              size="small"
+              onClick={(event) => {
+                event.stopPropagation();
+                onEdit(params.row.courseId);
+              }}
+            >
+              <Edit fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Elimina">
+            <IconButton
+              size="small"
+              onClick={(event) => {
+                event.stopPropagation();
+                onDelete(params.row.courseId);
+              }}
+            >
+              <Delete fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Stack>
+      );
+    },
+  },
+];
 
 export default function DashboardDataGrid(props: DashboardDataGridProps) {
   const {
@@ -75,175 +245,11 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
     };
   });
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const columns: GridColDef[] = [
-    {
-      field: "courseName",
-      headerName: "CORSO",
-      headerAlign: "center",
-      flex: 4,
-      minWidth: 200,
-      renderCell: (params: GridRenderCellParams) => (
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 2,
-            width: "100%",
-            overflow: "hidden",
-          }}
-        >
-          <Box
-            sx={{
-              width: 40,
-              height: 40,
-              minWidth: 40,
-              backgroundColor: "#E8F0FE",
-              borderRadius: 1,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-            }}
-          >
-            <Article sx={{ color: "primary.main" }} />
-          </Box>
-          <Box
-            sx={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              width: "calc(100% - 56px)",
-            }}
-          >
-            <Typography
-              variant="subtitle1"
-              fontWeight={500}
-              noWrap
-              sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
-            >
-              {params.value}
-            </Typography>
-          </Box>
-        </Box>
-      ),
-    },
-    {
-      field: "capacity",
-      headerName: "MAX PAZIENTI",
-      headerAlign: "center",
-      align: "center",
-      flex: 2,
-      minWidth: 80,
-      display: "flex",
-      renderCell: (params: GridRenderCellParams) => (
-        <Box>
-          <Typography variant="body2" color="text.secondary">
-            {params.value}
-          </Typography>
-        </Box>
-      ),
-    },
-    {
-      field: "category",
-      headerName: "CATEGORIA",
-      headerAlign: "center",
-      align: "center",
-      flex: 3,
-      display: "flex",
-      renderCell: (params) => {
-        const category = params.value;
-        const color = "#094D95";
-
-        return (
-          <Chip
-            label={category.name.replace("_", " ")}
-            size="small"
-            style={{
-              backgroundColor: color,
-              color: "white",
-              fontWeight: "bold",
-            }}
-          />
-        );
-      },
-    },
-    {
-      field: "is_published",
-      headerName: "STATO",
-      headerAlign: "center",
-      align: "center",
-      flex: 2,
-      display: "flex",
-      renderCell: (params) => {
-        const course = courses.find((c) => c.id === params.row.courseId);
-        return (
-          <Chip
-            label={course?.is_published ? "ATTIVO" : "ARCHIVIATO"}
-            size="small"
-            style={{
-              backgroundColor: course?.is_published ? "#4CAF50" : "#F44336",
-              color: "white",
-              fontWeight: "bold",
-            }}
-          />
-        );
-      },
-    },
-    {
-      field: "actions",
-      headerName: "AZIONI",
-      flex: 2,
-      minWidth: 130,
-      sortable: false,
-      filterable: false,
-      headerAlign: "center",
-      align: "right",
-      renderCell: (params: GridRenderCellParams) => {
-        return (
-          <Stack
-            direction="row"
-            spacing={1}
-            justifyContent="center"
-            width="100%"
-          >
-            <Tooltip title="Iscrizioni">
-              <IconButton
-                size="small"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onCourseUsers(params.row.courseId);
-                }}
-              >
-                <Group fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Modifica">
-              <IconButton
-                size="small"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onEdit(params.row.courseId);
-                }}
-              >
-                <Edit fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Elimina">
-              <IconButton
-                size="small"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onDelete(params.row.courseId);
-                }}
-              >
-                <Delete fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          </Stack>
-        );
-      },
-    },
-  ];
+  // Memoize columns with proper dependencies
+  const columns = useMemo(
+    () => createColumns(courses, onCourseUsers, onEdit, onDelete),
+    [courses, onCourseUsers, onEdit, onDelete]
+  );
 
   const visibleColumns = useMemo(() => {
     let filteredColumns = [...columns];

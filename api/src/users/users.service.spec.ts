@@ -152,7 +152,7 @@ describe("UsersService", () => {
 
     expect(prismaMock.client.applicationUser.paginate).toHaveBeenCalledWith(
       pagination,
-      { include: { physiotherapistData: true, finalUserData: true } },
+      { include: { physiotherapist: true, patient: true } },
       { mapType: expect.any(Function) }
     );
 

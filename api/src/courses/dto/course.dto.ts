@@ -6,10 +6,10 @@ import {
   IsEnum,
   IsNumber,
   IsOptional,
-  IsPositive,
   IsString,
+  Min,
 } from "class-validator";
-import { Course, CourseLevel } from "@prisma/client";
+import { Course, CourseLevel, PaymentRecurrence } from "@prisma/client";
 import { Exclude, Expose, Transform, Type } from "class-transformer";
 import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 import { CourseOwnerDto } from "./course-owner.dto";
@@ -17,10 +17,7 @@ import { Decimal } from "@prisma/client/runtime/library";
 import { CourseCategoryDto } from "src/categories/dto/category.dto";
 
 export class CourseSessionDto {
-  @ApiProperty({
-    description: "The id of the session",
-    required: false,
-  })
+  @ApiProperty({ description: "The id of the session" })
   @IsString()
   @Expose()
   id: string;
@@ -82,28 +79,24 @@ export class CourseDto implements Course {
   @Expose()
   level: CourseLevel;
 
-  @ApiProperty({ description: "Indicates if the course is free" })
-  @IsBoolean()
-  @Expose()
-  is_free: boolean;
-
   @ApiProperty({
     description: "Price of the course",
-    required: false,
     type: Number,
   })
   @Transform(({ value }) => value)
   @Type(() => Number)
-  @IsOptional()
-  @IsPositive()
-  @Expose()
-  price: Decimal | null;
-
-  @ApiProperty({ description: "Amount of payment required", required: false })
   @IsNumber()
+  @Min(0)
   @Expose()
-  @IsOptional()
-  number_of_payments: number | null;
+  price: Decimal;
+
+  @ApiProperty({
+    description: "Payment recurrence",
+    enum: PaymentRecurrence,
+  })
+  @IsEnum(PaymentRecurrence)
+  @Expose()
+  payment_recurrence: PaymentRecurrence;
 
   @ApiProperty({ description: "Indicates if the course is public" })
   @IsBoolean()

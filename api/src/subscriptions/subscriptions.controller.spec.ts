@@ -1,26 +1,58 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { SubscriptionsController } from "./subscriptions.controller";
 import { SubscriptionsService } from "./subscriptions.service";
-import { PrismaService } from "nestjs-prisma";
-import { BadRequestException, NotFoundException } from "@nestjs/common";
-import { randomUUID } from "crypto";
-import { Role } from "@prisma/client";
-import { UserSubscriptionDto } from "./dto/subscription.dto";
-import { toPaginatedOutput } from "src/common/prisma/pagination";
+import { BadRequestException } from "@nestjs/common";
+import {
+  SubscriptionCreateDto,
+  SubscriptionRequestDto,
+} from "./dto/subscription-create.dto";
+import { SubscriptionDeleteDto } from "./dto/subscription-delete.dto";
+import { EmailService } from "src/email/email.service";
+import { CoursesService } from "src/courses/courses.service";
+import { UserManager } from "src/users/user.manager";
 
 describe("SubscriptionsController", () => {
   let controller: SubscriptionsController;
 
   const subscriptionServiceMockup = {
     getCustomerSubscriptions: jest.fn(),
-    subscribeFinalUser: jest.fn(),
+    createSubscriptionRequest: jest.fn(),
+    createDirectSubscription: jest.fn(),
     unsubscribeFinalUser: jest.fn(),
     getCourseSubscriptions: jest.fn(),
+    acceptSubscriptionRequest: jest.fn(),
   };
 
-  const prismaServiceMockup = {};
+  const emailServiceMockup = {
+    sendEmail: jest.fn().mockResolvedValue(undefined),
+  };
+
+  const coursesServiceMockup = {
+    findOne: jest.fn().mockResolvedValue({
+      id: "course-id",
+      name: "Test Course",
+      owner: {
+        email: "owner@example.com",
+      },
+    }),
+  };
+
+  const userManagerMockup = {
+    getUserById: jest.fn().mockResolvedValue({
+      id: "user-id",
+      email: "user@example.com",
+      firstName: "Test",
+      lastName: "User",
+      patient: {
+        applicationUserId: "user-id",
+      },
+      physiotherapist: null,
+    }),
+  };
 
   beforeEach(async () => {
+    jest.clearAllMocks();
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [SubscriptionsController],
       providers: [
@@ -29,8 +61,16 @@ describe("SubscriptionsController", () => {
           useValue: subscriptionServiceMockup,
         },
         {
-          provide: PrismaService,
-          useValue: prismaServiceMockup,
+          provide: EmailService,
+          useValue: emailServiceMockup,
+        },
+        {
+          provide: CoursesService,
+          useValue: coursesServiceMockup,
+        },
+        {
+          provide: UserManager,
+          useValue: userManagerMockup,
         },
       ],
     }).compile();
@@ -42,240 +82,335 @@ describe("SubscriptionsController", () => {
     expect(controller).toBeDefined();
   });
 
-  it("should get customer subscriptions", async () => {
-    const pagination = { page: 1, perPage: 10 };
-    const userId = randomUUID();
-
-    subscriptionServiceMockup.getCustomerSubscriptions.mockResolvedValue({
-      data: [{ id: "1" }, { id: "2" }],
-      meta: {
-        items: pagination.perPage,
-        hasNextPage: false,
-        currentPage: pagination.page,
-        totalItems: 9,
-        totalPages: 1,
-      },
-    });
-
-    const result = await controller.getSubscriptionsForGivenUser(
-      userId,
-      pagination
-    );
-
-    expect(
-      subscriptionServiceMockup.getCustomerSubscriptions
-    ).toHaveBeenCalledWith(userId, pagination);
-
-    expect(result).toEqual({
-      data: [{ id: "1" }, { id: "2" }],
-      meta: {
-        items: pagination.perPage,
-        hasNextPage: false,
-        currentPage: pagination.page,
-        totalItems: 9,
-        totalPages: 1,
-      },
-    });
-  });
-
-  it("should get customer subscriptions of logged user", async () => {
-    const req = { user: { sub: "1" } };
-    const pagination = { page: 1, perPage: 10 };
-
-    subscriptionServiceMockup.getCustomerSubscriptions.mockResolvedValue({
-      data: [{ id: "1" }, { id: "2" }],
-      meta: {
-        items: pagination.perPage,
-        hasNextPage: false,
-        currentPage: pagination.page,
-        totalItems: 9,
-        totalPages: 1,
-      },
-    });
-
-    const result = await controller.getSubscriptionsForLoggedUser(
-      pagination,
-      req
-    );
-
-    expect(
-      subscriptionServiceMockup.getCustomerSubscriptions
-    ).toHaveBeenCalledWith(req.user.sub, pagination);
-
-    expect(result).toEqual({
-      data: [{ id: "1" }, { id: "2" }],
-      meta: {
-        items: pagination.perPage,
-        hasNextPage: false,
-        currentPage: pagination.page,
-        totalItems: 9,
-        totalPages: 1,
-      },
-    });
-  });
-
-  it("should subscribe a final user to a course", async () => {
-    const req = { user: { sub: "1", role: Role.USER } };
-    const courseId = randomUUID();
-    const subscriptionDate = new Date();
-    const subscribeDto = { courseId, userId: "ignored", subscriptionDate };
-
-    const result = await controller.subscribeLoggedUser(subscribeDto, req);
-
-    subscriptionServiceMockup.subscribeFinalUser.mockReturnValue(undefined);
-
-    expect(subscriptionServiceMockup.subscribeFinalUser).toHaveBeenCalledWith(
-      req.user.sub,
-      subscribeDto,
-      false
-    );
-
-    expect(result).toBeUndefined();
-  });
-
-  it("should throw bad request is admin attemps subscribe without userId", async () => {
-    const courseId = randomUUID();
-    const subscriptionDate = new Date();
-    const subscribeDto = { courseId, subscriptionDate };
-
-    subscriptionServiceMockup.subscribeFinalUser.mockRejectedValue(() => {
-      throw new BadRequestException("User not found");
-    });
-
-    expect(async () => {
-      await controller.subscribeGivenUser(subscribeDto);
-    }).rejects.toThrow(BadRequestException);
-  });
-
-  it("should throw bad request is high level priviledged user attempts to subscribe an non customer", async () => {
-    const courseId = randomUUID();
-    const subscriptionDate = new Date();
-    const subscribeDto = { courseId, subscriptionDate };
-
-    subscriptionServiceMockup.subscribeFinalUser.mockRejectedValue(() => {
-      throw new BadRequestException("User not found");
-    });
-
-    expect(async () => {
-      await controller.subscribeGivenUser(subscribeDto);
-    }).rejects.toThrow(BadRequestException);
-  });
-
-  it("should throw not found exception when user is not found on subscribe", async () => {
-    const req = { user: { sub: "1", role: Role.USER } };
-    const courseId = "1";
-    const subscribeDto = { courseId };
-
-    subscriptionServiceMockup.subscribeFinalUser.mockRejectedValue(() => {
-      throw new NotFoundException("User not found");
-    });
-
-    expect(controller.subscribeLoggedUser(subscribeDto, req)).rejects.toThrow(
-      NotFoundException
-    );
-  });
-
-  it("should unsubscribe a final user from a course", async () => {
-    const req = { user: { sub: "1", role: Role.USER } };
-    const deleteDto = { courseId: "1", userId: "ignored" };
-
-    const result = await controller.unsubscribeLoggedUser(deleteDto, req);
-
-    subscriptionServiceMockup.unsubscribeFinalUser.mockReturnValue(undefined);
-
-    expect(subscriptionServiceMockup.unsubscribeFinalUser).toHaveBeenCalledWith(
-      req.user.sub,
-      deleteDto
-    );
-
-    expect(result).toBeUndefined();
-  });
-
-  it("should unsubscribe the given final user from a course if admin", async () => {
-    const userId = randomUUID();
-    const deleteDto = { courseId: "1", userId };
-
-    const result = await controller.unsubscribeGivenUser(deleteDto);
-
-    subscriptionServiceMockup.unsubscribeFinalUser.mockReturnValue(undefined);
-
-    expect(subscriptionServiceMockup.unsubscribeFinalUser).toHaveBeenCalledWith(
-      userId,
-      deleteDto
-    );
-
-    expect(result).toBeUndefined();
-  });
-
-  it("should unsubscribe the given final user from a course if physiotherapist", async () => {
-    const userId = randomUUID();
-    const deleteDto = { courseId: "1", userId };
-
-    const result = await controller.unsubscribeGivenUser(deleteDto);
-
-    subscriptionServiceMockup.unsubscribeFinalUser.mockReturnValue(undefined);
-
-    expect(subscriptionServiceMockup.unsubscribeFinalUser).toHaveBeenCalledWith(
-      userId,
-      deleteDto
-    );
-
-    expect(result).toBeUndefined();
-  });
-
-  it("should throw exception if admin attempts to unsubscribe without userId", async () => {
-    const deleteDto = { courseId: "1" };
-
-    subscriptionServiceMockup.unsubscribeFinalUser.mockRejectedValue(() => {
-      throw new NotFoundException("User not found");
-    });
-
-    expect(async () => {
-      await controller.unsubscribeGivenUser(deleteDto);
-    }).rejects.toThrow(NotFoundException);
-  });
-
-  it("should throw not found exception when user is not found on unsubscribe", async () => {
-    const deleteDto = { courseId: "1", userId: randomUUID() };
-
-    subscriptionServiceMockup.unsubscribeFinalUser.mockRejectedValue(() => {
-      throw new NotFoundException("User not found");
-    });
-
-    expect(controller.unsubscribeGivenUser(deleteDto)).rejects.toThrow(
-      NotFoundException
-    );
-  });
-
-  it("should get the list of subscriptions for a course", async () => {
-    const subscribers: UserSubscriptionDto[] = [
-      {
-        course: null,
-        user: {
-          id: "1",
-          email: "email@email.email",
-          firstName: "a",
-          lastName: "b",
-          middleName: "c",
+  describe("User Endpoints", () => {
+    it("should get active subscriptions for logged user", async () => {
+      const req = { user: { sub: "1" } };
+      const pagination = { page: 1, perPage: 10 };
+      const expectedResult = {
+        data: [{ id: "1", course: { id: "course-1", name: "Course 1" } }],
+        meta: {
+          items: pagination.perPage,
+          hasNextPage: false,
+          currentPage: pagination.page,
+          totalItems: 1,
+          totalPages: 1,
         },
+      };
 
-        subscriptionDate: new Date(),
-      },
-    ];
+      subscriptionServiceMockup.getCustomerSubscriptions.mockResolvedValue(
+        expectedResult
+      );
 
-    const output = toPaginatedOutput(subscribers, 1, { page: 1, perPage: 10 });
+      const result = await controller.getSubscriptionsForLoggedUser(
+        pagination,
+        req
+      );
 
-    subscriptionServiceMockup.getCourseSubscriptions.mockResolvedValue(output);
-
-    const result = await controller.getSubscribers("1", {
-      page: 1,
-      perPage: 10,
+      expect(
+        subscriptionServiceMockup.getCustomerSubscriptions
+      ).toHaveBeenCalledWith(req.user.sub, pagination, false);
+      expect(result).toEqual(expectedResult);
     });
 
-    expect(result).toEqual(output);
+    it("should get pending subscriptions for logged user", async () => {
+      const req = { user: { sub: "1" } };
+      const pagination = { page: 1, perPage: 10 };
+      const expectedResult = {
+        data: [{ id: "1", course: { id: "course-1", name: "Course 1" } }],
+        meta: {
+          items: pagination.perPage,
+          hasNextPage: false,
+          currentPage: pagination.page,
+          totalItems: 1,
+          totalPages: 1,
+        },
+      };
 
-    expect(
-      subscriptionServiceMockup.getCourseSubscriptions
-    ).toHaveBeenCalledWith("1", { page: 1, perPage: 10 });
+      subscriptionServiceMockup.getCustomerSubscriptions.mockResolvedValue(
+        expectedResult
+      );
+
+      const result = await controller.getPendingSubscriptionsForLoggedUser(
+        pagination,
+        req
+      );
+
+      expect(
+        subscriptionServiceMockup.getCustomerSubscriptions
+      ).toHaveBeenCalledWith(req.user.sub, pagination, true);
+      expect(result).toEqual(expectedResult);
+    });
+
+    it("should send subscription request", async () => {
+      const req = { user: { sub: "1" } };
+      const subscriptionRequestDto: SubscriptionRequestDto = {
+        course_id: "course-1",
+        subscriptionRequestMessage: "",
+      };
+
+      await controller.sendSubscriptionRequest(subscriptionRequestDto, req);
+
+      expect(
+        subscriptionServiceMockup.createSubscriptionRequest
+      ).toHaveBeenCalledWith(req.user.sub, subscriptionRequestDto.course_id);
+    });
+  });
+
+  describe("Admin/Physiotherapist Endpoints", () => {
+    it("should get active subscriptions for a given user", async () => {
+      const userId = "user-1";
+      const pagination = { page: 1, perPage: 10 };
+      const expectedResult = {
+        data: [{ id: "1", course: { id: "course-1", name: "Course 1" } }],
+        meta: {
+          items: pagination.perPage,
+          hasNextPage: false,
+          currentPage: pagination.page,
+          totalItems: 1,
+          totalPages: 1,
+        },
+      };
+
+      subscriptionServiceMockup.getCustomerSubscriptions.mockResolvedValue(
+        expectedResult
+      );
+
+      const result = await controller.getSubscriptionsForGivenUser(
+        userId,
+        pagination
+      );
+
+      expect(
+        subscriptionServiceMockup.getCustomerSubscriptions
+      ).toHaveBeenCalledWith(userId, pagination, false);
+      expect(result).toEqual(expectedResult);
+    });
+
+    it("should get pending subscriptions for a given user", async () => {
+      const userId = "user-1";
+      const pagination = { page: 1, perPage: 10 };
+      const expectedResult = {
+        data: [{ id: "1", course: { id: "course-1", name: "Course 1" } }],
+        meta: {
+          items: pagination.perPage,
+          hasNextPage: false,
+          currentPage: pagination.page,
+          totalItems: 1,
+          totalPages: 1,
+        },
+      };
+
+      subscriptionServiceMockup.getCustomerSubscriptions.mockResolvedValue(
+        expectedResult
+      );
+
+      const result = await controller.getPendingSubscriptionsForGivenUser(
+        userId,
+        pagination
+      );
+
+      expect(
+        subscriptionServiceMockup.getCustomerSubscriptions
+      ).toHaveBeenCalledWith(userId, pagination, true);
+      expect(result).toEqual(expectedResult);
+    });
+
+    it("should get active subscribers for a course", async () => {
+      const courseId = "course-1";
+      const pagination = { page: 1, perPage: 10 };
+      const expectedResult = {
+        data: [
+          {
+            id: "1",
+            user: { id: "user-1", firstName: "John", lastName: "Doe" },
+          },
+        ],
+        meta: {
+          items: pagination.perPage,
+          hasNextPage: false,
+          currentPage: pagination.page,
+          totalItems: 1,
+          totalPages: 1,
+        },
+      };
+
+      subscriptionServiceMockup.getCourseSubscriptions.mockResolvedValue(
+        expectedResult
+      );
+
+      const result = await controller.getSubscribersForCourse(
+        courseId,
+        pagination
+      );
+
+      expect(
+        subscriptionServiceMockup.getCourseSubscriptions
+      ).toHaveBeenCalledWith(pagination, courseId, false);
+      expect(result).toEqual(expectedResult);
+    });
+
+    it("should get pending subscribers for a course", async () => {
+      const courseId = "course-1";
+      const pagination = { page: 1, perPage: 10 };
+      const expectedResult = {
+        data: [
+          {
+            id: "1",
+            user: { id: "user-1", firstName: "John", lastName: "Doe" },
+          },
+        ],
+        meta: {
+          items: pagination.perPage,
+          hasNextPage: false,
+          currentPage: pagination.page,
+          totalItems: 1,
+          totalPages: 1,
+        },
+      };
+
+      subscriptionServiceMockup.getCourseSubscriptions.mockResolvedValue(
+        expectedResult
+      );
+
+      const result = await controller.getPendingSubscribersForCourse(
+        courseId,
+        pagination
+      );
+
+      expect(
+        subscriptionServiceMockup.getCourseSubscriptions
+      ).toHaveBeenCalledWith(pagination, courseId, true);
+      expect(result).toEqual(expectedResult);
+    });
+
+    it("should accept subscription request and send email", async () => {
+      const subscriptionDto: SubscriptionCreateDto = {
+        patient_id: "patient-1",
+        course_id: "course-1",
+      };
+
+      await controller.acceptSubscriptionRequest(subscriptionDto);
+
+      expect(
+        subscriptionServiceMockup.acceptSubscriptionRequest
+      ).toHaveBeenCalledWith(
+        subscriptionDto.patient_id,
+        subscriptionDto.course_id
+      );
+      expect(coursesServiceMockup.findOne).toHaveBeenCalledWith(
+        subscriptionDto.course_id
+      );
+      expect(userManagerMockup.getUserById).toHaveBeenCalledWith(
+        subscriptionDto.patient_id
+      );
+      expect(emailServiceMockup.sendEmail).toHaveBeenCalledWith(
+        "user@example.com",
+        "Richiesta di iscrizione accettata",
+        expect.any(String)
+      );
+    });
+
+    it("should create direct subscription and send emails", async () => {
+      const subscriptionDto: SubscriptionCreateDto = {
+        patient_id: "patient-1",
+        course_id: "course-1",
+      };
+
+      await controller.createSubscription(subscriptionDto);
+
+      expect(
+        subscriptionServiceMockup.createDirectSubscription
+      ).toHaveBeenCalledWith(
+        subscriptionDto.patient_id,
+        subscriptionDto.course_id
+      );
+      expect(coursesServiceMockup.findOne).toHaveBeenCalledWith(
+        subscriptionDto.course_id
+      );
+      expect(userManagerMockup.getUserById).toHaveBeenCalledWith(
+        subscriptionDto.patient_id
+      );
+      expect(emailServiceMockup.sendEmail).toHaveBeenCalledTimes(2);
+      expect(emailServiceMockup.sendEmail).toHaveBeenNthCalledWith(
+        1,
+        "owner@example.com",
+        "Nuova iscrizione al corso",
+        expect.any(String)
+      );
+      expect(emailServiceMockup.sendEmail).toHaveBeenNthCalledWith(
+        2,
+        "user@example.com",
+        "Iscrizione al corso",
+        expect.any(String)
+      );
+    });
+
+    it("should delete subscription and send email", async () => {
+      const deleteDto: SubscriptionDeleteDto = {
+        patient_id: "patient-1",
+        course_id: "course-1",
+      };
+
+      await controller.deleteSubscription(deleteDto);
+
+      expect(
+        subscriptionServiceMockup.unsubscribeFinalUser
+      ).toHaveBeenCalledWith(deleteDto.patient_id, deleteDto.course_id);
+      expect(coursesServiceMockup.findOne).toHaveBeenCalledWith(
+        deleteDto.course_id
+      );
+      expect(userManagerMockup.getUserById).toHaveBeenCalledWith(
+        deleteDto.patient_id
+      );
+      expect(emailServiceMockup.sendEmail).toHaveBeenCalledWith(
+        "user@example.com",
+        "Rimozione dal corso",
+        expect.any(String)
+      );
+    });
+  });
+
+  describe("Error Handling", () => {
+    it("should handle errors when service throws exceptions", async () => {
+      const req = { user: { sub: "1" } };
+      const subscriptionRequestDto: SubscriptionRequestDto = {
+        course_id: "course-1",
+        subscriptionRequestMessage: "",
+      };
+
+      subscriptionServiceMockup.createSubscriptionRequest.mockRejectedValue(
+        new BadRequestException("Course is full")
+      );
+
+      await expect(
+        controller.sendSubscriptionRequest(subscriptionRequestDto, req)
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it("should not send email if user is not found", async () => {
+      const deleteDto: SubscriptionDeleteDto = {
+        patient_id: "patient-1",
+        course_id: "course-1",
+      };
+
+      userManagerMockup.getUserById.mockRejectedValueOnce(
+        new Error("User not found")
+      );
+
+      await expect(controller.deleteSubscription(deleteDto)).rejects.toThrow(
+        "User not found"
+      );
+
+      expect(
+        subscriptionServiceMockup.unsubscribeFinalUser
+      ).toHaveBeenCalledWith(deleteDto.patient_id, deleteDto.course_id);
+      expect(coursesServiceMockup.findOne).toHaveBeenCalledWith(
+        deleteDto.course_id
+      );
+      expect(userManagerMockup.getUserById).toHaveBeenCalledWith(
+        deleteDto.patient_id
+      );
+      expect(emailServiceMockup.sendEmail).not.toHaveBeenCalled();
+    });
   });
 });

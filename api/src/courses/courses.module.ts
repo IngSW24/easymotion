@@ -8,5 +8,6 @@ import { AssetsModule } from "src/assets/assets.module";
   imports: [AssetsModule],
   controllers: [CoursesController],
   providers: [CoursesService, PrismaService],
+  exports: [CoursesService],
 })
 export class CourseModule {}

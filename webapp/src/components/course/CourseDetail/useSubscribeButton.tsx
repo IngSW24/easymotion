@@ -1,5 +1,5 @@
 import { useAuth } from "@easymotion/auth-context";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useSubscriptions from "../../../hooks/useSubscription";
 import { CourseDto } from "@easymotion/openapi";
 
@@ -9,49 +9,28 @@ export interface UseSubscribeButtonProps {
 
 export const useSubscribeButton = ({ course }: UseSubscribeButtonProps) => {
   const [subscribed, setSubscribed] = useState(false);
-  const { user, isAuthenticated, isPhysiotherapist } = useAuth();
+  const { isAuthenticated, isPhysiotherapist } = useAuth();
 
-  const { subscribe, unSubscribe, getUserSubscriptions } = useSubscriptions({
-    userId: user?.id,
-    courseId: course.id,
-  });
+  const { getUserSubscriptions, getUserPendingSubscriptions } =
+    useSubscriptions({});
 
   useEffect(() => {
     if (!course.id) return;
 
-    const subsData = getUserSubscriptions.data;
-    if (!subsData) return;
+    const approvedSubscriptions = getUserSubscriptions.data?.data || [];
+    const pendingSubscriptions = getUserPendingSubscriptions.data?.data || [];
 
-    const alreadySubscribed = subsData.data.some(
+    const allSubscriptions = [
+      ...approvedSubscriptions,
+      ...pendingSubscriptions,
+    ];
+
+    const alreadySubscribed = allSubscriptions.some(
       (sub) => sub.course.id === course.id
     );
 
     setSubscribed(alreadySubscribed);
-  }, [getUserSubscriptions.data, course.id]);
-
-  const handleSubscribe = useCallback(() => {
-    if (!course.id) return;
-    subscribe.mutate(
-      { courseId: course.id },
-      {
-        onSuccess: () => {
-          setSubscribed(true);
-        },
-      }
-    );
-  }, [course.id, subscribe]);
-
-  const handleUnsubscribe = useCallback(() => {
-    if (!course.id) return;
-    unSubscribe.mutate(
-      { courseId: course.id },
-      {
-        onSuccess: () => {
-          setSubscribed(false);
-        },
-      }
-    );
-  }, [course.id, unSubscribe]);
+  }, [getUserSubscriptions.data, getUserPendingSubscriptions.data, course.id]);
 
   const isHidden = useMemo(
     () => !isAuthenticated || isPhysiotherapist,
@@ -65,8 +44,6 @@ export const useSubscribeButton = ({ course }: UseSubscribeButtonProps) => {
 
   return {
     subscribed,
-    handleSubscribe,
-    handleUnsubscribe,
     isDisabled,
     isHidden,
   };

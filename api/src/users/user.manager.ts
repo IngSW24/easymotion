@@ -58,7 +58,7 @@ export class UserManager {
           });
           break;
         case Role.USER:
-          await tx.finalUser.create({
+          await tx.patient.create({
             data: {
               applicationUser: { connect: { id: createdUser.id } },
             },
@@ -83,7 +83,7 @@ export class UserManager {
   async getUserById(userId: string, roles: Role[] = undefined) {
     return this.prisma.applicationUser.findUniqueOrThrow({
       where: { id: userId, ...(roles && { role: { in: roles } }) },
-      include: { physiotherapistData: true, finalUserData: true },
+      include: { physiotherapist: true, patient: true },
     });
   }
 
@@ -96,7 +96,7 @@ export class UserManager {
   async getUserByEmail(email: string, roles: Role[] = undefined) {
     return this.prisma.applicationUser.findUniqueOrThrow({
       where: { email, ...(roles && { role: { in: roles } }) },
-      include: { physiotherapistData: true, finalUserData: true },
+      include: { physiotherapist: true, patient: true },
     });
   }
 
@@ -127,14 +127,14 @@ export class UserManager {
 
     const updateData: Prisma.ApplicationUserUpdateInput = {
       ...data,
-      physiotherapistData: {
+      physiotherapist: {
         update: data.physiotherapistData,
       },
     };
 
     return this.prisma.applicationUser.update({
       where: { id: user.id },
-      include: { physiotherapistData: true },
+      include: { patient: true },
       data: updateData,
     });
   }

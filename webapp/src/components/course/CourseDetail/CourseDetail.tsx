@@ -1,10 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Typography,
   Chip,
   Paper,
-  Button,
   Stack,
   Avatar,
   Card,
@@ -26,13 +25,14 @@ import {
   InfoOutlined,
   CategoryOutlined,
   GroupOutlined,
-  Delete,
-  Done,
-  QuestionAnswer,
 } from "@mui/icons-material";
 import { CourseDto } from "@easymotion/openapi";
 import { calculateDuration } from "../../../utils/format";
-import { useSubscribeButton } from "./useSubscribeButton";
+import { getPaymentRecurrenceName } from "../../../data/payment-type";
+import { useAuth } from "@easymotion/auth-context";
+import { Link } from "react-router";
+import SubscriptionRequestForm from "./SubscriptionRequest";
+import SubscribeSection from "./SubscribeSection";
 
 export interface CourseDetailProps {
   course: CourseDto;
@@ -43,16 +43,13 @@ const CourseDetail: React.FC<CourseDetailProps> = (
   props: CourseDetailProps
 ) => {
   const { course, hideTitle = false } = props;
-  const subscribeButton = useSubscribeButton({ course });
+  const { isAuthenticated, isPhysiotherapist, user } = useAuth();
+
+  const [openSubReqModal, setOpenSubReqModal] = useState(false);
 
   const getPaymentDetails = () => {
     if (course.price === 0) return "Gratuito";
-    if (!course.number_of_payments || course.number_of_payments === 1)
-      return `Pagamento unico: €${course.price?.toFixed(2)}`;
-
-    const installment =
-      course.price && (course.price / course.number_of_payments).toFixed(2);
-    return `${course.number_of_payments} × €${installment} (Totale: €${course.price?.toFixed(2)})`;
+    return `Pagamento ${getPaymentRecurrenceName(course.payment_recurrence)}: €${course.price?.toFixed(2)}`;
   };
 
   return (
@@ -160,47 +157,56 @@ const CourseDetail: React.FC<CourseDetailProps> = (
               <Divider sx={{ my: 3 }} />
 
               <Box sx={{ textAlign: "center" }}>
-                <Typography
-                  variant="h5"
-                  gutterBottom
-                  sx={{
-                    display: "block",
-                    color: "primary.dark",
-                    fontSmooth: "antialiased",
-                    fontWeight: "bold",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: 1,
-                    }}
-                  >
-                    <QuestionAnswer />
-                    Vuoi partecipare? Iscriviti ora
+                {isAuthenticated && !isPhysiotherapist && (
+                  <SubscribeSection
+                    course={course}
+                    onSubscribeClick={() => setOpenSubReqModal(true)}
+                  />
+                )}
+                <SubscriptionRequestForm
+                  open={openSubReqModal}
+                  setOpen={setOpenSubReqModal}
+                  courseId={course.id}
+                  userId={user?.id}
+                />
+                {!isAuthenticated && (
+                  <Box sx={{ mt: 2 }}>
+                    <Typography
+                      component={Link}
+                      to="/login"
+                      variant="body1"
+                      sx={{
+                        textDecoration: "none",
+                        color: "primary.main",
+                        fontWeight: "bold",
+                        "&:hover": {
+                          color: "primary.dark",
+                          textDecoration: "underline",
+                        },
+                      }}
+                    >
+                      Accedi
+                    </Typography>
+                    <Typography component="span" sx={{ mx: 1 }}>
+                      oppure
+                    </Typography>
+                    <Typography
+                      component={Link}
+                      to="/signup"
+                      variant="body1"
+                      sx={{
+                        textDecoration: "none",
+                        color: "primary.main",
+                        fontWeight: "bold",
+                        "&:hover": {
+                          color: "primary.dark",
+                          textDecoration: "underline",
+                        },
+                      }}
+                    >
+                      Entra a far parte di EasyMotion!
+                    </Typography>
                   </Box>
-                </Typography>
-                {!subscribeButton.isHidden && (
-                  <Button
-                    startIcon={
-                      subscribeButton.subscribed ? <Delete /> : <Done />
-                    }
-                    variant="contained"
-                    color={subscribeButton.subscribed ? "error" : "primary"}
-                    disabled={subscribeButton.isDisabled}
-                    size="large"
-                    onClick={() =>
-                      subscribeButton.subscribed
-                        ? subscribeButton.handleUnsubscribe()
-                        : subscribeButton.handleSubscribe()
-                    }
-                  >
-                    {subscribeButton.subscribed
-                      ? "Annulla iscrizione"
-                      : "Iscriviti"}
-                  </Button>
                 )}
               </Box>
             </CardContent>

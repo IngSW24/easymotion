@@ -58,7 +58,7 @@ export class UsersService {
     return this.prisma.client.applicationUser.paginate(
       pagination,
       {
-        include: { physiotherapistData: true, finalUserData: true },
+        include: { physiotherapist: true, patient: true },
       },
       {
         mapType: ApplicationUserDto,

@@ -4,13 +4,18 @@ import {
   Box,
   Drawer,
   IconButton,
+  Paper,
+  TextField,
   Toolbar,
   Typography,
+  Grid,
+  Button,
 } from "@mui/material";
 import useSubscriptions from "../../hooks/useSubscription";
 import { useEffect, useState } from "react";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
-import { ArrowBack, PersonRemove } from "@mui/icons-material";
+import { ArrowBack, Check, Close, Search } from "@mui/icons-material";
+import { SubscriptionDtoWithUser } from "@easymotion/openapi";
 
 enum CurrentState {
   "LOADING",
@@ -26,8 +31,29 @@ export interface CourseUsersListModalProps {
 
 export default function CourseUsersListModal(props: CourseUsersListModalProps) {
   const { open, onClose, courseId } = props;
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const { getCourseSubscribers } = useSubscriptions({ courseId: courseId });
+  const {
+    getCourseSubscribers,
+    getPendingCourseSubscriptions,
+    acceptSubscriptionRequest,
+    unsubscribe,
+  } = useSubscriptions({ courseId: courseId });
+
+  const confirmSubscription = async (patientId: string) => {
+    console.log(courseId, patientId);
+    acceptSubscriptionRequest.mutateAsync({
+      course_id: courseId!,
+      patient_id: patientId,
+    });
+  };
+
+  const denySubscription = async (patientId: string) => {
+    unsubscribe.mutateAsync({
+      course_id: courseId!,
+      patient_id: patientId,
+    });
+  };
 
   const [currentPageState, setCurrentPageState] = useState(
     CurrentState.LOADING
@@ -43,14 +69,165 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
   };
 
   useEffect(() => {
-    if (getCourseSubscribers.isError || !courseId) {
+    if (
+      getCourseSubscribers.isError ||
+      getPendingCourseSubscriptions.isError ||
+      !courseId
+    ) {
       setCurrentPageState(CurrentState.ERROR);
-    } else if (getCourseSubscribers.isSuccess) {
+    } else if (
+      getCourseSubscribers.isSuccess &&
+      getPendingCourseSubscriptions.isSuccess
+    ) {
       setCurrentPageState(CurrentState.READY);
     } else {
       setCurrentPageState(CurrentState.LOADING);
     }
-  }, [getCourseSubscribers, courseId]);
+  }, [getCourseSubscribers, getPendingCourseSubscriptions, courseId]);
+
+  // Render already subscribed user (simplified)
+  const renderSubscribedUserItem = (
+    value: SubscriptionDtoWithUser,
+    index: number
+  ) => (
+    <Box
+      key={index}
+      sx={{
+        mb: 2,
+        pb: 2,
+        borderBottom: "1px solid #eee",
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
+          <Avatar
+            sx={{
+              width: 40,
+              height: 40,
+              bgcolor: "primary.main",
+              mr: 2,
+              flexShrink: 0,
+            }}
+          >
+            {value.user.firstName?.charAt(0) || value.user.email?.charAt(0)}
+          </Avatar>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "100%",
+              overflow: "hidden",
+            }}
+          >
+            <Box sx={{ overflow: "hidden", mr: 2 }}>
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  fontWeight: "medium",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {value.user.firstName} {value.user.lastName}
+              </Typography>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {value.user.email}
+              </Typography>
+            </Box>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{
+                flexShrink: 0,
+                textAlign: "right",
+                ml: 1,
+              }}
+            >
+              {formatDate(value.created_at)}
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
+  );
+
+  // Render pending user with accept/decline buttons
+  const renderPendingUserItem = (
+    value: SubscriptionDtoWithUser,
+    index: number
+  ) => (
+    <Box
+      key={index}
+      sx={{
+        mb: 2,
+        pb: 2,
+        borderBottom: "1px solid #eee",
+      }}
+    >
+      <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+        <Avatar
+          sx={{
+            width: 40,
+            height: 40,
+            bgcolor: "warning.main",
+            mr: 2,
+          }}
+        >
+          {value.user.firstName?.charAt(0) || value.user.email?.charAt(0)}
+        </Avatar>
+        <Typography
+          variant="body2"
+          sx={{
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            maxWidth: "calc(100% - 60px)",
+          }}
+        >
+          {value.user.email}
+        </Typography>
+      </Box>
+
+      <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
+        <Button
+          size="small"
+          variant="contained"
+          color="primary"
+          startIcon={<Check />}
+          sx={{ flex: 1, mr: 1 }}
+          onClick={() => confirmSubscription(value.user.id)}
+        >
+          Accetta
+        </Button>
+        <Button
+          size="small"
+          variant="outlined"
+          color="error"
+          startIcon={<Close />}
+          sx={{ flex: 1 }}
+          onClick={() => denySubscription(value.user.id)}
+        >
+          Rifiuta
+        </Button>
+      </Box>
+    </Box>
+  );
 
   return (
     <Drawer
@@ -101,125 +278,87 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
           </Typography>
         </Toolbar>
       </AppBar>
-      {currentPageState === CurrentState.ERROR && (
-        <Typography>Error ....</Typography>
-      )}
-      {currentPageState === CurrentState.LOADING && <LoadingSpinner />}
-      {currentPageState === CurrentState.READY && (
-        <Box sx={{ p: 2, width: "100%" }}>
-          {getCourseSubscribers.data?.data.map((value, index) => (
-            <Box
-              key={index}
-              sx={{
-                mb: 2,
-                pb: 2,
-                borderBottom: "1px solid #eee",
-              }}
-            >
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: { xs: "column", sm: "row" },
-                  alignItems: { xs: "flex-start", sm: "center" },
-                  justifyContent: "space-between",
-                  gap: 2,
-                }}
-              >
-                {/* User information */}
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    width: { xs: "100%", sm: "auto" },
-                    mb: { xs: 1, sm: 0 },
-                  }}
-                >
-                  <Avatar
-                    sx={{
-                      width: 40,
-                      height: 40,
-                      bgcolor: "primary.main",
-                      mr: 2,
-                      flexShrink: 0,
-                    }}
-                  >
-                    {value.user.firstName?.charAt(0) ||
-                      value.user.email?.charAt(0)}
-                  </Avatar>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: { xs: "column", md: "row" },
-                      alignItems: { xs: "flex-start", md: "baseline" },
-                      gap: { xs: 0.5, md: 1 },
-                      overflow: "hidden",
-                    }}
-                  >
-                    <Typography
-                      component="span"
-                      variant="subtitle1"
-                      sx={{
-                        fontWeight: "medium",
-                        py: 0.5,
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: { md: "nowrap" },
-                      }}
-                    >
-                      {value.user.firstName} {value.user.middleName}{" "}
-                      {value.user.lastName}
-                    </Typography>
-                    <Typography
-                      component="span"
-                      variant="subtitle1"
-                      color="text.secondary"
-                      sx={{
-                        py: 0.5,
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: { md: "nowrap" },
-                        fontSize: { xs: "0.875rem", md: "1rem" },
-                      }}
-                    >
-                      {value.user.email}
-                    </Typography>
-                  </Box>
-                </Box>
 
-                {/* Actions area */}
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: { xs: "flex-end", sm: "flex-end" },
-                    width: { xs: "100%", sm: "auto" },
-                    flexShrink: 0,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      mr: 1,
-                      flexShrink: 0,
-                    }}
-                  >
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ mr: 0.5 }}
-                    >
-                      {formatDate(value.subscriptionDate)}
-                    </Typography>
-                  </Box>
-                  <IconButton size="small">
-                    <PersonRemove />
-                  </IconButton>
-                </Box>
-              </Box>
-            </Box>
-          ))}
+      {currentPageState === CurrentState.ERROR && (
+        <Box sx={{ p: 3 }}>
+          <Typography variant="h6" color="error">
+            Si è verificato un errore durante il caricamento dei dati
+          </Typography>
         </Box>
+      )}
+
+      {currentPageState === CurrentState.LOADING && (
+        <Box sx={{ display: "flex", justifyContent: "center", p: 5 }}>
+          <LoadingSpinner />
+        </Box>
+      )}
+
+      {currentPageState === CurrentState.READY && (
+        <Grid container sx={{ height: "calc(100% - 64px)" }}>
+          {/* Main list - 2/3 width */}
+          <Grid
+            size={{ xs: 12, md: 8 }}
+            sx={{ p: 2, borderRight: { md: "1px solid #e0e0e0" } }}
+          >
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
+                Utenti iscritti
+              </Typography>
+              <Paper sx={{ p: 1, mb: 3 }}>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <Search sx={{ color: "action.active", mr: 1 }} />
+                  <TextField
+                    variant="standard"
+                    placeholder="Cerca utente..."
+                    fullWidth
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </Box>
+              </Paper>
+
+              {getCourseSubscribers.data?.data.length === 0 ? (
+                <Typography
+                  sx={{ textAlign: "center", py: 4, color: "text.secondary" }}
+                >
+                  Attualmente, non ci sono ancora iscritti a questo corso!
+                </Typography>
+              ) : (
+                getCourseSubscribers.data?.data
+                  .filter(
+                    (user) =>
+                      searchTerm === "" ||
+                      `${user.user.firstName} ${user.user.lastName}`
+                        .toLowerCase()
+                        .includes(searchTerm.toLowerCase()) ||
+                      user.user.email
+                        .toLowerCase()
+                        .includes(searchTerm.toLowerCase())
+                  )
+                  .map((value, index) => renderSubscribedUserItem(value, index))
+              )}
+            </Box>
+          </Grid>
+
+          {/* Pending requests - 1/3 width */}
+          <Grid size={{ xs: 12, md: 4 }} sx={{ p: 2, bgcolor: "#f9f9f9" }}>
+            <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
+              Richieste
+            </Typography>
+
+            {getPendingCourseSubscriptions.data?.data.length === 0 ? (
+              <Typography
+                sx={{ textAlign: "center", py: 4, color: "text.secondary" }}
+              >
+                Nessuna nuova richiesta
+              </Typography>
+            ) : (
+              getPendingCourseSubscriptions.data?.data.map((value, index) =>
+                renderPendingUserItem(value, index)
+              )
+            )}
+          </Grid>
+        </Grid>
       )}
     </Drawer>
   );
