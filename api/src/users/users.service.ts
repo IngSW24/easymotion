@@ -7,11 +7,11 @@ import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { PaginatedOutput } from "src/common/dto/paginated-output.dto";
 import { plainToInstance } from "class-transformer";
 import { PhysiotherapistFilter } from "./filters/physiotherapist-filter.dto";
-import { Prisma } from "@prisma/client";
+import { ApplicationUser, Physiotherapist, Prisma } from "@prisma/client";
 import { CustomPrismaService } from "nestjs-prisma";
 import { ExtendedPrismaService } from "src/common/prisma/pagination";
-import { PhysiotherapistDto } from "./dto/physiotherapist.dto";
 import ApplicationUserCreateDto from "./dto/create-application-user.dto";
+import { PhysiotherapistProfileDto } from "./dto/physiotherapist-profile.dto";
 
 /**
  * The UsersService class provides high-level CRUD operations for ApplicationUsers,
@@ -114,17 +114,40 @@ export class UsersService {
     return this.userManager.deleteUser(id);
   }
 
+  private mapPhysiotherapistToProfile(
+    physiotherapist: Physiotherapist & { applicationUser: ApplicationUser }
+  ) {
+    const flags = {
+      excludeExtraneousValues: true,
+    };
+
+    return plainToInstance(
+      PhysiotherapistProfileDto,
+      {
+        ...physiotherapist,
+        ...physiotherapist.applicationUser,
+      },
+      flags
+    );
+  }
+
   /**
    * Finds a physiotherapist by their unique ID.
    * @param id - The ID of the physiotherapist to look up.
    * @returns A promise that resolves to a PhysiotherapistDto if the physiotherapist is found.
    */
-  findPhysiotherapist(id: string) {
-    return this.prisma.client.physiotherapist.findUniqueOrThrow({
-      where: {
-        applicationUserId: id,
-      },
-    });
+  async findPhysiotherapist(id: string) {
+    const physiotherapist =
+      await this.prisma.client.physiotherapist.findUniqueOrThrow({
+        where: {
+          applicationUserId: id,
+        },
+        include: {
+          applicationUser: true,
+        },
+      });
+
+    return this.mapPhysiotherapistToProfile(physiotherapist);
   }
 
   /**
@@ -157,7 +180,7 @@ export class UsersService {
     return this.prisma.client.physiotherapist.paginate(
       pagination,
       { where, include: { applicationUser: true } },
-      { mapType: PhysiotherapistDto }
+      { mapFn: this.mapPhysiotherapistToProfile }
     );
   }
 }

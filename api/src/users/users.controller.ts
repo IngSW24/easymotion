@@ -20,6 +20,7 @@ import UseAuth from "src/auth/decorators/auth-with-role.decorator";
 import { Role } from "@prisma/client";
 import { PhysiotherapistDto } from "./dto/physiotherapist.dto";
 import { PhysiotherapistFilter } from "./filters/physiotherapist-filter.dto";
+import { PhysiotherapistProfileDto } from "./dto/physiotherapist-profile.dto";
 
 /**
  * A controller for managing user-related operations, providing
@@ -55,7 +56,7 @@ export class UsersController {
   }
 
   @Get("physiotherapist")
-  @ApiPaginatedResponse(PhysiotherapistDto)
+  @ApiPaginatedResponse(PhysiotherapistProfileDto)
   @UseAuth()
   findAllPhysiotherapists(
     @Query() pagination: PaginationFilter,
@@ -65,7 +66,7 @@ export class UsersController {
   }
 
   @Get("physiotherapist/:id")
-  @ApiOkResponse({ type: PhysiotherapistDto })
+  @ApiOkResponse({ type: PhysiotherapistProfileDto })
   @UseAuth()
   findPhysiotherapist(@Param("id") id: string) {
     return this.usersService.findPhysiotherapist(id);

@@ -15,6 +15,7 @@ import { z } from "zod";
 import { useEffect } from "react";
 import { Person } from "@mui/icons-material";
 import PhoneNumberEditor from "../../editors/PhoneNumberEditor/PhoneNumberEditor";
+import MarkdownTextField from "../../atoms/MarkdownTextField/MarkdownTextField";
 
 export interface PhysiotherapistSettingsProps {
   physiotherapist: PhysiotherapistDto | null;
@@ -141,11 +142,12 @@ export default function PhysiotherapistSettings(
             <Typography variant="subtitle2" color="text.secondary" mb={1}>
               Bio
             </Typography>
-            <TextField
+            <MarkdownTextField
               fullWidth
               multiline
-              rows={4}
-              placeholder="Inserisci la tua bio"
+              rows={15}
+              placeholder="Inserisci la tua bio in formato markdown"
+              previewValue={watch("bio") || ""}
               error={!!errors.bio}
               helperText={errors.bio?.message}
               {...register("bio")}

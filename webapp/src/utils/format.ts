@@ -78,5 +78,6 @@ export const getCourseImageUrl = ({
 };
 
 export const getStaticImageUrl = (picturePath: string) => {
+  if (!picturePath) return undefined;
   return `${import.meta.env.VITE_STATIC_URL}/${picturePath}`;
 };

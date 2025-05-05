@@ -1280,14 +1280,14 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "PaginatedResponseOfPhysiotherapistDto",
+                  "title": "PaginatedResponseOfPhysiotherapistProfileDto",
                   "allOf": [
                     {
                       "properties": {
                         "data": {
                           "type": "array",
                           "items": {
-                            "$ref": "#/components/schemas/PhysiotherapistDto"
+                            "$ref": "#/components/schemas/PhysiotherapistProfileDto"
                           }
                         }
                       },
@@ -1364,7 +1364,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PhysiotherapistDto"
+                  "$ref": "#/components/schemas/PhysiotherapistProfileDto"
                 }
               }
             }
@@ -3471,6 +3471,108 @@
           "isEmailVerified",
           "firstName",
           "lastName"
+        ]
+      },
+      "PhysiotherapistProfileDto": {
+        "type": "object",
+        "properties": {
+          "bio": {
+            "type": "string",
+            "nullable": true,
+            "description": "The bio of the physiotherapist",
+            "example": "I am a physiotherapist with a passion for helping people"
+          },
+          "specialization": {
+            "type": "string",
+            "description": "The specialization of the physiotherapist",
+            "example": "I am a physiotherapist with a passion for helping people"
+          },
+          "publicPhoneNumber": {
+            "type": "string",
+            "description": "The public phone number of the physiotherapist",
+            "example": "1234567890"
+          },
+          "publicEmail": {
+            "type": "string",
+            "description": "The public email of the physiotherapist",
+            "example": "physio@example.com"
+          },
+          "publicAddress": {
+            "type": "string",
+            "description": "The public address of the physiotherapist",
+            "example": "123 Main St, Anytown, USA"
+          },
+          "website": {
+            "type": "string",
+            "description": "The website of the physiotherapist",
+            "example": "https://www.physio.com"
+          },
+          "socialMediaLinks": {
+            "description": "The social media links of the physiotherapist",
+            "example": [
+              "https://www.facebook.com/physio",
+              "https://www.instagram.com/physio"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "applicationUser": {
+            "description": "The application user of the physiotherapist",
+            "example": {},
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ApplicationUserDto"
+              }
+            ]
+          },
+          "firstName": {
+            "type": "string",
+            "description": "User first name",
+            "example": "John"
+          },
+          "middleName": {
+            "type": "string",
+            "nullable": true,
+            "description": "User middle name",
+            "example": "Alexander"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "User last name",
+            "example": "Doe"
+          },
+          "lastLogin": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Timestamp of the user last login",
+            "example": "2025-12-31T23:59:59.999Z"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Timestamp of when the user was created",
+            "example": "2025-01-01T00:00:00.000Z"
+          },
+          "applicationUserId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "bio",
+          "specialization",
+          "publicPhoneNumber",
+          "publicEmail",
+          "publicAddress",
+          "website",
+          "socialMediaLinks",
+          "applicationUser",
+          "firstName",
+          "lastName",
+          "lastLogin",
+          "createdAt",
+          "applicationUserId"
         ]
       },
       "UpdateUserDto": {
