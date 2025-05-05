@@ -1,17 +1,14 @@
 import {
   BadRequestException,
   ConflictException,
-  HttpStatus,
   Injectable,
 } from "@nestjs/common";
 import { ApplicationUser, Prisma, Role } from "@prisma/client";
-import { ResultPromise, isSuccessResult } from "src/common/types/result";
 import * as argon2 from "argon2";
 import { DateTime } from "luxon";
 import { randomBytes, randomInt } from "node:crypto";
 import { v4 as uuidv4 } from "uuid";
 import { PrismaService } from "nestjs-prisma";
-import { ApplicationUserDto } from "./dto/application-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 
 @Injectable()
@@ -199,7 +196,7 @@ export class UserManager {
     userId: string,
     oldPassword: string,
     newPassword: string
-  ): ResultPromise<void> {
+  ) {
     const userResult = await this.getUserById(userId);
     const isPasswordValid = await this.verifyPassword(
       userResult.passwordHash,
@@ -207,11 +204,7 @@ export class UserManager {
     );
 
     if (!isPasswordValid) {
-      return {
-        success: false,
-        errors: ["Invalid password"],
-        code: HttpStatus.BAD_REQUEST,
-      };
+      throw new BadRequestException("Invalid password");
     }
 
     const hashedPassword = await this.hashPassword(newPassword);
@@ -224,8 +217,6 @@ export class UserManager {
         passwordResetTokenExpiry: null,
       },
     });
-
-    return { success: true, data: null };
   }
 
   /**
@@ -235,11 +226,7 @@ export class UserManager {
    * @param newPassword - The new password to be hashed and set.
    * @returns A promise that resolves with a success Result on success or an error Result on failure.
    */
-  async resetPassword(
-    userId: string,
-    resetToken: string,
-    newPassword: string
-  ): ResultPromise<void> {
+  async resetPassword(userId: string, resetToken: string, newPassword: string) {
     const user = await this.prisma.applicationUser.findUniqueOrThrow({
       where: {
         id: userId,
@@ -263,8 +250,6 @@ export class UserManager {
         passwordResetTokenExpiry: null,
       },
     });
-
-    return { success: true, data: null };
   }
 
   /**

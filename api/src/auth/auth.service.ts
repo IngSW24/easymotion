@@ -1,10 +1,6 @@
 import { BadRequestException, Inject } from "@nestjs/common";
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import {
-  isSuccessResult,
-  resultToHttpException,
-} from "src/common/types/result";
 import { UserManager } from "src/users/user.manager";
 import { SignUpDto } from "./dto/actions/sign-up.dto";
 import { Prisma, Role } from "@prisma/client";
@@ -276,15 +272,7 @@ export class AuthService {
 
     const { oldPassword, newPassword } = passwordChangeDto;
 
-    const result = await this.userManager.changePassword(
-      user.id,
-      oldPassword,
-      newPassword
-    );
-
-    if (!isSuccessResult(result)) {
-      throw resultToHttpException(result);
-    }
+    await this.userManager.changePassword(user.id, oldPassword, newPassword);
   }
 
   /**
@@ -326,15 +314,7 @@ export class AuthService {
     const { userId, token, newPassword } = passwordUpdateDto;
     const user = await this.getUserByIdOrThrow(userId);
 
-    const result = await this.userManager.resetPassword(
-      user.id,
-      token,
-      newPassword
-    );
-
-    if (!isSuccessResult(result)) {
-      throw resultToHttpException(result);
-    }
+    await this.userManager.resetPassword(user.id, token, newPassword);
   }
 
   /**
