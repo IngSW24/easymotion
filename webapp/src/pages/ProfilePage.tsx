@@ -44,10 +44,10 @@ export default function ProfilePage() {
           {profile.get.data.role === "PHYSIOTHERAPIST" && (
             <Grid size={{ xs: 12 }}>
               <PhysiotherapistSettings
-                physiotherapistData={profile.get.data.physiotherapistData}
+                physiotherapist={profile.get.data.physiotherapist}
                 onProfileSave={(updatedProfile) =>
-                  profile.updatePhysiotherapistData.mutate(
-                    updatedProfile.physiotherapistData
+                  profile.updatePhysiotherapist.mutate(
+                    updatedProfile.physiotherapist
                   )
                 }
               />

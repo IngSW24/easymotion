@@ -13,5 +13,5 @@ export class AuthUserDto extends PickType(ApplicationUserDto, [
   "role",
   "isEmailVerified",
   "twoFactorEnabled",
-  "physiotherapistData",
+  "physiotherapist",
 ] as const) {}

@@ -116,7 +116,7 @@ export class UserManager {
   async updateUser(userId: string, data: UpdateUserDto) {
     const user = await this.getUserById(userId); // ensures user exists
 
-    if (user.role !== Role.PHYSIOTHERAPIST && !!data.physiotherapistData) {
+    if (user.role !== Role.PHYSIOTHERAPIST && !!data.physiotherapist) {
       throw new BadRequestException(
         "Physiotherapist data can only be updated for physiotherapists"
       );
@@ -125,7 +125,7 @@ export class UserManager {
     const updateData: Prisma.ApplicationUserUpdateInput = {
       ...data,
       physiotherapist: {
-        update: data.physiotherapistData,
+        update: data.physiotherapist,
       },
     };
 

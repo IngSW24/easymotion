@@ -139,7 +139,7 @@ export class ApplicationUserDto implements Readonly<ApplicationUser> {
   })
   @Type(() => PhysiotherapistDto)
   @Expose()
-  physiotherapistData: PhysiotherapistDto | null;
+  physiotherapist: PhysiotherapistDto | null;
 
   @ApiHideProperty()
   emailConfirmationToken: string;

@@ -173,7 +173,7 @@ describe("AuthService - validateUser", () => {
       role: "USER",
       isEmailVerified: false,
       twoFactorEnabled: false,
-      physiotherapistData: {
+      physiotherapist: {
         bio: "",
         specialization: "",
         publicPhoneNumber: "",

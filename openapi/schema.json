@@ -2974,7 +2974,7 @@
             "description": "Indicates if two-factor authentication is enabled",
             "default": false
           },
-          "physiotherapistData": {
+          "physiotherapist": {
             "nullable": true,
             "description": "Physiotherapist data",
             "allOf": [
@@ -2996,7 +2996,7 @@
           "updatedAt",
           "picturePath",
           "twoFactorEnabled",
-          "physiotherapistData"
+          "physiotherapist"
         ]
       },
       "PhysiotherapistDto": {
@@ -3137,7 +3137,7 @@
             "description": "Indicates if two-factor authentication is enabled",
             "default": false
           },
-          "physiotherapistData": {
+          "physiotherapist": {
             "nullable": true,
             "description": "Physiotherapist data",
             "allOf": [
@@ -3156,7 +3156,7 @@
           "isEmailVerified",
           "picturePath",
           "twoFactorEnabled",
-          "physiotherapistData"
+          "physiotherapist"
         ]
       },
       "AccessTokenDto": {
@@ -3266,7 +3266,7 @@
             "description": "Indicates if two-factor authentication is enabled",
             "default": false
           },
-          "physiotherapistData": {
+          "physiotherapist": {
             "nullable": true,
             "description": "Physiotherapist data",
             "allOf": [
@@ -3559,7 +3559,7 @@
             "description": "Indicates if two-factor authentication is enabled",
             "default": false
           },
-          "physiotherapistData": {
+          "physiotherapist": {
             "nullable": true,
             "description": "Physiotherapist data",
             "allOf": [

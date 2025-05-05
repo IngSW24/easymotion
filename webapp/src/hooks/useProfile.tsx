@@ -33,10 +33,10 @@ export const useProfile = () => {
     onError: (error) => snack.showError(error),
   });
 
-  const updatePhysiotherapistData = useMutation({
-    mutationFn: async (data: UpdateAuthUserDto["physiotherapistData"]) => {
+  const updatePhysiotherapist = useMutation({
+    mutationFn: async (data: UpdateAuthUserDto["physiotherapist"]) => {
       const response = await apiClient.auth.authControllerUpdateUserProfile({
-        physiotherapistData: data,
+        physiotherapist: data,
       });
       return response.data;
     },
@@ -54,5 +54,5 @@ export const useProfile = () => {
     },
   });
 
-  return { get, update, remove, updatePhysiotherapistData };
+  return { get, update, remove, updatePhysiotherapist };
 };

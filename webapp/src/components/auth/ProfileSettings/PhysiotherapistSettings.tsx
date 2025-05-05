@@ -17,7 +17,7 @@ import { Person } from "@mui/icons-material";
 import PhoneNumberEditor from "../../editors/PhoneNumberEditor/PhoneNumberEditor";
 
 export interface PhysiotherapistSettingsProps {
-  physiotherapistData: PhysiotherapistDto | null;
+  physiotherapist: PhysiotherapistDto | null;
   onProfileSave: (user: UpdateAuthUserDto) => void;
 }
 
@@ -59,7 +59,7 @@ type FormData = z.infer<typeof schema>;
 export default function PhysiotherapistSettings(
   props: PhysiotherapistSettingsProps
 ) {
-  const { physiotherapistData, onProfileSave } = props;
+  const { physiotherapist, onProfileSave } = props;
 
   const {
     register,
@@ -71,18 +71,18 @@ export default function PhysiotherapistSettings(
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      bio: physiotherapistData?.bio || "",
-      specialization: physiotherapistData?.specialization || "",
-      publicPhoneNumber: physiotherapistData?.publicPhoneNumber || "",
-      publicEmail: physiotherapistData?.publicEmail || "",
-      publicAddress: physiotherapistData?.publicAddress || "",
-      website: physiotherapistData?.website || "",
-      socialMediaLinks: physiotherapistData?.socialMediaLinks || [],
+      bio: physiotherapist?.bio || "",
+      specialization: physiotherapist?.specialization || "",
+      publicPhoneNumber: physiotherapist?.publicPhoneNumber || "",
+      publicEmail: physiotherapist?.publicEmail || "",
+      publicAddress: physiotherapist?.publicAddress || "",
+      website: physiotherapist?.website || "",
+      socialMediaLinks: physiotherapist?.socialMediaLinks || [],
     },
   });
 
   const onSubmit = (data: FormData) => {
-    onProfileSave({ physiotherapistData: data as PhysiotherapistDto });
+    onProfileSave({ physiotherapist: data as PhysiotherapistDto });
     // Reset the form state after successful submission
     reset(data, {
       keepValues: true, // Keep the current values
@@ -93,15 +93,15 @@ export default function PhysiotherapistSettings(
   // Reset the form when the physiotherapist data is updated
   useEffect(() => {
     reset({
-      bio: physiotherapistData?.bio || "",
-      specialization: physiotherapistData?.specialization || "",
-      publicPhoneNumber: physiotherapistData?.publicPhoneNumber || "",
-      publicEmail: physiotherapistData?.publicEmail || "",
-      publicAddress: physiotherapistData?.publicAddress || "",
-      website: physiotherapistData?.website || "",
-      socialMediaLinks: physiotherapistData?.socialMediaLinks || [],
+      bio: physiotherapist?.bio || "",
+      specialization: physiotherapist?.specialization || "",
+      publicPhoneNumber: physiotherapist?.publicPhoneNumber || "",
+      publicEmail: physiotherapist?.publicEmail || "",
+      publicAddress: physiotherapist?.publicAddress || "",
+      website: physiotherapist?.website || "",
+      socialMediaLinks: physiotherapist?.socialMediaLinks || [],
     });
-  }, [physiotherapistData, reset]);
+  }, [physiotherapist, reset]);
 
   return (
     <Card

@@ -173,7 +173,7 @@ describe("AuthController", () => {
         role: "USER",
         isEmailVerified: false,
         twoFactorEnabled: false,
-        physiotherapistData: {
+        physiotherapist: {
           bio: "",
           specialization: "",
           publicPhoneNumber: "",
@@ -260,7 +260,7 @@ describe("AuthController", () => {
         role: "USER",
         isEmailVerified: false,
         twoFactorEnabled: false,
-        physiotherapistData: {
+        physiotherapist: {
           bio: "",
           specialization: "",
           publicPhoneNumber: "",
