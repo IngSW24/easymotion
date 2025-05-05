@@ -14,6 +14,7 @@ import {
   updateUserDtoMock,
 } from "test/mocks/users.mock";
 import { ApplicationUser } from "@prisma/client";
+import { EXTENDED_PRISMA_SERVICE } from "src/common/prisma/pagination";
 
 describe("UsersService", () => {
   let service: UsersService;
@@ -50,7 +51,7 @@ describe("UsersService", () => {
           useValue: userManagerMock,
         },
         {
-          provide: "ExtendedPrismaService",
+          provide: EXTENDED_PRISMA_SERVICE,
           useValue: prismaMock,
         },
       ],

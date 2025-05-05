@@ -8,10 +8,12 @@ import { PaginatedOutput } from "src/common/dto/paginated-output.dto";
 import { plainToInstance } from "class-transformer";
 import { PhysiotherapistFilter } from "./filters/physiotherapist-filter.dto";
 import { ApplicationUser, Physiotherapist, Prisma } from "@prisma/client";
-import { CustomPrismaService } from "nestjs-prisma";
-import { ExtendedPrismaService } from "src/common/prisma/pagination";
 import ApplicationUserCreateDto from "./dto/create-application-user.dto";
 import { PhysiotherapistProfileDto } from "./dto/physiotherapist-profile.dto";
+import {
+  EXTENDED_PRISMA_SERVICE,
+  ExtendedPrismaService,
+} from "src/common/prisma/pagination";
 
 /**
  * The UsersService class provides high-level CRUD operations for ApplicationUsers,
@@ -21,8 +23,8 @@ import { PhysiotherapistProfileDto } from "./dto/physiotherapist-profile.dto";
 @Injectable()
 export class UsersService {
   constructor(
-    @Inject("ExtendedPrismaService")
-    private readonly prisma: CustomPrismaService<ExtendedPrismaService>,
+    @Inject(EXTENDED_PRISMA_SERVICE)
+    private readonly prisma: ExtendedPrismaService,
     private readonly userManager: UserManager
   ) {}
 

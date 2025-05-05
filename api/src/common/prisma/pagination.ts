@@ -2,6 +2,7 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import { PaginatedOutput } from "../dto/paginated-output.dto";
 import { PaginationFilter } from "../dto/pagination-filter.dto";
 import { ClassConstructor, plainToInstance } from "class-transformer";
+import { CustomPrismaService } from "nestjs-prisma";
 
 export const toPaginatedOutput = <T>(
   data: T[],
@@ -20,7 +21,12 @@ export const toPaginatedOutput = <T>(
   };
 };
 
-export type ExtendedPrismaService = ReturnType<typeof extendClient>;
+type InternalExtendedPrismaService = ReturnType<typeof extendClient>;
+
+export const EXTENDED_PRISMA_SERVICE = "ExtendedPrismaService";
+
+export type ExtendedPrismaService =
+  CustomPrismaService<InternalExtendedPrismaService>;
 
 export const extendClient = (client: PrismaClient) =>
   client.$extends(createPaginationExtension());

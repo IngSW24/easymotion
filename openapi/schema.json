@@ -2377,6 +2377,41 @@
           "Categories"
         ]
       }
+    },
+    "/search": {
+      "get": {
+        "operationId": "SearchController_searchPhysiotherapist",
+        "parameters": [
+          {
+            "name": "query",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResult"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Search"
+        ]
+      }
     }
   },
   "info": {
@@ -3899,6 +3934,92 @@
         },
         "required": [
           "name"
+        ]
+      },
+      "SearchPhysiotherapistDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The ID of the physiotherapist"
+          },
+          "fullName": {
+            "type": "string",
+            "description": "The full name of the physiotherapist"
+          },
+          "specialization": {
+            "type": "string",
+            "description": "The specialization of the physiotherapist"
+          },
+          "address": {
+            "type": "string",
+            "description": "The address of the physiotherapist"
+          },
+          "numberOfCourses": {
+            "type": "number",
+            "description": "The number of courses the physiotherapist is involved in"
+          }
+        },
+        "required": [
+          "id",
+          "fullName",
+          "specialization",
+          "address",
+          "numberOfCourses"
+        ]
+      },
+      "SearchCourseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The ID of the course"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the course"
+          },
+          "categoryName": {
+            "type": "string",
+            "description": "The category of the course"
+          },
+          "imagePath": {
+            "type": "string",
+            "nullable": true,
+            "description": "The image of the course"
+          },
+          "subscriptionCount": {
+            "type": "number",
+            "description": "The number of subscriptions of the course"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "categoryName",
+          "imagePath",
+          "subscriptionCount"
+        ]
+      },
+      "SearchResult": {
+        "type": "object",
+        "properties": {
+          "physiotherapists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SearchPhysiotherapistDto"
+            }
+          },
+          "courses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SearchCourseDto"
+            }
+          }
+        },
+        "required": [
+          "physiotherapists",
+          "courses"
         ]
       }
     }

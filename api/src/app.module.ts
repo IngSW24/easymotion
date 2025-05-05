@@ -16,7 +16,10 @@ import { join } from "path";
 import { AwsModule } from "./aws/aws.module";
 import { SearchModule } from "./search/search.module";
 import dbConfig from "./config/db.config";
-import { extendClient } from "./common/prisma/pagination";
+import {
+  extendClient,
+  EXTENDED_PRISMA_SERVICE,
+} from "./common/prisma/pagination";
 import { PrismaClient } from "@prisma/client";
 
 const shouldServeStaticFiles =
@@ -31,7 +34,7 @@ const shouldServeStaticFiles =
     }),
     CourseModule,
     CustomPrismaModule.forRootAsync({
-      name: "ExtendedPrismaService",
+      name: EXTENDED_PRISMA_SERVICE,
       isGlobal: true,
       useFactory: async (config: ConfigType<typeof dbConfig>) => {
         return extendClient(
