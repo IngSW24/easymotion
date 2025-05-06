@@ -1,19 +1,19 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { UpdateUserDto } from "./dto/update-user.dto";
-import { ApplicationUserDto } from "./dto/application-user.dto";
+import { CreateUserDto } from "./dto/user/create-user.dto";
+import { UpdateUserDto } from "./dto/user/update-user.dto";
 import { UserManager } from "./user.manager";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { PaginatedOutput } from "src/common/dto/paginated-output.dto";
 import { plainToInstance } from "class-transformer";
 import { PhysiotherapistFilter } from "./filters/physiotherapist-filter.dto";
 import { ApplicationUser, Physiotherapist, Prisma } from "@prisma/client";
-import ApplicationUserCreateDto from "./dto/create-application-user.dto";
-import { PhysiotherapistProfileDto } from "./dto/physiotherapist-profile.dto";
+import ApplicationUserCreateDto from "./dto/user/create-application-user.dto";
+import { PhysiotherapistProfileDto } from "./dto/physiotherapist/physiotherapist-profile.dto";
 import {
   EXTENDED_PRISMA_SERVICE,
   ExtendedPrismaService,
 } from "src/common/prisma/pagination";
+import { ApplicationUserDto } from "./dto/user/application-user.dto";
 
 /**
  * The UsersService class provides high-level CRUD operations for ApplicationUsers,

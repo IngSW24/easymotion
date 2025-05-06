@@ -2,7 +2,7 @@ import { ApiHideProperty, ApiProperty, PickType } from "@nestjs/swagger";
 import { Exclude, Expose, Type } from "class-transformer";
 import { IsDate, IsOptional, IsString } from "class-validator";
 import { CourseDto } from "src/courses/dto/course.dto";
-import { ApplicationUserDto } from "src/users/dto/application-user.dto";
+import { ApplicationUserDto } from "src/users/dto/user/application-user.dto";
 import { Subscription } from "@prisma/client";
 
 export class SubscriptionUserDto extends PickType(ApplicationUserDto, [
