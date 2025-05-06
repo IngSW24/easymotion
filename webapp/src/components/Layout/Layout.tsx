@@ -28,6 +28,7 @@ import { AuthUserDto } from "@easymotion/openapi";
 import PhysiotherapistAppBar from "./headers/PhysiotherapistAppBar";
 import UserHeader from "./headers/UserHeaders";
 import SearchDialog from "../search/SearchDialog";
+import { useHotkeys } from "react-hotkeys-hook";
 
 export type MenuEntry = {
   label: string;
@@ -61,11 +62,43 @@ const getAppbarEntries = (
     .filter((x) => !x.showIn || x.showIn === "appbar" || x.showIn === "both");
 };
 
-const SearchButton = ({ onClick }: { onClick: () => void }) => (
-  <IconButton color="inherit" onClick={onClick} sx={{ mr: 2 }}>
-    <SearchIcon />
-  </IconButton>
-);
+const SearchButton = ({ onClick }: { onClick: () => void }) => {
+  const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
+
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        gap: 1,
+        px: 1,
+        py: 0.5,
+        borderRadius: 1,
+        mr: 2,
+        "&:hover": {
+          backgroundColor: "rgba(255, 255, 255, 0.1)",
+        },
+        cursor: "pointer",
+      }}
+      onClick={onClick}
+    >
+      <SearchIcon sx={{ fontSize: 20 }} />
+      <Typography
+        variant="body2"
+        sx={{
+          display: { xs: "none", sm: "block" },
+          color: "inherit",
+          opacity: 0.8,
+          fontSize: "0.875rem",
+          fontWeight: 500,
+          letterSpacing: "0.5px",
+        }}
+      >
+        {isMac ? "⌘K" : "Ctrl+K"}
+      </Typography>
+    </Box>
+  );
+};
 
 export default function Layout(props: LayoutProps) {
   const { entries } = props;
@@ -73,6 +106,7 @@ export default function Layout(props: LayoutProps) {
   const auth = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  useHotkeys("mod+k", () => setSearchOpen((prev) => !prev));
 
   const currentRole = auth.user?.role;
 
