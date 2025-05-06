@@ -17,5 +17,5 @@ export class BaseAuthUserDto extends PickType(ApplicationUserDto, [
 
 export class AuthUserDto extends IntersectionType(
   BaseAuthUserDto,
-  PickType(ApplicationUserDto, ["physiotherapist"])
+  PickType(ApplicationUserDto, ["physiotherapist", "patient"])
 ) {}
