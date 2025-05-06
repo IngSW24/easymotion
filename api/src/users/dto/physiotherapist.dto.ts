@@ -1,6 +1,5 @@
 import { Physiotherapist } from "@prisma/client";
-import { ApplicationUserDto } from "./application-user.dto";
-import { Exclude, Expose, Type } from "class-transformer";
+import { Exclude, Expose } from "class-transformer";
 import { IsString, IsArray } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
@@ -64,14 +63,6 @@ export class PhysiotherapistDto implements Physiotherapist {
     ],
   })
   socialMediaLinks: string[];
-
-  @Expose()
-  @Type(() => ApplicationUserDto)
-  @ApiProperty({
-    description: "The application user of the physiotherapist",
-    example: {},
-  })
-  applicationUser: ApplicationUserDto;
 
   @Exclude()
   applicationUserId: string;

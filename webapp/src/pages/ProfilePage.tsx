@@ -33,14 +33,6 @@ export default function ProfilePage() {
             />
           </Grid>
 
-          <Grid size={{ xs: 12, md: 6 }}>
-            <EmailUpdate />
-          </Grid>
-
-          <Grid size={{ xs: 12, md: 6 }}>
-            <PasswordUpdate />
-          </Grid>
-
           {profile.get.data.role === "PHYSIOTHERAPIST" && (
             <Grid size={{ xs: 12 }}>
               <PhysiotherapistSettings
@@ -53,6 +45,14 @@ export default function ProfilePage() {
               />
             </Grid>
           )}
+
+          <Grid size={{ xs: 12, md: 6 }}>
+            <EmailUpdate />
+          </Grid>
+
+          <Grid size={{ xs: 12, md: 6 }}>
+            <PasswordUpdate />
+          </Grid>
         </Grid>
       )}
     </Container>

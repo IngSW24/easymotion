@@ -131,7 +131,7 @@ export class UserManager {
 
     return this.prisma.applicationUser.update({
       where: { id: user.id },
-      include: { patient: true },
+      include: { patient: true, physiotherapist: true },
       data: updateData,
     });
   }

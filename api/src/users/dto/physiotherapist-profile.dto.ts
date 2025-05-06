@@ -10,5 +10,6 @@ export class PhysiotherapistProfileDto extends IntersectionType(
     "firstName",
     "middleName",
     "lastName",
+    "picturePath",
   ])
 ) {}

@@ -27,7 +27,6 @@ import { ApiBody, ApiOkResponse, ApiResponse } from "@nestjs/swagger";
 import { SignInDto } from "./dto/actions/sign-in.dto";
 import { DateTime } from "luxon";
 import { RefreshGuard } from "./guards/refresh.guard";
-import { AuthUserDto } from "./dto/auth-user/auth-user.dto";
 import UseAuth from "./decorators/auth-with-role.decorator";
 import { UpdateAuthUserDto } from "./dto/auth-user/update-auth-user.dto";
 import AuthFlowHeader from "./decorators/authflow-header.decorator";
@@ -90,7 +89,7 @@ export class AuthController {
   @Post("login")
   @ApiBody({ type: SignInDto })
   @ApiLoginResponse()
-  async userLogin(@Req() req: CustomRequest, @Res() res): Promise<void> {
+  async userLogin(@Req() req: CustomRequest, @Res() res) {
     this.login(req, res);
   }
 
@@ -103,7 +102,7 @@ export class AuthController {
   @Post("login/admin")
   @ApiBody({ type: SignInDto })
   @ApiLoginResponse()
-  async adminLogin(@Req() req: CustomRequest, @Res() res): Promise<void> {
+  async adminLogin(@Req() req: CustomRequest, @Res() res) {
     this.login(req, res);
   }
 
@@ -156,7 +155,7 @@ export class AuthController {
    */
   @UseAuth()
   @Get("profile")
-  getUserProfile(@Req() req): Promise<AuthUserDto> {
+  getUserProfile(@Req() req) {
     return this.authService.getUserProfile(req.user.sub);
   }
 
@@ -167,10 +166,7 @@ export class AuthController {
    */
   @UseAuth()
   @Put("profile")
-  updateUserProfile(
-    @Req() req,
-    @Body() updateProfileDto: UpdateAuthUserDto
-  ): Promise<AuthUserDto> {
+  updateUserProfile(@Req() req, @Body() updateProfileDto: UpdateAuthUserDto) {
     return this.authService.updateUserProfile(req.user.sub, updateProfileDto);
   }
 

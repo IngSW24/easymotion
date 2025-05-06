@@ -67,7 +67,6 @@ export const applicationUserDtoMock = (): ApplicationUserDto => ({
     publicAddress: "",
     website: "",
     socialMediaLinks: [],
-    applicationUser: undefined,
     applicationUserId: "",
   },
 });

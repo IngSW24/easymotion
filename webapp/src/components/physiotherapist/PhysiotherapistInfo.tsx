@@ -44,25 +44,14 @@ export default function PhysiotherapistInfo({
     );
   }
 
-  const {
-    applicationUser,
-    bio,
-    specialization,
-    publicEmail,
-    publicPhoneNumber,
-    publicAddress,
-    website,
-    socialMediaLinks,
-  } = physiotherapist;
-
   return (
     <Card sx={{ mx: "auto", my: 4, boxShadow: 3 }}>
       <CardContent>
         {/* Header Section with Profile Image */}
         <Box sx={{ mb: 4, textAlign: "center" }}>
           <Avatar
-            src={getStaticImageUrl(applicationUser.picturePath ?? "")}
-            alt={`${applicationUser.firstName} ${applicationUser.lastName}`}
+            src={getStaticImageUrl(physiotherapist.picturePath ?? "")}
+            alt={`${physiotherapist.firstName} ${physiotherapist.lastName}`}
             sx={{
               width: { xs: 100, sm: 120 },
               height: { xs: 100, sm: 120 },
@@ -79,11 +68,11 @@ export default function PhysiotherapistInfo({
               lineHeight: { xs: 1.2, sm: 1.235 },
             }}
           >
-            {formatUserName(applicationUser)}
+            {formatUserName(physiotherapist)}
           </Typography>
           <Chip
             icon={<School />}
-            label={specialization}
+            label={physiotherapist.specialization}
             color="primary"
             sx={{ mt: 1, mb: 2 }}
           />
@@ -147,12 +136,12 @@ export default function PhysiotherapistInfo({
         <Divider sx={{ my: 3 }} />
 
         {/* Bio Section */}
-        {bio && (
+        {physiotherapist.bio && (
           <Box sx={{ mb: 4 }}>
             <Typography variant="h6" gutterBottom>
               Biografia
             </Typography>
-            <MarkdownBlock content={bio} />
+            <MarkdownBlock content={physiotherapist.bio} />
           </Box>
         )}
 
@@ -165,7 +154,7 @@ export default function PhysiotherapistInfo({
         {/* Contact Information */}
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 3 }}>
-            {publicEmail && (
+            {physiotherapist.publicEmail && (
               <Box
                 sx={{
                   display: "flex",
@@ -175,13 +164,16 @@ export default function PhysiotherapistInfo({
                 }}
               >
                 <Email color="primary" />
-                <Link href={`mailto:${publicEmail}`} color="inherit">
-                  {publicEmail}
+                <Link
+                  href={`mailto:${physiotherapist.publicEmail}`}
+                  color="inherit"
+                >
+                  {physiotherapist.publicEmail}
                 </Link>
               </Box>
             )}
 
-            {publicPhoneNumber && (
+            {physiotherapist.publicPhoneNumber && (
               <Box
                 sx={{
                   display: "flex",
@@ -191,55 +183,65 @@ export default function PhysiotherapistInfo({
                 }}
               >
                 <Phone color="primary" />
-                <Link href={`tel:${publicPhoneNumber}`} color="inherit">
-                  {publicPhoneNumber}
+                <Link
+                  href={`tel:${physiotherapist.publicPhoneNumber}`}
+                  color="inherit"
+                >
+                  {physiotherapist.publicPhoneNumber}
                 </Link>
               </Box>
             )}
           </Box>
 
-          {publicAddress && (
+          {physiotherapist.publicAddress && (
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <LocationOn color="primary" />
-              <Typography variant="body1">{publicAddress}</Typography>
+              <Typography variant="body1">
+                {physiotherapist.publicAddress}
+              </Typography>
             </Box>
           )}
 
-          {website && (
+          {physiotherapist.website && (
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <Language color="primary" />
-              <Link href={website} target="_blank" rel="noopener noreferrer">
-                {website}
+              <Link
+                href={physiotherapist.website}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {physiotherapist.website}
               </Link>
             </Box>
           )}
         </Box>
 
         {/* Social Media Links */}
-        {socialMediaLinks && socialMediaLinks.length > 0 && (
-          <Box sx={{ mt: 4 }}>
-            <Typography variant="h6" gutterBottom>
-              Social Media
-            </Typography>
-            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-              {socialMediaLinks.map((link, index) => (
-                <Link
-                  key={index}
-                  href={link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  sx={{ textDecoration: "none" }}
-                >
-                  <Chip
-                    label={new URL(link).hostname}
-                    variant="outlined"
-                    clickable
-                  />
-                </Link>
-              ))}
+        {physiotherapist.socialMediaLinks &&
+          physiotherapist.socialMediaLinks.length > 0 && (
+            <Box sx={{ mt: 4 }}>
+              <Typography variant="h6" gutterBottom>
+                Social Media
+              </Typography>
+              <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+                {physiotherapist.socialMediaLinks.map((link, index) => (
+                  <Link
+                    key={index}
+                    href={link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    sx={{ textDecoration: "none" }}
+                  >
+                    <Chip
+                      label={new URL(link).hostname}
+                      variant="outlined"
+                      clickable
+                    />
+                  </Link>
+                ))}
+              </Box>
             </Box>
-          </Box>
-        )}
+          )}
       </CardContent>
     </Card>
   );

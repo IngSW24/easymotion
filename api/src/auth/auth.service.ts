@@ -11,7 +11,7 @@ import { OtpLoginDto } from "./dto/actions/otp-login.dto";
 import { EmailService } from "src/email/email.service";
 import { EmailConfirmDto } from "./dto/actions/email-confirm.dto";
 import { plainToInstance } from "class-transformer";
-import { AuthUserDto } from "./dto/auth-user/auth-user.dto";
+import { AuthUserDto, BaseAuthUserDto } from "./dto/auth-user/auth-user.dto";
 import { ConfigType } from "@nestjs/config";
 import jwtConfig from "src/config/jwt.config";
 import { JwtPayloadDto } from "./dto/auth-user/jwt-payload.dto";
@@ -65,7 +65,7 @@ export class AuthService {
       return null;
     }
 
-    return plainToInstance(AuthUserDto, user, {
+    return plainToInstance(BaseAuthUserDto, user, {
       excludeExtraneousValues: true,
     });
   }
@@ -136,7 +136,7 @@ export class AuthService {
   ): Promise<AuthResponseDto> {
     const result = await this.userManager.getUserById(userId);
 
-    const user = plainToInstance(AuthUserDto, result, {
+    const user = plainToInstance(BaseAuthUserDto, result, {
       excludeExtraneousValues: true,
     });
 
@@ -144,7 +144,7 @@ export class AuthService {
   }
 
   public async getAuthResponseFromUser(
-    user: AuthUserDto
+    user: BaseAuthUserDto
   ): Promise<AuthResponseDto> {
     await this.userManager.setLastLogin(user.id);
     await this.userManager.clearFailedLoginAttempts(user.id);
@@ -342,7 +342,7 @@ export class AuthService {
       otp
     );
 
-    return validationResult ? result : null;
+    return validationResult ? plainToInstance(BaseAuthUserDto, result) : null;
   }
 
   /**
