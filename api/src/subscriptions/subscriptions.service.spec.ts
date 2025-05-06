@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { SubscriptionsService } from "./subscriptions.service";
 import { PrismaService } from "nestjs-prisma";
 import { BadRequestException } from "@nestjs/common";
-import { Course, PaymentRecurrence, Prisma } from "@prisma/client";
+import { Course, Prisma } from "@prisma/client";
 import { randomUUID } from "crypto";
 import { applicationUserDtoMock } from "test/mocks/users.mock";
 
@@ -77,7 +77,6 @@ describe("SubscriptionsService", () => {
         image_path: "",
         level: "BASIC",
         price: new Prisma.Decimal("30"),
-        payment_recurrence: PaymentRecurrence.SINGLE,
         is_published: true,
         subscriptions_open: true,
         max_subscribers: 10,
@@ -88,6 +87,7 @@ describe("SubscriptionsService", () => {
         category_id: "1",
         subscription_start_date: new Date(),
         subscription_end_date: new Date(),
+        payment_recurrence: "SINGLE",
       };
 
       const courseSubscribers = [

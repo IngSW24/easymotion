@@ -1,8 +1,8 @@
-import { AuthUserDto, SignUpDto } from "@easymotion/openapi";
+import { BaseAuthUserDto, SignUpDto } from "@easymotion/openapi";
 import { createContext } from "react";
 
 export interface AuthContextProps {
-  user: AuthUserDto | null;
+  user: BaseAuthUserDto | null;
   isAuthenticated: boolean;
   isPhysiotherapist: boolean;
   login: (email: string, password: string) => Promise<{ needsOtp: boolean }>;
@@ -10,7 +10,7 @@ export interface AuthContextProps {
   logout: () => Promise<void>;
   signup: (signupInfo: SignUpDto) => Promise<boolean>;
   updateEmail: (email: string, userId: string, token: string) => Promise<void>;
-  updateUser: (user: AuthUserDto) => void;
+  updateUser: (user: BaseAuthUserDto) => void;
   updateOtpStatus: (otpEnabled: boolean) => Promise<void>;
   updateProfilePicture: (file: File) => Promise<string | null>;
   initialized: boolean;

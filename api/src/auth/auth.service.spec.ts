@@ -4,6 +4,7 @@ import { UserManager } from "src/users/user.manager";
 import { EmailService } from "src/email/email.service";
 import { JwtService } from "@nestjs/jwt";
 import { AuthUserDto } from "./dto/auth-user/auth-user.dto";
+import { PhysiotherapistDto } from "src/users/dto/physiotherapist.dto";
 import jwtConfig from "src/config/jwt.config";
 import frontendConfig from "src/config/frontend.config";
 import { ASSETS_SERVICE } from "src/assets/assets.interface";
@@ -85,9 +86,7 @@ describe("AuthService - validateUser", () => {
   });
 
   it("should return null if user cannot login", async () => {
-    userManagerMock.getUserByEmail = jest
-      .fn()
-      .mockResolvedValue({ success: true, data: {} });
+    userManagerMock.getUserByEmail = jest.fn().mockResolvedValue({});
     userManagerMock.canUserLogin = jest.fn().mockReturnValue(false);
 
     const result = await service.validateUser("test@example.com", "password");
@@ -146,20 +145,16 @@ describe("AuthService - validateUser", () => {
   });
 
   it("should return null if the user is not found", async () => {
-    userManagerMock.getUserById = jest
-      .fn()
-      .mockResolvedValue({ success: false });
+    userManagerMock.getUserById = jest.fn().mockRejectedValue(new Error());
 
-    const result = await service.getAuthResponseFromUserId("user123");
-    expect(result).toBeNull();
-    expect(userManagerMock.getUserById).toHaveBeenCalledWith("user123");
+    await expect(
+      service.getAuthResponseFromUserId("user123")
+    ).rejects.toThrow();
   });
 
   it("should return a valid AuthResponseDto for a valid user", async () => {
     const mockUser = { id: "user123", firstName: "Test User" };
-    userManagerMock.getUserById = jest
-      .fn()
-      .mockResolvedValue({ success: true, data: mockUser });
+    userManagerMock.getUserById = jest.fn().mockResolvedValue(mockUser);
 
     const result = await service.getAuthResponseFromUserId("user123");
     expect(result).toBeDefined();
@@ -179,6 +174,17 @@ describe("AuthService - validateUser", () => {
       role: "USER",
       isEmailVerified: false,
       twoFactorEnabled: false,
+      physiotherapist: {
+        bio: "",
+        specialization: "",
+        publicPhoneNumber: "",
+        publicEmail: "",
+        publicAddress: "",
+        website: "",
+        socialMediaLinks: [],
+        applicationUser: undefined,
+        applicationUserId: "",
+      } as PhysiotherapistDto,
     };
     jwtServiceMock.sign = jest.fn().mockImplementation(() => "mock-token");
 
@@ -192,18 +198,14 @@ describe("AuthService - validateUser", () => {
   });
 
   it("should throw an exception if the user is not found", async () => {
-    userManagerMock.getUserById = jest
-      .fn()
-      .mockResolvedValue({ success: false });
+    userManagerMock.getUserById = jest.fn().mockRejectedValue(new Error());
 
     await expect(service.getUserProfile("user123")).rejects.toThrow();
   });
 
   it("should return the user profile for a valid user", async () => {
     const mockUser = { id: "user123", firstName: "Test User" };
-    userManagerMock.getUserById = jest
-      .fn()
-      .mockResolvedValue({ success: true, data: mockUser });
+    userManagerMock.getUserById = jest.fn().mockResolvedValue(mockUser);
 
     const result = await service.getUserProfile("user123");
     expect(result).toBeDefined();
@@ -211,9 +213,7 @@ describe("AuthService - validateUser", () => {
   });
 
   it("should throw an exception if update fails", async () => {
-    userManagerMock.updateUser = jest
-      .fn()
-      .mockResolvedValue({ success: false });
+    userManagerMock.updateUser = jest.fn().mockRejectedValue(new Error());
 
     await expect(
       service.updateUserProfile("user123", { firstName: "Updated User" })
@@ -222,23 +222,13 @@ describe("AuthService - validateUser", () => {
 
   it("should return the updated user profile for a valid update", async () => {
     const mockUpdatedUser = { id: "user123", firstName: "Updated User" };
-    userManagerMock.updateUser = jest
-      .fn()
-      .mockResolvedValue({ success: true, data: mockUpdatedUser });
+    userManagerMock.updateUser = jest.fn().mockResolvedValue(mockUpdatedUser);
 
     const result = await service.updateUserProfile("user123", {
       firstName: "Updated User",
     });
     expect(result).toBeDefined();
     expect(result).toMatchObject(mockUpdatedUser);
-  });
-
-  it("should throw an exception if delete fails", async () => {
-    userManagerMock.deleteUser = jest
-      .fn()
-      .mockResolvedValue({ success: false });
-
-    await expect(service.deleteUserProfile("user123")).rejects.toThrow();
   });
 
   it("should call deleteUser with the correct userId", async () => {
@@ -253,15 +243,13 @@ describe("AuthService - validateUser", () => {
     const buffer = Buffer.from("test");
     const mimeType = "image/jpeg";
 
-    userManagerMock.getUserById = jest.fn().mockResolvedValue({
-      success: true,
-      data: { id: userId, picturePath: "path1" },
-    });
+    userManagerMock.getUserById = jest
+      .fn()
+      .mockResolvedValue({ id: userId, picturePath: "path1" });
 
-    userManagerMock.updateUser = jest.fn().mockResolvedValue({
-      success: true,
-      data: { id: userId, picturePath: "profile/user123-123" },
-    });
+    userManagerMock.updateUser = jest
+      .fn()
+      .mockResolvedValue({ id: userId, picturePath: "profile/user123-123" });
 
     const result = await service.updateUserPicture(
       userId,
@@ -274,7 +262,6 @@ describe("AuthService - validateUser", () => {
       picturePath: "profile/user123-123",
     });
     expect(result).toBeDefined();
-    expect(result.picturePath).toBeDefined();
     expect(result.picturePath).toBe("profile/user123-123");
   });
 });

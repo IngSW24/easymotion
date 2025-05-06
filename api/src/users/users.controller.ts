@@ -18,13 +18,14 @@ import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { ApiPaginatedResponse } from "src/common/decorators/api-paginated-response.decorator";
 import UseAuth from "src/auth/decorators/auth-with-role.decorator";
 import { Role } from "@prisma/client";
+import { PhysiotherapistFilter } from "./filters/physiotherapist-filter.dto";
+import { PhysiotherapistProfileDto } from "./dto/physiotherapist-profile.dto";
 
 /**
  * A controller for managing user-related operations, providing
  * standard CRUD endpoints for creating, reading, updating, and deleting users.
  */
 @ApiTags("Users")
-@UseAuth([Role.ADMIN])
 @Controller("users")
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -36,6 +37,7 @@ export class UsersController {
    */
   @Post()
   @ApiCreatedResponse({ type: ApplicationUserDto })
+  @UseAuth([Role.ADMIN])
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
@@ -47,8 +49,26 @@ export class UsersController {
    */
   @Get()
   @ApiPaginatedResponse(ApplicationUserDto)
+  @UseAuth([Role.ADMIN])
   findAll(@Query() pagination: PaginationFilter) {
     return this.usersService.findAll(pagination);
+  }
+
+  @Get("physiotherapist")
+  @ApiPaginatedResponse(PhysiotherapistProfileDto)
+  @UseAuth()
+  findAllPhysiotherapists(
+    @Query() pagination: PaginationFilter,
+    @Query() filter: PhysiotherapistFilter
+  ) {
+    return this.usersService.findAllPhysiotherapists(pagination, filter);
+  }
+
+  @Get("physiotherapist/:id")
+  @ApiOkResponse({ type: PhysiotherapistProfileDto })
+  @UseAuth()
+  findPhysiotherapist(@Param("id") id: string) {
+    return this.usersService.findPhysiotherapist(id);
   }
 
   /**
@@ -58,6 +78,7 @@ export class UsersController {
    */
   @Get(":id")
   @ApiOkResponse({ type: ApplicationUserDto })
+  @UseAuth([Role.ADMIN])
   findOne(@Param("id") id: string) {
     return this.usersService.findOne(id);
   }
@@ -70,6 +91,7 @@ export class UsersController {
    */
   @Put(":id")
   @ApiOkResponse({ type: ApplicationUserDto })
+  @UseAuth([Role.ADMIN])
   update(@Param("id") id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
   }
@@ -80,6 +102,7 @@ export class UsersController {
    */
   @Delete(":id")
   @ApiOkResponse()
+  @UseAuth([Role.ADMIN])
   remove(@Param("id") id: string) {
     return this.usersService.remove(id);
   }

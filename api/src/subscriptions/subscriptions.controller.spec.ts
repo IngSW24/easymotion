@@ -39,13 +39,14 @@ describe("SubscriptionsController", () => {
 
   const userManagerMockup = {
     getUserById: jest.fn().mockResolvedValue({
-      success: true,
-      data: {
-        id: "user-id",
-        email: "user@example.com",
-        firstName: "Test",
-        lastName: "User",
+      id: "user-id",
+      email: "user@example.com",
+      firstName: "Test",
+      lastName: "User",
+      patient: {
+        applicationUserId: "user-id",
       },
+      physiotherapist: null,
     }),
   };
 
@@ -392,12 +393,13 @@ describe("SubscriptionsController", () => {
         course_id: "course-1",
       };
 
-      userManagerMockup.getUserById.mockResolvedValueOnce({
-        success: false,
-        error: "User not found",
-      });
+      userManagerMockup.getUserById.mockRejectedValueOnce(
+        new Error("User not found")
+      );
 
-      await controller.deleteSubscription(deleteDto);
+      await expect(controller.deleteSubscription(deleteDto)).rejects.toThrow(
+        "User not found"
+      );
 
       expect(
         subscriptionServiceMockup.unsubscribeFinalUser
@@ -408,7 +410,6 @@ describe("SubscriptionsController", () => {
       expect(userManagerMockup.getUserById).toHaveBeenCalledWith(
         deleteDto.patient_id
       );
-      // Email should not be sent if user is not found
       expect(emailServiceMockup.sendEmail).not.toHaveBeenCalled();
     });
   });

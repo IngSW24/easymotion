@@ -1243,6 +1243,143 @@
         ]
       }
     },
+    "/users/physiotherapist": {
+      "get": {
+        "operationId": "UsersController_findAllPhysiotherapists",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "searchText",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "PaginatedResponseOfPhysiotherapistProfileDto",
+                  "allOf": [
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/PhysiotherapistProfileDto"
+                          }
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ]
+                    },
+                    {
+                      "properties": {
+                        "meta": {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "number"
+                            },
+                            "hasNextPage": {
+                              "type": "boolean"
+                            },
+                            "currentPage": {
+                              "type": "number"
+                            },
+                            "totalItems": {
+                              "type": "number"
+                            },
+                            "totalPages": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "items",
+                            "hasNextPage",
+                            "currentPage",
+                            "totalItems",
+                            "totalPages"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "meta"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/physiotherapist/{id}": {
+      "get": {
+        "operationId": "UsersController_findPhysiotherapist",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhysiotherapistProfileDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Users"
+        ]
+      }
+    },
     "/users/{id}": {
       "get": {
         "operationId": "UsersController_findOne",
@@ -2240,6 +2377,41 @@
           "Categories"
         ]
       }
+    },
+    "/search": {
+      "get": {
+        "operationId": "SearchController_searchAll",
+        "parameters": [
+          {
+            "name": "query",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResultDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Search"
+        ]
+      }
     }
   },
   "info": {
@@ -2751,7 +2923,7 @@
           "password"
         ]
       },
-      "AuthUserDto": {
+      "BaseAuthUserDto": {
         "type": "object",
         "properties": {
           "id": {
@@ -2854,7 +3026,7 @@
             "description": "User related data",
             "allOf": [
               {
-                "$ref": "#/components/schemas/AuthUserDto"
+                "$ref": "#/components/schemas/BaseAuthUserDto"
               }
             ]
           },
@@ -2902,6 +3074,156 @@
           }
         }
       },
+      "PhysiotherapistDto": {
+        "type": "object",
+        "properties": {
+          "bio": {
+            "type": "string",
+            "nullable": true,
+            "description": "The bio of the physiotherapist",
+            "example": "I am a physiotherapist with a passion for helping people"
+          },
+          "specialization": {
+            "type": "string",
+            "description": "The specialization of the physiotherapist",
+            "example": "I am a physiotherapist with a passion for helping people"
+          },
+          "publicPhoneNumber": {
+            "type": "string",
+            "description": "The public phone number of the physiotherapist",
+            "example": "1234567890"
+          },
+          "publicEmail": {
+            "type": "string",
+            "description": "The public email of the physiotherapist",
+            "example": "physio@example.com"
+          },
+          "publicAddress": {
+            "type": "string",
+            "description": "The public address of the physiotherapist",
+            "example": "123 Main St, Anytown, USA"
+          },
+          "website": {
+            "type": "string",
+            "description": "The website of the physiotherapist",
+            "example": "https://www.physio.com"
+          },
+          "socialMediaLinks": {
+            "description": "The social media links of the physiotherapist",
+            "example": [
+              "https://www.facebook.com/physio",
+              "https://www.instagram.com/physio"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "applicationUserId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "bio",
+          "specialization",
+          "publicPhoneNumber",
+          "publicEmail",
+          "publicAddress",
+          "website",
+          "socialMediaLinks",
+          "applicationUserId"
+        ]
+      },
+      "AuthUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique user identifier (UUID)",
+            "example": "b3bf4d18-8dd0-43a1-b1da-fd3f7b9553a1"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the user",
+            "example": "user@example.com"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "User first name",
+            "example": "John"
+          },
+          "middleName": {
+            "type": "string",
+            "nullable": true,
+            "description": "User middle name",
+            "example": "Alexander"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "User last name",
+            "example": "Doe"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true,
+            "description": "User phone number",
+            "example": "+1234567890"
+          },
+          "birthDate": {
+            "type": "string",
+            "nullable": true,
+            "description": "User birth date",
+            "example": "1990-01-01"
+          },
+          "role": {
+            "type": "string",
+            "description": "User role in the system",
+            "enum": [
+              "USER",
+              "ADMIN",
+              "PHYSIOTHERAPIST"
+            ],
+            "default": "USER"
+          },
+          "isEmailVerified": {
+            "type": "boolean",
+            "description": "Indicates if the user email has been verified",
+            "default": false,
+            "example": false
+          },
+          "picturePath": {
+            "type": "string",
+            "nullable": true,
+            "description": "Profile picture path"
+          },
+          "twoFactorEnabled": {
+            "type": "boolean",
+            "description": "Indicates if two-factor authentication is enabled",
+            "default": false
+          },
+          "physiotherapist": {
+            "nullable": true,
+            "description": "Physiotherapist data",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PhysiotherapistDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "firstName",
+          "lastName",
+          "role",
+          "isEmailVerified",
+          "picturePath",
+          "twoFactorEnabled",
+          "physiotherapist"
+        ]
+      },
       "UpdateAuthUserDto": {
         "type": "object",
         "properties": {
@@ -2937,6 +3259,15 @@
             "type": "boolean",
             "description": "Indicates if two-factor authentication is enabled",
             "default": false
+          },
+          "physiotherapist": {
+            "nullable": true,
+            "description": "Physiotherapist data",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PhysiotherapistDto"
+              }
+            ]
           }
         }
       },
@@ -3025,6 +3356,15 @@
             "type": "boolean",
             "description": "Indicates if two-factor authentication is enabled",
             "default": false
+          },
+          "physiotherapist": {
+            "nullable": true,
+            "description": "Physiotherapist data",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PhysiotherapistDto"
+              }
+            ]
           }
         },
         "required": [
@@ -3038,7 +3378,8 @@
           "createdAt",
           "updatedAt",
           "picturePath",
-          "twoFactorEnabled"
+          "twoFactorEnabled",
+          "physiotherapist"
         ]
       },
       "SignUpDto": {
@@ -3237,60 +3578,198 @@
           "lastName"
         ]
       },
-      "UpdateUserDto": {
+      "PhysiotherapistProfileDto": {
         "type": "object",
         "properties": {
-          "email": {
+          "bio": {
             "type": "string",
-            "format": "email",
-            "description": "Email address of the new user",
-            "example": "john.doe@example.com"
+            "nullable": true,
+            "description": "The bio of the physiotherapist",
+            "example": "I am a physiotherapist with a passion for helping people"
           },
-          "password": {
+          "specialization": {
             "type": "string",
-            "minLength": 6,
-            "description": "Plain-text password for the new user (will be hashed)",
-            "example": "MyStrongP@ssw0rd!"
+            "description": "The specialization of the physiotherapist",
+            "example": "I am a physiotherapist with a passion for helping people"
           },
-          "isEmailVerified": {
-            "type": "boolean",
-            "description": "Flag indicating if the email address has been verified",
-            "example": true
+          "publicPhoneNumber": {
+            "type": "string",
+            "description": "The public phone number of the physiotherapist",
+            "example": "1234567890"
+          },
+          "publicEmail": {
+            "type": "string",
+            "description": "The public email of the physiotherapist",
+            "example": "physio@example.com"
+          },
+          "publicAddress": {
+            "type": "string",
+            "description": "The public address of the physiotherapist",
+            "example": "123 Main St, Anytown, USA"
+          },
+          "website": {
+            "type": "string",
+            "description": "The website of the physiotherapist",
+            "example": "https://www.physio.com"
+          },
+          "socialMediaLinks": {
+            "description": "The social media links of the physiotherapist",
+            "example": [
+              "https://www.facebook.com/physio",
+              "https://www.instagram.com/physio"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           "firstName": {
             "type": "string",
-            "description": "First name of the new user",
+            "description": "User first name",
             "example": "John"
           },
           "middleName": {
             "type": "string",
-            "description": "Middle name of the new user (optional)",
+            "nullable": true,
+            "description": "User middle name",
             "example": "Alexander"
           },
           "lastName": {
             "type": "string",
-            "description": "Last name of the new user",
+            "description": "User last name",
+            "example": "Doe"
+          },
+          "lastLogin": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Timestamp of the user last login",
+            "example": "2025-12-31T23:59:59.999Z"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Timestamp of when the user was created",
+            "example": "2025-01-01T00:00:00.000Z"
+          },
+          "picturePath": {
+            "type": "string",
+            "nullable": true,
+            "description": "Profile picture path"
+          },
+          "applicationUserId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "bio",
+          "specialization",
+          "publicPhoneNumber",
+          "publicEmail",
+          "publicAddress",
+          "website",
+          "socialMediaLinks",
+          "firstName",
+          "lastName",
+          "lastLogin",
+          "createdAt",
+          "picturePath",
+          "applicationUserId"
+        ]
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique user identifier (UUID)",
+            "example": "b3bf4d18-8dd0-43a1-b1da-fd3f7b9553a1"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the user",
+            "example": "user@example.com"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "User first name",
+            "example": "John"
+          },
+          "middleName": {
+            "type": "string",
+            "nullable": true,
+            "description": "User middle name",
+            "example": "Alexander"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "User last name",
             "example": "Doe"
           },
           "phoneNumber": {
             "type": "string",
-            "description": "Phone number of the new user (optional)",
-            "example": "+123456789"
+            "nullable": true,
+            "description": "User phone number",
+            "example": "+1234567890"
           },
           "birthDate": {
             "type": "string",
-            "description": "Birth date in ISO format (YYYY-MM-DD) (optional)",
+            "nullable": true,
+            "description": "User birth date",
             "example": "1990-01-01"
           },
           "role": {
             "type": "string",
-            "description": "Role of the new user (defaults to USER if not provided)",
+            "description": "User role in the system",
             "enum": [
               "USER",
               "ADMIN",
               "PHYSIOTHERAPIST"
             ],
             "default": "USER"
+          },
+          "isEmailVerified": {
+            "type": "boolean",
+            "description": "Indicates if the user email has been verified",
+            "default": false,
+            "example": false
+          },
+          "lastLogin": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Timestamp of the user last login",
+            "example": "2025-12-31T23:59:59.999Z"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Timestamp of when the user was created",
+            "example": "2025-01-01T00:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Timestamp of the user last update",
+            "example": "2025-01-10T10:00:00.000Z"
+          },
+          "picturePath": {
+            "type": "string",
+            "nullable": true,
+            "description": "Profile picture path"
+          },
+          "twoFactorEnabled": {
+            "type": "boolean",
+            "description": "Indicates if two-factor authentication is enabled",
+            "default": false
+          },
+          "physiotherapist": {
+            "nullable": true,
+            "description": "Physiotherapist data",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PhysiotherapistDto"
+              }
+            ]
           }
         }
       },
@@ -3521,6 +4000,98 @@
         },
         "required": [
           "name"
+        ]
+      },
+      "SearchPhysiotherapistDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The ID of the physiotherapist"
+          },
+          "fullName": {
+            "type": "string",
+            "description": "The full name of the physiotherapist"
+          },
+          "specialization": {
+            "type": "string",
+            "description": "The specialization of the physiotherapist"
+          },
+          "address": {
+            "type": "string",
+            "description": "The address of the physiotherapist"
+          },
+          "numberOfCourses": {
+            "type": "number",
+            "description": "The number of courses the physiotherapist is involved in"
+          },
+          "picturePath": {
+            "type": "string",
+            "nullable": true,
+            "description": "The picture path of the physiotherapist"
+          }
+        },
+        "required": [
+          "id",
+          "fullName",
+          "specialization",
+          "address",
+          "numberOfCourses",
+          "picturePath"
+        ]
+      },
+      "SearchCourseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The ID of the course"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the course"
+          },
+          "categoryName": {
+            "type": "string",
+            "description": "The category of the course"
+          },
+          "imagePath": {
+            "type": "string",
+            "nullable": true,
+            "description": "The image of the course"
+          },
+          "subscriptionCount": {
+            "type": "number",
+            "description": "The number of subscriptions of the course"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "categoryName",
+          "imagePath",
+          "subscriptionCount"
+        ]
+      },
+      "SearchResultDto": {
+        "type": "object",
+        "properties": {
+          "physiotherapists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SearchPhysiotherapistDto"
+            }
+          },
+          "courses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SearchCourseDto"
+            }
+          }
+        },
+        "required": [
+          "physiotherapists",
+          "courses"
         ]
       }
     }

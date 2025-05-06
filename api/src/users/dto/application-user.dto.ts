@@ -13,6 +13,7 @@ import {
 } from "class-validator";
 import { Expose, Type } from "class-transformer";
 import { ApplicationUser, Role } from "@prisma/client";
+import { PhysiotherapistDto } from "./physiotherapist.dto";
 
 export class ApplicationUserDto implements Readonly<ApplicationUser> {
   @ApiProperty({
@@ -131,6 +132,14 @@ export class ApplicationUserDto implements Readonly<ApplicationUser> {
   @IsBoolean()
   @Expose()
   twoFactorEnabled: boolean;
+
+  @ApiProperty({
+    description: "Physiotherapist data",
+    type: PhysiotherapistDto,
+  })
+  @Type(() => PhysiotherapistDto)
+  @Expose()
+  physiotherapist: PhysiotherapistDto | null;
 
   @ApiHideProperty()
   emailConfirmationToken: string;

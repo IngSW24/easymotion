@@ -12,8 +12,6 @@ import {
 } from "@mui/material";
 import { Person, PhotoCamera } from "@mui/icons-material";
 import { AuthUserDto, UpdateAuthUserDto } from "@easymotion/openapi";
-import EmailUpdate from "./EmailUpdate";
-import PasswordUpdate from "./PasswordUpdate";
 import PhoneNumberEditor from "../../editors/PhoneNumberEditor/PhoneNumberEditor";
 import { DateField } from "@mui/x-date-pickers";
 import { useForm, useWatch } from "react-hook-form";
@@ -102,7 +100,7 @@ export default function GeneralProfileSettings(
       <Card
         sx={{
           width: "100%",
-          maxWidth: 800,
+          margin: "auto",
           boxShadow: 3,
           borderRadius: 3,
           padding: 3,
@@ -289,10 +287,6 @@ export default function GeneralProfileSettings(
           </Box>
         </CardContent>
       </Card>
-
-      <EmailUpdate />
-
-      <PasswordUpdate />
 
       <AvatarUploadDialog
         open={isAvatarDialogOpen}

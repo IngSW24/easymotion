@@ -33,6 +33,7 @@ import { useAuth } from "@easymotion/auth-context";
 import { Link } from "react-router";
 import SubscriptionRequestForm from "./SubscriptionRequest";
 import SubscribeSection from "./SubscribeSection";
+import MarkdownBlock from "../../atoms/MarkdownBlock/MarkdownBlock";
 
 export interface CourseDetailProps {
   course: CourseDto;
@@ -108,7 +109,7 @@ const CourseDetail: React.FC<CourseDetailProps> = (
                 <Typography variant="h5" fontWeight="bold">
                   Descrizione
                 </Typography>
-                <Typography variant="body1">{course.description}</Typography>
+                <MarkdownBlock content={course.description} />
               </Box>
 
               <Divider sx={{ my: 3 }} />
@@ -129,7 +130,7 @@ const CourseDetail: React.FC<CourseDetailProps> = (
                           </Avatar>
                         </ListItemIcon>
                         <ListItemText
-                          primary={`${start.toLocaleString(DateTime.DATE_FULL)} – ${end.toLocaleString(DateTime.TIME_SIMPLE)}`}
+                          primary={`${start.toLocaleString(DateTime.DATE_FULL, { locale: "it" })} – ${end.toLocaleString(DateTime.TIME_SIMPLE, { locale: "it" })}`}
                           secondary={calculateDuration(start, end)}
                           slotProps={{
                             primary: {

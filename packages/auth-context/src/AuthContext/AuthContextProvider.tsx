@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useApiClient } from "../hooks/useApiClient";
 import { AuthContext } from "./AuthContext";
 import { useInitialRefresh } from "./useInitialRefresh";
-import { Api, AuthUserDto, SignUpDto } from "@easymotion/openapi";
+import { Api, BaseAuthUserDto, SignUpDto } from "@easymotion/openapi";
 
 export interface AuthContextProviderProps {
   children: React.ReactNode;
@@ -39,7 +39,7 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
   );
 
   // State to store the authenticated user's details
-  const [user, setUser] = useState<AuthUserDto | null>(null);
+  const [user, setUser] = useState<BaseAuthUserDto | null>(null);
 
   // Automatically attempt to get an access token when the app loads
   const initialized = useInitialRefresh({

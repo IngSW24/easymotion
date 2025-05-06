@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import { plainToInstance } from "class-transformer";
 import { PrismaService } from "nestjs-prisma";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
-import { toPaginatedOutput } from "src/common/utils/pagination";
+import { toPaginatedOutput } from "src/common/prisma/pagination";
 import {
   SubscriptionDtoWithCourse,
   SubscriptionDtoWithUser,

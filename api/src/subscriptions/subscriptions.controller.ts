@@ -27,7 +27,6 @@ import { Role } from "@prisma/client";
 import { EmailService } from "src/email/email.service";
 import { CoursesService } from "src/courses/courses.service";
 import { UserManager } from "src/users/user.manager";
-import { isSuccessResult } from "src/common/types/result";
 
 @ApiTags("Subscriptions")
 @Controller("subscriptions")
@@ -179,13 +178,11 @@ export class SubscriptionsController {
       subscriptionCreateDto.patient_id
     );
 
-    if (isSuccessResult(user)) {
-      await this.emailService.sendEmail(
-        user.data.email,
-        "Richiesta di iscrizione accettata",
-        `La tua richiesta di iscrizione al corso ${course.name} è stata accettata.`
-      );
-    }
+    await this.emailService.sendEmail(
+      user.email,
+      "Richiesta di iscrizione accettata",
+      `La tua richiesta di iscrizione al corso ${course.name} è stata accettata.`
+    );
   }
 
   /**
@@ -216,13 +213,11 @@ export class SubscriptionsController {
       `Il paziente ${subscriptionCreateDto.patient_id} è stato iscritto al corso ${course.name}.`
     );
 
-    if (isSuccessResult(patient)) {
-      await this.emailService.sendEmail(
-        patient.data.email,
-        "Iscrizione al corso",
-        `Sei stato iscritto al corso ${course.name}.`
-      );
-    }
+    await this.emailService.sendEmail(
+      patient.email,
+      "Iscrizione al corso",
+      `Sei stato iscritto al corso ${course.name}.`
+    );
   }
 
   /**
@@ -247,12 +242,10 @@ export class SubscriptionsController {
       subscriptionDeleteDto.patient_id
     );
 
-    if (isSuccessResult(patient)) {
-      await this.emailService.sendEmail(
-        patient.data.email,
-        "Rimozione dal corso",
-        `Sei stato rimosso dal corso ${course.name}.`
-      );
-    }
+    await this.emailService.sendEmail(
+      patient.email,
+      "Rimozione dal corso",
+      `Sei stato rimosso dal corso ${course.name}.`
+    );
   }
 }

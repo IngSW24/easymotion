@@ -1,7 +1,7 @@
 import { MiddlewareConsumer, Module } from "@nestjs/common";
 import { ConfigModule, ConfigType } from "@nestjs/config";
 import { CourseModule } from "./courses/courses.module";
-import { PrismaModule } from "nestjs-prisma";
+import { CustomPrismaModule, PrismaModule } from "nestjs-prisma";
 import { AuthModule } from "./auth/auth.module";
 import { UsersModule } from "./users/users.module";
 import { EmailModule } from "./email/email.module";
@@ -14,7 +14,13 @@ import { AssetsModule } from "./assets/assets.module";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { join } from "path";
 import { AwsModule } from "./aws/aws.module";
+import { SearchModule } from "./search/search.module";
 import dbConfig from "./config/db.config";
+import {
+  extendClient,
+  EXTENDED_PRISMA_SERVICE,
+} from "./common/prisma/pagination";
+import { PrismaClient } from "@prisma/client";
 
 const shouldServeStaticFiles =
   process.env.NODE_ENV === "development" && process.env.USE_S3 !== "true";
@@ -27,7 +33,16 @@ const shouldServeStaticFiles =
       expandVariables: true,
     }),
     CourseModule,
-    PrismaModule,
+    CustomPrismaModule.forRootAsync({
+      name: EXTENDED_PRISMA_SERVICE,
+      isGlobal: true,
+      useFactory: async (config: ConfigType<typeof dbConfig>) => {
+        return extendClient(
+          new PrismaClient({ datasources: { db: { url: config.url } } })
+        );
+      },
+      inject: [dbConfig.KEY],
+    }),
     PrismaModule.forRootAsync({
       isGlobal: true,
       useFactory: async (config: ConfigType<typeof dbConfig>) => {
@@ -59,6 +74,7 @@ const shouldServeStaticFiles =
     CategoriesModule,
     AssetsModule,
     AwsModule,
+    SearchModule,
   ],
 })
 export class AppModule {

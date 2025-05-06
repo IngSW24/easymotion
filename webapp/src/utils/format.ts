@@ -1,5 +1,11 @@
-import { AuthUserDto, CourseDto } from "@easymotion/openapi";
+import { CourseDto } from "@easymotion/openapi";
 import { DateTime } from "luxon";
+
+interface WithFullName {
+  firstName: string;
+  middleName?: string | null;
+  lastName: string;
+}
 
 /**
  * Formats a user's name
@@ -7,7 +13,7 @@ import { DateTime } from "luxon";
  * @returns The formatted name
  */
 export const formatUserName = (
-  user: AuthUserDto | null | undefined
+  user: WithFullName | null | undefined
 ): string => {
   if (!user) {
     return "";
@@ -78,5 +84,6 @@ export const getCourseImageUrl = ({
 };
 
 export const getStaticImageUrl = (picturePath: string) => {
+  if (!picturePath) return undefined;
   return `${import.meta.env.VITE_STATIC_URL}/${picturePath}`;
 };

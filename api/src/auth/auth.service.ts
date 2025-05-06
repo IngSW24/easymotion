@@ -1,10 +1,6 @@
 import { BadRequestException, Inject } from "@nestjs/common";
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import {
-  isSuccessResult,
-  resultToHttpException,
-} from "src/common/types/result";
 import { UserManager } from "src/users/user.manager";
 import { SignUpDto } from "./dto/actions/sign-up.dto";
 import { Prisma, Role } from "@prisma/client";
@@ -15,7 +11,7 @@ import { OtpLoginDto } from "./dto/actions/otp-login.dto";
 import { EmailService } from "src/email/email.service";
 import { EmailConfirmDto } from "./dto/actions/email-confirm.dto";
 import { plainToInstance } from "class-transformer";
-import { AuthUserDto } from "./dto/auth-user/auth-user.dto";
+import { AuthUserDto, BaseAuthUserDto } from "./dto/auth-user/auth-user.dto";
 import { ConfigType } from "@nestjs/config";
 import jwtConfig from "src/config/jwt.config";
 import { JwtPayloadDto } from "./dto/auth-user/jwt-payload.dto";
@@ -54,13 +50,7 @@ export class AuthService {
     password: string,
     roles: Role[] = undefined
   ) {
-    const result = await this.userManager.getUserByEmail(email, roles);
-
-    if (!isSuccessResult(result)) {
-      return null;
-    }
-
-    const user = result.data;
+    const user = await this.userManager.getUserByEmail(email, roles);
 
     if (!this.userManager.canUserLogin(user)) {
       return null;
@@ -75,7 +65,7 @@ export class AuthService {
       return null;
     }
 
-    return plainToInstance(AuthUserDto, user, {
+    return plainToInstance(BaseAuthUserDto, user, {
       excludeExtraneousValues: true,
     });
   }
@@ -109,12 +99,8 @@ export class AuthService {
   ) {
     const user = await this.userManager.getUserById(userId);
 
-    if (!isSuccessResult(user)) {
-      throw resultToHttpException(user);
-    }
-
-    if (user.data.picturePath) {
-      await this.assetsService.deleteFile(user.data.picturePath);
+    if (user.picturePath) {
+      await this.assetsService.deleteFile(user.picturePath);
     }
 
     const fileName = `${userId}-${!uniqueTimestamp ? DateTime.now().toMillis() : uniqueTimestamp}`;
@@ -130,15 +116,11 @@ export class AuthService {
       throw new BadRequestException("Failed to upload image!");
     }
 
-    const result = await this.userManager.updateUser(userId, {
+    const updatedUser = await this.userManager.updateUser(userId, {
       picturePath: imagePath,
     });
 
-    if (!isSuccessResult(result)) {
-      throw resultToHttpException(result);
-    }
-
-    return plainToInstance(AuthUserDto, result.data, {
+    return plainToInstance(AuthUserDto, updatedUser, {
       excludeExtraneousValues: true,
     });
   }
@@ -154,11 +136,7 @@ export class AuthService {
   ): Promise<AuthResponseDto> {
     const result = await this.userManager.getUserById(userId);
 
-    if (!isSuccessResult(result)) {
-      return null;
-    }
-
-    const user = plainToInstance(AuthUserDto, result.data, {
+    const user = plainToInstance(BaseAuthUserDto, result, {
       excludeExtraneousValues: true,
     });
 
@@ -166,7 +144,7 @@ export class AuthService {
   }
 
   public async getAuthResponseFromUser(
-    user: AuthUserDto
+    user: BaseAuthUserDto
   ): Promise<AuthResponseDto> {
     await this.userManager.setLastLogin(user.id);
     await this.userManager.clearFailedLoginAttempts(user.id);
@@ -192,11 +170,8 @@ export class AuthService {
    */
   async getUserProfile(userId: string) {
     const result = await this.userManager.getUserById(userId);
-    if (!isSuccessResult(result)) {
-      throw resultToHttpException(result);
-    }
 
-    return plainToInstance(AuthUserDto, result.data, {
+    return plainToInstance(AuthUserDto, result, {
       excludeExtraneousValues: true,
     });
   }
@@ -211,13 +186,9 @@ export class AuthService {
     userId: string,
     updateAuthUserDto: UpdateAuthUserDto
   ) {
-    const result = await this.userManager.updateUser(userId, updateAuthUserDto);
+    const user = await this.userManager.updateUser(userId, updateAuthUserDto);
 
-    if (!isSuccessResult(result)) {
-      throw resultToHttpException(result);
-    }
-
-    return plainToInstance(AuthUserDto, result.data, {
+    return plainToInstance(AuthUserDto, user, {
       excludeExtraneousValues: true,
     });
   }
@@ -227,11 +198,7 @@ export class AuthService {
    * @param userId the ID of the user to delete the profile for
    */
   async deleteUserProfile(userId: string) {
-    const result = await this.userManager.deleteUser(userId);
-
-    if (!isSuccessResult(result)) {
-      throw resultToHttpException(result);
-    }
+    return this.userManager.deleteUser(userId);
   }
 
   /**
@@ -269,24 +236,20 @@ export class AuthService {
       );
     }
 
-    const result = await this.userManager.createUser(newUser, password);
-
-    if (!isSuccessResult(result)) {
-      throw resultToHttpException(result);
-    }
+    const createdUser = await this.userManager.createUser(newUser, password);
 
     const emailToken = await this.userManager.generateEmailConfirmationToken(
-      result.data.id
+      createdUser.id
     );
 
     await this.emailService.sendEmail(
-      result.data.email,
+      newUser.email,
       "Completa la registrazione in EasyMotion",
       generateEmailConfirmMessage(
         this.frontendConfigService.url,
         emailToken,
-        result.data.id,
-        result.data.email
+        createdUser.id,
+        createdUser.email
       )
     );
   }
@@ -309,15 +272,7 @@ export class AuthService {
 
     const { oldPassword, newPassword } = passwordChangeDto;
 
-    const result = await this.userManager.changePassword(
-      user.id,
-      oldPassword,
-      newPassword
-    );
-
-    if (!isSuccessResult(result)) {
-      throw resultToHttpException(result);
-    }
+    await this.userManager.changePassword(user.id, oldPassword, newPassword);
   }
 
   /**
@@ -330,21 +285,17 @@ export class AuthService {
   async requestResetPassword(requestDto: EmailDto): Promise<void> {
     const user = await this.userManager.getUserByEmail(requestDto.email);
 
-    if (!isSuccessResult(user)) {
-      return; // no exception thrown if user not found to prevent user enumeration
-    }
-
     const resetToken = await this.userManager.generatePasswordResetToken(
-      user.data.id
+      user.id
     );
 
     await this.emailService.sendEmail(
-      user.data.email,
+      user.email,
       "Modifica la tua password di EasyMotion",
       generatePasswordResetMessage(
         this.frontendConfigService.url,
         resetToken,
-        user.data.id
+        user.id
       )
     );
   }
@@ -363,15 +314,7 @@ export class AuthService {
     const { userId, token, newPassword } = passwordUpdateDto;
     const user = await this.getUserByIdOrThrow(userId);
 
-    const result = await this.userManager.resetPassword(
-      user.id,
-      token,
-      newPassword
-    );
-
-    if (!isSuccessResult(result)) {
-      throw resultToHttpException(result);
-    }
+    await this.userManager.resetPassword(user.id, token, newPassword);
   }
 
   /**
@@ -394,16 +337,12 @@ export class AuthService {
 
     const result = await this.userManager.getUserByEmail(email);
 
-    if (!isSuccessResult(result)) {
-      throw resultToHttpException(result);
-    }
-
     const validationResult = await this.userManager.validateTwoFactor(
-      result.data.id,
+      result.id,
       otp
     );
 
-    return validationResult ? result.data : null;
+    return validationResult ? plainToInstance(BaseAuthUserDto, result) : null;
   }
 
   /**
@@ -436,21 +375,17 @@ export class AuthService {
   async confirmEmail(emailConfirmDto: EmailConfirmDto) {
     const user = await this.getUserByIdOrThrow(emailConfirmDto.userId);
 
-    let result;
-    if (user.email === emailConfirmDto.email && user.isEmailVerified) {
-      result = await this.userManager.confirmEmail(
-        user.id,
-        emailConfirmDto.token
-      );
-    } else {
-      result = await this.userManager.resetEmail(
-        user.id,
-        emailConfirmDto.token,
-        emailConfirmDto.email
-      );
-    }
-
-    if (!isSuccessResult(result)) {
+    try {
+      if (user.email === emailConfirmDto.email && user.isEmailVerified) {
+        await this.userManager.confirmEmail(user.id, emailConfirmDto.token);
+      } else {
+        await this.userManager.resetEmail(
+          user.id,
+          emailConfirmDto.token,
+          emailConfirmDto.email
+        );
+      }
+    } catch (_) {
       throw new BadRequestException({
         message: "Data provided is not valid for email confirmation",
       });
@@ -469,12 +404,6 @@ export class AuthService {
    * @returns A promise that resolves with the user if found.
    */
   private async getUserByIdOrThrow(userId: string) {
-    const user = await this.userManager.getUserById(userId);
-
-    if (!isSuccessResult(user)) {
-      throw resultToHttpException(user);
-    }
-
-    return user.data;
+    return this.userManager.getUserById(userId);
   }
 }

@@ -1,7 +1,7 @@
 import { Box, Container, Grid, Typography } from "@mui/material";
 import { useCourses } from "../../hooks/useCourses";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
-import LandingCourseCard from "./LandingCourseCard";
+import CourseCard from "../course/CourseCard/CourseCard";
 
 /**
  * LandingCoursesSection displays featured courses on the landing page.
@@ -51,7 +51,7 @@ export default function LandingCoursesSection() {
           >
             {getCourses.data?.map((course) => (
               <Grid key={course.id} sx={{ xs: 1 }}>
-                <LandingCourseCard course={course} />
+                <CourseCard course={course} />
               </Grid>
             ))}
           </Grid>

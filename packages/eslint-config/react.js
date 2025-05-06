@@ -44,6 +44,11 @@ export default tseslint.config(eslintPluginPrettierRecommended, {
         caughtErrorsIgnorePattern: "^_",
       },
     ],
-    "prettier/prettier": "warn",
+    "prettier/prettier": [
+      "warn",
+      {
+        endOfLine: "auto",
+      },
+    ],
   },
 });

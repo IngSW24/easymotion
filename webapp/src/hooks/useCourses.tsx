@@ -5,6 +5,7 @@ export type CourseFilters = {
   searchText?: string;
   categories?: string[];
   level?: string;
+  ownerId?: string;
 };
 
 type UseCoursesProps = {
@@ -36,6 +37,7 @@ export const useCourses = (props: UseCoursesProps = {}) => {
           categoryIds: filters?.categories?.join(","),
         }),
         ...(filters?.level && { level: filters.level }),
+        ...(filters?.ownerId && { ownerId: filters.ownerId }),
       });
 
       return response.data.data;

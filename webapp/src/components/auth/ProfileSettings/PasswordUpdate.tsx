@@ -4,7 +4,6 @@ import {
   Button,
   Card,
   CardContent,
-  Grid,
   Stack,
   Switch,
   TextField,
@@ -81,11 +80,9 @@ export default function PasswordUpdate() {
     <Card
       sx={{
         width: "100%",
-        maxWidth: 800,
         boxShadow: 3,
         borderRadius: 3,
         padding: 3,
-        marginTop: 4,
       }}
     >
       <CardContent>
@@ -110,42 +107,36 @@ export default function PasswordUpdate() {
           effettuare la modifica
         </Typography>
         <form onSubmit={handleSubmit(onPasswordUpdate)}>
-          <Grid container spacing={2}>
-            <Grid size={{ xs: 12, sm: 5 }}>
-              <TextField
-                fullWidth
-                label="Password precedente"
-                type="password"
-                size="small"
-                {...register("old")}
-                error={!!errors.old}
-                helperText={errors.old?.message}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 5 }}>
-              <TextField
-                fullWidth
-                label="Nuova password"
-                type="password"
-                size="small"
-                {...register("new")}
-                error={!!errors.new}
-                helperText={errors.new?.message}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 2 }} sx={{ display: "flex" }}>
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{ minWidth: 120 }}
-                fullWidth
-                startIcon={<Save />}
-                type="submit"
-              >
-                Modifica
-              </Button>
-            </Grid>
-          </Grid>
+          <Stack direction="column" spacing={2} gap={2} flexWrap="wrap">
+            <TextField
+              fullWidth
+              label="Password precedente"
+              type="password"
+              size="small"
+              {...register("old")}
+              error={!!errors.old}
+              helperText={errors.old?.message}
+            />
+            <TextField
+              fullWidth
+              label="Nuova password"
+              type="password"
+              size="small"
+              {...register("new")}
+              error={!!errors.new}
+              helperText={errors.new?.message}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ minWidth: 120 }}
+              fullWidth
+              startIcon={<Save />}
+              type="submit"
+            >
+              Modifica
+            </Button>
+          </Stack>
         </form>
         <Stack
           spacing={2}
