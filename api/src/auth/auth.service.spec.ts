@@ -9,7 +9,7 @@ import jwtConfig from "src/config/jwt.config";
 import frontendConfig from "src/config/frontend.config";
 import { ASSETS_SERVICE } from "src/assets/assets.interface";
 import { MockAssetsService } from "src/assets/implementations/mock.service";
-
+import { ActivityLevel } from "@prisma/client";
 describe("AuthService - validateUser", () => {
   let service: AuthService;
   let userManagerMock: Partial<UserManager>;
@@ -185,6 +185,18 @@ describe("AuthService - validateUser", () => {
         applicationUser: undefined,
         applicationUserId: "",
       } as PhysiotherapistDto,
+      patient: {
+        heightCm: 0,
+        weightKg: 0,
+        smoker: false,
+        activityLevel: ActivityLevel.LOW,
+        mobilityLevel: "LIMITED",
+        restingHeartRate: 0,
+        bloodPressure: "",
+        lastMedicalCheckup: undefined,
+        notes: "",
+        applicationUserId: "",
+      },
     };
     jwtServiceMock.sign = jest.fn().mockImplementation(() => "mock-token");
 
