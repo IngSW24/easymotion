@@ -1,12 +1,9 @@
 import { IntersectionType, PickType } from "@nestjs/swagger";
-import { PhysiotherapistDto } from "./physiotherapist.dto";
+import { PatientDto } from "./patient.dto";
 import { ApplicationUserDto } from "../user/application-user.dto";
 
-/**
- * Represents the public profile of a physiotherapist.
- */
-export class PhysiotherapistProfileDto extends IntersectionType(
-  PhysiotherapistDto,
+export class PatientProfileDto extends IntersectionType(
+  PatientDto,
   PickType(ApplicationUserDto, [
     "createdAt",
     "lastLogin",
@@ -14,5 +11,8 @@ export class PhysiotherapistProfileDto extends IntersectionType(
     "middleName",
     "lastName",
     "picturePath",
+    "birthDate",
+    "phoneNumber",
+    "email",
   ])
 ) {}

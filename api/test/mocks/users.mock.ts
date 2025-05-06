@@ -1,3 +1,4 @@
+import { ActivityLevel, MobilityLevel } from "@prisma/client";
 import { ApplicationUserDto } from "src/users/dto/user/application-user.dto";
 import { CreateUserDto } from "src/users/dto/user/create-user.dto";
 import { UpdateUserDto } from "src/users/dto/user/update-user.dto";
@@ -67,6 +68,18 @@ export const applicationUserDtoMock = (): ApplicationUserDto => ({
     publicAddress: "",
     website: "",
     socialMediaLinks: [],
+    applicationUserId: "",
+  },
+  patient: {
+    heightCm: 170,
+    weightKg: 70,
+    smoker: false,
+    activityLevel: ActivityLevel.MEDIUM,
+    mobilityLevel: MobilityLevel.LIMITED,
+    restingHeartRate: 70,
+    bloodPressure: "120/80",
+    lastMedicalCheckup: new Date(),
+    notes: "Notes",
     applicationUserId: "",
   },
 });

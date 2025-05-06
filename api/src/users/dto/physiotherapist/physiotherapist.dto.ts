@@ -3,6 +3,9 @@ import { Exclude, Expose } from "class-transformer";
 import { IsString, IsArray } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
+/**
+ * Represents the physiotherapist-specific data for the application user.
+ */
 export class PhysiotherapistDto implements Physiotherapist {
   @Expose()
   @IsString()

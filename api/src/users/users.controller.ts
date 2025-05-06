@@ -17,9 +17,10 @@ import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { ApiPaginatedResponse } from "src/common/decorators/api-paginated-response.decorator";
 import UseAuth from "src/auth/decorators/auth-with-role.decorator";
 import { Role } from "@prisma/client";
-import { PhysiotherapistFilter } from "./filters/physiotherapist-filter.dto";
+import { ProfilesFilter } from "./filters/profiles-filter.dto";
 import { PhysiotherapistProfileDto } from "./dto/physiotherapist/physiotherapist-profile.dto";
 import { ApplicationUserDto } from "./dto/user/application-user.dto";
+import { PatientProfileDto } from "./dto/patient/patient-profile.dto";
 
 /**
  * A controller for managing user-related operations, providing
@@ -29,6 +30,57 @@ import { ApplicationUserDto } from "./dto/user/application-user.dto";
 @Controller("users")
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @Get("physiotherapists")
+  @ApiPaginatedResponse(PhysiotherapistProfileDto)
+  @UseAuth()
+  findAllPhysiotherapists(
+    @Query() pagination: PaginationFilter,
+    @Query() filter: ProfilesFilter
+  ) {
+    const { searchText } = filter;
+
+    return this.usersService.findProfiles(pagination, {
+      type: "physiotherapist",
+      dto: PhysiotherapistProfileDto,
+      searchText,
+    });
+  }
+
+  @Get("physiotherapists/:id")
+  @ApiOkResponse({ type: PhysiotherapistProfileDto })
+  @UseAuth()
+  findPhysiotherapist(@Param("id") id: string) {
+    return this.usersService.findProfile(id, {
+      type: "physiotherapist",
+      dto: PhysiotherapistProfileDto,
+    });
+  }
+
+  @Get("patients")
+  @ApiPaginatedResponse(PatientProfileDto)
+  @UseAuth([Role.ADMIN, Role.PHYSIOTHERAPIST])
+  findAllPatients(
+    @Query() pagination: PaginationFilter,
+    @Query() filter: ProfilesFilter
+  ) {
+    const { searchText } = filter;
+    return this.usersService.findProfiles(pagination, {
+      type: "patient",
+      dto: PatientProfileDto,
+      searchText,
+    });
+  }
+
+  @Get("patient/:id")
+  @ApiPaginatedResponse(PatientProfileDto)
+  @UseAuth([Role.ADMIN, Role.PHYSIOTHERAPIST])
+  findPatient(@Param("id") id: string) {
+    return this.usersService.findProfile(id, {
+      type: "patient",
+      dto: PatientProfileDto,
+    });
+  }
 
   /**
    * Create a new user.
@@ -52,23 +104,6 @@ export class UsersController {
   @UseAuth([Role.ADMIN])
   findAll(@Query() pagination: PaginationFilter) {
     return this.usersService.findAll(pagination);
-  }
-
-  @Get("physiotherapist")
-  @ApiPaginatedResponse(PhysiotherapistProfileDto)
-  @UseAuth()
-  findAllPhysiotherapists(
-    @Query() pagination: PaginationFilter,
-    @Query() filter: PhysiotherapistFilter
-  ) {
-    return this.usersService.findAllPhysiotherapists(pagination, filter);
-  }
-
-  @Get("physiotherapist/:id")
-  @ApiOkResponse({ type: PhysiotherapistProfileDto })
-  @UseAuth()
-  findPhysiotherapist(@Param("id") id: string) {
-    return this.usersService.findPhysiotherapist(id);
   }
 
   /**

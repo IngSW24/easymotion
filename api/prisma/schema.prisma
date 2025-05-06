@@ -98,6 +98,18 @@ enum Role {
   PHYSIOTHERAPIST
 }
 
+enum ActivityLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum MobilityLevel {
+  LIMITED
+  MODERATE
+  FULL
+}
+
 model ApplicationUser {
   id    String @id @default(uuid())
   email String @unique
@@ -136,7 +148,7 @@ model Physiotherapist {
   specialization    String?
   publicPhoneNumber String?
   publicEmail       String?
-  publicAddress     String? 
+  publicAddress     String?
   website           String?
   socialMediaLinks  String[] @default([])
 
@@ -150,10 +162,14 @@ model Patient {
   applicationUser   ApplicationUser @relation(fields: [applicationUserId], references: [id])
   subscriptions     Subscription[]
 
-  // TODO: Specify body measurements
-  // bodyWeight                Decimal?
-  // bodyHeight                Decimal?
-  // bodyFatPercentage         Decimal?
-  // bodyMassIndex             Decimal?
-  // bodyWaterPercentage       Decimal?
+  heightCm         Float?
+  weightKg         Float?
+  smoker           Boolean?
+  activityLevel    ActivityLevel?
+  mobilityLevel    MobilityLevel?
+  restingHeartRate Int?
+  bloodPressure    String?
+
+  lastMedicalCheckup DateTime?
+  notes              String?
 }
