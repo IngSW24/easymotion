@@ -5,6 +5,7 @@ import GeneralProfileSettings from "../components/auth/ProfileSettings/GeneralPr
 import EmailUpdate from "../components/auth/ProfileSettings/EmailUpdate";
 import PasswordUpdate from "../components/auth/ProfileSettings/PasswordUpdate";
 import PhysiotherapistSettings from "../components/auth/ProfileSettings/PhysiotherapistSettings";
+import PatientSettings from "../components/auth/ProfileSettings/PatientSettings";
 
 export default function ProfilePage() {
   const profile = useProfile();
@@ -43,6 +44,13 @@ export default function ProfilePage() {
                   )
                 }
               />
+            </Grid>
+          )}
+
+          {profile.get.data.role === "USER" && (
+            <Grid size={{ xs: 12 }}>
+              {/* Should behave like physiotherapist settings but for patient data */}
+              <PatientSettings />
             </Grid>
           )}
 

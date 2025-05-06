@@ -42,6 +42,15 @@ export const useProfile = () => {
     },
   });
 
+  const updatePatient = useMutation({
+    mutationFn: async (data: UpdateAuthUserDto["patient"]) => {
+      const response = await apiClient.auth.authControllerUpdateUserProfile({
+        patient: data,
+      });
+      return response.data;
+    },
+  });
+
   const remove = useMutation({
     mutationFn: async () => {
       await apiClient.auth.authControllerDeleteUserProfile();
@@ -54,5 +63,5 @@ export const useProfile = () => {
     },
   });
 
-  return { get, update, remove, updatePhysiotherapist };
+  return { get, update, remove, updatePhysiotherapist, updatePatient };
 };
