@@ -64,6 +64,7 @@ const getAppbarEntries = (
 
 const SearchButton = ({ onClick }: { onClick: () => void }) => {
   const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
+  useHotkeys(isMac ? "mod+k" : "mod+alt+k", onClick);
 
   return (
     <Box
@@ -94,7 +95,7 @@ const SearchButton = ({ onClick }: { onClick: () => void }) => {
           letterSpacing: "0.5px",
         }}
       >
-        {isMac ? "⌘K" : "Ctrl+K"}
+        {isMac ? "⌘K" : "Ctrl+Alt+K"}
       </Typography>
     </Box>
   );
@@ -106,7 +107,6 @@ export default function Layout(props: LayoutProps) {
   const auth = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  useHotkeys("mod+k", () => setSearchOpen((prev) => !prev));
 
   const currentRole = auth.user?.role;
 
