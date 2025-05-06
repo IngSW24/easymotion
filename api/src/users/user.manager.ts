@@ -9,7 +9,7 @@ import { DateTime } from "luxon";
 import { randomBytes, randomInt } from "node:crypto";
 import { v4 as uuidv4 } from "uuid";
 import { PrismaService } from "nestjs-prisma";
-import { UpdateUserDto } from "./dto/update-user.dto";
+import { UpdateUserDto } from "./dto/user/update-user.dto";
 
 @Injectable()
 export class UserManager {

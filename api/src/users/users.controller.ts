@@ -11,15 +11,15 @@ import {
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 
 import { UsersService } from "./users.service";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { UpdateUserDto } from "./dto/update-user.dto";
-import { ApplicationUserDto } from "./dto/application-user.dto";
+import { CreateUserDto } from "./dto/user/create-user.dto";
+import { UpdateUserDto } from "./dto/user/update-user.dto";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { ApiPaginatedResponse } from "src/common/decorators/api-paginated-response.decorator";
 import UseAuth from "src/auth/decorators/auth-with-role.decorator";
 import { Role } from "@prisma/client";
 import { PhysiotherapistFilter } from "./filters/physiotherapist-filter.dto";
-import { PhysiotherapistProfileDto } from "./dto/physiotherapist-profile.dto";
+import { PhysiotherapistProfileDto } from "./dto/physiotherapist/physiotherapist-profile.dto";
+import { ApplicationUserDto } from "./dto/user/application-user.dto";
 
 /**
  * A controller for managing user-related operations, providing

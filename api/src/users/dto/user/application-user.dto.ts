@@ -13,7 +13,7 @@ import {
 } from "class-validator";
 import { Expose, Type } from "class-transformer";
 import { ApplicationUser, Role } from "@prisma/client";
-import { PhysiotherapistDto } from "./physiotherapist.dto";
+import { PhysiotherapistDto } from "../physiotherapist/physiotherapist.dto";
 
 export class ApplicationUserDto implements Readonly<ApplicationUser> {
   @ApiProperty({

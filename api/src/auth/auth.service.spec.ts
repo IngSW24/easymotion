@@ -4,7 +4,7 @@ import { UserManager } from "src/users/user.manager";
 import { EmailService } from "src/email/email.service";
 import { JwtService } from "@nestjs/jwt";
 import { AuthUserDto } from "./dto/auth-user/auth-user.dto";
-import { PhysiotherapistDto } from "src/users/dto/physiotherapist.dto";
+import { PhysiotherapistDto } from "src/users/dto/physiotherapist/physiotherapist.dto";
 import jwtConfig from "src/config/jwt.config";
 import frontendConfig from "src/config/frontend.config";
 import { ASSETS_SERVICE } from "src/assets/assets.interface";

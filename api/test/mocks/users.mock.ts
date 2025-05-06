@@ -1,6 +1,6 @@
-import { CreateUserDto } from "src/users/dto/create-user.dto";
-import { ApplicationUserDto } from "src/users/dto/application-user.dto";
-import { UpdateUserDto } from "src/users/dto/update-user.dto";
+import { ApplicationUserDto } from "src/users/dto/user/application-user.dto";
+import { CreateUserDto } from "src/users/dto/user/create-user.dto";
+import { UpdateUserDto } from "src/users/dto/user/update-user.dto";
 
 export const createUserDtoMock = (): CreateUserDto => ({
   email: "test@example.com",
