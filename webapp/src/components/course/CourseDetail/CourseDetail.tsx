@@ -71,6 +71,12 @@ const CourseDetail: React.FC<CourseDetailProps> = (
       : getCourseSubscribers.data?.data.length;
   };
 
+  const getAvailableSubscriptions = () => {
+    return (course.max_subscribers ?? 0) == 0
+      ? 0
+      : (course.max_subscribers ?? 0) - getNumberOfParticipants();
+  };
+
   return (
     <>
       {!hideTitle && (
@@ -128,6 +134,14 @@ const CourseDetail: React.FC<CourseDetailProps> = (
                   Descrizione
                 </Typography>
                 <MarkdownBlock content={course.description} />
+              </Box>
+
+              <Box
+                sx={{ gap: 2, display: "flex", flexDirection: "column", mt: 2 }}
+              >
+                <Typography color="green" fontWeight="bold">
+                  Posti ancora disponibili: {getAvailableSubscriptions()}
+                </Typography>
               </Box>
 
               <Divider sx={{ my: 3 }} />
