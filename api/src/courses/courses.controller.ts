@@ -128,7 +128,7 @@ export class CoursesController {
 
     const subscribers = await this.coursesService.getCourseSubscribers(id);
 
-    await Promise.all(
+    await Promise.allSettled(
       subscribers.map((subscriber) =>
         this.emailService.sendEmail(
           subscriber.patient.applicationUser.email,
