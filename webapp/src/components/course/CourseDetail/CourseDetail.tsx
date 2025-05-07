@@ -46,6 +46,7 @@ const CourseDetail: React.FC<CourseDetailProps> = (
   props: CourseDetailProps
 ) => {
   const { course, hideTitle = false } = props;
+  
   const { isAuthenticated, isPhysiotherapist, user } = useAuth();
 
   const [openSubReqModal, setOpenSubReqModal] = useState(false);
