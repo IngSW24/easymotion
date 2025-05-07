@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -25,6 +25,7 @@ import {
   InfoOutlined,
   CategoryOutlined,
   GroupOutlined,
+  CalendarMonth,
 } from "@mui/icons-material";
 import { CourseDto } from "@easymotion/openapi";
 import { calculateDuration } from "../../../utils/format";
@@ -34,6 +35,7 @@ import { Link } from "react-router";
 import SubscriptionRequestForm from "./SubscriptionRequest";
 import SubscribeSection from "./SubscribeSection";
 import MarkdownBlock from "../../atoms/MarkdownBlock/MarkdownBlock";
+import useSubscriptions from "../../../hooks/useSubscription";
 
 export interface CourseDetailProps {
   course: CourseDto;
@@ -48,9 +50,25 @@ const CourseDetail: React.FC<CourseDetailProps> = (
 
   const [openSubReqModal, setOpenSubReqModal] = useState(false);
 
+  const { getCourseSubscribers } = useSubscriptions({ courseId: course.id });
+
+  const startSubscriptionDate = new Date(
+    Date.parse(course.subscription_start_date)
+  );
+
+  const endSubscriptionDate = new Date(
+    Date.parse(course.subscription_end_date)
+  );
+
   const getPaymentDetails = () => {
     if (course.price === 0) return "Gratuito";
     return `Pagamento ${getPaymentRecurrenceName(course.payment_recurrence)}: €${course.price?.toFixed(2)}`;
+  };
+
+  const getNumberOfParticipants = () => {
+    return getCourseSubscribers.data?.data.length === undefined
+      ? 0
+      : getCourseSubscribers.data?.data.length;
   };
 
   return (
@@ -165,6 +183,8 @@ const CourseDetail: React.FC<CourseDetailProps> = (
                 <SubscriptionRequestForm
                   open={openSubReqModal}
                   setOpen={setOpenSubReqModal}
+                  numberSubscribers={getNumberOfParticipants()}
+                  maxSubscribers={course.max_subscribers ?? 0}
                   courseId={course.id}
                   userId={user?.id}
                 />
@@ -242,9 +262,30 @@ const CourseDetail: React.FC<CourseDetailProps> = (
                 value: getCourseLevelName(course.level),
               },
               {
+                icon: <CalendarMonth />,
+                label: "Periodo di iscrizione",
+                value:
+                  startSubscriptionDate.getFullYear() +
+                  "/" +
+                  startSubscriptionDate.getMonth() +
+                  "/" +
+                  startSubscriptionDate.getDate() +
+                  " - " +
+                  endSubscriptionDate.getFullYear() +
+                  "/" +
+                  endSubscriptionDate.getMonth() +
+                  "/" +
+                  endSubscriptionDate.getDate(),
+              },
+              {
                 icon: <GroupOutlined />,
                 label: "Massimo partecipanti",
                 value: course.max_subscribers ?? "Illimitato",
+              },
+              {
+                icon: <GroupOutlined />,
+                label: "Numero di partecipanti",
+                value: getNumberOfParticipants(),
               },
             ].map((detail, idx) => (
               <Paper
