@@ -314,6 +314,24 @@ export class CoursesService {
   }
 
   /**
+   * Get all subscribers for a course
+   * @param courseId the id of the course
+   * @returns all subscribers for the course
+   */
+  getCourseSubscribers(courseId: string) {
+    return this.prismaService.subscription.findMany({
+      where: { course_id: courseId },
+      include: {
+        patient: {
+          include: {
+            applicationUser: true,
+          },
+        },
+      },
+    });
+  }
+
+  /**
    * Find courses to which the given userId is subscribed
    * @param userId the id of the logged in user
    * @param pagination the pagination filter
