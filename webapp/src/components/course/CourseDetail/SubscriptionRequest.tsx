@@ -27,15 +27,21 @@ const style = {
 export interface CourseDetailProps {
   courseId?: string;
   userId?: string;
+  numberSubscribers: number;
+  maxSubscribers: number;
   open: boolean;
   setOpen: (s: boolean) => void;
 }
 
 export default function SubscriptionRequest(props: CourseDetailProps) {
-  const { courseId, userId, open, setOpen } = props;
+  const { courseId, userId, numberSubscribers, maxSubscribers, open, setOpen } =
+    props;
 
   const courseRepo = useCourses({ fetchId: courseId });
-  const { request2Subscribe } = useSubscriptions({ courseId, userId });
+  const { request2Subscribe, getCourseSubscribers } = useSubscriptions({
+    courseId,
+    userId,
+  });
 
   const [isReqSended, setIsReqSended] = useState(false);
 
@@ -122,30 +128,55 @@ export default function SubscriptionRequest(props: CourseDetailProps) {
                 <Typography color="error">CHIUSE</Typography>
               )}
             </Box>
+
             <Box mb={3}>
               <Typography fontWeight="bold" sx={{ fontSize: 20 }}>
-                Note aggiuntive *
+                Numero di iscritti
               </Typography>
-              <Typography marginBottom={3}>
-                Scrivi qui la tua lettera di motivazione indicando i motivi per
-                cui desideri partecipare a questo corso!
-              </Typography>
-              <TextField
-                fullWidth
-                multiline
-                type="text"
-                name="motivation to participate"
-                value={textLetter}
-                onChange={handleChange}
-                rows={4}
-              />
-              <Typography>
-                {textLetter.length} / {maxLength}
-              </Typography>
+              {numberSubscribers < maxSubscribers ? (
+                <Typography>
+                  {numberSubscribers} / {maxSubscribers}
+                </Typography>
+              ) : (
+                <Typography color="error">
+                  {numberSubscribers} / {maxSubscribers}
+                </Typography>
+              )}
             </Box>
-            <Typography color="text.secondary" fontSize={13}>
-              * I campi contrassegnati da asterisco sono abbligatori
-            </Typography>
+
+            {numberSubscribers < maxSubscribers ? (
+              <>
+                <Box mb={3}>
+                  <Typography fontWeight="bold" sx={{ fontSize: 20 }}>
+                    Note aggiuntive *
+                  </Typography>
+                  <Typography marginBottom={3}>
+                    Scrivi qui la tua lettera di motivazione indicando i motivi
+                    per cui desideri partecipare a questo corso!
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    multiline
+                    type="text"
+                    name="motivation to participate"
+                    value={textLetter}
+                    onChange={handleChange}
+                    rows={4}
+                  />
+                  <Typography>
+                    {textLetter.length} / {maxLength}
+                  </Typography>
+                </Box>
+                <Typography color="text.secondary" fontSize={13}>
+                  * I campi contrassegnati da asterisco sono abbligatori
+                </Typography>
+              </>
+            ) : (
+              <Typography color="error" fontSize={25} align="center">
+                Spiacente è stato raggiunto il numero massimo di partecipanti e
+                pertanto non è più possibile iscriversi a questo corso!
+              </Typography>
+            )}
             <Stack
               direction={"row"}
               spacing={2}
@@ -161,7 +192,9 @@ export default function SubscriptionRequest(props: CourseDetailProps) {
               <Button
                 variant="contained"
                 onClick={handleSubscriptionRequest}
-                disabled={textLetter.length <= 5}
+                disabled={
+                  textLetter.length <= 5 || numberSubscribers >= maxSubscribers
+                }
               >
                 Invia richiesta
               </Button>
