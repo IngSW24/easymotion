@@ -134,7 +134,7 @@ export default function SubscriptionRequest(props: CourseDetailProps) {
                 Numero di iscritti
               </Typography>
               {numberSubscribers < maxSubscribers ? (
-                <Typography>
+                <Typography color="green">
                   {numberSubscribers} / {maxSubscribers}
                 </Typography>
               ) : (
