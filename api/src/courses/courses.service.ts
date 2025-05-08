@@ -131,8 +131,11 @@ export class CoursesService {
     });
 
     return toPaginatedOutput(
-      courses.map((x) =>
-        plainToInstance(CourseDto, { ...x, owner: x.owner.applicationUser })
+      courses.map((course) =>
+        plainToInstance(CourseDto, {
+          ...course,
+          owner: course.owner.applicationUser,
+        })
       ),
       count,
       pagination
@@ -190,6 +193,13 @@ export class CoursesService {
     return plainToInstance(CourseDto, {
       ...course,
       owner: course.owner.applicationUser,
+      available_slots: course.max_subscribers
+        ? course.max_subscribers -
+          (await this.prismaService.subscription.count({
+            // TODO: use transactions, they are important in SELECT query too
+            where: { course_id: id },
+          }))
+        : null,
     });
   }
 

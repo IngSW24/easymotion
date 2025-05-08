@@ -136,7 +136,7 @@ model Physiotherapist {
   specialization    String?
   publicPhoneNumber String?
   publicEmail       String?
-  publicAddress     String? 
+  publicAddress     String?
   website           String?
   socialMediaLinks  String[] @default([])
 
