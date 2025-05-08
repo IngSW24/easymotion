@@ -194,11 +194,14 @@ export class CoursesService {
       ...course,
       owner: course.owner.applicationUser,
       available_slots: course.max_subscribers
-        ? course.max_subscribers -
-          (await this.prismaService.subscription.count({
-            // TODO: use transactions, they are important in SELECT query too
-            where: { course_id: id },
-          }))
+        ? Math.max(
+            0,
+            course.max_subscribers -
+              (await this.prismaService.subscription.count({
+                // TODO: use transactions, they are important in SELECT query too
+                where: { course_id: id },
+              }))
+          )
         : null,
     });
   }
