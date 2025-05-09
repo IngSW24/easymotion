@@ -1,4 +1,4 @@
-import { ActivityLevel, MobilityLevel, Sex } from "@prisma/client";
+import { ActivityLevel, MobilityLevel } from "@prisma/client";
 import { ApplicationUserDto } from "src/users/dto/user/application-user.dto";
 import { CreateUserDto } from "src/users/dto/user/create-user.dto";
 import { UpdateUserDto } from "src/users/dto/user/update-user.dto";
