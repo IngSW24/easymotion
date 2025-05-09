@@ -38,7 +38,6 @@ describe("CourseDetail GUI test", () => {
       firstName: "",
       lastName: "",
       middleName: "",
-      sex: "MALE",
     },
     is_published: false,
     subscriptions_open: false,

@@ -10,7 +10,6 @@ export class BaseAuthUserDto extends PickType(ApplicationUserDto, [
   "picturePath",
   "lastName",
   "phoneNumber",
-  "sex",
   "role",
   "isEmailVerified",
   "twoFactorEnabled",

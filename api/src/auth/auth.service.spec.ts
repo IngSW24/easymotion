@@ -9,7 +9,7 @@ import jwtConfig from "src/config/jwt.config";
 import frontendConfig from "src/config/frontend.config";
 import { ASSETS_SERVICE } from "src/assets/assets.interface";
 import { MockAssetsService } from "src/assets/implementations/mock.service";
-import { ActivityLevel } from "@prisma/client";
+import { ActivityLevel, Sex } from "@prisma/client";
 describe("AuthService - validateUser", () => {
   let service: AuthService;
   let userManagerMock: Partial<UserManager>;
@@ -172,7 +172,6 @@ describe("AuthService - validateUser", () => {
       middleName: "",
       phoneNumber: "",
       role: "USER",
-      sex: "Male",
       isEmailVerified: false,
       twoFactorEnabled: false,
       physiotherapist: {
@@ -187,6 +186,7 @@ describe("AuthService - validateUser", () => {
         applicationUserId: "",
       } as PhysiotherapistDto,
       patient: {
+        sex: Sex.MALE,
         heightCm: 0,
         weightKg: 0,
         smoker: false,
@@ -197,14 +197,16 @@ describe("AuthService - validateUser", () => {
         lastMedicalCheckup: undefined,
         notes: "",
         applicationUserId: "",
-        alcohol: 0,
+        alcoholUnits: 0,
         profession: "",
-        drugs: "",
+        sport: "",
+        sportFrequency: 0,
+        medications: "",
         allergies: "",
         otherPathologies: "",
         painZone: "",
         painIntensity: 0,
-        painFrequency: "CONSTANT",
+        painFrequency: "",
         painCharacteristics: "",
         painModifiers: "",
         sleepHours: 8,

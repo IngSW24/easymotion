@@ -92,7 +92,7 @@ model Subscription {
   @@id([course_id, patient_id])
 }
 
-enum UserSex {
+enum Sex {
   MALE
   FEMALE
   OTHER
@@ -114,12 +114,6 @@ enum MobilityLevel {
   LIMITED
   MODERATE
   FULL
-}
-
-enum PainFrequency {
-  CONSTANT
-  DISCONTINUOUS
-  NIGHTTIME
 }
 
 model ApplicationUser {
@@ -144,7 +138,6 @@ model ApplicationUser {
   lastName    String
   phoneNumber String?
   birthDate   String?
-  sex         UserSex?
 
   lastLogin           DateTime?
   failedLoginAttempts Int              @default(0)
@@ -175,21 +168,24 @@ model Patient {
   applicationUser   ApplicationUser @relation(fields: [applicationUserId], references: [id])
   subscriptions     Subscription[]
 
+  sex              Sex?
   heightCm         Float?
   weightKg         Float?
   smoker           Boolean?
-  alcohol          Int?
+  alcoholUnits     Int?
   activityLevel    ActivityLevel?
   mobilityLevel    MobilityLevel?
   restingHeartRate Int?
   bloodPressure    String?
   profession       String?
-  drugs            String? 
+  sport            String?
+  sportFrequency   Int?
+  medications      String? 
   allergies        String?
   otherPathologies  String?
   painZone         String?
   painIntensity    Int?
-  painFrequency    PainFrequency?
+  painFrequency    String?
   painCharacteristics  String?
   painModifiers    String?
   sleepHours       Int?
