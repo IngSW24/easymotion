@@ -10,6 +10,7 @@ import {
   Req,
   UploadedFile,
   ParseFilePipeBuilder,
+  Inject,
 } from "@nestjs/common";
 import { CoursesService } from "./courses.service";
 import { CreateCourseDto } from "./dto/create-course.dto";
@@ -23,12 +24,18 @@ import { Role } from "@prisma/client";
 import { CourseQueryFilter } from "./dto/filters/course-query-filter.dto";
 import { ApiFileBody } from "src/common/decorators/api-file-body.decorator";
 import { CompressionService } from "src/assets/utilities/compression.service";
+import { EmailService } from "src/email/email.service";
+import { ConfigType } from "@nestjs/config";
+import frontendConfig from "src/config/frontend.config";
 
 @Controller("courses")
 export class CoursesController {
   constructor(
     private readonly coursesService: CoursesService,
-    private readonly imageCompressionService: CompressionService
+    private readonly emailService: EmailService,
+    private readonly imageCompressionService: CompressionService,
+    @Inject(frontendConfig.KEY)
+    private readonly config: ConfigType<typeof frontendConfig>
   ) {}
 
   /**
@@ -110,8 +117,29 @@ export class CoursesController {
   @Put(":id")
   @ApiOkResponse({ type: CourseDto })
   @UseAuth([Role.PHYSIOTHERAPIST])
-  update(@Param("id") id: string, @Body() updateCoursesDto: UpdateCourseDto) {
-    return this.coursesService.update(id, updateCoursesDto);
+  async update(
+    @Param("id") id: string,
+    @Body() updateCoursesDto: UpdateCourseDto
+  ) {
+    const updatedCourse = await this.coursesService.update(
+      id,
+      updateCoursesDto
+    );
+
+    const subscribers = await this.coursesService.getCourseSubscribers(id);
+
+    await Promise.allSettled(
+      subscribers.map((subscriber) =>
+        this.emailService.sendEmail(
+          subscriber.patient.applicationUser.email,
+          "Corso aggiornato",
+          `Il corso ${updatedCourse.name} al quale sei iscritto è stato aggiornato.<br/>
+          <a href="${this.config.url}/details/${id}">Visualizza le modifiche.</a>`
+        )
+      )
+    );
+
+    return updatedCourse;
   }
 
   /**

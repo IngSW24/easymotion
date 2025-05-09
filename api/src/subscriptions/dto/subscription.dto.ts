@@ -1,4 +1,4 @@
-import { ApiProperty, PickType } from "@nestjs/swagger";
+import { ApiHideProperty, ApiProperty, PickType } from "@nestjs/swagger";
 import { Exclude, Expose, Type } from "class-transformer";
 import { IsDate, IsOptional, IsString } from "class-validator";
 import { CourseDto } from "src/courses/dto/course.dto";
@@ -31,20 +31,23 @@ export class SubscriptionDtoWithCourse implements Subscription {
   @Expose()
   updated_at: Date;
 
+  @ApiHideProperty()
   @Exclude()
   course_id: string;
 
+  @ApiHideProperty()
   @Exclude()
   patient_id: string;
 
+  @ApiHideProperty()
   @Exclude() // should be filtered by 2 endpoints
   isPending: boolean;
 
-  @ApiProperty({ description: "Subscription request message" })
+  @ApiProperty({ description: "Subscription request message", required: false })
   @IsString()
   @IsOptional()
   @Expose()
-  subscriptionRequestMessage: string;
+  subscriptionRequestMessage: string | null;
 
   // extra
 

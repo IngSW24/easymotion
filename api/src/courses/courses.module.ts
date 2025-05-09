@@ -3,9 +3,10 @@ import { CoursesService } from "./courses.service";
 import { CoursesController } from "./courses.controller";
 import { PrismaService } from "nestjs-prisma";
 import { AssetsModule } from "src/assets/assets.module";
+import { EmailModule } from "src/email/email.module";
 
 @Module({
-  imports: [AssetsModule],
+  imports: [AssetsModule, EmailModule],
   controllers: [CoursesController],
   providers: [CoursesService, PrismaService],
   exports: [CoursesService],

@@ -117,6 +117,15 @@ export class CourseDto implements Course {
   @Expose()
   max_subscribers: number | null;
 
+  @ApiProperty({
+    description: "Available slots (unlimited if null)",
+    required: false,
+  })
+  @IsNumber()
+  @IsOptional()
+  @Expose()
+  available_slots: number | null;
+
   @ApiProperty({ description: "Related tags" })
   @IsArray()
   @IsString({ each: true })

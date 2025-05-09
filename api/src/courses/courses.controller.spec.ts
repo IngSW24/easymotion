@@ -12,10 +12,13 @@ import { Course, CourseLevel, PaymentRecurrence } from "@prisma/client";
 import { plainToInstance } from "class-transformer";
 import { CompressionService } from "src/assets/utilities/compression.service";
 import { ASSETS_SERVICE } from "src/assets/assets.interface";
+import { EmailService } from "src/email/email.service";
+import frontendConfig from "src/config/frontend.config";
 
 describe("CoursesController", () => {
   let controller: CoursesController;
   let prismaMock: any;
+  let mockupEmailService: any;
 
   beforeEach(async () => {
     // Mock PrismaService
@@ -31,6 +34,9 @@ describe("CoursesController", () => {
       courseSession: {
         findMany: jest.fn(),
       },
+      subscription: {
+        findMany: jest.fn(),
+      },
     };
 
     const mockupCompressionService = {
@@ -41,6 +47,10 @@ describe("CoursesController", () => {
       uploadBuffer: jest.fn(),
       deleteFile: jest.fn(),
       getFileStream: jest.fn(),
+    };
+
+    mockupEmailService = {
+      sendEmail: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -58,6 +68,16 @@ describe("CoursesController", () => {
         {
           provide: CompressionService,
           useValue: mockupCompressionService,
+        },
+        {
+          provide: EmailService,
+          useValue: mockupEmailService,
+        },
+        {
+          provide: frontendConfig.KEY,
+          useValue: {
+            url: "http://localhost:3000",
+          },
         },
       ],
     }).compile();
@@ -85,6 +105,7 @@ describe("CoursesController", () => {
       sessions: [],
       subscription_start_date: new Date(),
       subscription_end_date: new Date(),
+      available_slots: 0,
     };
 
     const createdCourse = {
@@ -183,6 +204,7 @@ describe("CoursesController", () => {
         category_id: randomUUID(),
         subscription_start_date: new Date(),
         subscription_end_date: new Date(),
+        available_slots: 0,
       },
     ];
     const totalItems = 1;
@@ -271,6 +293,7 @@ describe("CoursesController", () => {
     const expected = plainToInstance(CourseDto, {
       ...mockCourse,
       owner: mockCourse.owner.applicationUser,
+      available_slots: null,
     });
 
     expect(prismaMock.course.findUniqueOrThrow).toHaveBeenCalledWith({
@@ -344,7 +367,8 @@ describe("CoursesController", () => {
     prismaMock.courseSession.findMany.mockResolvedValue([]);
     prismaMock.course.findUniqueOrThrow.mockResolvedValue(updatedCourse);
     prismaMock.course.update.mockResolvedValue(updatedCourse);
-
+    prismaMock.subscription.findMany.mockResolvedValue([]);
+    mockupEmailService.sendEmail.mockResolvedValue(undefined);
     const result = await controller.update(id, dto);
 
     // Check that update was called with correct ID
