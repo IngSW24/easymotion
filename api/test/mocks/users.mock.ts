@@ -1,4 +1,4 @@
-import { ActivityLevel, MobilityLevel } from "@prisma/client";
+import { ActivityLevel, MobilityLevel, Sex } from "@prisma/client";
 import { ApplicationUserDto } from "src/users/dto/user/application-user.dto";
 import { CreateUserDto } from "src/users/dto/user/create-user.dto";
 import { UpdateUserDto } from "src/users/dto/user/update-user.dto";
@@ -11,6 +11,7 @@ export const createUserDtoMock = (): CreateUserDto => ({
   lastName: "lastname",
   middleName: "middlename",
   birthDate: "01-01-1999",
+  sex: "Male",
   phoneNumber: "0000000000",
   role: "USER",
 });
@@ -29,6 +30,7 @@ export const mappedUserPlainToInstanceMock = () => ({
   lastName: "lastname",
   phoneNumber: "0000000000",
   birthDate: "01-01-1999",
+  sex: "Male",
   role: "USER",
   isEmailVerified: false,
   twoFactorEnabled: undefined,
@@ -46,6 +48,7 @@ export const applicationUserDtoMock = (): ApplicationUserDto => ({
   middleName: "middlename",
   birthDate: "01-01-1999",
   phoneNumber: "0000000000",
+  sex: "Male",
   role: "USER",
   isEmailVerified: false,
   lastLogin: new Date(),
@@ -81,6 +84,19 @@ export const applicationUserDtoMock = (): ApplicationUserDto => ({
     lastMedicalCheckup: new Date(),
     notes: "Notes",
     applicationUserId: "",
+    alcohol: 0,
+    profession: "",
+    drugs: "",
+    allergies: "",
+    otherPathologies: "",
+    painZone: "",
+    painIntensity: 0,
+    painFrequency: "CONSTANT",
+    painCharacteristics: "",
+    painModifiers: "",
+    sleepHours: 8,
+    perceivedStress: 0,
+    personalGoals: "",
   },
 });
 

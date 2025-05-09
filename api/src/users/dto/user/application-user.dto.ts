@@ -12,7 +12,7 @@ import {
   IsEnum,
 } from "class-validator";
 import { Expose, Type } from "class-transformer";
-import { ApplicationUser, Role } from "@prisma/client";
+import { ApplicationUser, Role, Sex } from "@prisma/client";
 import { PhysiotherapistDto } from "../physiotherapist/physiotherapist.dto";
 import { PatientDto } from "../patient/patient.dto";
 
@@ -75,6 +75,15 @@ export class ApplicationUserDto implements Readonly<ApplicationUser> {
   @IsString()
   @Expose()
   birthDate: string | null;
+
+  @ApiProperty({
+    description: "Sex of the new user (optional)",
+    enum: Sex,
+    default: Sex.MALE,
+  })
+  @IsEnum(Sex)
+  @Expose()
+  sex?: Sex;
 
   @ApiProperty({
     description: "User role in the system",

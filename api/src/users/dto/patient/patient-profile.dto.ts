@@ -14,5 +14,6 @@ export class PatientProfileDto extends IntersectionType(
     "birthDate",
     "phoneNumber",
     "email",
+    "sex",
   ])
 ) {}

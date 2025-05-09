@@ -8,7 +8,7 @@ import {
   Length,
   IsBoolean,
 } from "class-validator";
-import { Role } from "@prisma/client";
+import { $Enums, PainFrequency, Role, Sex } from "@prisma/client";
 import { Expose } from "class-transformer";
 import CheckPasswordConstraints from "src/auth/decorators/strong-password.decorator";
 
@@ -82,6 +82,16 @@ export class CreateUserDto {
   @IsDateString()
   @Expose()
   birthDate?: string;
+
+  @ApiPropertyOptional({
+    description: "Sex of the new user (optional)",
+    enum: Sex,
+    default: Sex.MALE,
+  })
+  @IsOptional()
+  @IsEnum(Sex)
+  @Expose()
+  sex?: Sex;
 
   @ApiPropertyOptional({
     description: "Role of the new user (defaults to USER if not provided)",

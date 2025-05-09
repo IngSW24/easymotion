@@ -172,6 +172,7 @@ describe("AuthService - validateUser", () => {
       middleName: "",
       phoneNumber: "",
       role: "USER",
+      sex: "Male",
       isEmailVerified: false,
       twoFactorEnabled: false,
       physiotherapist: {
@@ -196,6 +197,19 @@ describe("AuthService - validateUser", () => {
         lastMedicalCheckup: undefined,
         notes: "",
         applicationUserId: "",
+        alcohol: 0,
+        profession: "",
+        drugs: "",
+        allergies: "",
+        otherPathologies: "",
+        painZone: "",
+        painIntensity: 0,
+        painFrequency: "CONSTANT",
+        painCharacteristics: "",
+        painModifiers: "",
+        sleepHours: 8,
+        perceivedStress: 0,
+        personalGoals: "",
       },
     };
     jwtServiceMock.sign = jest.fn().mockImplementation(() => "mock-token");
