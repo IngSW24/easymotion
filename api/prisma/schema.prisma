@@ -92,6 +92,12 @@ model Subscription {
   @@id([course_id, patient_id])
 }
 
+enum UserSex {
+  MALE
+  FEMALE
+  OTHER
+}
+
 enum Role {
   USER
   ADMIN
@@ -108,6 +114,12 @@ enum MobilityLevel {
   LIMITED
   MODERATE
   FULL
+}
+
+enum PainFrequency {
+  CONSTANT
+  DISCONTINUOUS
+  NIGHTTIME
 }
 
 model ApplicationUser {
@@ -132,6 +144,7 @@ model ApplicationUser {
   lastName    String
   phoneNumber String?
   birthDate   String?
+  sex         UserSex?
 
   lastLogin           DateTime?
   failedLoginAttempts Int              @default(0)
@@ -165,11 +178,24 @@ model Patient {
   heightCm         Float?
   weightKg         Float?
   smoker           Boolean?
+  alcohol          Int?
   activityLevel    ActivityLevel?
   mobilityLevel    MobilityLevel?
   restingHeartRate Int?
   bloodPressure    String?
+  profession       String?
+  drugs            String? 
+  allergies        String?
+  otherPathologies  String?
+  painZone         String?
+  painIntensity    Int?
+  painFrequency    PainFrequency?
+  painCharacteristics  String?
+  painModifiers    String?
+  sleepHours       Int?
+  perceivedStress  Int?
 
   lastMedicalCheckup DateTime?
+  personalGoals      String?
   notes              String?
 }
