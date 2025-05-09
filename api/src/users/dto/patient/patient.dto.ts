@@ -7,6 +7,11 @@ import { IsBoolean, IsDate, IsEnum, IsNumber, IsString } from "class-validator";
  * Represents the patient-specific data for the application user.
  */
 export class PatientDto implements Patient {
+  @ApiProperty({ description: "Sex of the user" })
+  @IsEnum($Enums.Sex)
+  @Expose()
+  sex: $Enums.Sex | null;
+
   @ApiProperty({ description: "Height in cm" })
   @IsNumber()
   @Expose()
@@ -25,7 +30,7 @@ export class PatientDto implements Patient {
   @ApiProperty({ description: "Alcohol consumption (integer)" })
   @IsNumber()
   @Expose()
-  alcohol: number | null;
+  alcoholUnits: number | null;
 
   @ApiProperty({ description: "Activity level" })
   @IsEnum($Enums.ActivityLevel)
@@ -52,10 +57,20 @@ export class PatientDto implements Patient {
   @Expose()
   profession: string | null;
 
-  @ApiProperty({ description: "Drugs" })
+  @ApiProperty({ description: "Sport" })
   @IsString()
   @Expose()
-  drugs: string | null;
+  sport: string | null;
+
+  @ApiProperty({ description: "Sport frequency" })
+  @IsNumber()
+  @Expose()
+  sportFrequency: number | null;
+
+  @ApiProperty({ description: "Medications" })
+  @IsString()
+  @Expose()
+  medications: string | null;
 
   @ApiProperty({ description: "Allergies" })
   @IsString()
@@ -78,9 +93,9 @@ export class PatientDto implements Patient {
   painIntensity: number | null;
 
   @ApiProperty({ description: "Pain frequency" })
-  @IsEnum($Enums.PainFrequency)
+  @IsString()
   @Expose()
-  painFrequency: $Enums.PainFrequency | null;
+  painFrequency: string | null;
 
   @ApiProperty({ description: "Pain characteristics" })
   @IsString()
