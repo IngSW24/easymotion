@@ -28,6 +28,7 @@ export interface GeneralProfileSettingsProps {
   onProfileSave: (user: UpdateAuthUserDto) => void;
 }
 
+// Map user role to label
 const mapUserRole = (role: AuthUserDto["role"]) => {
   switch (role) {
     case "USER":
@@ -243,7 +244,7 @@ export default function GeneralProfileSettings(
                 value={watch("phoneNumber")}
               />
             </Grid>
-            <Grid size={{ xs: 12 }}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <Typography variant="subtitle2" color="text.secondary" mb={1}>
                 Data di nascita
               </Typography>
