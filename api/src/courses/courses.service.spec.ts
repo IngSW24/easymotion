@@ -85,6 +85,7 @@ describe("CoursesService", () => {
         ],
         subscription_start_date: new Date(),
         subscription_end_date: new Date(),
+        available_slots: 0,
       };
 
       const mockCreatedCourse = {

@@ -105,6 +105,7 @@ describe("CoursesController", () => {
       sessions: [],
       subscription_start_date: new Date(),
       subscription_end_date: new Date(),
+      available_slots: 0,
     };
 
     const createdCourse = {
@@ -203,6 +204,7 @@ describe("CoursesController", () => {
         category_id: randomUUID(),
         subscription_start_date: new Date(),
         subscription_end_date: new Date(),
+        available_slots: 0,
       },
     ];
     const totalItems = 1;
@@ -291,6 +293,7 @@ describe("CoursesController", () => {
     const expected = plainToInstance(CourseDto, {
       ...mockCourse,
       owner: mockCourse.owner.applicationUser,
+      available_slots: null,
     });
 
     expect(prismaMock.course.findUniqueOrThrow).toHaveBeenCalledWith({

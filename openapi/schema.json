@@ -2586,6 +2586,11 @@
             "nullable": true,
             "description": "Amount of maximum subscribers (unlimited if null)"
           },
+          "available_slots": {
+            "type": "number",
+            "nullable": true,
+            "description": "Available slots (unlimited if null)"
+          },
           "tags": {
             "description": "Related tags",
             "type": "array",
@@ -2742,6 +2747,11 @@
             "nullable": true,
             "description": "Amount of maximum subscribers (unlimited if null)"
           },
+          "available_slots": {
+            "type": "number",
+            "nullable": true,
+            "description": "Available slots (unlimited if null)"
+          },
           "tags": {
             "description": "Related tags",
             "type": "array",
@@ -2873,6 +2883,11 @@
             "type": "number",
             "nullable": true,
             "description": "Amount of maximum subscribers (unlimited if null)"
+          },
+          "available_slots": {
+            "type": "number",
+            "nullable": true,
+            "description": "Available slots (unlimited if null)"
           },
           "tags": {
             "description": "Related tags",
@@ -3805,6 +3820,7 @@
           },
           "subscriptionRequestMessage": {
             "type": "string",
+            "nullable": true,
             "description": "Subscription request message"
           },
           "course": {
@@ -3814,25 +3830,12 @@
                 "$ref": "#/components/schemas/SubscriptionCourseDto"
               }
             ]
-          },
-          "course_id": {
-            "type": "string"
-          },
-          "patient_id": {
-            "type": "string"
-          },
-          "isPending": {
-            "type": "boolean"
           }
         },
         "required": [
           "created_at",
           "updated_at",
-          "subscriptionRequestMessage",
-          "course",
-          "course_id",
-          "patient_id",
-          "isPending"
+          "course"
         ]
       },
       "SubscriptionRequestDto": {
@@ -3905,6 +3908,7 @@
           },
           "subscriptionRequestMessage": {
             "type": "string",
+            "nullable": true,
             "description": "Subscription request message"
           },
           "course": {
@@ -3922,26 +3926,13 @@
                 "$ref": "#/components/schemas/SubscriptionUserDto"
               }
             ]
-          },
-          "course_id": {
-            "type": "string"
-          },
-          "patient_id": {
-            "type": "string"
-          },
-          "isPending": {
-            "type": "boolean"
           }
         },
         "required": [
           "created_at",
           "updated_at",
-          "subscriptionRequestMessage",
           "course",
-          "user",
-          "course_id",
-          "patient_id",
-          "isPending"
+          "user"
         ]
       },
       "SubscriptionCreateDto": {
