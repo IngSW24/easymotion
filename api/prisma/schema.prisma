@@ -168,28 +168,28 @@ model Patient {
   applicationUser   ApplicationUser @relation(fields: [applicationUserId], references: [id])
   subscriptions     Subscription[]
 
-  sex              Sex?
-  heightCm         Float?
-  weightKg         Float?
-  smoker           Boolean?
-  alcoholUnits     Int?
-  activityLevel    ActivityLevel?
-  mobilityLevel    MobilityLevel?
-  restingHeartRate Int?
-  bloodPressure    String?
-  profession       String?
-  sport            String?
-  sportFrequency   Int?
-  medications      String? 
-  allergies        String?
-  otherPathologies  String?
-  painZone         String?
-  painIntensity    Int?
-  painFrequency    String?
-  painCharacteristics  String?
-  painModifiers    String?
-  sleepHours       Int?
-  perceivedStress  Int?
+  sex                 Sex?
+  heightCm            Float?
+  weightKg            Float?
+  smoker              Boolean?
+  alcoholUnits        Int?
+  activityLevel       ActivityLevel?
+  mobilityLevel       MobilityLevel?
+  restingHeartRate    Int?
+  bloodPressure       String?
+  profession          String?
+  sport               String?
+  sportFrequency      Int?
+  medications         String?
+  allergies           String?
+  otherPathologies    String?
+  painZone            String?
+  painIntensity       Int?
+  painFrequency       String?
+  painCharacteristics String?
+  painModifiers       String?
+  sleepHours          Int?
+  perceivedStress     Int?
 
   lastMedicalCheckup DateTime?
   personalGoals      String?

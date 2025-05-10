@@ -17,6 +17,7 @@ describe("CoursesService", () => {
   //let prisma: PrismaService;
 
   const prismaMock = {
+    $transaction: jest.fn(),
     course: {
       create: jest.fn(),
       findMany: jest.fn(),
@@ -85,7 +86,7 @@ describe("CoursesService", () => {
         ],
         subscription_start_date: new Date(),
         subscription_end_date: new Date(),
-        available_slots: 0,
+        current_subscribers: 0,
       };
 
       const mockCreatedCourse = {

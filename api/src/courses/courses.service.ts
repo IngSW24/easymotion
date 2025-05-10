@@ -82,94 +82,111 @@ export class CoursesService {
   ): Promise<PaginatedOutput<CourseDto>> {
     const { page, perPage } = pagination;
 
-    const count = await this.prismaService.course.count();
+    return this.prismaService.$transaction(async (tx) => {
+      const count = await tx.course.count();
 
-    const categoryIds = filter.categoryIds?.split(",");
+      const categoryIds = filter.categoryIds?.split(",");
 
-    const courses = await this.prismaService.course.findMany({
-      skip: page * perPage,
-      take: perPage,
-      where: {
-        ...(onlyPublished && { is_published: true }),
-        ...(filter?.ownerId && {
-          owner: {
-            applicationUser: {
-              id: filter.ownerId,
+      const courses = await tx.course.findMany({
+        skip: page * perPage,
+        take: perPage,
+        where: {
+          ...(onlyPublished && { is_published: true }),
+          ...(filter?.ownerId && {
+            owner: {
+              applicationUser: {
+                id: filter.ownerId,
+              },
             },
-          },
-        }),
-        ...(filter?.searchText && {
-          name: {
-            contains: filter.searchText,
-            mode: "insensitive",
-          },
-        }),
-        ...(categoryIds && {
-          category: {
-            id: {
-              in: categoryIds,
+          }),
+          ...(filter?.searchText && {
+            name: {
+              contains: filter.searchText,
+              mode: "insensitive",
             },
-          },
-        }),
-        ...(filter?.level && {
-          level: filter.level as CourseLevel,
-        }),
-      },
-
-      include: {
-        owner: {
-          include: {
-            applicationUser: true,
-          },
+          }),
+          ...(categoryIds && {
+            category: {
+              id: {
+                in: categoryIds,
+              },
+            },
+          }),
+          ...(filter?.level && {
+            level: filter.level as CourseLevel,
+          }),
         },
-        category: true,
-        sessions: true,
-      },
-      orderBy: {
-        created_at: "desc",
-      },
-    });
 
-    return toPaginatedOutput(
-      courses.map((course) =>
-        plainToInstance(CourseDto, {
-          ...course,
-          owner: course.owner.applicationUser,
-        })
-      ),
-      count,
-      pagination
-    );
+        include: {
+          owner: {
+            include: {
+              applicationUser: true,
+            },
+          },
+          category: true,
+          sessions: true,
+        },
+        orderBy: {
+          created_at: "desc",
+        },
+      });
+
+      return toPaginatedOutput(
+        await Promise.all(
+          courses.map(async (course) =>
+            plainToInstance(CourseDto, {
+              ...course,
+              owner: course.owner.applicationUser,
+              current_subscribers: await tx.subscription.count({
+                where: { course_id: course.id },
+              }),
+            })
+          )
+        ),
+        count,
+        pagination
+      );
+    });
   }
 
   async findAllByPhysiotherapist(
     physioId: string,
     pagination: PaginationFilter
   ) {
-    const count = await this.prismaService.course.count({
-      where: { owner_id: physioId },
-    });
+    return this.prismaService.$transaction(async (tx) => {
+      const count = await tx.course.count({
+        where: { owner_id: physioId },
+      });
 
-    const courses = await this.prismaService.course.findMany({
-      where: { owner_id: physioId },
-      include: {
-        owner: {
-          include: { applicationUser: true },
+      const courses = await tx.course.findMany({
+        where: { owner_id: physioId },
+        include: {
+          owner: {
+            include: { applicationUser: true },
+          },
+          category: true,
+          sessions: true,
         },
-        category: true,
-        sessions: true,
-      },
-      skip: pagination.page * pagination.perPage,
-      take: pagination.perPage,
-    });
+        skip: pagination.page * pagination.perPage,
+        take: pagination.perPage,
+      });
 
-    return toPaginatedOutput(
-      courses.map((x) =>
-        plainToInstance(CourseDto, { ...x, owner: x.owner.applicationUser })
-      ),
-      count,
-      pagination
-    );
+      return toPaginatedOutput(
+        await Promise.all(
+          courses.map(async (course) =>
+            plainToInstance(CourseDto, {
+              ...course,
+              owner: course.owner.applicationUser,
+              current_subscribers: await tx.subscription.count({
+                where: { course_id: course.id },
+              }),
+            })
+          )
+        ),
+        count,
+        pagination
+      );
+    });
   }
 
   /**
@@ -179,30 +196,25 @@ export class CoursesService {
    * @throws NotFoundException if the course is not found.
    */
   async findOne(id: string) {
-    const course = await this.prismaService.course.findUniqueOrThrow({
-      where: { id },
-      include: {
-        owner: {
-          include: { applicationUser: true },
+    return this.prismaService.$transaction(async (tx) => {
+      const course = await tx.course.findUniqueOrThrow({
+        where: { id },
+        include: {
+          owner: {
+            include: { applicationUser: true },
+          },
+          sessions: true,
+          category: true,
         },
-        sessions: true,
-        category: true,
-      },
-    });
+      });
 
-    return plainToInstance(CourseDto, {
-      ...course,
-      owner: course.owner.applicationUser,
-      available_slots: course.max_subscribers
-        ? Math.max(
-            0,
-            course.max_subscribers -
-              (await this.prismaService.subscription.count({
-                // TODO: use transactions, they are important in SELECT query too
-                where: { course_id: id },
-              }))
-          )
-        : null,
+      return plainToInstance(CourseDto, {
+        ...course,
+        owner: course.owner.applicationUser,
+        current_subscribers: await tx.subscription.count({
+          where: { course_id: id },
+        }),
+      });
     });
   }
 

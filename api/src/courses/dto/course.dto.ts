@@ -3,6 +3,7 @@ import {
   IsBoolean,
   IsDate,
   IsDateString,
+  IsDefined,
   IsEnum,
   IsNumber,
   IsOptional,
@@ -118,13 +119,12 @@ export class CourseDto implements Course {
   max_subscribers: number | null;
 
   @ApiProperty({
-    description: "Available slots (unlimited if null)",
-    required: false,
+    description: "Current subscribers (count)",
   })
   @IsNumber()
-  @IsOptional()
+  @IsDefined()
   @Expose()
-  available_slots: number | null;
+  current_subscribers: number;
 
   @ApiProperty({ description: "Related tags" })
   @IsArray()
