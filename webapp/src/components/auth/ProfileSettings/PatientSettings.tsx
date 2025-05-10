@@ -157,23 +157,6 @@ export default function PatientSettings({
           </Typography>
           <Grid container spacing={2} sx={{ mb: 2 }}>
             <Grid size={{ xs: 12, sm: 6 }}>
-              <Typography variant="subtitle2" color="text.secondary" mb={1}>
-                Sesso *
-              </Typography>
-              <TextField
-                fullWidth
-                select
-                size="small"
-                error={!!errors.sex}
-                helperText={errors.sex?.message}
-                {...register("sex")}
-              >
-                <MenuItem value="MALE">Maschio</MenuItem>
-                <MenuItem value="FEMALE">Femmina</MenuItem>
-                <MenuItem value="OTHER">Altro</MenuItem>
-              </TextField>
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Professione *"
                 fullWidth
@@ -218,6 +201,23 @@ export default function PatientSettings({
                 helperText={errors.weight?.message}
                 {...register("weight", { valueAsNumber: true })}
               />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <Typography variant="subtitle2" color="text.secondary" mb={1}>
+                Sesso *
+              </Typography>
+              <TextField
+                fullWidth
+                select
+                size="small"
+                error={!!errors.sex}
+                helperText={errors.sex?.message}
+                {...register("sex")}
+              >
+                <MenuItem value="MALE">Maschio</MenuItem>
+                <MenuItem value="FEMALE">Femmina</MenuItem>
+                <MenuItem value="OTHER">Altro</MenuItem>
+              </TextField>
             </Grid>
           </Grid>
 
@@ -281,10 +281,7 @@ export default function PatientSettings({
                 helperText={errors.allergies?.message}
               />
             </Grid>
-            <Grid>
-              <Typography variant="subtitle2" color="text.secondary" mb={1}>
-                Patologie concomitanti
-              </Typography>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 multiline
                 minRows={2}
