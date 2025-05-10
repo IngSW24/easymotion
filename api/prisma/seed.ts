@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import getUsers from "./seed-data/users";
 import getCourses from "./seed-data/courses";
 import { getCategories } from "./seed-data/categories";
+import { getSubscriptions } from "./seed-data/subscriptions";
 
 const prisma = new PrismaClient();
 
@@ -14,27 +15,7 @@ async function main() {
         where: { id: e.id },
         update: {},
         create: { ...e },
-      });
-
-      if (e.role === "USER") {
-        await tx.patient.upsert({
-          where: { applicationUserId: e.id },
-          update: {},
-          create: {
-            applicationUserId: e.id,
-          },
-        });
-      }
-
-      if (e.role === "PHYSIOTHERAPIST") {
-        await tx.physiotherapist.upsert({
-          where: { applicationUserId: e.id },
-          update: {},
-          create: {
-            applicationUserId: e.id,
-          },
-        });
-      }
+      }); // this will create the patient/physio in according to the seed, see seed-data/users.ts
     });
   }
 
@@ -53,6 +34,21 @@ async function main() {
   for (const e of courses) {
     await prisma.course.upsert({
       where: { id: e.id },
+      update: {},
+      create: { ...e },
+    });
+  }
+
+  const subscriptions = getSubscriptions();
+
+  for (const e of subscriptions) {
+    await prisma.subscription.upsert({
+      where: {
+        course_id_patient_id: {
+          course_id: e.course_id,
+          patient_id: e.patient_id,
+        },
+      },
       update: {},
       create: { ...e },
     });
