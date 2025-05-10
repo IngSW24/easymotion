@@ -36,6 +36,7 @@ import SubscriptionRequestForm from "./SubscriptionRequest";
 import SubscribeSection from "./SubscribeSection";
 import MarkdownBlock from "../../atoms/MarkdownBlock/MarkdownBlock";
 import useSubscriptions from "../../../hooks/useSubscription";
+import { start } from "repl";
 
 export interface CourseDetailProps {
   course: CourseDto;
@@ -46,7 +47,7 @@ const CourseDetail: React.FC<CourseDetailProps> = (
   props: CourseDetailProps
 ) => {
   const { course, hideTitle = false } = props;
-  
+
   const { isAuthenticated, isPhysiotherapist, user } = useAuth();
 
   const [openSubReqModal, setOpenSubReqModal] = useState(false);
@@ -137,14 +138,6 @@ const CourseDetail: React.FC<CourseDetailProps> = (
                 <MarkdownBlock content={course.description} />
               </Box>
 
-              <Box
-                sx={{ gap: 2, display: "flex", flexDirection: "column", mt: 2 }}
-              >
-                <Typography color="green" fontWeight="bold">
-                  Posti ancora disponibili: {getAvailableSubscriptions()}
-                </Typography>
-              </Box>
-
               <Divider sx={{ my: 3 }} />
 
               <Box>
@@ -188,6 +181,40 @@ const CourseDetail: React.FC<CourseDetailProps> = (
 
               <Divider sx={{ my: 3 }} />
 
+              <Box>
+                <Typography variant="h5" fontWeight="bold" mb={3}>
+                  Periodo d'iscrizione:
+                </Typography>
+
+                <Typography mb={3}>
+                  Le iscrizioni inizieranno a partire dal giorno{" "}
+                  {startSubscriptionDate.toLocaleDateString()} alle ore{" "}
+                  {startSubscriptionDate.toLocaleTimeString()}
+                </Typography>
+                <Typography mb={3}>
+                  Le iscrizioni termineranno il giorno{" "}
+                  {endSubscriptionDate.toLocaleDateString()} alle ore{" "}
+                  {endSubscriptionDate.toLocaleTimeString()}
+                </Typography>
+
+                {(course.max_subscribers ?? 0) > 0 && (
+                  <Box
+                    sx={{
+                      gap: 2,
+                      display: "flex",
+                      flexDirection: "column",
+                      mt: 2,
+                    }}
+                  >
+                    <Typography color="green" fontWeight="bold">
+                      Posti ancora disponibili: {getAvailableSubscriptions()}
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+
+              <Divider sx={{ my: 3 }} />
+
               <Box sx={{ textAlign: "center" }}>
                 {isAuthenticated && !isPhysiotherapist && (
                   <SubscribeSection
@@ -199,6 +226,8 @@ const CourseDetail: React.FC<CourseDetailProps> = (
                   open={openSubReqModal}
                   setOpen={setOpenSubReqModal}
                   numberSubscribers={getNumberOfParticipants()}
+                  startSubscriptionDate={startSubscriptionDate.getTime()}
+                  endSubscriptionDate={endSubscriptionDate}
                   maxSubscribers={course.max_subscribers ?? 0}
                   courseId={course.id}
                   userId={user?.id}
@@ -280,21 +309,13 @@ const CourseDetail: React.FC<CourseDetailProps> = (
                 icon: <CalendarMonth />,
                 label: "Periodo di iscrizione",
                 value:
-                  startSubscriptionDate.getFullYear() +
-                  "/" +
-                  startSubscriptionDate.getMonth() +
-                  "/" +
-                  startSubscriptionDate.getDate() +
+                  startSubscriptionDate.toLocaleDateString() +
                   " - " +
-                  endSubscriptionDate.getFullYear() +
-                  "/" +
-                  endSubscriptionDate.getMonth() +
-                  "/" +
-                  endSubscriptionDate.getDate(),
+                  endSubscriptionDate.toLocaleDateString(),
               },
               {
                 icon: <GroupOutlined />,
-                label: "Massimo partecipanti",
+                label: "Numero massimo di partecipanti",
                 value: course.max_subscribers ?? "Illimitato",
               },
               {
