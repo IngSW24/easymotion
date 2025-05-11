@@ -6,106 +6,104 @@ import {
   CardContent,
   Divider,
   Grid,
-  MenuItem,
-  Slider,
-  Switch,
-  TextField,
   Typography,
-  FormControlLabel,
+  TextField,
+  Slider,
   Alert,
+  Switch,
+  MenuItem,
+  FormControlLabel,
 } from "@mui/material";
 import { Person } from "@mui/icons-material";
-import { useForm, useWatch } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { PatientDto, UpdateAuthUserDto } from "@easymotion/openapi";
 
 export interface PatientSettingsProps {
-  defaultValues?: Partial<PatientMedicalData>;
-  onSave?: (data: PatientMedicalData) => void;
+  defaultValues: PatientDto | null;
+  onSave: (data: UpdateAuthUserDto) => void;
 }
 
 export interface PatientMedicalData {
-  // 1. Dati anagrafici & antropometrici
-  sex: string; // "MALE" | "FEMALE" | "OTHER"
-  profession: string;
-  sport: string;
-  height: number;
-  weight: number;
-
-  // 2. Segni vitali
-  bloodPressure?: number;
-  restingHeartRate?: number;
-
-  // 3. Storia medica
-  medications?: string;
-  allergies?: string;
-  otherPatologies?: string[];
-
-  // 4. Valutazione del dolore
-  painLocation?: string;
-  painIntensity?: number;
-  painFrequency?: string; // "costante" | "intermittente" | "notturna"
-  painCharacteristics?: string;
-  painModifiers?: string;
-
-  // 5. Funzione & disabilità
-  mobilityLevel?: number;
-
-  // 6. Stile di vita & fattori psicosociali
-  smoking?: boolean;
-  alcoholUnits?: number;
-  sleepHours?: number;
-  stressLevel?: number;
-
-  // 7. Obiettivi
-  personalGoals?: string;
+  sex: "MALE" | "FEMALE" | "OTHER" | null;
+  height: number | null;
+  weight: number | null;
+  smoker: boolean | null;
+  alcoholUnits: number | null;
+  activityLevel: "LOW" | "MEDIUM" | "HIGH" | null;
+  mobilityLevel: "LIMITED" | "MODERATE" | "FULL" | null;
+  bloodPressure: string | null;
+  restingHeartRate: number | null;
+  profession: string | null;
+  sport: string | null;
+  sportFrequency: number | null;
+  medications: string | null;
+  allergies: string | null;
+  otherPathologies: string | null;
+  painZone: string | null;
+  painIntensity: number | null;
+  painFrequency: string | null;
+  painCharacteristics: string | null;
+  painModifiers: string | null;
+  sleepHours: number | null;
+  perceivedStress: number | null;
+  lastMedicalCheckup: string | null;
+  personalGoals: string | null;
+  notes: string | null;
 }
 
-const frequencyOptions: PatientMedicalData["painFrequency"][] = [
-  "costante",
-  "intermittente",
-  "notturna",
-];
-
-const schema: z.ZodType<PatientMedicalData> = z.object({
-  /** 1. Dati anagrafici & antropometrici */
-  profession: z.string().min(2, "Inserisci la professione"),
-  sport: z.string().min(2, "Inserisci lo sport praticato"),
+const schema = z.object({
+  /** 1. Anagrafica */
+  sex: z.enum(["MALE", "FEMALE", "OTHER"]).nullable(),
   height: z
-    .number({ invalid_type_error: "Inserisci altezza" })
+    .number({ invalid_type_error: "Inserisci l'altezza" })
     .min(50)
-    .max(300),
-  weight: z.number({ invalid_type_error: "Inserisci peso" }).min(20).max(500),
-  sex: z.enum(["MALE", "FEMALE", "OTHER"]),
+    .max(300)
+    .nullable(),
+  weight: z
+    .number({ invalid_type_error: "Inserisci il peso" })
+    .min(20)
+    .max(500)
+    .nullable(),
+  profession: z.string().min(2, "Almeno 2 caratteri").nullable(),
+  sport: z.string().nullable(),
+  sportFrequency: z.number().min(0).max(7).nullable(),
 
   /** 2. Segni vitali */
-  bloodPressure: z.number().positive().optional(),
-  restingHeartRate: z.number().positive().optional(),
+  bloodPressure: z
+    .string()
+    .regex(/^[0-9]{2,3}\/[0-9]{2,3}$/i, { message: "Formato 120/80" })
+    .nullable(),
+  restingHeartRate: z.number().positive().nullable(),
 
-  /** 3. Storia medica */
-  medications: z.string().optional(),
-  allergies: z.string().optional(),
-  otherPatologies: z.array(z.string()).optional(),
+  /** 3. Stile di vita */
+  smoker: z.boolean().nullable(),
+  alcoholUnits: z.number().min(0).nullable(),
+  activityLevel: z.enum(["LOW", "MEDIUM", "HIGH"]).nullable(),
+  mobilityLevel: z.enum(["LIMITED", "MODERATE", "FULL"]).nullable(),
+  sleepHours: z.number().min(0).max(24).nullable(),
+  perceivedStress: z.number().min(0).max(10).nullable(),
 
-  /** 4. Dolore */
-  painLocation: z.string().optional(),
-  painIntensity: z.number().min(0).max(10).optional(),
-  painFrequency: z.enum(["costante", "intermittente", "notturna"]).optional(),
-  painCharacteristics: z.string().optional(),
-  painModifiers: z.string().optional(),
+  /** 4. Storia medica */
+  medications: z.string().nullable(),
+  allergies: z.string().nullable(),
+  otherPathologies: z.string().nullable(),
 
-  /** 5. Funzione */
-  mobilityLevel: z.number().min(0).max(4).optional(),
+  /** 5. Dolore */
+  painZone: z.string().nullable(),
+  painIntensity: z.number().min(0).max(10).nullable(),
+  painFrequency: z.enum(["COSTANT", "INTERMITTENT", "NIGHT"]).nullable(),
+  painCharacteristics: z.string().nullable(),
+  painModifiers: z.string().nullable(),
 
-  /** 6. Stile di vita */
-  smoking: z.boolean().optional(),
-  alcoholUnits: z.number().min(0).optional(),
-  sleepHours: z.number().min(0).max(24).optional(),
-  stressLevel: z.number().min(0).max(10).optional(),
-
-  /** 7. Obiettivi */
-  personalGoals: z.string().optional(),
+  /** 6. Altre */
+  lastMedicalCheckup: z.string().nullable(),
+  personalGoals: z.string().nullable(),
+  notes: z.string().nullable(),
 });
+
+type FormData = z.infer<typeof schema>;
 
 export default function PatientSettings({
   defaultValues,
@@ -119,378 +117,513 @@ export default function PatientSettings({
     setValue,
     watch,
     reset,
-  } = useForm<PatientMedicalData>({
+  } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      profession: "",
-      sport: "",
-      smoking: false,
-      ...defaultValues,
+    values: {
+      sex: defaultValues?.sex || null,
+      height: defaultValues?.height || null,
+      weight: defaultValues?.weight || null,
+      profession: defaultValues?.profession || "",
+      sport: defaultValues?.sport || "",
+      sportFrequency: defaultValues?.sportFrequency || null,
+      bloodPressure: defaultValues?.bloodPressure || "",
+      restingHeartRate: defaultValues?.restingHeartRate || null,
+      smoker: defaultValues?.smoker ?? false,
+      alcoholUnits: defaultValues?.alcoholUnits || null,
+      activityLevel: defaultValues?.activityLevel || null,
+      mobilityLevel: defaultValues?.mobilityLevel || null,
+      sleepHours: defaultValues?.sleepHours || null,
+      perceivedStress: defaultValues?.perceivedStress || null,
+      medications: defaultValues?.medications || "",
+      allergies: defaultValues?.allergies || "",
+      otherPathologies: defaultValues?.otherPathologies || "",
+      painZone: defaultValues?.painZone || "",
+      painIntensity: defaultValues?.painIntensity || null,
+      painFrequency:
+        defaultValues?.painFrequency === "COSTANT" ||
+        defaultValues?.painFrequency === "INTERMITTENT" ||
+        defaultValues?.painFrequency === "NIGHT"
+          ? defaultValues.painFrequency
+          : null,
+      painCharacteristics: defaultValues?.painCharacteristics || "",
+      painModifiers: defaultValues?.painModifiers || "",
+      lastMedicalCheckup: defaultValues?.lastMedicalCheckup || "",
+      personalGoals: defaultValues?.personalGoals || "",
+      notes: defaultValues?.notes || "",
     },
   });
 
+  // Reset the form when the physiotherapist data is updated
   useEffect(() => {
-    if (defaultValues) reset({ ...defaultValues });
+    reset({
+      sex: defaultValues?.sex || null,
+      height: defaultValues?.height || null,
+      weight: defaultValues?.weight || null,
+      profession: defaultValues?.profession || "",
+      sport: defaultValues?.sport || "",
+      sportFrequency: defaultValues?.sportFrequency || null,
+      bloodPressure: defaultValues?.bloodPressure || "",
+      restingHeartRate: defaultValues?.restingHeartRate || null,
+      smoker: defaultValues?.smoker ?? false,
+      alcoholUnits: defaultValues?.alcoholUnits || null,
+      activityLevel: defaultValues?.activityLevel || null,
+      mobilityLevel: defaultValues?.mobilityLevel || null,
+      sleepHours: defaultValues?.sleepHours || null,
+      perceivedStress: defaultValues?.perceivedStress || null,
+      medications: defaultValues?.medications || "",
+      allergies: defaultValues?.allergies || "",
+      otherPathologies: defaultValues?.otherPathologies || "",
+      painZone: defaultValues?.painZone || "",
+      painIntensity: defaultValues?.painIntensity || null,
+      painFrequency:
+        defaultValues?.painFrequency === "COSTANT" ||
+        defaultValues?.painFrequency === "INTERMITTENT" ||
+        defaultValues?.painFrequency === "NIGHT"
+          ? defaultValues.painFrequency
+          : null,
+      painCharacteristics: defaultValues?.painCharacteristics || "",
+      painModifiers: defaultValues?.painModifiers || "",
+      lastMedicalCheckup: defaultValues?.lastMedicalCheckup || "",
+      personalGoals: defaultValues?.personalGoals || "",
+      notes: defaultValues?.notes || "",
+    });
   }, [defaultValues, reset]);
 
   const painIntensity = useWatch({ control, name: "painIntensity" });
-  const stressLevel = useWatch({ control, name: "stressLevel" });
-  const smoking = useWatch({ control, name: "smoking" });
+  const perceivedStress = useWatch({ control, name: "perceivedStress" });
+  const smoker = useWatch({ control, name: "smoker" });
 
-  const submit = (data: PatientMedicalData) => onSave?.(data);
+  const onSubmit = (data: FormData) => {
+    onSave({ patient: data as PatientDto });
+    // Reset the form state after successful submission
+    reset(data, {
+      keepValues: true, // Keep the current values
+      keepDirty: false, // Reset the dirty state
+    });
+  };
+
+  const NumberField = ({
+    name,
+    label,
+    placeholder,
+    min,
+    max,
+  }: {
+    name: keyof PatientMedicalData;
+    label: string;
+    placeholder: string;
+    min?: number;
+    max?: number;
+  }) => (
+    <TextField
+      type="number"
+      label={label}
+      fullWidth
+      size="small"
+      placeholder={placeholder}
+      error={!!errors[name]}
+      helperText={(errors as any)[name]?.message}
+      {...register(name as any, { valueAsNumber: true, min, max })}
+    />
+  );
 
   return (
     <Card
       sx={{ width: "100%", m: "auto", boxShadow: 3, borderRadius: 3, p: 3 }}
     >
       <CardContent>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
-          <Person />
+        <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+          <Person sx={{ mr: 1 }} />
           <Typography variant="h5" fontWeight="bold">
-            Dati Sanitari
+            Dati sanitari
           </Typography>
         </Box>
-
-        <form onSubmit={handleSubmit(submit)} noValidate>
-          <Typography variant="h6" gutterBottom>
-            Dati anagrafici & antropometrici
-          </Typography>
-          <Grid container spacing={2} sx={{ mb: 2 }}>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                label="Professione *"
-                fullWidth
-                size="small"
-                placeholder="Professione"
-                error={!!errors.profession}
-                helperText={errors.profession?.message}
-                {...register("profession")}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                label="Sport praticato *"
-                fullWidth
-                size="small"
-                placeholder="Sport"
-                error={!!errors.sport}
-                helperText={errors.sport?.message}
-                {...register("sport")}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                type="number"
-                label="Altezza (cm) *"
-                fullWidth
-                size="small"
-                placeholder="es. 175"
-                error={!!errors.height}
-                helperText={errors.height?.message}
-                {...register("height", { valueAsNumber: true })}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                type="number"
-                label="Peso (kg) *"
-                fullWidth
-                size="small"
-                placeholder="es. 70"
-                error={!!errors.weight}
-                helperText={errors.weight?.message}
-                {...register("weight", { valueAsNumber: true })}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <Typography variant="subtitle2" color="text.secondary" mb={1}>
-                Sesso *
-              </Typography>
-              <TextField
-                fullWidth
-                select
-                size="small"
-                error={!!errors.sex}
-                helperText={errors.sex?.message}
-                {...register("sex")}
-              >
-                <MenuItem value="MALE">Maschio</MenuItem>
-                <MenuItem value="FEMALE">Femmina</MenuItem>
-                <MenuItem value="OTHER">Altro</MenuItem>
-              </TextField>
-            </Grid>
-          </Grid>
-
-          <Typography variant="h6" gutterBottom>
-            Segni vitali
-          </Typography>
-          <Grid container spacing={2} sx={{ mb: 2 }}>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                type="number"
-                label="Pressione arteriosa (mmHg)"
-                fullWidth
-                size="small"
-                placeholder="es. 120"
-                error={!!errors.bloodPressure}
-                helperText={errors.bloodPressure?.message}
-                {...register("bloodPressure", { valueAsNumber: true })}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                type="number"
-                label="Frequenza cardiaca a riposo (bpm)"
-                fullWidth
-                size="small"
-                placeholder="es. 60"
-                error={!!errors.restingHeartRate}
-                helperText={errors.restingHeartRate?.message}
-                {...register("restingHeartRate", { valueAsNumber: true })}
-              />
-            </Grid>
-          </Grid>
-
-          <Typography variant="h6" gutterBottom>
-            Storia medica
-          </Typography>
-          <Grid container spacing={2} sx={{ mb: 2 }}>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                multiline
-                minRows={2}
-                label="Farmaci in uso"
-                fullWidth
-                size="small"
-                placeholder="es. Ibuprofene 400 mg x2/die"
-                {...register("medications")}
-                error={!!errors.medications}
-                helperText={errors.medications?.message}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                multiline
-                minRows={2}
-                label="Allergie"
-                fullWidth
-                size="small"
-                placeholder="es. Penicillina, lattice…"
-                {...register("allergies")}
-                error={!!errors.allergies}
-                helperText={errors.allergies?.message}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                multiline
-                minRows={2}
-                label="Patologie concomitanti"
-                fullWidth
-                size="small"
-                placeholder="es. Penicillina, lattice…"
-                {...register("otherPatologies")}
-                error={!!errors.allergies}
-                helperText={errors.allergies?.message}
-              />
-            </Grid>
-          </Grid>
-
-          <Typography variant="h6" gutterBottom>
-            Valutazione del dolore
-          </Typography>
-          <Grid container spacing={2} sx={{ mb: 2 }}>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                label="Localizzazione"
-                fullWidth
-                size="small"
-                placeholder="es. Ginocchio destro"
-                {...register("painLocation")}
-                error={!!errors.painLocation}
-                helperText={errors.painLocation?.message}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <Typography variant="subtitle2" color="text.secondary" mb={1}>
-                Intensità (0-10)
-              </Typography>
-              <Slider
-                value={painIntensity ?? 0}
-                step={1}
-                marks
-                min={0}
-                max={10}
-                onChange={(_, v) =>
-                  setValue("painIntensity", v as number, { shouldDirty: true })
-                }
-              />
-              {errors.painIntensity && (
-                <Alert severity="error">{errors.painIntensity.message}</Alert>
+        <Divider sx={{ my: 2 }} />
+        {/* Anagrafica */}
+        <Typography variant="h6" gutterBottom>
+          Dati anagrafici & antropometrici
+        </Typography>
+        <Grid container spacing={2} mb={2}>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Controller
+              name="sex"
+              control={control}
+              defaultValue={null} // stringa vuota o undefined se preferisci
+              render={({ field }) => (
+                <TextField
+                  {...field} // gestisce value/onChange
+                  label="Sesso"
+                  select
+                  fullWidth
+                  size="small"
+                  error={!!errors.sex}
+                  helperText={errors.sex?.message}
+                >
+                  <MenuItem value="MALE">Maschio</MenuItem>
+                  <MenuItem value="FEMALE">Femmina</MenuItem>
+                  <MenuItem value="OTHER">Altro</MenuItem>
+                </TextField>
               )}
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                select
-                label="Frequenza"
-                fullWidth
-                size="small"
-                placeholder="Frequenza"
-                {...register("painFrequency")}
-                error={!!errors.painFrequency}
-                helperText={errors.painFrequency?.message}
-              >
-                {frequencyOptions.map((f) => (
-                  <MenuItem key={f} value={f}>
-                    {f.charAt(0).toUpperCase() + f.slice(1)}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                label="Caratteristiche"
-                fullWidth
-                size="small"
-                placeholder="es. Bruciante, trafittivo…"
-                {...register("painCharacteristics")}
-                error={!!errors.painCharacteristics}
-                helperText={errors.painCharacteristics?.message}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                multiline
-                minRows={2}
-                label="Fattori che peggiorano / alleviano"
-                fullWidth
-                size="small"
-                placeholder="es. Peggiora in estensione…"
-                {...register("painModifiers")}
-                error={!!errors.painModifiers}
-                helperText={errors.painModifiers?.message}
-              />
-            </Grid>
+            />
           </Grid>
-
-          <Typography variant="h6" gutterBottom>
-            Funzione & disabilità
-          </Typography>
-          <Grid container spacing={2} sx={{ mb: 2 }}>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <Typography variant="subtitle2" color="text.secondary" mb={1}>
-                Livello di mobilità (0-4)
-              </Typography>
-              <Slider
-                value={watch("mobilityLevel") ?? 0}
-                step={1}
-                marks
-                min={0}
-                max={4}
-                onChange={(_, v) =>
-                  setValue("mobilityLevel", v as number, { shouldDirty: true })
-                }
-              />
-              {errors.mobilityLevel && (
-                <Alert severity="error">{errors.mobilityLevel.message}</Alert>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            {NumberField({
+              name: "height",
+              label: "Altezza (cm)",
+              placeholder: "es. 175",
+            })}
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            {NumberField({
+              name: "weight",
+              label: "Peso (kg)",
+              placeholder: "es. 70",
+            })}
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextField
+              label="Professione"
+              fullWidth
+              size="small"
+              placeholder="es. Ingegnere"
+              error={!!errors.profession}
+              helperText={errors.profession?.message}
+              {...register("profession")}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextField
+              label="Sport praticato"
+              fullWidth
+              size="small"
+              placeholder="es. Calcio"
+              error={!!errors.sport}
+              helperText={errors.sport?.message}
+              {...register("sport")}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            {NumberField({
+              name: "sportFrequency",
+              label: "Frequenza sportiva (0‑7)",
+              placeholder: "es. 3",
+            })}
+          </Grid>
+        </Grid>
+        <Divider sx={{ my: 2 }} />
+        <Typography variant="h6" gutterBottom>
+          Segni vitali
+        </Typography>
+        <Grid container spacing={2} mb={2}>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextField
+              label="Pressione sanguignia (mmHg)"
+              fullWidth
+              size="small"
+              placeholder="es. 120/80"
+              error={!!errors.bloodPressure}
+              helperText={errors.bloodPressure?.message}
+              {...register("bloodPressure", {
+                setValueAs: (v) => (v === "" ? null : v),
+              })}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            {NumberField({
+              name: "restingHeartRate",
+              label: "Frequenza cardiaca a riposo (bpm)",
+              placeholder: "es. 60",
+            })}
+          </Grid>
+        </Grid>
+        <Divider sx={{ my: 2 }} />
+        <Typography variant="h6" gutterBottom>
+          Storia medica
+        </Typography>
+        <Grid container spacing={2} mb={2}>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextField
+              multiline
+              minRows={2}
+              label="Farmaci in uso"
+              fullWidth
+              size="small"
+              placeholder="es. Ibuprofene 400 mg x2/die"
+              error={!!errors.medications}
+              helperText={errors.medications?.message}
+              {...register("medications")}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextField
+              multiline
+              minRows={2}
+              label="Allergie"
+              fullWidth
+              size="small"
+              placeholder="es. Penicillina, lattice..."
+              error={!!errors.allergies}
+              helperText={errors.allergies?.message}
+              {...register("allergies")}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextField
+              multiline
+              minRows={2}
+              label="Altre patologie"
+              fullWidth
+              size="small"
+              placeholder="es. Diabete"
+              error={!!errors.otherPathologies}
+              helperText={errors.otherPathologies?.message}
+              {...register("otherPathologies")}
+            />
+          </Grid>
+        </Grid>
+        <Divider sx={{ my: 2 }} />
+        <Typography variant="h6" gutterBottom>
+          Valutazione del dolore
+        </Typography>
+        <Grid container spacing={2} mb={2}>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextField
+              label="Zona del dolore"
+              fullWidth
+              size="small"
+              placeholder="es. Ginocchio destro"
+              error={!!errors.painZone}
+              helperText={errors.painZone?.message}
+              {...register("painZone")}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Typography variant="subtitle2" color="text.secondary" mb={1}>
+              Intensità (0‑10)
+            </Typography>
+            <Slider
+              value={painIntensity ?? 0}
+              step={1}
+              marks
+              min={0}
+              max={10}
+              onChange={(_, v) =>
+                setValue("painIntensity", v as number, { shouldDirty: true })
+              }
+            />
+            {errors.painIntensity && (
+              <Alert severity="error" sx={{ mt: 1 }}>
+                {errors.painIntensity.message}
+              </Alert>
+            )}
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Controller
+              name="painFrequency"
+              control={control}
+              defaultValue={null}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Frequenza del dolore"
+                  select
+                  fullWidth
+                  size="small"
+                  error={!!errors.painFrequency}
+                  helperText={errors.painFrequency?.message}
+                >
+                  <MenuItem value="COSTANT">Costante</MenuItem>
+                  <MenuItem value="INTERMITTENT">Intermittente</MenuItem>
+                  <MenuItem value="NIGHT">Notturno</MenuItem>
+                </TextField>
               )}
-            </Grid>
+            />
           </Grid>
-
-          <Typography variant="h6" gutterBottom>
-            Stile di vita & fattori psicosociali
-          </Typography>
-          <Grid container spacing={2} sx={{ mb: 2 }}>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                type="number"
-                label="Alcol (unità settimanali)"
-                fullWidth
-                size="small"
-                placeholder="es. 10"
-                {...register("alcoholUnits", { valueAsNumber: true })}
-                error={!!errors.alcoholUnits}
-                helperText={errors.alcoholUnits?.message}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                type="number"
-                label="Ore di sonno (media/notte)"
-                fullWidth
-                size="small"
-                placeholder="es. 7"
-                {...register("sleepHours", { valueAsNumber: true })}
-                error={!!errors.sleepHours}
-                helperText={errors.sleepHours?.message}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <Typography variant="subtitle2" color="text.secondary" mb={1}>
-                Stress percepito (0-10)
-              </Typography>
-              <Slider
-                value={stressLevel ?? 0}
-                step={1}
-                marks
-                min={0}
-                max={10}
-                onChange={(_, v) =>
-                  setValue("stressLevel", v as number, { shouldDirty: true })
-                }
-              />
-              {errors.stressLevel && (
-                <Alert severity="error">{errors.stressLevel.message}</Alert>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextField
+              label="Caratteristiche del dolore"
+              fullWidth
+              size="small"
+              placeholder="es. Bruciante"
+              error={!!errors.painCharacteristics}
+              helperText={errors.painCharacteristics?.message}
+              {...register("painCharacteristics")}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextField
+              multiline
+              minRows={2}
+              label="Fattori che modificano il dolore"
+              fullWidth
+              size="small"
+              placeholder="es. Migliora con il riposo"
+              error={!!errors.painModifiers}
+              helperText={errors.painModifiers?.message}
+              {...register("painModifiers")}
+            />
+          </Grid>
+        </Grid>
+        <Divider sx={{ my: 2 }} />
+        <Typography variant="h6" gutterBottom>
+          Stile di vita & Fattori psicosociali
+        </Typography>
+        <Grid container spacing={2} mb={2}>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={smoker ?? false}
+                  onChange={(e) =>
+                    setValue("smoker", e.target.checked, {
+                      shouldDirty: true,
+                    })
+                  }
+                />
+              }
+              label={watch("smoker") ? "Fumatore" : "Non fumatore"}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            {NumberField({
+              name: "alcoholUnits",
+              label: "Unità alcoliche settimanali",
+              placeholder: "es. 10",
+            })}
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Controller
+              name="mobilityLevel"
+              control={control}
+              defaultValue={null}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Livello di mobilità"
+                  select
+                  fullWidth
+                  size="small"
+                  error={!!errors.mobilityLevel}
+                  helperText={errors.mobilityLevel?.message}
+                >
+                  <MenuItem value="LIMITED">Limitato</MenuItem>
+                  <MenuItem value="MODERATE">Moderato</MenuItem>
+                  <MenuItem value="FULL">Totale</MenuItem>
+                </TextField>
               )}
-            </Grid>
-            <Grid>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={smoking || false}
-                    onChange={(e) =>
-                      setValue("smoking", e.target.checked, {
-                        shouldDirty: true,
-                      })
-                    }
-                  />
-                }
-                label={smoking ? "Fumatore" : "Non fumatore"}
-              />
-            </Grid>
+            />
           </Grid>
-
-          <Typography variant="h6" gutterBottom>
-            Obiettivi personali
-          </Typography>
-          <Grid container spacing={2} sx={{ mb: 2 }}>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                multiline
-                minRows={2}
-                label="Obiettivi"
-                fullWidth
-                size="small"
-                placeholder="es. Tornare a correre 10 km…"
-                {...register("personalGoals")}
-                error={!!errors.personalGoals}
-                helperText={errors.personalGoals?.message}
-              />
-            </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Controller
+              name="activityLevel"
+              control={control}
+              defaultValue={null}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Livello di difficoltà di svolgimento di attività fisica"
+                  select
+                  fullWidth
+                  size="small"
+                  error={!!errors.activityLevel}
+                  helperText={errors.activityLevel?.message}
+                >
+                  <MenuItem value="LOW">Basso</MenuItem>
+                  <MenuItem value="MEDIUM">Medio</MenuItem>
+                  <MenuItem value="HIGH">Alto</MenuItem>
+                </TextField>
+              )}
+            />
           </Grid>
-
-          <Divider sx={{ my: 2 }} />
-          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={!isDirty}
-              sx={{ px: 3 }}
-            >
-              Salva
-            </Button>
-          </Box>
-        </form>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            {NumberField({
+              name: "sleepHours",
+              label: "Ore di sonno (media/notte)",
+              placeholder: "es. 7",
+            })}
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Typography variant="subtitle2" color="text.secondary" mb={1}>
+              Stress percepito (0‑10)
+            </Typography>
+            <Slider
+              value={perceivedStress ?? 0}
+              step={1}
+              marks
+              min={0}
+              max={10}
+              onChange={(_, v) =>
+                setValue("perceivedStress", v as number, {
+                  shouldDirty: true,
+                })
+              }
+            />
+            {errors.perceivedStress && (
+              <Alert severity="error" sx={{ mt: 1 }}>
+                {errors.perceivedStress.message}
+              </Alert>
+            )}
+          </Grid>
+        </Grid>
+        <Divider sx={{ my: 2 }} />
+        <Typography variant="h6" gutterBottom>
+          Altri dati
+        </Typography>
+        <Grid container spacing={2} mb={2}>
+          {/**
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextField
+              label="Ultimo controllo medico"
+              fullWidth
+              size="small"
+              placeholder="es. 2023-01-15"
+              error={!!errors.lastMedicalCheckup}
+              helperText={errors.lastMedicalCheckup?.message}
+              {...register("lastMedicalCheckup", {
+                setValueAs: (v) => (v === "" ? null : v),
+              })}
+            />
+          </Grid>
+           */}
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextField
+              multiline
+              minRows={2}
+              label="Note"
+              fullWidth
+              size="small"
+              placeholder="Eventuali note aggiuntive..."
+              error={!!errors.notes}
+              helperText={errors.notes?.message}
+              {...register("notes")}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextField
+              multiline
+              minRows={2}
+              label="Obiettivi personali"
+              fullWidth
+              size="small"
+              placeholder="es. Migliorare la forma fisica"
+              error={!!errors.personalGoals}
+              helperText={errors.personalGoals?.message}
+              {...register("personalGoals")}
+            />
+          </Grid>
+        </Grid>
+        <Divider sx={{ my: 2 }} />
+        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <Button
+            variant="contained"
+            color="primary"
+            disabled={!isDirty}
+            onClick={handleSubmit(onSubmit)}
+            sx={{ paddingX: 3, marginTop: { xs: 2, sm: 0 } }}
+          >
+            Salva
+          </Button>
+        </Box>
       </CardContent>
     </Card>
   );

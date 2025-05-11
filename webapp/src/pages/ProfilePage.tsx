@@ -49,8 +49,12 @@ export default function ProfilePage() {
 
           {profile.get.data.role === "USER" && (
             <Grid size={{ xs: 12 }}>
-              {/* Should behave like physiotherapist settings but for patient data */}
-              <PatientSettings />
+              <PatientSettings
+                defaultValues={profile.get.data.patient}
+                onSave={(updatedPatient) =>
+                  profile.updatePatient.mutate(updatedPatient.patient)
+                }
+              />
             </Grid>
           )}
 

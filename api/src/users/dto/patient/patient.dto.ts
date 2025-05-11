@@ -24,13 +24,13 @@ export class PatientDto implements Patient {
   @IsNumber()
   @IsOptional()
   @Expose()
-  heightCm: number | null;
+  height: number | null;
 
   @ApiProperty({ description: "Weight in kg", required: false })
   @IsNumber()
   @IsOptional()
   @Expose()
-  weightKg: number | null;
+  weight: number | null;
 
   @ApiProperty({ description: "Smoker", required: false })
   @IsBoolean()
