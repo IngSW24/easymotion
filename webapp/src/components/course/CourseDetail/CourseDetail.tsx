@@ -67,16 +67,10 @@ const CourseDetail: React.FC<CourseDetailProps> = (
     return `Pagamento ${getPaymentRecurrenceName(course.payment_recurrence)}: €${course.price?.toFixed(2)}`;
   };
 
-  const getNumberOfParticipants = () => {
-    return getCourseSubscribers.data?.data.length === undefined
-      ? 0
-      : getCourseSubscribers.data?.data.length;
-  };
-
   const getAvailableSubscriptions = () => {
     return (course.max_subscribers ?? 0) == 0
       ? 0
-      : (course.max_subscribers ?? 0) - getNumberOfParticipants();
+      : (course.max_subscribers ?? 0) - course.current_subscribers;
   };
 
   return (
@@ -225,7 +219,7 @@ const CourseDetail: React.FC<CourseDetailProps> = (
                 <SubscriptionRequestForm
                   open={openSubReqModal}
                   setOpen={setOpenSubReqModal}
-                  numberSubscribers={getNumberOfParticipants()}
+                  numberSubscribers={course.current_subscribers}
                   startSubscriptionDate={startSubscriptionDate.getTime()}
                   endSubscriptionDate={endSubscriptionDate}
                   maxSubscribers={course.max_subscribers ?? 0}
@@ -321,7 +315,7 @@ const CourseDetail: React.FC<CourseDetailProps> = (
               {
                 icon: <GroupOutlined />,
                 label: "Numero di partecipanti",
-                value: getNumberOfParticipants(),
+                value: course.current_subscribers,
               },
             ].map((detail, idx) => (
               <Paper
