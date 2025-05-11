@@ -2772,10 +2772,9 @@
             "nullable": true,
             "description": "Amount of maximum subscribers (unlimited if null)"
           },
-          "available_slots": {
+          "current_subscribers": {
             "type": "number",
-            "nullable": true,
-            "description": "Available slots (unlimited if null)"
+            "description": "Current subscribers (count)"
           },
           "tags": {
             "description": "Related tags",
@@ -2840,6 +2839,7 @@
           "payment_recurrence",
           "is_published",
           "subscriptions_open",
+          "current_subscribers",
           "tags",
           "created_at",
           "updated_at",
@@ -2933,10 +2933,9 @@
             "nullable": true,
             "description": "Amount of maximum subscribers (unlimited if null)"
           },
-          "available_slots": {
+          "current_subscribers": {
             "type": "number",
-            "nullable": true,
-            "description": "Available slots (unlimited if null)"
+            "description": "Current subscribers (count)"
           },
           "tags": {
             "description": "Related tags",
@@ -2976,6 +2975,7 @@
           "payment_recurrence",
           "is_published",
           "subscriptions_open",
+          "current_subscribers",
           "tags",
           "subscription_start_date",
           "subscription_end_date",
@@ -3070,10 +3070,9 @@
             "nullable": true,
             "description": "Amount of maximum subscribers (unlimited if null)"
           },
-          "available_slots": {
+          "current_subscribers": {
             "type": "number",
-            "nullable": true,
-            "description": "Available slots (unlimited if null)"
+            "description": "Current subscribers (count)"
           },
           "tags": {
             "description": "Related tags",
@@ -3338,6 +3337,11 @@
       "PatientDto": {
         "type": "object",
         "properties": {
+          "sex": {
+            "type": "object",
+            "nullable": true,
+            "description": "Sex of the user"
+          },
           "heightCm": {
             "type": "number",
             "nullable": true,
@@ -3352,6 +3356,11 @@
             "type": "boolean",
             "nullable": true,
             "description": "Smoker"
+          },
+          "alcoholUnits": {
+            "type": "number",
+            "nullable": true,
+            "description": "Alcohol consumption (integer)"
           },
           "activityLevel": {
             "type": "object",
@@ -3373,11 +3382,81 @@
             "nullable": true,
             "description": "Blood pressure"
           },
+          "profession": {
+            "type": "string",
+            "nullable": true,
+            "description": "Profession"
+          },
+          "sport": {
+            "type": "string",
+            "nullable": true,
+            "description": "Sport"
+          },
+          "sportFrequency": {
+            "type": "number",
+            "nullable": true,
+            "description": "Sport frequency"
+          },
+          "medications": {
+            "type": "string",
+            "nullable": true,
+            "description": "Medications"
+          },
+          "allergies": {
+            "type": "string",
+            "nullable": true,
+            "description": "Allergies"
+          },
+          "otherPathologies": {
+            "type": "string",
+            "nullable": true,
+            "description": "Other concomitant pathologies"
+          },
+          "painZone": {
+            "type": "string",
+            "nullable": true,
+            "description": "Pain zone"
+          },
+          "painIntensity": {
+            "type": "number",
+            "nullable": true,
+            "description": "Pain intensity"
+          },
+          "painFrequency": {
+            "type": "string",
+            "nullable": true,
+            "description": "Pain frequency"
+          },
+          "painCharacteristics": {
+            "type": "string",
+            "nullable": true,
+            "description": "Pain characteristics"
+          },
+          "painModifiers": {
+            "type": "string",
+            "nullable": true,
+            "description": "Aspects that modify the intensity of pain"
+          },
+          "sleepHours": {
+            "type": "number",
+            "nullable": true,
+            "description": "Sleep hours"
+          },
+          "perceivedStress": {
+            "type": "number",
+            "nullable": true,
+            "description": "Perceived stress"
+          },
           "lastMedicalCheckup": {
             "format": "date-time",
             "type": "string",
             "nullable": true,
             "description": "Last medical checkup"
+          },
+          "personalGoals": {
+            "type": "string",
+            "nullable": true,
+            "description": "Personal goals"
           },
           "notes": {
             "type": "string",
@@ -3389,15 +3468,6 @@
           }
         },
         "required": [
-          "heightCm",
-          "weightKg",
-          "smoker",
-          "activityLevel",
-          "mobilityLevel",
-          "restingHeartRate",
-          "bloodPressure",
-          "lastMedicalCheckup",
-          "notes",
           "applicationUserId"
         ]
       },
@@ -3911,6 +3981,11 @@
       "PatientProfileDto": {
         "type": "object",
         "properties": {
+          "sex": {
+            "type": "object",
+            "nullable": true,
+            "description": "Sex of the user"
+          },
           "heightCm": {
             "type": "number",
             "nullable": true,
@@ -3925,6 +4000,11 @@
             "type": "boolean",
             "nullable": true,
             "description": "Smoker"
+          },
+          "alcoholUnits": {
+            "type": "number",
+            "nullable": true,
+            "description": "Alcohol consumption (integer)"
           },
           "activityLevel": {
             "type": "object",
@@ -3946,11 +4026,81 @@
             "nullable": true,
             "description": "Blood pressure"
           },
+          "profession": {
+            "type": "string",
+            "nullable": true,
+            "description": "Profession"
+          },
+          "sport": {
+            "type": "string",
+            "nullable": true,
+            "description": "Sport"
+          },
+          "sportFrequency": {
+            "type": "number",
+            "nullable": true,
+            "description": "Sport frequency"
+          },
+          "medications": {
+            "type": "string",
+            "nullable": true,
+            "description": "Medications"
+          },
+          "allergies": {
+            "type": "string",
+            "nullable": true,
+            "description": "Allergies"
+          },
+          "otherPathologies": {
+            "type": "string",
+            "nullable": true,
+            "description": "Other concomitant pathologies"
+          },
+          "painZone": {
+            "type": "string",
+            "nullable": true,
+            "description": "Pain zone"
+          },
+          "painIntensity": {
+            "type": "number",
+            "nullable": true,
+            "description": "Pain intensity"
+          },
+          "painFrequency": {
+            "type": "string",
+            "nullable": true,
+            "description": "Pain frequency"
+          },
+          "painCharacteristics": {
+            "type": "string",
+            "nullable": true,
+            "description": "Pain characteristics"
+          },
+          "painModifiers": {
+            "type": "string",
+            "nullable": true,
+            "description": "Aspects that modify the intensity of pain"
+          },
+          "sleepHours": {
+            "type": "number",
+            "nullable": true,
+            "description": "Sleep hours"
+          },
+          "perceivedStress": {
+            "type": "number",
+            "nullable": true,
+            "description": "Perceived stress"
+          },
           "lastMedicalCheckup": {
             "format": "date-time",
             "type": "string",
             "nullable": true,
             "description": "Last medical checkup"
+          },
+          "personalGoals": {
+            "type": "string",
+            "nullable": true,
+            "description": "Personal goals"
           },
           "notes": {
             "type": "string",
@@ -4013,15 +4163,6 @@
           }
         },
         "required": [
-          "heightCm",
-          "weightKg",
-          "smoker",
-          "activityLevel",
-          "mobilityLevel",
-          "restingHeartRate",
-          "bloodPressure",
-          "lastMedicalCheckup",
-          "notes",
           "email",
           "firstName",
           "lastName",
@@ -4075,6 +4216,16 @@
             "type": "string",
             "description": "Birth date in ISO format (YYYY-MM-DD) (optional)",
             "example": "1990-01-01"
+          },
+          "sex": {
+            "type": "string",
+            "description": "Sex of the new user (optional)",
+            "enum": [
+              "MALE",
+              "FEMALE",
+              "OTHER"
+            ],
+            "default": "MALE"
           },
           "role": {
             "type": "string",
