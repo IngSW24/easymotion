@@ -1,15 +1,14 @@
-import {
-  Box,
-  Button,
-  Divider,
-  Modal,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Divider from "@mui/material/Divider";
+import Modal from "@mui/material/Modal";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import CheckCircleOutline from "@mui/icons-material/CheckCircleOutline";
+import Email from "@mui/icons-material/Email";
 import React, { useState } from "react";
 import { useCourses } from "../../../hooks/useCourses";
-import { CheckCircleOutline, Email } from "@mui/icons-material";
 import useSubscriptions from "../../../hooks/useSubscription";
 
 const style = {

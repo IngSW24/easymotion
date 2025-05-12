@@ -8,7 +8,7 @@ import {
   Chip,
   Stack,
 } from "@mui/material";
-import { Launch } from "@mui/icons-material";
+import LaunchIcon from "@mui/icons-material/Launch";
 import { Link } from "react-router";
 import { courseLevels } from "../../../data/course-levels";
 import { CourseDto } from "@easymotion/openapi";
@@ -78,7 +78,7 @@ export default function CourseCard(props: CourseCardProps) {
       </Stack>
       <CardActions sx={{ justifyContent: "right", paddingX: 2 }}>
         <Button
-          startIcon={<Launch />}
+          startIcon={<LaunchIcon />}
           component={Link}
           variant="contained"
           to={"/details/" + course.id}

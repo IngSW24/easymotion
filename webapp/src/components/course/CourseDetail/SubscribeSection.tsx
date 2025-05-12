@@ -1,4 +1,8 @@
-import { Button, Typography, Box, Paper, Alert } from "@mui/material";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import Paper from "@mui/material/Paper";
+import Alert from "@mui/material/Alert";
 import { useSubscribeButton } from "./useSubscribeButton";
 import { CourseDto } from "@easymotion/openapi";
 import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
