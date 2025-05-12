@@ -17,6 +17,7 @@ import EventIcon from "@mui/icons-material/Event";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PersonIcon from "@mui/icons-material/Person";
 import EuroIcon from "@mui/icons-material/Euro";
+import CalendarMonth from "@mui/icons-material/CalendarMonth";
 import { DateTime } from "luxon";
 import { getCourseLevelName } from "../../../data/course-levels";
 import InfoOutlined from "@mui/icons-material/InfoOutlined";
@@ -40,13 +41,28 @@ const CourseDetail: React.FC<CourseDetailProps> = (
   props: CourseDetailProps
 ) => {
   const { course, hideTitle = false } = props;
+
   const { isAuthenticated, isPhysiotherapist, user } = useAuth();
 
   const [openSubReqModal, setOpenSubReqModal] = useState(false);
 
+  const startSubscriptionDate = new Date(
+    Date.parse(course.subscription_start_date)
+  );
+
+  const endSubscriptionDate = new Date(
+    Date.parse(course.subscription_end_date)
+  );
+
   const getPaymentDetails = () => {
     if (course.price === 0) return "Gratuito";
     return `Pagamento ${getPaymentRecurrenceName(course.payment_recurrence)}: €${course.price?.toFixed(2)}`;
+  };
+
+  const getAvailableSubscriptions = () => {
+    return (course.max_subscribers ?? 0) == 0
+      ? 0
+      : (course.max_subscribers ?? 0) - course.current_subscribers;
   };
 
   return (
@@ -151,6 +167,40 @@ const CourseDetail: React.FC<CourseDetailProps> = (
 
               <Divider sx={{ my: 3 }} />
 
+              <Box>
+                <Typography variant="h5" fontWeight="bold" mb={3}>
+                  Periodo d'iscrizione:
+                </Typography>
+
+                <Typography mb={3}>
+                  Le iscrizioni cominciano a partire dal giorno{" "}
+                  {startSubscriptionDate.toLocaleDateString()} alle ore{" "}
+                  {startSubscriptionDate.toLocaleTimeString()}
+                </Typography>
+                <Typography mb={3}>
+                  Le iscrizioni terminano il giorno{" "}
+                  {endSubscriptionDate.toLocaleDateString()} alle ore{" "}
+                  {endSubscriptionDate.toLocaleTimeString()}
+                </Typography>
+
+                {(course.max_subscribers ?? 0) > 0 && (
+                  <Box
+                    sx={{
+                      gap: 2,
+                      display: "flex",
+                      flexDirection: "column",
+                      mt: 2,
+                    }}
+                  >
+                    <Typography color="green" fontWeight="bold">
+                      Posti ancora disponibili: {getAvailableSubscriptions()}
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+
+              <Divider sx={{ my: 3 }} />
+
               <Box sx={{ textAlign: "center" }}>
                 {isAuthenticated && !isPhysiotherapist && (
                   <SubscribeSection
@@ -161,6 +211,11 @@ const CourseDetail: React.FC<CourseDetailProps> = (
                 <SubscriptionRequestForm
                   open={openSubReqModal}
                   setOpen={setOpenSubReqModal}
+                  numberSubscribers={course.current_subscribers}
+                  startSubscriptionDate={startSubscriptionDate.getTime()}
+                  endSubscriptionDate={endSubscriptionDate}
+                  maxSubscribers={course.max_subscribers ?? 0}
+                  price={getPaymentDetails()}
                   courseId={course.id}
                   userId={user?.id}
                 />
@@ -238,9 +293,22 @@ const CourseDetail: React.FC<CourseDetailProps> = (
                 value: getCourseLevelName(course.level),
               },
               {
+                icon: <CalendarMonth />,
+                label: "Periodo di iscrizione",
+                value:
+                  startSubscriptionDate.toLocaleDateString() +
+                  " - " +
+                  endSubscriptionDate.toLocaleDateString(),
+              },
+              {
                 icon: <GroupOutlined />,
-                label: "Massimo partecipanti",
+                label: "Numero massimo di partecipanti",
                 value: course.max_subscribers ?? "Illimitato",
+              },
+              {
+                icon: <GroupOutlined />,
+                label: "Numero di partecipanti",
+                value: course.current_subscribers,
               },
             ].map((detail, idx) => (
               <Paper

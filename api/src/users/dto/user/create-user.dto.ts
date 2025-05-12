@@ -84,6 +84,16 @@ export class CreateUserDto {
   birthDate?: string;
 
   @ApiPropertyOptional({
+    description: "Sex of the new user (optional)",
+    enum: Sex,
+    default: Sex.MALE,
+  })
+  @IsOptional()
+  @IsEnum(Sex)
+  @Expose()
+  sex?: Sex;
+
+  @ApiPropertyOptional({
     description: "Role of the new user (defaults to USER if not provided)",
     enum: Role,
     default: Role.USER,
