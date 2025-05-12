@@ -181,12 +181,12 @@ const CourseDetail: React.FC<CourseDetailProps> = (
                 </Typography>
 
                 <Typography mb={3}>
-                  Le iscrizioni inizieranno a partire dal giorno{" "}
+                  Le iscrizioni cominciano a partire dal giorno{" "}
                   {startSubscriptionDate.toLocaleDateString()} alle ore{" "}
                   {startSubscriptionDate.toLocaleTimeString()}
                 </Typography>
                 <Typography mb={3}>
-                  Le iscrizioni termineranno il giorno{" "}
+                  Le iscrizioni terminano il giorno{" "}
                   {endSubscriptionDate.toLocaleDateString()} alle ore{" "}
                   {endSubscriptionDate.toLocaleTimeString()}
                 </Typography>
