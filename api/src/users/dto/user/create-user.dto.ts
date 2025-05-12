@@ -8,7 +8,7 @@ import {
   Length,
   IsBoolean,
 } from "class-validator";
-import { Role } from "@prisma/client";
+import { Role, Sex } from "@prisma/client";
 import { Expose } from "class-transformer";
 import CheckPasswordConstraints from "src/auth/decorators/strong-password.decorator";
 

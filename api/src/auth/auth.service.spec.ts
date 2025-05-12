@@ -4,12 +4,12 @@ import { UserManager } from "src/users/user.manager";
 import { EmailService } from "src/email/email.service";
 import { JwtService } from "@nestjs/jwt";
 import { AuthUserDto } from "./dto/auth-user/auth-user.dto";
-import { PhysiotherapistDto } from "src/users/dto/physiotherapist.dto";
+import { PhysiotherapistDto } from "src/users/dto/physiotherapist/physiotherapist.dto";
 import jwtConfig from "src/config/jwt.config";
 import frontendConfig from "src/config/frontend.config";
 import { ASSETS_SERVICE } from "src/assets/assets.interface";
 import { MockAssetsService } from "src/assets/implementations/mock.service";
-
+import { ActivityLevel, Sex } from "@prisma/client";
 describe("AuthService - validateUser", () => {
   let service: AuthService;
   let userManagerMock: Partial<UserManager>;
@@ -185,6 +185,34 @@ describe("AuthService - validateUser", () => {
         applicationUser: undefined,
         applicationUserId: "",
       } as PhysiotherapistDto,
+      patient: {
+        sex: Sex.MALE,
+        height: 0,
+        weight: 0,
+        smoker: false,
+        activityLevel: ActivityLevel.LOW,
+        mobilityLevel: "LIMITED",
+        restingHeartRate: 0,
+        bloodPressure: "",
+        lastMedicalCheckup: undefined,
+        notes: "",
+        applicationUserId: "",
+        alcoholUnits: 0,
+        profession: "",
+        sport: "",
+        sportFrequency: 0,
+        medications: "",
+        allergies: "",
+        otherPathologies: "",
+        painZone: "",
+        painIntensity: 0,
+        painFrequency: "",
+        painCharacteristics: "",
+        painModifiers: "",
+        sleepHours: 8,
+        perceivedStress: 0,
+        personalGoals: "",
+      },
     };
     jwtServiceMock.sign = jest.fn().mockImplementation(() => "mock-token");
 

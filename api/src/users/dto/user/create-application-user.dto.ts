@@ -3,5 +3,5 @@ import { ApplicationUserDto } from "./application-user.dto";
 
 export default class ApplicationUserCreateDto extends OmitType(
   ApplicationUserDto,
-  ["id", "physiotherapist"]
+  ["id", "physiotherapist", "patient"]
 ) {}

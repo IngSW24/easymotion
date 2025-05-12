@@ -1,19 +1,20 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { UpdateUserDto } from "./dto/update-user.dto";
-import { ApplicationUserDto } from "./dto/application-user.dto";
+import { CreateUserDto } from "./dto/user/create-user.dto";
+import { UpdateUserDto } from "./dto/user/update-user.dto";
 import { UserManager } from "./user.manager";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { PaginatedOutput } from "src/common/dto/paginated-output.dto";
 import { plainToInstance } from "class-transformer";
-import { PhysiotherapistFilter } from "./filters/physiotherapist-filter.dto";
-import { ApplicationUser, Physiotherapist, Prisma } from "@prisma/client";
-import ApplicationUserCreateDto from "./dto/create-application-user.dto";
-import { PhysiotherapistProfileDto } from "./dto/physiotherapist-profile.dto";
+import { ApplicationUser } from "@prisma/client";
+import ApplicationUserCreateDto from "./dto/user/create-application-user.dto";
+import { PhysiotherapistProfileDto } from "./dto/physiotherapist/physiotherapist-profile.dto";
 import {
   EXTENDED_PRISMA_SERVICE,
   ExtendedPrismaService,
 } from "src/common/prisma/pagination";
+import { ApplicationUserDto } from "./dto/user/application-user.dto";
+import { PatientProfileDto } from "./dto/patient/patient-profile.dto";
+import { FindProfileArgs, FindProfilesArgsMap } from "./types";
 
 /**
  * The UsersService class provides high-level CRUD operations for ApplicationUsers,
@@ -116,73 +117,114 @@ export class UsersService {
     return this.userManager.deleteUser(id);
   }
 
-  private mapPhysiotherapistToProfile(
-    physiotherapist: Physiotherapist & { applicationUser: ApplicationUser }
-  ) {
-    const flags = {
-      excludeExtraneousValues: true,
-    };
+  /**
+   * Finds a profile by its unique ID.
+   * @param id - The ID of the profile to look up.
+   * @param args - An object containing the type of profile and the DTO to map to.
+   * @returns A promise that resolves to a PhysiotherapistProfileDto or PatientProfileDto.
+   */
+  async findProfile<T extends "physiotherapist" | "patient">(
+    id: string,
+    args: FindProfileArgs<T>
+  ): Promise<
+    T extends "physiotherapist" ? PhysiotherapistProfileDto : PatientProfileDto
+  > {
+    const client = this.prisma.client[args.type];
 
-    return plainToInstance(
-      PhysiotherapistProfileDto,
+    let result: { applicationUser: ApplicationUser } | never;
+
+    if (client === this.prisma.client.physiotherapist) {
+      result = await client.findUniqueOrThrow({
+        where: { applicationUserId: id },
+        include: { applicationUser: true },
+      });
+    } else if (client === this.prisma.client.patient) {
+      result = await client.findUniqueOrThrow({
+        where: { applicationUserId: id },
+        include: { applicationUser: true },
+      });
+    }
+
+    return this.mapToProfile(
+      args.dto as new () => unknown,
+      result
+    ) as T extends "physiotherapist"
+      ? PhysiotherapistProfileDto
+      : PatientProfileDto;
+  }
+
+  /**
+   * Finds paginated profiles of a specific type.
+   * @param pagination - The pagination filter for the paginated results.
+   * @param args - The arguments for finding profiles, including the type and DTO.
+   * @returns A promise that resolves to a paginated list of profiles of the specified type.
+   */
+  async findProfiles<T extends "physiotherapist" | "patient">(
+    pagination: PaginationFilter,
+    args: FindProfilesArgsMap<T>
+  ): Promise<
+    T extends "physiotherapist"
+      ? PaginatedOutput<PhysiotherapistProfileDto>
+      : PaginatedOutput<PatientProfileDto>
+  > {
+    const client = this.prisma.client[args.type];
+
+    return client.paginate(
+      pagination,
       {
-        ...physiotherapist,
-        ...physiotherapist.applicationUser,
+        where: args.searchText
+          ? {
+              applicationUser: {
+                OR: [
+                  {
+                    firstName: {
+                      contains: args.searchText,
+                      mode: "insensitive",
+                    },
+                  },
+                  {
+                    lastName: {
+                      contains: args.searchText,
+                      mode: "insensitive",
+                    },
+                  },
+                  {
+                    middleName: {
+                      contains: args.searchText,
+                      mode: "insensitive",
+                    },
+                  },
+                ],
+              },
+            }
+          : undefined,
+        include: { applicationUser: true },
       },
-      flags
+      {
+        mapFn: (o) => this.mapToProfile(args.dto as new () => unknown, o),
+      }
     );
   }
 
   /**
-   * Finds a physiotherapist by their unique ID.
-   * @param id - The ID of the physiotherapist to look up.
-   * @returns A promise that resolves to a PhysiotherapistDto if the physiotherapist is found.
+   * Maps a profile to a DTO.
+   * @param type - The DTO type to map to.
+   * @param profile - The profile to map.
+   * @returns A promise that resolves to a DTO.
    */
-  async findPhysiotherapist(id: string) {
-    const physiotherapist =
-      await this.prisma.client.physiotherapist.findUniqueOrThrow({
-        where: {
-          applicationUserId: id,
-        },
-        include: {
-          applicationUser: true,
-        },
-      });
-
-    return this.mapPhysiotherapistToProfile(physiotherapist);
-  }
-
-  /**
-   * Finds all physiotherapists with pagination and filter.
-   * @param pagination - The pagination filter.
-   * @param filter - The filter for the physiotherapists.
-   * @returns A promise that resolves to a PaginatedOutput of PhysiotherapistDto,
-   */
-  async findAllPhysiotherapists(
-    pagination: PaginationFilter,
-    filter: PhysiotherapistFilter
+  private mapToProfile<T extends { applicationUser: ApplicationUser }, K>(
+    type: new () => K,
+    profile: T
   ) {
-    const { searchText } = filter;
+    const { applicationUser, ...rest } = profile;
 
-    const where: Prisma.PhysiotherapistWhereInput = {};
-
-    if (searchText) {
-      where.OR = [
-        { specialization: { contains: searchText, mode: "insensitive" } },
-        {
-          applicationUser: {
-            firstName: { contains: searchText, mode: "insensitive" },
-            middleName: { contains: searchText, mode: "insensitive" },
-            lastName: { contains: searchText, mode: "insensitive" },
-          },
-        },
-      ];
-    }
-
-    return this.prisma.client.physiotherapist.paginate(
-      pagination,
-      { where, include: { applicationUser: true } },
-      { mapFn: this.mapPhysiotherapistToProfile }
+    return plainToInstance(
+      type,
+      {
+        ...rest,
+        ...applicationUser,
+      },
+      { excludeExtraneousValues: true }
     );
   }
 }

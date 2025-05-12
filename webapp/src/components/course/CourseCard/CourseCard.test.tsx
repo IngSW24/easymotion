@@ -23,13 +23,20 @@ describe("CourseCard GUI test", () => {
     tags: ["sample_tag1", "sample_tag2"],
     created_at: "",
     updated_at: "",
-    owner: { id: "", email: "", firstName: "", lastName: "", middleName: "" },
+    owner: {
+      id: "",
+      email: "",
+      firstName: "",
+      lastName: "",
+      middleName: "",
+    },
     is_published: false,
     subscriptions_open: false,
     sessions: [],
     subscription_start_date: "",
     subscription_end_date: "",
     payment_recurrence: "SINGLE",
+    current_subscribers: 0,
   };
 
   it("Check if CourseCard shows the correct information", () => {

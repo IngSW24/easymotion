@@ -92,10 +92,28 @@ model Subscription {
   @@id([course_id, patient_id])
 }
 
+enum Sex {
+  MALE
+  FEMALE
+  OTHER
+}
+
 enum Role {
   USER
   ADMIN
   PHYSIOTHERAPIST
+}
+
+enum ActivityLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum MobilityLevel {
+  LIMITED
+  MODERATE
+  FULL
 }
 
 model ApplicationUser {
@@ -150,10 +168,30 @@ model Patient {
   applicationUser   ApplicationUser @relation(fields: [applicationUserId], references: [id])
   subscriptions     Subscription[]
 
-  // TODO: Specify body measurements
-  // bodyWeight                Decimal?
-  // bodyHeight                Decimal?
-  // bodyFatPercentage         Decimal?
-  // bodyMassIndex             Decimal?
-  // bodyWaterPercentage       Decimal?
+  sex                 Sex?
+  height              Float?
+  weight              Float?
+  smoker              Boolean?
+  alcoholUnits        Int?
+  activityLevel       ActivityLevel?
+  mobilityLevel       MobilityLevel?
+  restingHeartRate    Int?
+  bloodPressure       String?
+  profession          String?
+  sport               String?
+  sportFrequency      Int?
+  medications         String?
+  allergies           String?
+  otherPathologies    String?
+  painZone            String?
+  painIntensity       Int?
+  painFrequency       String?
+  painCharacteristics String?
+  painModifiers       String?
+  sleepHours          Int?
+  perceivedStress     Int?
+
+  lastMedicalCheckup DateTime?
+  personalGoals      String?
+  notes              String?
 }

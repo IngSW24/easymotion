@@ -11,6 +11,7 @@ export class CreateCourseDto extends OmitType(CourseDto, [
   "id",
   "created_at",
   "updated_at",
+  "current_subscribers",
   "owner",
   "owner_id",
   "category",

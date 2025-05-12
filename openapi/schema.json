@@ -1113,6 +1113,329 @@
         ]
       }
     },
+    "/users/physiotherapists": {
+      "get": {
+        "operationId": "UsersController_findAllPhysiotherapists",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "searchText",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "PaginatedResponseOfPhysiotherapistProfileDto",
+                  "allOf": [
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/PhysiotherapistProfileDto"
+                          }
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ]
+                    },
+                    {
+                      "properties": {
+                        "meta": {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "number"
+                            },
+                            "hasNextPage": {
+                              "type": "boolean"
+                            },
+                            "currentPage": {
+                              "type": "number"
+                            },
+                            "totalItems": {
+                              "type": "number"
+                            },
+                            "totalPages": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "items",
+                            "hasNextPage",
+                            "currentPage",
+                            "totalItems",
+                            "totalPages"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "meta"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/physiotherapists/{id}": {
+      "get": {
+        "operationId": "UsersController_findPhysiotherapist",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhysiotherapistProfileDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/patients": {
+      "get": {
+        "operationId": "UsersController_findAllPatients",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "searchText",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "PaginatedResponseOfPatientProfileDto",
+                  "allOf": [
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/PatientProfileDto"
+                          }
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ]
+                    },
+                    {
+                      "properties": {
+                        "meta": {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "number"
+                            },
+                            "hasNextPage": {
+                              "type": "boolean"
+                            },
+                            "currentPage": {
+                              "type": "number"
+                            },
+                            "totalItems": {
+                              "type": "number"
+                            },
+                            "totalPages": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "items",
+                            "hasNextPage",
+                            "currentPage",
+                            "totalItems",
+                            "totalPages"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "meta"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/patient/{id}": {
+      "get": {
+        "operationId": "UsersController_findPatient",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "PaginatedResponseOfPatientProfileDto",
+                  "allOf": [
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/PatientProfileDto"
+                          }
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ]
+                    },
+                    {
+                      "properties": {
+                        "meta": {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "number"
+                            },
+                            "hasNextPage": {
+                              "type": "boolean"
+                            },
+                            "currentPage": {
+                              "type": "number"
+                            },
+                            "totalItems": {
+                              "type": "number"
+                            },
+                            "totalPages": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "items",
+                            "hasNextPage",
+                            "currentPage",
+                            "totalItems",
+                            "totalPages"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "meta"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Users"
+        ]
+      }
+    },
     "/users": {
       "post": {
         "operationId": "UsersController_create",
@@ -1238,143 +1561,6 @@
           }
         ],
         "summary": "Retrieve a paginated list of users.",
-        "tags": [
-          "Users"
-        ]
-      }
-    },
-    "/users/physiotherapist": {
-      "get": {
-        "operationId": "UsersController_findAllPhysiotherapists",
-        "parameters": [
-          {
-            "name": "page",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "default": 0,
-              "type": "number"
-            }
-          },
-          {
-            "name": "perPage",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "default": 10,
-              "type": "number"
-            }
-          },
-          {
-            "name": "searchText",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "title": "PaginatedResponseOfPhysiotherapistProfileDto",
-                  "allOf": [
-                    {
-                      "properties": {
-                        "data": {
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/components/schemas/PhysiotherapistProfileDto"
-                          }
-                        }
-                      },
-                      "required": [
-                        "data"
-                      ]
-                    },
-                    {
-                      "properties": {
-                        "meta": {
-                          "type": "object",
-                          "properties": {
-                            "items": {
-                              "type": "number"
-                            },
-                            "hasNextPage": {
-                              "type": "boolean"
-                            },
-                            "currentPage": {
-                              "type": "number"
-                            },
-                            "totalItems": {
-                              "type": "number"
-                            },
-                            "totalPages": {
-                              "type": "number"
-                            }
-                          },
-                          "required": [
-                            "items",
-                            "hasNextPage",
-                            "currentPage",
-                            "totalItems",
-                            "totalPages"
-                          ]
-                        }
-                      },
-                      "required": [
-                        "meta"
-                      ]
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "Users"
-        ]
-      }
-    },
-    "/users/physiotherapist/{id}": {
-      "get": {
-        "operationId": "UsersController_findPhysiotherapist",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PhysiotherapistProfileDto"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
         "tags": [
           "Users"
         ]
@@ -2586,10 +2772,9 @@
             "nullable": true,
             "description": "Amount of maximum subscribers (unlimited if null)"
           },
-          "available_slots": {
+          "current_subscribers": {
             "type": "number",
-            "nullable": true,
-            "description": "Available slots (unlimited if null)"
+            "description": "Current subscribers (count)"
           },
           "tags": {
             "description": "Related tags",
@@ -2654,6 +2839,7 @@
           "payment_recurrence",
           "is_published",
           "subscriptions_open",
+          "current_subscribers",
           "tags",
           "created_at",
           "updated_at",
@@ -2746,11 +2932,6 @@
             "type": "number",
             "nullable": true,
             "description": "Amount of maximum subscribers (unlimited if null)"
-          },
-          "available_slots": {
-            "type": "number",
-            "nullable": true,
-            "description": "Available slots (unlimited if null)"
           },
           "tags": {
             "description": "Related tags",
@@ -2883,11 +3064,6 @@
             "type": "number",
             "nullable": true,
             "description": "Amount of maximum subscribers (unlimited if null)"
-          },
-          "available_slots": {
-            "type": "number",
-            "nullable": true,
-            "description": "Available slots (unlimited if null)"
           },
           "tags": {
             "description": "Related tags",
@@ -3149,6 +3325,158 @@
           "applicationUserId"
         ]
       },
+      "PatientDto": {
+        "type": "object",
+        "properties": {
+          "sex": {
+            "type": "string",
+            "nullable": true,
+            "description": "Sex of the user",
+            "enum": [
+              "MALE",
+              "FEMALE",
+              "OTHER"
+            ]
+          },
+          "height": {
+            "type": "number",
+            "nullable": true,
+            "description": "Height in cm"
+          },
+          "weight": {
+            "type": "number",
+            "nullable": true,
+            "description": "Weight in kg"
+          },
+          "smoker": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Smoker"
+          },
+          "alcoholUnits": {
+            "type": "number",
+            "nullable": true,
+            "description": "Alcohol consumption (integer)"
+          },
+          "activityLevel": {
+            "type": "string",
+            "nullable": true,
+            "description": "Activity level",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH"
+            ]
+          },
+          "mobilityLevel": {
+            "type": "string",
+            "nullable": true,
+            "description": "Mobility level",
+            "enum": [
+              "LIMITED",
+              "MODERATE",
+              "FULL"
+            ]
+          },
+          "restingHeartRate": {
+            "type": "number",
+            "nullable": true,
+            "description": "Resting heart rate"
+          },
+          "bloodPressure": {
+            "type": "string",
+            "nullable": true,
+            "description": "Blood pressure"
+          },
+          "profession": {
+            "type": "string",
+            "nullable": true,
+            "description": "Profession"
+          },
+          "sport": {
+            "type": "string",
+            "nullable": true,
+            "description": "Sport"
+          },
+          "sportFrequency": {
+            "type": "number",
+            "nullable": true,
+            "description": "Sport frequency"
+          },
+          "medications": {
+            "type": "string",
+            "nullable": true,
+            "description": "Medications"
+          },
+          "allergies": {
+            "type": "string",
+            "nullable": true,
+            "description": "Allergies"
+          },
+          "otherPathologies": {
+            "type": "string",
+            "nullable": true,
+            "description": "Other concomitant pathologies"
+          },
+          "painZone": {
+            "type": "string",
+            "nullable": true,
+            "description": "Pain zone"
+          },
+          "painIntensity": {
+            "type": "number",
+            "nullable": true,
+            "description": "Pain intensity"
+          },
+          "painFrequency": {
+            "type": "string",
+            "nullable": true,
+            "description": "Pain frequency"
+          },
+          "painCharacteristics": {
+            "type": "string",
+            "nullable": true,
+            "description": "Pain characteristics"
+          },
+          "painModifiers": {
+            "type": "string",
+            "nullable": true,
+            "description": "Aspects that modify the intensity of pain"
+          },
+          "sleepHours": {
+            "type": "number",
+            "nullable": true,
+            "description": "Sleep hours"
+          },
+          "perceivedStress": {
+            "type": "number",
+            "nullable": true,
+            "description": "Perceived stress"
+          },
+          "lastMedicalCheckup": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true,
+            "description": "Last medical checkup"
+          },
+          "personalGoals": {
+            "type": "string",
+            "nullable": true,
+            "description": "Personal goals"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "description": "Notes"
+          },
+          "applicationUserId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "applicationUserId"
+        ]
+      },
       "AuthUserDto": {
         "type": "object",
         "properties": {
@@ -3225,6 +3553,15 @@
                 "$ref": "#/components/schemas/PhysiotherapistDto"
               }
             ]
+          },
+          "patient": {
+            "nullable": true,
+            "description": "Patient data",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PatientDto"
+              }
+            ]
           }
         },
         "required": [
@@ -3236,7 +3573,8 @@
           "isEmailVerified",
           "picturePath",
           "twoFactorEnabled",
-          "physiotherapist"
+          "physiotherapist",
+          "patient"
         ]
       },
       "UpdateAuthUserDto": {
@@ -3281,6 +3619,15 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/PhysiotherapistDto"
+              }
+            ]
+          },
+          "patient": {
+            "nullable": true,
+            "description": "Patient data",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PatientDto"
               }
             ]
           }
@@ -3380,6 +3727,15 @@
                 "$ref": "#/components/schemas/PhysiotherapistDto"
               }
             ]
+          },
+          "patient": {
+            "nullable": true,
+            "description": "Patient data",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PatientDto"
+              }
+            ]
           }
         },
         "required": [
@@ -3394,7 +3750,8 @@
           "updatedAt",
           "picturePath",
           "twoFactorEnabled",
-          "physiotherapist"
+          "physiotherapist",
+          "patient"
         ]
       },
       "SignUpDto": {
@@ -3529,70 +3886,6 @@
           "userId"
         ]
       },
-      "CreateUserDto": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "format": "email",
-            "description": "Email address of the new user",
-            "example": "john.doe@example.com"
-          },
-          "password": {
-            "type": "string",
-            "minLength": 6,
-            "description": "Plain-text password for the new user (will be hashed)",
-            "example": "MyStrongP@ssw0rd!"
-          },
-          "isEmailVerified": {
-            "type": "boolean",
-            "description": "Flag indicating if the email address has been verified",
-            "example": true
-          },
-          "firstName": {
-            "type": "string",
-            "description": "First name of the new user",
-            "example": "John"
-          },
-          "middleName": {
-            "type": "string",
-            "description": "Middle name of the new user (optional)",
-            "example": "Alexander"
-          },
-          "lastName": {
-            "type": "string",
-            "description": "Last name of the new user",
-            "example": "Doe"
-          },
-          "phoneNumber": {
-            "type": "string",
-            "description": "Phone number of the new user (optional)",
-            "example": "+123456789"
-          },
-          "birthDate": {
-            "type": "string",
-            "description": "Birth date in ISO format (YYYY-MM-DD) (optional)",
-            "example": "1990-01-01"
-          },
-          "role": {
-            "type": "string",
-            "description": "Role of the new user (defaults to USER if not provided)",
-            "enum": [
-              "USER",
-              "ADMIN",
-              "PHYSIOTHERAPIST"
-            ],
-            "default": "USER"
-          }
-        },
-        "required": [
-          "email",
-          "password",
-          "isEmailVerified",
-          "firstName",
-          "lastName"
-        ]
-      },
       "PhysiotherapistProfileDto": {
         "type": "object",
         "properties": {
@@ -3691,6 +3984,279 @@
           "applicationUserId"
         ]
       },
+      "PatientProfileDto": {
+        "type": "object",
+        "properties": {
+          "sex": {
+            "type": "string",
+            "nullable": true,
+            "description": "Sex of the user",
+            "enum": [
+              "MALE",
+              "FEMALE",
+              "OTHER"
+            ]
+          },
+          "height": {
+            "type": "number",
+            "nullable": true,
+            "description": "Height in cm"
+          },
+          "weight": {
+            "type": "number",
+            "nullable": true,
+            "description": "Weight in kg"
+          },
+          "smoker": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Smoker"
+          },
+          "alcoholUnits": {
+            "type": "number",
+            "nullable": true,
+            "description": "Alcohol consumption (integer)"
+          },
+          "activityLevel": {
+            "type": "string",
+            "nullable": true,
+            "description": "Activity level",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH"
+            ]
+          },
+          "mobilityLevel": {
+            "type": "string",
+            "nullable": true,
+            "description": "Mobility level",
+            "enum": [
+              "LIMITED",
+              "MODERATE",
+              "FULL"
+            ]
+          },
+          "restingHeartRate": {
+            "type": "number",
+            "nullable": true,
+            "description": "Resting heart rate"
+          },
+          "bloodPressure": {
+            "type": "string",
+            "nullable": true,
+            "description": "Blood pressure"
+          },
+          "profession": {
+            "type": "string",
+            "nullable": true,
+            "description": "Profession"
+          },
+          "sport": {
+            "type": "string",
+            "nullable": true,
+            "description": "Sport"
+          },
+          "sportFrequency": {
+            "type": "number",
+            "nullable": true,
+            "description": "Sport frequency"
+          },
+          "medications": {
+            "type": "string",
+            "nullable": true,
+            "description": "Medications"
+          },
+          "allergies": {
+            "type": "string",
+            "nullable": true,
+            "description": "Allergies"
+          },
+          "otherPathologies": {
+            "type": "string",
+            "nullable": true,
+            "description": "Other concomitant pathologies"
+          },
+          "painZone": {
+            "type": "string",
+            "nullable": true,
+            "description": "Pain zone"
+          },
+          "painIntensity": {
+            "type": "number",
+            "nullable": true,
+            "description": "Pain intensity"
+          },
+          "painFrequency": {
+            "type": "string",
+            "nullable": true,
+            "description": "Pain frequency"
+          },
+          "painCharacteristics": {
+            "type": "string",
+            "nullable": true,
+            "description": "Pain characteristics"
+          },
+          "painModifiers": {
+            "type": "string",
+            "nullable": true,
+            "description": "Aspects that modify the intensity of pain"
+          },
+          "sleepHours": {
+            "type": "number",
+            "nullable": true,
+            "description": "Sleep hours"
+          },
+          "perceivedStress": {
+            "type": "number",
+            "nullable": true,
+            "description": "Perceived stress"
+          },
+          "lastMedicalCheckup": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true,
+            "description": "Last medical checkup"
+          },
+          "personalGoals": {
+            "type": "string",
+            "nullable": true,
+            "description": "Personal goals"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "description": "Notes"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the user",
+            "example": "user@example.com"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "User first name",
+            "example": "John"
+          },
+          "middleName": {
+            "type": "string",
+            "nullable": true,
+            "description": "User middle name",
+            "example": "Alexander"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "User last name",
+            "example": "Doe"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true,
+            "description": "User phone number",
+            "example": "+1234567890"
+          },
+          "birthDate": {
+            "type": "string",
+            "nullable": true,
+            "description": "User birth date",
+            "example": "1990-01-01"
+          },
+          "lastLogin": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Timestamp of the user last login",
+            "example": "2025-12-31T23:59:59.999Z"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Timestamp of when the user was created",
+            "example": "2025-01-01T00:00:00.000Z"
+          },
+          "picturePath": {
+            "type": "string",
+            "nullable": true,
+            "description": "Profile picture path"
+          },
+          "applicationUserId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "firstName",
+          "lastName",
+          "lastLogin",
+          "createdAt",
+          "picturePath",
+          "applicationUserId"
+        ]
+      },
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the new user",
+            "example": "john.doe@example.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "description": "Plain-text password for the new user (will be hashed)",
+            "example": "MyStrongP@ssw0rd!"
+          },
+          "isEmailVerified": {
+            "type": "boolean",
+            "description": "Flag indicating if the email address has been verified",
+            "example": true
+          },
+          "firstName": {
+            "type": "string",
+            "description": "First name of the new user",
+            "example": "John"
+          },
+          "middleName": {
+            "type": "string",
+            "description": "Middle name of the new user (optional)",
+            "example": "Alexander"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Last name of the new user",
+            "example": "Doe"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "description": "Phone number of the new user (optional)",
+            "example": "+123456789"
+          },
+          "birthDate": {
+            "type": "string",
+            "description": "Birth date in ISO format (YYYY-MM-DD) (optional)",
+            "example": "1990-01-01"
+          },
+          "role": {
+            "type": "string",
+            "description": "Role of the new user (defaults to USER if not provided)",
+            "enum": [
+              "USER",
+              "ADMIN",
+              "PHYSIOTHERAPIST"
+            ],
+            "default": "USER"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "isEmailVerified",
+          "firstName",
+          "lastName"
+        ]
+      },
       "UpdateUserDto": {
         "type": "object",
         "properties": {
@@ -3783,6 +4349,15 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/PhysiotherapistDto"
+              }
+            ]
+          },
+          "patient": {
+            "nullable": true,
+            "description": "Patient data",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PatientDto"
               }
             ]
           }

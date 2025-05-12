@@ -1,31 +1,27 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Typography,
-  Chip,
-  Paper,
-  Stack,
-  Avatar,
-  Card,
-  CardContent,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Divider,
-  Grid,
-} from "@mui/material";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Chip from "@mui/material/Chip";
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
+import Avatar from "@mui/material/Avatar";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import Divider from "@mui/material/Divider";
+import Grid from "@mui/material/Grid";
 import EventIcon from "@mui/icons-material/Event";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PersonIcon from "@mui/icons-material/Person";
 import EuroIcon from "@mui/icons-material/Euro";
 import { DateTime } from "luxon";
 import { getCourseLevelName } from "../../../data/course-levels";
-import {
-  InfoOutlined,
-  CategoryOutlined,
-  GroupOutlined,
-} from "@mui/icons-material";
+import InfoOutlined from "@mui/icons-material/InfoOutlined";
+import CategoryOutlined from "@mui/icons-material/CategoryOutlined";
+import GroupOutlined from "@mui/icons-material/GroupOutlined";
 import { CourseDto } from "@easymotion/openapi";
 import { calculateDuration } from "../../../utils/format";
 import { getPaymentRecurrenceName } from "../../../data/payment-type";

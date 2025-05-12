@@ -9,7 +9,7 @@ import { DateTime } from "luxon";
 import { randomBytes, randomInt } from "node:crypto";
 import { v4 as uuidv4 } from "uuid";
 import { PrismaService } from "nestjs-prisma";
-import { UpdateUserDto } from "./dto/update-user.dto";
+import { UpdateUserDto } from "./dto/user/update-user.dto";
 
 @Injectable()
 export class UserManager {
@@ -116,16 +116,17 @@ export class UserManager {
   async updateUser(userId: string, data: UpdateUserDto) {
     const user = await this.getUserById(userId); // ensures user exists
 
-    if (user.role !== Role.PHYSIOTHERAPIST && !!data.physiotherapist) {
-      throw new BadRequestException(
-        "Physiotherapist data can only be updated for physiotherapists"
-      );
+    if (this.isUpdateDataValid(user, data)) {
+      throw new BadRequestException("Attempting to update wrong user type");
     }
 
     const updateData: Prisma.ApplicationUserUpdateInput = {
       ...data,
       physiotherapist: {
         update: data.physiotherapist,
+      },
+      patient: {
+        update: data.patient,
       },
     };
 
@@ -134,6 +135,19 @@ export class UserManager {
       include: { patient: true, physiotherapist: true },
       data: updateData,
     });
+  }
+
+  /**
+   * Checks if the update data is valid for the user.
+   * @param user - The user to check the update data for.
+   * @param data - The update data to check.
+   * @returns A boolean indicating if the update data is valid for the user.
+   */
+  private isUpdateDataValid(user: ApplicationUser, data: UpdateUserDto) {
+    return (
+      (user.role !== Role.PHYSIOTHERAPIST && !!data.physiotherapist) ||
+      (user.role !== Role.USER && !!data.patient)
+    );
   }
 
   /**

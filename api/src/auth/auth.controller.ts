@@ -38,10 +38,10 @@ import {
   UserLocalAuthGuard,
 } from "./guards/local-auth.guard";
 import { AuthResponseDto } from "./dto/auth-user/auth-response.dto";
-import { ApplicationUserDto } from "src/users/dto/application-user.dto";
 import { ApiFileBody } from "src/common/decorators/api-file-body.decorator";
 import IAssetsService, { ASSETS_SERVICE } from "src/assets/assets.interface";
 import { CompressionService } from "src/assets/utilities/compression.service";
+import { ApplicationUserDto } from "src/users/dto/user/application-user.dto";
 
 // avoids having to bloat the code with the same multiple decorators
 const ApiLoginResponse = (description: string = "Successful login") =>

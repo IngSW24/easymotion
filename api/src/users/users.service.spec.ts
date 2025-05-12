@@ -1,11 +1,10 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { UsersService } from "./users.service";
 import { UserManager } from "./user.manager";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { ApplicationUserDto } from "./dto/application-user.dto";
+import { CreateUserDto } from "./dto/user/create-user.dto";
 import { plainToInstance } from "class-transformer";
 import { NotFoundException } from "@nestjs/common";
-import { UpdateUserDto } from "./dto/update-user.dto";
+import { UpdateUserDto } from "./dto/user/update-user.dto";
 import {
   applicationUserDtoMock,
   createUserDtoMock,
@@ -15,6 +14,7 @@ import {
 } from "test/mocks/users.mock";
 import { ApplicationUser } from "@prisma/client";
 import { EXTENDED_PRISMA_SERVICE } from "src/common/prisma/pagination";
+import { ApplicationUserDto } from "./dto/user/application-user.dto";
 
 describe("UsersService", () => {
   let service: UsersService;

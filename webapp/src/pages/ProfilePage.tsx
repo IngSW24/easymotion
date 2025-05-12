@@ -5,6 +5,7 @@ import GeneralProfileSettings from "../components/auth/ProfileSettings/GeneralPr
 import EmailUpdate from "../components/auth/ProfileSettings/EmailUpdate";
 import PasswordUpdate from "../components/auth/ProfileSettings/PasswordUpdate";
 import PhysiotherapistSettings from "../components/auth/ProfileSettings/PhysiotherapistSettings";
+import PatientSettings from "../components/auth/ProfileSettings/PatientSettings";
 
 export default function ProfilePage() {
   const profile = useProfile();
@@ -41,6 +42,17 @@ export default function ProfilePage() {
                   profile.updatePhysiotherapist.mutate(
                     updatedProfile.physiotherapist
                   )
+                }
+              />
+            </Grid>
+          )}
+
+          {profile.get.data.role === "USER" && (
+            <Grid size={{ xs: 12 }}>
+              <PatientSettings
+                defaultValues={profile.get.data.patient}
+                onSave={(updatedPatient) =>
+                  profile.updatePatient.mutate(updatedPatient.patient)
                 }
               />
             </Grid>

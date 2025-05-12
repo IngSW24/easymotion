@@ -13,7 +13,8 @@ import {
 } from "class-validator";
 import { Expose, Type } from "class-transformer";
 import { ApplicationUser, Role } from "@prisma/client";
-import { PhysiotherapistDto } from "./physiotherapist.dto";
+import { PhysiotherapistDto } from "../physiotherapist/physiotherapist.dto";
+import { PatientDto } from "../patient/patient.dto";
 
 export class ApplicationUserDto implements Readonly<ApplicationUser> {
   @ApiProperty({
@@ -140,6 +141,14 @@ export class ApplicationUserDto implements Readonly<ApplicationUser> {
   @Type(() => PhysiotherapistDto)
   @Expose()
   physiotherapist: PhysiotherapistDto | null;
+
+  @ApiProperty({
+    description: "Patient data",
+    type: PatientDto,
+  })
+  @Type(() => PatientDto)
+  @Expose()
+  patient: PatientDto | null;
 
   @ApiHideProperty()
   emailConfirmationToken: string;
