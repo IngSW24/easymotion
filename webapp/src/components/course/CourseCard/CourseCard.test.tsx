@@ -36,6 +36,7 @@ describe("CourseCard GUI test", () => {
     subscription_start_date: "",
     subscription_end_date: "",
     payment_recurrence: "SINGLE",
+    current_subscribers: 0,
   };
 
   it("Check if CourseCard shows the correct information", () => {
