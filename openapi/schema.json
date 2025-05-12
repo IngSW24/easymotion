@@ -3329,16 +3329,21 @@
         "type": "object",
         "properties": {
           "sex": {
-            "type": "object",
+            "type": "string",
             "nullable": true,
-            "description": "Sex of the user"
+            "description": "Sex of the user",
+            "enum": [
+              "MALE",
+              "FEMALE",
+              "OTHER"
+            ]
           },
-          "heightCm": {
+          "height": {
             "type": "number",
             "nullable": true,
             "description": "Height in cm"
           },
-          "weightKg": {
+          "weight": {
             "type": "number",
             "nullable": true,
             "description": "Weight in kg"
@@ -3354,14 +3359,24 @@
             "description": "Alcohol consumption (integer)"
           },
           "activityLevel": {
-            "type": "object",
+            "type": "string",
             "nullable": true,
-            "description": "Activity level"
+            "description": "Activity level",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH"
+            ]
           },
           "mobilityLevel": {
-            "type": "object",
+            "type": "string",
             "nullable": true,
-            "description": "Mobility level"
+            "description": "Mobility level",
+            "enum": [
+              "LIMITED",
+              "MODERATE",
+              "FULL"
+            ]
           },
           "restingHeartRate": {
             "type": "number",
@@ -3973,16 +3988,21 @@
         "type": "object",
         "properties": {
           "sex": {
-            "type": "object",
+            "type": "string",
             "nullable": true,
-            "description": "Sex of the user"
+            "description": "Sex of the user",
+            "enum": [
+              "MALE",
+              "FEMALE",
+              "OTHER"
+            ]
           },
-          "heightCm": {
+          "height": {
             "type": "number",
             "nullable": true,
             "description": "Height in cm"
           },
-          "weightKg": {
+          "weight": {
             "type": "number",
             "nullable": true,
             "description": "Weight in kg"
@@ -3998,14 +4018,24 @@
             "description": "Alcohol consumption (integer)"
           },
           "activityLevel": {
-            "type": "object",
+            "type": "string",
             "nullable": true,
-            "description": "Activity level"
+            "description": "Activity level",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH"
+            ]
           },
           "mobilityLevel": {
-            "type": "object",
+            "type": "string",
             "nullable": true,
-            "description": "Mobility level"
+            "description": "Mobility level",
+            "enum": [
+              "LIMITED",
+              "MODERATE",
+              "FULL"
+            ]
           },
           "restingHeartRate": {
             "type": "number",
@@ -4207,16 +4237,6 @@
             "type": "string",
             "description": "Birth date in ISO format (YYYY-MM-DD) (optional)",
             "example": "1990-01-01"
-          },
-          "sex": {
-            "type": "string",
-            "description": "Sex of the new user (optional)",
-            "enum": [
-              "MALE",
-              "FEMALE",
-              "OTHER"
-            ],
-            "default": "MALE"
           },
           "role": {
             "type": "string",

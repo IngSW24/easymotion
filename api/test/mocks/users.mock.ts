@@ -72,8 +72,8 @@ export const applicationUserDtoMock = (): ApplicationUserDto => ({
   },
   patient: {
     sex: "MALE",
-    heightCm: 170,
-    weightKg: 70,
+    height: 170,
+    weight: 70,
     smoker: false,
     activityLevel: ActivityLevel.MEDIUM,
     mobilityLevel: MobilityLevel.LIMITED,

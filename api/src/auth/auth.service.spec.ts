@@ -187,8 +187,8 @@ describe("AuthService - validateUser", () => {
       } as PhysiotherapistDto,
       patient: {
         sex: Sex.MALE,
-        heightCm: 0,
-        weightKg: 0,
+        height: 0,
+        weight: 0,
         smoker: false,
         activityLevel: ActivityLevel.LOW,
         mobilityLevel: "LIMITED",

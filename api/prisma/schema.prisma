@@ -169,8 +169,8 @@ model Patient {
   subscriptions     Subscription[]
 
   sex                 Sex?
-  heightCm            Float?
-  weightKg            Float?
+  height              Float?
+  weight              Float?
   smoker              Boolean?
   alcoholUnits        Int?
   activityLevel       ActivityLevel?
