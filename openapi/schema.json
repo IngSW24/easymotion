@@ -2933,10 +2933,6 @@
             "nullable": true,
             "description": "Amount of maximum subscribers (unlimited if null)"
           },
-          "current_subscribers": {
-            "type": "number",
-            "description": "Current subscribers (count)"
-          },
           "tags": {
             "description": "Related tags",
             "type": "array",
@@ -2975,7 +2971,6 @@
           "payment_recurrence",
           "is_published",
           "subscriptions_open",
-          "current_subscribers",
           "tags",
           "subscription_start_date",
           "subscription_end_date",
@@ -3069,10 +3064,6 @@
             "type": "number",
             "nullable": true,
             "description": "Amount of maximum subscribers (unlimited if null)"
-          },
-          "current_subscribers": {
-            "type": "number",
-            "description": "Current subscribers (count)"
           },
           "tags": {
             "description": "Related tags",

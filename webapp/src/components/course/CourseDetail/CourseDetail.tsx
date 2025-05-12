@@ -223,6 +223,7 @@ const CourseDetail: React.FC<CourseDetailProps> = (
                   startSubscriptionDate={startSubscriptionDate.getTime()}
                   endSubscriptionDate={endSubscriptionDate}
                   maxSubscribers={course.max_subscribers ?? 0}
+                  price={getPaymentDetails()}
                   courseId={course.id}
                   userId={user?.id}
                 />

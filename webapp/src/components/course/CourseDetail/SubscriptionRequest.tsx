@@ -24,6 +24,10 @@ const style = {
   boxShadow: 24,
   p: 4,
   borderRadius: 1,
+  justifyContent: "center",
+  alignItems: "center",
+  maxHeight: "calc(100vh)", // 80% of the viewport height minus padding
+  overflowY: "auto", // enables vertical scrolling
 };
 
 export interface CourseDetailProps {
@@ -33,6 +37,7 @@ export interface CourseDetailProps {
   startSubscriptionDate: number;
   endSubscriptionDate: Date;
   maxSubscribers: number;
+  price: string;
   open: boolean;
   setOpen: (s: boolean) => void;
 }
@@ -45,6 +50,7 @@ export default function SubscriptionRequest(props: CourseDetailProps) {
     startSubscriptionDate,
     endSubscriptionDate,
     maxSubscribers,
+    price,
     open,
     setOpen,
   } = props;
@@ -212,6 +218,14 @@ export default function SubscriptionRequest(props: CourseDetailProps) {
                     {endSubscriptionDate.toLocaleDateString()} alle{" "}
                     {endSubscriptionDate.toLocaleTimeString()}
                   </Typography>
+                </Box>
+
+                <Box mb={3}>
+                  <Typography fontWeight="bold" sx={{ fontSize: 20 }}>
+                    Prezzo:
+                  </Typography>
+
+                  <Typography>{price}</Typography>
                 </Box>
               </Grid>
               <Grid size={{ xs: 6 }}>
