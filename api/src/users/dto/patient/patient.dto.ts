@@ -4,7 +4,6 @@ import { Exclude, Expose } from "class-transformer";
 import {
   IsBoolean,
   IsDate,
-  IsEnum,
   IsNumber,
   IsOptional,
   IsString,
@@ -14,8 +13,11 @@ import {
  * Represents the patient-specific data for the application user.
  */
 export class PatientDto implements Patient {
-  @ApiProperty({ description: "Sex of the user", required: false })
-  @IsEnum($Enums.Sex)
+  @ApiProperty({
+    description: "Sex of the user",
+    required: false,
+    enum: $Enums.Sex,
+  })
   @IsOptional()
   @Expose()
   sex: $Enums.Sex | null;
@@ -47,14 +49,20 @@ export class PatientDto implements Patient {
   @Expose()
   alcoholUnits: number | null;
 
-  @ApiProperty({ description: "Activity level", required: false })
-  @IsEnum($Enums.ActivityLevel)
+  @ApiProperty({
+    description: "Activity level",
+    required: false,
+    enum: $Enums.ActivityLevel,
+  })
   @IsOptional()
   @Expose()
   activityLevel: $Enums.ActivityLevel | null;
 
-  @ApiProperty({ description: "Mobility level", required: false })
-  @IsEnum($Enums.MobilityLevel)
+  @ApiProperty({
+    description: "Mobility level",
+    required: false,
+    enum: $Enums.MobilityLevel,
+  })
   @IsOptional()
   @Expose()
   mobilityLevel: $Enums.MobilityLevel | null;
