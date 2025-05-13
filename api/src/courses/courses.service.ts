@@ -425,7 +425,7 @@ export class CoursesService {
           plainToInstance(CourseDto, {
             ...x.course,
             owner: x.course.owner.applicationUser,
-            current_subscribers: tx.subscription.count({
+            current_subscribers: await tx.subscription.count({
               where: { course_id: x.course_id },
             }),
           })
