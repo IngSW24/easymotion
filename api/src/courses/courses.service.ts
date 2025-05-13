@@ -366,68 +366,75 @@ export class CoursesService {
     pagination: PaginationFilter,
     filters: CourseQueryFilter
   ) {
-    const count = await this.prismaService.subscription.count({
-      where: { patient_id: userId, isPending: false },
-    });
+    return this.prismaService.$transaction(async (tx) => {
+      const count = await tx.subscription.count({
+        where: { patient_id: userId, isPending: false },
+      });
 
-    const courses = await this.prismaService.subscription.findMany({
-      where: {
-        AND: [
-          { isPending: false },
-          { patient_id: userId },
-          {
-            ...(filters.searchText
-              ? {
-                  OR: [
-                    {
-                      course: {
-                        name: {
-                          contains: filters.searchText,
-                          mode: "insensitive",
+      const courses = await tx.subscription.findMany({
+        where: {
+          AND: [
+            { isPending: false },
+            { patient_id: userId },
+            {
+              ...(filters.searchText
+                ? {
+                    OR: [
+                      {
+                        course: {
+                          name: {
+                            contains: filters.searchText,
+                            mode: "insensitive",
+                          },
                         },
                       },
-                    },
-                    {
-                      course: {
-                        description: {
-                          contains: filters.searchText,
-                          mode: "insensitive",
+                      {
+                        course: {
+                          description: {
+                            contains: filters.searchText,
+                            mode: "insensitive",
+                          },
                         },
                       },
-                    },
-                  ],
-                }
-              : {}),
-            ...(filters.categoryIds
-              ? { category_id: { in: filters.categoryIds.split(",") } }
-              : {}),
-            ...(filters.level ? { level: filters.level } : {}),
-          },
-        ],
-      },
-      include: {
-        course: {
-          include: {
-            owner: {
-              include: { applicationUser: true },
+                    ],
+                  }
+                : {}),
+              ...(filters.categoryIds
+                ? { category_id: { in: filters.categoryIds.split(",") } }
+                : {}),
+              ...(filters.level ? { level: filters.level } : {}),
             },
-            category: true,
+          ],
+        },
+        include: {
+          course: {
+            include: {
+              owner: {
+                include: { applicationUser: true },
+              },
+              category: true,
+            },
           },
         },
-      },
-      skip: pagination.page * pagination.perPage,
-      take: pagination.perPage,
-    });
+        skip: pagination.page * pagination.perPage,
+        take: pagination.perPage,
+      });
 
-    return toPaginatedOutput(
-      courses.map((x) =>
-        plainToInstance(CourseDto, {
-          ...x.course,
-          owner: x.course.owner.applicationUser,
-        })
-      ),
-      count,
-      pagination
-    );
+      return toPaginatedOutput(
+        await Promise.all(
+          courses.map(async (x) =>
+            plainToInstance(CourseDto, {
+              ...x.course,
+              owner: x.course.owner.applicationUser,
+              current_subscribers: await tx.subscription.count({
+                where: { course_id: x.course_id },
+              }),
+            })
+          )
+        ),
+        count,
+        pagination
+      );
+    });
   }
 }

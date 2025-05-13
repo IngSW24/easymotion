@@ -24,7 +24,6 @@ describe("CoursesController", () => {
     // Mock PrismaService
     prismaMock = {
       $transaction: jest.fn(),
-      $transaction: jest.fn(),
       course: {
         create: jest.fn(),
         findMany: jest.fn(),
