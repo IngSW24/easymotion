@@ -421,14 +421,16 @@ export class CoursesService {
       });
 
       return toPaginatedOutput(
-        courses.map((x) =>
-          plainToInstance(CourseDto, {
-            ...x.course,
-            owner: x.course.owner.applicationUser,
-            current_subscribers: await tx.subscription.count({
-              where: { course_id: x.course_id },
-            }),
-          })
+        await Promise.all(
+          courses.map(async (x) =>
+            plainToInstance(CourseDto, {
+              ...x.course,
+              owner: x.course.owner.applicationUser,
+              current_subscribers: await tx.subscription.count({
+                where: { course_id: x.course_id },
+              }),
+            })
+          )
         ),
         count,
         pagination
