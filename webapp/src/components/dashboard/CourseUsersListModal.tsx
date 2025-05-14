@@ -41,18 +41,32 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
   } = useSubscriptions({ courseId: courseId });
 
   const confirmSubscription = async (patientId: string) => {
-    console.log(courseId, patientId);
-    acceptSubscriptionRequest.mutateAsync({
-      course_id: courseId!,
-      patient_id: patientId,
-    });
+    if (!courseId) return;
+    try {
+      await acceptSubscriptionRequest.mutateAsync({
+        course_id: courseId,
+        patient_id: patientId,
+      });
+
+      getCourseSubscribers.refetch();
+      getPendingCourseSubscriptions.refetch();
+    } catch (err) {
+      console.error("Error accepting subscription:", err);
+    }
   };
 
   const denySubscription = async (patientId: string) => {
-    unsubscribe.mutateAsync({
-      course_id: courseId!,
-      patient_id: patientId,
-    });
+    if (!courseId) return;
+    try {
+      await unsubscribe.mutateAsync({
+        course_id: courseId,
+        patient_id: patientId,
+      });
+
+      getPendingCourseSubscriptions.refetch();
+    } catch (error) {
+      console.error("Error denying subscription:", error);
+    }
   };
 
   const [currentPageState, setCurrentPageState] = useState(
@@ -69,21 +83,24 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
   };
 
   useEffect(() => {
-    if (
-      getCourseSubscribers.isError ||
-      getPendingCourseSubscriptions.isError ||
-      !courseId
-    ) {
+    if (getCourseSubscribers.isError || getPendingCourseSubscriptions.isError) {
       setCurrentPageState(CurrentState.ERROR);
     } else if (
-      getCourseSubscribers.isSuccess &&
-      getPendingCourseSubscriptions.isSuccess
+      (getCourseSubscribers.isSuccess || getCourseSubscribers.data) &&
+      (getPendingCourseSubscriptions.isSuccess ||
+        getPendingCourseSubscriptions.data)
     ) {
       setCurrentPageState(CurrentState.READY);
     } else {
       setCurrentPageState(CurrentState.LOADING);
     }
-  }, [getCourseSubscribers, getPendingCourseSubscriptions, courseId]);
+  }, [
+    getCourseSubscribers,
+    getPendingCourseSubscriptions,
+    getCourseSubscribers.data,
+    getPendingCourseSubscriptions.data,
+    courseId,
+  ]);
 
   // Render already subscribed user (simplified)
   const renderSubscribedUserItem = (

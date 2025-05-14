@@ -4238,6 +4238,16 @@
             "description": "Birth date in ISO format (YYYY-MM-DD) (optional)",
             "example": "1990-01-01"
           },
+          "sex": {
+            "type": "string",
+            "description": "Sex of the new user (optional)",
+            "enum": [
+              "MALE",
+              "FEMALE",
+              "OTHER"
+            ],
+            "default": "MALE"
+          },
           "role": {
             "type": "string",
             "description": "Role of the new user (defaults to USER if not provided)",
