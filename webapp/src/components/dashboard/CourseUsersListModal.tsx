@@ -42,7 +42,7 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
 
   const confirmSubscription = async (patientId: string) => {
     if (!courseId) return;
-    acceptSubscriptionRequest.mutateAsync({
+    await acceptSubscriptionRequest.mutateAsync({
       course_id: courseId,
       patient_id: patientId,
     });
