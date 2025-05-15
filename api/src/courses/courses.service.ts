@@ -149,46 +149,6 @@ export class CoursesService {
     });
   }
 
-  async findAllByPhysiotherapist(
-    physioId: string,
-    pagination: PaginationFilter
-  ) {
-    return this.prismaService.$transaction(async (tx) => {
-      const count = await tx.course.count({
-        where: { owner_id: physioId },
-      });
-
-      const courses = await tx.course.findMany({
-        where: { owner_id: physioId },
-        include: {
-          owner: {
-            include: { applicationUser: true },
-          },
-          category: true,
-          sessions: true,
-        },
-        skip: pagination.page * pagination.perPage,
-        take: pagination.perPage,
-      });
-
-      return toPaginatedOutput(
-        await Promise.all(
-          courses.map(async (course) =>
-            plainToInstance(CourseDto, {
-              ...course,
-              owner: course.owner.applicationUser,
-              current_subscribers: await tx.subscription.count({
-                where: { course_id: course.id },
-              }),
-            })
-          )
-        ),
-        count,
-        pagination
-      );
-    });
-  }
-
   /**
    * Finds a single course by its ID.
    * @param id - Unique identifier of the course.

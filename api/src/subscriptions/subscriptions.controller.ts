@@ -123,7 +123,7 @@ export class SubscriptionsController {
   }
 
   /**
-   * [ADMIN & PHYSIOTHERAPIST] Get all active subscribers for a course
+   * [ADMIN & PHYSIOTHERAPIST] Get many active subscribers for a course
    */
   @Get("course/:courseId")
   @UseAuth([Role.ADMIN, Role.PHYSIOTHERAPIST])
@@ -140,7 +140,7 @@ export class SubscriptionsController {
   }
 
   /**
-   * [ADMIN & PHYSIOTHERAPIST] Get all pending subscribers for a course
+   * [ADMIN & PHYSIOTHERAPIST] Get many pending subscribers for a course
    */
   @Get("course/:courseId/pending")
   @UseAuth([Role.ADMIN, Role.PHYSIOTHERAPIST])

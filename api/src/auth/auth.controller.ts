@@ -4,8 +4,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
-  HttpStatus,
   Inject,
   ParseFilePipeBuilder,
   Post,
@@ -42,7 +40,6 @@ import { AuthResponseDto } from "./dto/auth-user/auth-response.dto";
 import { ApiFileBody } from "src/common/decorators/api-file-body.decorator";
 import IAssetsService, { ASSETS_SERVICE } from "src/assets/assets.interface";
 import { CompressionService } from "src/assets/utilities/compression.service";
-import { ApplicationUserDto } from "src/users/dto/user/application-user.dto";
 import { AuthUserDto } from "./dto/auth-user/auth-user.dto";
 
 // avoids having to bloat the code with the same multiple decorators
@@ -59,11 +56,7 @@ const ApiLoginResponse = (description: string = "Successful login") =>
 
 @Controller("auth")
 export class AuthController {
-  constructor(
-    private authService: AuthService,
-    private readonly imageCompressionService: CompressionService,
-    @Inject(ASSETS_SERVICE) private readonly assetsService: IAssetsService
-  ) {}
+  constructor(private authService: AuthService) {}
 
   private async login(req: CustomRequest, res: any) {
     if (req.user.requiresOtp) {
@@ -148,7 +141,6 @@ export class AuthController {
   @UseAuth()
   async logout(@Res() res) {
     this.clearRefreshTokenCookie(res);
-    res.sendStatus(200);
   }
 
   /**
@@ -160,6 +152,7 @@ export class AuthController {
   @ApiOkResponse({ type: AuthUserDto })
   @SerializeOptions({ type: AuthUserDto })
   getUserProfile(@Req() req) {
+    // this returns an ApplicationUser that will be converted into a AuthUser
     return this.authService.getUserProfile(req.user.sub);
   }
 
@@ -170,6 +163,8 @@ export class AuthController {
    */
   @UseAuth()
   @Put("profile")
+  @ApiOkResponse({ type: AuthUserDto })
+  @SerializeOptions({ type: AuthUserDto })
   updateUserProfile(@Req() req, @Body() updateProfileDto: UpdateAuthUserDto) {
     return this.authService.updateUserProfile(req.user.sub, updateProfileDto);
   }
@@ -181,6 +176,7 @@ export class AuthController {
    */
   @UseAuth()
   @Delete("profile")
+  @ApiOkResponse()
   async deleteUserProfile(@Req() req, @Res() res) {
     this.clearRefreshTokenCookie(res);
     await this.authService.deleteUserProfile(req.user.sub);
@@ -193,7 +189,8 @@ export class AuthController {
    */
   @UseAuth()
   @Post("profile/picture")
-  @ApiOkResponse({ type: ApplicationUserDto })
+  @ApiOkResponse({ type: AuthUserDto })
+  @SerializeOptions({ type: AuthUserDto })
   @ApiFileBody()
   async updateProfilePicture(
     @Req() req,
@@ -207,13 +204,9 @@ export class AuthController {
   ) {
     const userId = req.user.sub;
 
-    const compressedBuffer = await this.imageCompressionService.compressImage(
-      file.buffer
-    );
-
     return this.authService.updateUserPicture(
       userId,
-      compressedBuffer,
+      file.buffer,
       file.mimetype
     );
   }
@@ -222,8 +215,8 @@ export class AuthController {
    * Registers a new customer account.
    * @param signUpDto The data for creating the new account.
    */
-  @HttpCode(HttpStatus.OK)
   @Post("signup/customer")
+  @ApiOkResponse()
   signUp(@Body() signUpDto: SignUpDto) {
     return this.authService.customerSignup(signUpDto);
   }
@@ -233,6 +226,7 @@ export class AuthController {
    * @param resetPasswordRequestDto The email of the user requesting a reset.
    */
   @Post("password")
+  @ApiOkResponse()
   requestPasswordReset(@Body() resetPasswordRequestDto: EmailDto) {
     return this.authService.requestResetPassword(resetPasswordRequestDto);
   }
@@ -242,6 +236,7 @@ export class AuthController {
    * @param passwordUpdateDto The data to update the password.
    */
   @Post("password/update")
+  @ApiOkResponse()
   updatePassword(@Body() passwordUpdateDto: PasswordUpdateDto) {
     return this.authService.updatePassword(passwordUpdateDto);
   }
@@ -253,6 +248,7 @@ export class AuthController {
    */
   @UseAuth()
   @Post("password/change")
+  @ApiOkResponse()
   changePassword(@Req() req, @Body() passwordChangeDto: PasswordChangeDto) {
     const userId = req.user.sub;
     return this.authService.changePassword(userId, passwordChangeDto);

@@ -22,11 +22,11 @@ import { AssetsModule } from "src/assets/assets.module";
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         global: true,
-        secret: configService.get("jwt.secret"),
+        secret: configService.getOrThrow("jwt.secret"),
         signOptions: {
-          expiresIn: configService.get("jwt.expiresIn"),
-          audience: configService.get("jwt.audience"),
-          issuer: configService.get("jwt.issuer"),
+          expiresIn: configService.getOrThrow("jwt.expiresIn"),
+          audience: configService.getOrThrow("jwt.audience"),
+          issuer: configService.getOrThrow("jwt.issuer"),
         },
       }),
     }),

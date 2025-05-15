@@ -24,6 +24,7 @@ import frontendConfig from "src/config/frontend.config";
 import { AuthResponseDto } from "./dto/auth-user/auth-response.dto";
 import IAssetsService, { ASSETS_SERVICE } from "src/assets/assets.interface";
 import { DateTime } from "luxon";
+import { CompressionService } from "src/assets/utilities/compression.service";
 
 @Injectable()
 export class AuthService {
@@ -36,7 +37,8 @@ export class AuthService {
     @Inject(frontendConfig.KEY)
     private readonly frontendConfigService: ConfigType<typeof frontendConfig>,
     @Inject(ASSETS_SERVICE)
-    private readonly assetsService: IAssetsService
+    private readonly assetsService: IAssetsService,
+    private readonly imageCompressionService: CompressionService
   ) {}
 
   /**
@@ -105,8 +107,11 @@ export class AuthService {
 
     const fileName = `${userId}-${!uniqueTimestamp ? DateTime.now().toMillis() : uniqueTimestamp}`;
 
+    const compressedBuffer =
+      await this.imageCompressionService.compressImage(buffer);
+
     const imagePath = await this.assetsService.uploadBuffer(
-      buffer,
+      compressedBuffer,
       "profile",
       fileName,
       mimetype
@@ -166,14 +171,10 @@ export class AuthService {
   /**
    * Fetches the user profile for the given user ID.
    * @param userId the ID of the user to fetch the profile for
-   * @returns the user profile as an AuthUserDto
+   * @returns the user profile as an ApplicationUserDto (will be converted by the controller)
    */
-  async getUserProfile(userId: string) {
-    const result = await this.userManager.getUserById(userId);
-
-    return plainToInstance(AuthUserDto, result, {
-      excludeExtraneousValues: true,
-    });
+  getUserProfile(userId: string) {
+    return this.userManager.getUserById(userId);
   }
 
   /**
@@ -399,7 +400,7 @@ export class AuthService {
   }
 
   /**
-   * Retrieves a user by their unique identifier or throws an exception if any error occours.
+   * Retrieves a user by their unique identifier or throws an exception if any error occurs.
    * @param userId The unique identifier of the user to retrieve.
    * @returns A promise that resolves with the user if found.
    */
