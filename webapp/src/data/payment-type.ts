@@ -1,7 +1,7 @@
 import { CourseDto } from "@easymotion/openapi";
 
 export const paymentRecurrence: LiteralUnionDescriptor<
-  CourseDto["payment_recurrence"]
+  CourseDto["paymentRecurrence"]
 > = [
   { value: "SINGLE", label: "unica rata" },
   { value: "PER_SESSION", label: "a sessione" },

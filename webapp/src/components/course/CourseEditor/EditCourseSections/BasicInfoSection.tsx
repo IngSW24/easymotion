@@ -20,10 +20,10 @@ export default function BasicInfoSection() {
         fullWidth
       />
       <TextField
-        {...register("short_description")}
+        {...register("shortDescription")}
         label="Descrizione breve"
-        error={!!errors.short_description}
-        helperText={errors.short_description?.message}
+        error={!!errors.shortDescription}
+        helperText={errors.shortDescription?.message}
         fullWidth
         multiline
         rows={2}

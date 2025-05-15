@@ -7,8 +7,9 @@
         "parameters": [
           {
             "name": "page",
-            "required": false,
+            "required": true,
             "in": "query",
+            "description": "Page",
             "schema": {
               "default": 0,
               "type": "number"
@@ -16,8 +17,9 @@
           },
           {
             "name": "perPage",
-            "required": false,
+            "required": true,
             "in": "query",
+            "description": "Page size",
             "schema": {
               "default": 10,
               "type": "number"
@@ -164,8 +166,9 @@
         "parameters": [
           {
             "name": "page",
-            "required": false,
+            "required": true,
             "in": "query",
+            "description": "Page",
             "schema": {
               "default": 0,
               "type": "number"
@@ -173,8 +176,9 @@
           },
           {
             "name": "perPage",
-            "required": false,
+            "required": true,
             "in": "query",
+            "description": "Page size",
             "schema": {
               "default": 10,
               "type": "number"
@@ -290,8 +294,9 @@
         "parameters": [
           {
             "name": "page",
-            "required": false,
+            "required": true,
             "in": "query",
+            "description": "Page",
             "schema": {
               "default": 0,
               "type": "number"
@@ -299,8 +304,9 @@
           },
           {
             "name": "perPage",
-            "required": false,
+            "required": true,
             "in": "query",
+            "description": "Page size",
             "schema": {
               "default": 10,
               "type": "number"
@@ -882,7 +888,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApplicationUserDto"
+                  "$ref": "#/components/schemas/AuthUserDto"
                 }
               }
             }
@@ -926,6 +932,9 @@
         "responses": {
           "200": {
             "description": ""
+          },
+          "201": {
+            "description": ""
           }
         },
         "summary": "Registers a new customer account.",
@@ -949,6 +958,9 @@
           }
         },
         "responses": {
+          "200": {
+            "description": ""
+          },
           "201": {
             "description": ""
           }
@@ -974,6 +986,9 @@
           }
         },
         "responses": {
+          "200": {
+            "description": ""
+          },
           "201": {
             "description": ""
           }
@@ -999,6 +1014,9 @@
           }
         },
         "responses": {
+          "200": {
+            "description": ""
+          },
           "201": {
             "description": ""
           }
@@ -1119,8 +1137,9 @@
         "parameters": [
           {
             "name": "page",
-            "required": false,
+            "required": true,
             "in": "query",
+            "description": "Page",
             "schema": {
               "default": 0,
               "type": "number"
@@ -1128,8 +1147,9 @@
           },
           {
             "name": "perPage",
-            "required": false,
+            "required": true,
             "in": "query",
+            "description": "Page size",
             "schema": {
               "default": 10,
               "type": "number"
@@ -1256,8 +1276,9 @@
         "parameters": [
           {
             "name": "page",
-            "required": false,
+            "required": true,
             "in": "query",
+            "description": "Page",
             "schema": {
               "default": 0,
               "type": "number"
@@ -1265,8 +1286,9 @@
           },
           {
             "name": "perPage",
-            "required": false,
+            "required": true,
             "in": "query",
+            "description": "Page size",
             "schema": {
               "default": 10,
               "type": "number"
@@ -1477,8 +1499,9 @@
         "parameters": [
           {
             "name": "page",
-            "required": false,
+            "required": true,
             "in": "query",
+            "description": "Page",
             "schema": {
               "default": 0,
               "type": "number"
@@ -1486,8 +1509,9 @@
           },
           {
             "name": "perPage",
-            "required": false,
+            "required": true,
             "in": "query",
+            "description": "Page size",
             "schema": {
               "default": 10,
               "type": "number"
@@ -1679,8 +1703,9 @@
         "parameters": [
           {
             "name": "page",
-            "required": false,
+            "required": true,
             "in": "query",
+            "description": "Page",
             "schema": {
               "default": 0,
               "type": "number"
@@ -1688,8 +1713,9 @@
           },
           {
             "name": "perPage",
-            "required": false,
+            "required": true,
             "in": "query",
+            "description": "Page size",
             "schema": {
               "default": 10,
               "type": "number"
@@ -1833,8 +1859,9 @@
         "parameters": [
           {
             "name": "page",
-            "required": false,
+            "required": true,
             "in": "query",
+            "description": "Page",
             "schema": {
               "default": 0,
               "type": "number"
@@ -1842,8 +1869,9 @@
           },
           {
             "name": "perPage",
-            "required": false,
+            "required": true,
             "in": "query",
+            "description": "Page size",
             "schema": {
               "default": 10,
               "type": "number"
@@ -1969,8 +1997,9 @@
           },
           {
             "name": "page",
-            "required": false,
+            "required": true,
             "in": "query",
+            "description": "Page",
             "schema": {
               "default": 0,
               "type": "number"
@@ -1978,8 +2007,9 @@
           },
           {
             "name": "perPage",
-            "required": false,
+            "required": true,
             "in": "query",
+            "description": "Page size",
             "schema": {
               "default": 10,
               "type": "number"
@@ -2072,8 +2102,9 @@
           },
           {
             "name": "page",
-            "required": false,
+            "required": true,
             "in": "query",
+            "description": "Page",
             "schema": {
               "default": 0,
               "type": "number"
@@ -2081,8 +2112,9 @@
           },
           {
             "name": "perPage",
-            "required": false,
+            "required": true,
             "in": "query",
+            "description": "Page size",
             "schema": {
               "default": 10,
               "type": "number"
@@ -2175,8 +2207,9 @@
           },
           {
             "name": "page",
-            "required": false,
+            "required": true,
             "in": "query",
+            "description": "Page",
             "schema": {
               "default": 0,
               "type": "number"
@@ -2184,8 +2217,9 @@
           },
           {
             "name": "perPage",
-            "required": false,
+            "required": true,
             "in": "query",
+            "description": "Page size",
             "schema": {
               "default": 10,
               "type": "number"
@@ -2258,7 +2292,7 @@
             "bearer": []
           }
         ],
-        "summary": "[ADMIN & PHYSIOTHERAPIST] Get all active subscribers for a course",
+        "summary": "[ADMIN & PHYSIOTHERAPIST] Get many active subscribers for a course",
         "tags": [
           "Subscriptions"
         ]
@@ -2278,8 +2312,9 @@
           },
           {
             "name": "page",
-            "required": false,
+            "required": true,
             "in": "query",
+            "description": "Page",
             "schema": {
               "default": 0,
               "type": "number"
@@ -2287,8 +2322,9 @@
           },
           {
             "name": "perPage",
-            "required": false,
+            "required": true,
             "in": "query",
+            "description": "Page size",
             "schema": {
               "default": 10,
               "type": "number"
@@ -2361,7 +2397,7 @@
             "bearer": []
           }
         ],
-        "summary": "[ADMIN & PHYSIOTHERAPIST] Get all pending subscribers for a course",
+        "summary": "[ADMIN & PHYSIOTHERAPIST] Get many pending subscribers for a course",
         "tags": [
           "Subscriptions"
         ]
@@ -2682,12 +2718,12 @@
             "type": "string",
             "description": "The id of the session"
           },
-          "start_time": {
+          "startTime": {
             "format": "date-time",
             "type": "string",
             "description": "Start time of the session"
           },
-          "end_time": {
+          "endTime": {
             "format": "date-time",
             "type": "string",
             "description": "End time of the session"
@@ -2695,8 +2731,8 @@
         },
         "required": [
           "id",
-          "start_time",
-          "end_time"
+          "startTime",
+          "endTime"
         ]
       },
       "CourseDto": {
@@ -2706,7 +2742,7 @@
             "type": "string",
             "description": "The id of the course"
           },
-          "image_path": {
+          "imagePath": {
             "type": "string",
             "nullable": true,
             "description": "The image path of the course"
@@ -2719,7 +2755,7 @@
             "type": "string",
             "description": "The complete description of the course"
           },
-          "short_description": {
+          "shortDescription": {
             "type": "string",
             "description": "A brief description of the course"
           },
@@ -2749,7 +2785,7 @@
             "minimum": 0,
             "description": "Price of the course"
           },
-          "payment_recurrence": {
+          "paymentRecurrence": {
             "type": "string",
             "description": "Payment recurrence",
             "enum": [
@@ -2759,20 +2795,20 @@
               "ANNUAL"
             ]
           },
-          "is_published": {
+          "isPublished": {
             "type": "boolean",
             "description": "Indicates if the course is public"
           },
-          "subscriptions_open": {
+          "subscriptionsOpen": {
             "type": "boolean",
             "description": "Indicates if subscriptions are open"
           },
-          "max_subscribers": {
+          "maxSubscribers": {
             "type": "number",
             "nullable": true,
             "description": "Amount of maximum subscribers (unlimited if null)"
           },
-          "current_subscribers": {
+          "currentSubscribers": {
             "type": "number",
             "description": "Current subscribers (count)"
           },
@@ -2783,12 +2819,12 @@
               "type": "string"
             }
           },
-          "created_at": {
+          "createdAt": {
             "format": "date-time",
             "type": "string",
             "description": "Date of creation"
           },
-          "updated_at": {
+          "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Date of last update"
@@ -2816,12 +2852,12 @@
               "$ref": "#/components/schemas/CourseSessionDto"
             }
           },
-          "subscription_start_date": {
+          "subscriptionStartDate": {
             "format": "date-time",
             "type": "string",
             "description": "Subscription start date"
           },
-          "subscription_end_date": {
+          "subscriptionEndDate": {
             "format": "date-time",
             "type": "string",
             "description": "Subscription end date"
@@ -2829,44 +2865,44 @@
         },
         "required": [
           "id",
-          "image_path",
+          "imagePath",
           "name",
           "description",
-          "short_description",
+          "shortDescription",
           "instructors",
           "level",
           "price",
-          "payment_recurrence",
-          "is_published",
-          "subscriptions_open",
-          "current_subscribers",
+          "paymentRecurrence",
+          "isPublished",
+          "subscriptionsOpen",
+          "currentSubscribers",
           "tags",
-          "created_at",
-          "updated_at",
+          "createdAt",
+          "updatedAt",
           "owner",
           "category",
           "sessions",
-          "subscription_start_date",
-          "subscription_end_date"
+          "subscriptionStartDate",
+          "subscriptionEndDate"
         ]
       },
       "CreateCourseSessionDto": {
         "type": "object",
         "properties": {
-          "start_time": {
+          "startTime": {
             "format": "date-time",
             "type": "string",
             "description": "Start time of the session"
           },
-          "end_time": {
+          "endTime": {
             "format": "date-time",
             "type": "string",
             "description": "End time of the session"
           }
         },
         "required": [
-          "start_time",
-          "end_time"
+          "startTime",
+          "endTime"
         ]
       },
       "CreateCourseDto": {
@@ -2880,7 +2916,7 @@
             "type": "string",
             "description": "The complete description of the course"
           },
-          "short_description": {
+          "shortDescription": {
             "type": "string",
             "description": "A brief description of the course"
           },
@@ -2910,7 +2946,7 @@
             "minimum": 0,
             "description": "Price of the course"
           },
-          "payment_recurrence": {
+          "paymentRecurrence": {
             "type": "string",
             "description": "Payment recurrence",
             "enum": [
@@ -2920,15 +2956,15 @@
               "ANNUAL"
             ]
           },
-          "is_published": {
+          "isPublished": {
             "type": "boolean",
             "description": "Indicates if the course is public"
           },
-          "subscriptions_open": {
+          "subscriptionsOpen": {
             "type": "boolean",
             "description": "Indicates if subscriptions are open"
           },
-          "max_subscribers": {
+          "maxSubscribers": {
             "type": "number",
             "nullable": true,
             "description": "Amount of maximum subscribers (unlimited if null)"
@@ -2940,17 +2976,17 @@
               "type": "string"
             }
           },
-          "subscription_start_date": {
+          "subscriptionStartDate": {
             "format": "date-time",
             "type": "string",
             "description": "Subscription start date"
           },
-          "subscription_end_date": {
+          "subscriptionEndDate": {
             "format": "date-time",
             "type": "string",
             "description": "Subscription end date"
           },
-          "category_id": {
+          "categoryId": {
             "type": "string",
             "description": "id of the existent category"
           },
@@ -2964,29 +3000,29 @@
         "required": [
           "name",
           "description",
-          "short_description",
+          "shortDescription",
           "instructors",
           "level",
           "price",
-          "payment_recurrence",
-          "is_published",
-          "subscriptions_open",
+          "paymentRecurrence",
+          "isPublished",
+          "subscriptionsOpen",
           "tags",
-          "subscription_start_date",
-          "subscription_end_date",
-          "category_id",
+          "subscriptionStartDate",
+          "subscriptionEndDate",
+          "categoryId",
           "sessions"
         ]
       },
       "UpdateCourseSessionDto": {
         "type": "object",
         "properties": {
-          "start_time": {
+          "startTime": {
             "format": "date-time",
             "type": "string",
             "description": "Start time of the session"
           },
-          "end_time": {
+          "endTime": {
             "format": "date-time",
             "type": "string",
             "description": "End time of the session"
@@ -2997,8 +3033,8 @@
           }
         },
         "required": [
-          "start_time",
-          "end_time"
+          "startTime",
+          "endTime"
         ]
       },
       "UpdateCourseDto": {
@@ -3012,7 +3048,7 @@
             "type": "string",
             "description": "The complete description of the course"
           },
-          "short_description": {
+          "shortDescription": {
             "type": "string",
             "description": "A brief description of the course"
           },
@@ -3042,7 +3078,7 @@
             "minimum": 0,
             "description": "Price of the course"
           },
-          "payment_recurrence": {
+          "paymentRecurrence": {
             "type": "string",
             "description": "Payment recurrence",
             "enum": [
@@ -3052,15 +3088,15 @@
               "ANNUAL"
             ]
           },
-          "is_published": {
+          "isPublished": {
             "type": "boolean",
             "description": "Indicates if the course is public"
           },
-          "subscriptions_open": {
+          "subscriptionsOpen": {
             "type": "boolean",
             "description": "Indicates if subscriptions are open"
           },
-          "max_subscribers": {
+          "maxSubscribers": {
             "type": "number",
             "nullable": true,
             "description": "Amount of maximum subscribers (unlimited if null)"
@@ -3072,17 +3108,17 @@
               "type": "string"
             }
           },
-          "subscription_start_date": {
+          "subscriptionStartDate": {
             "format": "date-time",
             "type": "string",
             "description": "Subscription start date"
           },
-          "subscription_end_date": {
+          "subscriptionEndDate": {
             "format": "date-time",
             "type": "string",
             "description": "Subscription end date"
           },
-          "category_id": {
+          "categoryId": {
             "type": "string",
             "description": "id of the existent category"
           },
@@ -3633,127 +3669,6 @@
           }
         }
       },
-      "ApplicationUserDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Unique user identifier (UUID)",
-            "example": "b3bf4d18-8dd0-43a1-b1da-fd3f7b9553a1"
-          },
-          "email": {
-            "type": "string",
-            "format": "email",
-            "description": "Email address of the user",
-            "example": "user@example.com"
-          },
-          "firstName": {
-            "type": "string",
-            "description": "User first name",
-            "example": "John"
-          },
-          "middleName": {
-            "type": "string",
-            "nullable": true,
-            "description": "User middle name",
-            "example": "Alexander"
-          },
-          "lastName": {
-            "type": "string",
-            "description": "User last name",
-            "example": "Doe"
-          },
-          "phoneNumber": {
-            "type": "string",
-            "nullable": true,
-            "description": "User phone number",
-            "example": "+1234567890"
-          },
-          "birthDate": {
-            "type": "string",
-            "nullable": true,
-            "description": "User birth date",
-            "example": "1990-01-01"
-          },
-          "role": {
-            "type": "string",
-            "description": "User role in the system",
-            "enum": [
-              "USER",
-              "ADMIN",
-              "PHYSIOTHERAPIST"
-            ],
-            "default": "USER"
-          },
-          "isEmailVerified": {
-            "type": "boolean",
-            "description": "Indicates if the user email has been verified",
-            "default": false,
-            "example": false
-          },
-          "lastLogin": {
-            "format": "date-time",
-            "type": "string",
-            "description": "Timestamp of the user last login",
-            "example": "2025-12-31T23:59:59.999Z"
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string",
-            "description": "Timestamp of when the user was created",
-            "example": "2025-01-01T00:00:00.000Z"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string",
-            "description": "Timestamp of the user last update",
-            "example": "2025-01-10T10:00:00.000Z"
-          },
-          "picturePath": {
-            "type": "string",
-            "nullable": true,
-            "description": "Profile picture path"
-          },
-          "twoFactorEnabled": {
-            "type": "boolean",
-            "description": "Indicates if two-factor authentication is enabled",
-            "default": false
-          },
-          "physiotherapist": {
-            "nullable": true,
-            "description": "Physiotherapist data",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/PhysiotherapistDto"
-              }
-            ]
-          },
-          "patient": {
-            "nullable": true,
-            "description": "Patient data",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/PatientDto"
-              }
-            ]
-          }
-        },
-        "required": [
-          "id",
-          "email",
-          "firstName",
-          "lastName",
-          "role",
-          "isEmailVerified",
-          "lastLogin",
-          "createdAt",
-          "updatedAt",
-          "picturePath",
-          "twoFactorEnabled",
-          "physiotherapist",
-          "patient"
-        ]
-      },
       "SignUpDto": {
         "type": "object",
         "properties": {
@@ -4267,6 +4182,127 @@
           "lastName"
         ]
       },
+      "ApplicationUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique user identifier (UUID)",
+            "example": "b3bf4d18-8dd0-43a1-b1da-fd3f7b9553a1"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the user",
+            "example": "user@example.com"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "User first name",
+            "example": "John"
+          },
+          "middleName": {
+            "type": "string",
+            "nullable": true,
+            "description": "User middle name",
+            "example": "Alexander"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "User last name",
+            "example": "Doe"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true,
+            "description": "User phone number",
+            "example": "+1234567890"
+          },
+          "birthDate": {
+            "type": "string",
+            "nullable": true,
+            "description": "User birth date",
+            "example": "1990-01-01"
+          },
+          "role": {
+            "type": "string",
+            "description": "User role in the system",
+            "enum": [
+              "USER",
+              "ADMIN",
+              "PHYSIOTHERAPIST"
+            ],
+            "default": "USER"
+          },
+          "isEmailVerified": {
+            "type": "boolean",
+            "description": "Indicates if the user email has been verified",
+            "default": false,
+            "example": false
+          },
+          "lastLogin": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Timestamp of the user last login",
+            "example": "2025-12-31T23:59:59.999Z"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Timestamp of when the user was created",
+            "example": "2025-01-01T00:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Timestamp of the user last update",
+            "example": "2025-01-10T10:00:00.000Z"
+          },
+          "picturePath": {
+            "type": "string",
+            "nullable": true,
+            "description": "Profile picture path"
+          },
+          "twoFactorEnabled": {
+            "type": "boolean",
+            "description": "Indicates if two-factor authentication is enabled",
+            "default": false
+          },
+          "physiotherapist": {
+            "nullable": true,
+            "description": "Physiotherapist data",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PhysiotherapistDto"
+              }
+            ]
+          },
+          "patient": {
+            "nullable": true,
+            "description": "Patient data",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PatientDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "firstName",
+          "lastName",
+          "role",
+          "isEmailVerified",
+          "lastLogin",
+          "createdAt",
+          "updatedAt",
+          "picturePath",
+          "twoFactorEnabled",
+          "physiotherapist",
+          "patient"
+        ]
+      },
       "UpdateUserDto": {
         "type": "object",
         "properties": {
@@ -4393,12 +4429,12 @@
       "SubscriptionDtoWithCourse": {
         "type": "object",
         "properties": {
-          "created_at": {
+          "createdAt": {
             "format": "date-time",
             "type": "string",
             "description": "Creation date"
           },
-          "updated_at": {
+          "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Update date"
@@ -4418,15 +4454,15 @@
           }
         },
         "required": [
-          "created_at",
-          "updated_at",
+          "createdAt",
+          "updatedAt",
           "course"
         ]
       },
       "SubscriptionRequestDto": {
         "type": "object",
         "properties": {
-          "course_id": {
+          "courseId": {
             "type": "string",
             "description": "Course ID of the subscription request"
           },
@@ -4436,7 +4472,7 @@
           }
         },
         "required": [
-          "course_id",
+          "courseId",
           "subscriptionRequestMessage"
         ]
       },
@@ -4481,12 +4517,12 @@
       "SubscriptionDtoWithUser": {
         "type": "object",
         "properties": {
-          "created_at": {
+          "createdAt": {
             "format": "date-time",
             "type": "string",
             "description": "Creation date"
           },
-          "updated_at": {
+          "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Update date"
@@ -4514,8 +4550,8 @@
           }
         },
         "required": [
-          "created_at",
-          "updated_at",
+          "createdAt",
+          "updatedAt",
           "course",
           "user"
         ]
@@ -4523,35 +4559,35 @@
       "SubscriptionCreateDto": {
         "type": "object",
         "properties": {
-          "course_id": {
+          "courseId": {
             "type": "string",
             "description": "Subscribed course ID"
           },
-          "patient_id": {
+          "patientId": {
             "type": "string",
             "description": "Subscribed user ID"
           }
         },
         "required": [
-          "course_id",
-          "patient_id"
+          "courseId",
+          "patientId"
         ]
       },
       "SubscriptionDeleteDto": {
         "type": "object",
         "properties": {
-          "course_id": {
+          "courseId": {
             "type": "string",
             "description": "Subscribed course ID"
           },
-          "patient_id": {
+          "patientId": {
             "type": "string",
             "description": "Subscribed user ID"
           }
         },
         "required": [
-          "course_id",
-          "patient_id"
+          "courseId",
+          "patientId"
         ]
       },
       "CreateCourseCategoryDto": {

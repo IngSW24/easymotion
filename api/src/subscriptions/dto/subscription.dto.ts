@@ -23,21 +23,21 @@ export class SubscriptionDtoWithCourse implements Subscription {
   @Type(() => Date)
   @IsDate()
   @Expose()
-  created_at: Date;
+  createdAt: Date;
 
   @ApiProperty({ description: "Update date" })
   @Type(() => Date)
   @IsDate()
   @Expose()
-  updated_at: Date;
+  updatedAt: Date;
 
   @ApiHideProperty()
   @Exclude()
-  course_id: string;
+  courseId: string;
 
   @ApiHideProperty()
   @Exclude()
-  patient_id: string;
+  patientId: string;
 
   @ApiHideProperty()
   @Exclude() // should be filtered by 2 endpoints

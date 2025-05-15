@@ -70,42 +70,42 @@ describe("CoursesService", () => {
       const createDto: CreateCourseDto = {
         name: "Test Course",
         description: "Course description",
-        short_description: "Short description",
+        shortDescription: "Short description",
         location: "Online",
         instructors: ["John Doe"],
         level: CourseLevel.BASIC,
         price: new Decimal(100),
-        payment_recurrence: PaymentRecurrence.SINGLE,
-        is_published: true,
-        subscriptions_open: true,
-        max_subscribers: 20,
+        paymentRecurrence: PaymentRecurrence.SINGLE,
+        isPublished: true,
+        subscriptionsOpen: true,
+        maxSubscribers: 20,
         tags: ["tag1", "tag2"],
-        category_id: categoryId,
+        categoryId: categoryId,
         sessions: [
-          { start_time: new Date(), end_time: new Date(Date.now() + 3600000) },
+          { startTime: new Date(), endTime: new Date(Date.now() + 3600000) },
         ],
-        subscription_start_date: new Date(),
-        subscription_end_date: new Date(),
+        subscriptionStartDate: new Date(),
+        subscriptionEndDate: new Date(),
       };
 
       const mockCreatedCourse = {
         id: randomUUID(),
         name: createDto.name,
         description: createDto.description,
-        short_description: createDto.short_description,
+        shortDescription: createDto.shortDescription,
         location: createDto.location,
         instructors: createDto.instructors,
         level: createDto.level,
         price: createDto.price,
-        payment_recurrence: createDto.payment_recurrence,
-        is_published: createDto.is_published,
-        subscriptions_open: createDto.subscriptions_open,
-        max_subscribers: createDto.max_subscribers,
+        paymentRecurrence: createDto.paymentRecurrence,
+        isPublished: createDto.isPublished,
+        subscriptionsOpen: createDto.subscriptionsOpen,
+        maxSubscribers: createDto.maxSubscribers,
         tags: createDto.tags,
-        owner_id: ownerId,
-        category_id: categoryId,
-        created_at: new Date(),
-        updated_at: new Date(),
+        ownerId: ownerId,
+        categoryId: categoryId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
         owner: {
           applicationUser: {
             id: ownerId,
@@ -121,8 +121,8 @@ describe("CoursesService", () => {
         },
         sessions: [
           {
-            start_time: createDto.sessions[0].start_time,
-            end_time: createDto.sessions[0].end_time,
+            startTime: createDto.sessions[0].startTime,
+            endTime: createDto.sessions[0].endTime,
           },
         ],
       };
@@ -137,14 +137,14 @@ describe("CoursesService", () => {
         data: expect.objectContaining({
           name: createDto.name,
           description: createDto.description,
-          short_description: createDto.short_description,
+          shortDescription: createDto.shortDescription,
           instructors: createDto.instructors,
           level: createDto.level,
           sessions: {
             create: createDto.sessions,
           },
           category: {
-            connect: { id: createDto.category_id },
+            connect: { id: createDto.categoryId },
           },
           owner: {
             connect: { applicationUserId: ownerId },
@@ -179,7 +179,7 @@ describe("CoursesService", () => {
           id: randomUUID(),
           name: "Test Course",
           description: "Description",
-          short_description: "Short Desc",
+          shortDescription: "Short Desc",
           level: CourseLevel.BASIC,
           owner: {
             applicationUser: {
@@ -192,19 +192,19 @@ describe("CoursesService", () => {
           },
           category: { id: "id1", name: "Category 1" },
           sessions: [],
-          created_at: new Date(),
-          updated_at: new Date(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
           price: new Decimal(100),
           is_free: false,
-          is_published: true,
-          subscriptions_open: true,
-          max_subscribers: null,
+          isPublished: true,
+          subscriptionsOpen: true,
+          maxSubscribers: null,
           number_of_payments: null,
           tags: [],
           location: null,
           instructors: [],
-          owner_id: "owner1",
-          category_id: "id1",
+          ownerId: "owner1",
+          categoryId: "id1",
         },
       ];
 
@@ -223,7 +223,7 @@ describe("CoursesService", () => {
           skip: pagination.page * pagination.perPage,
           take: pagination.perPage,
           orderBy: {
-            created_at: "desc",
+            createdAt: "desc",
           },
         })
       );*/
@@ -242,7 +242,7 @@ describe("CoursesService", () => {
         id: courseId,
         name: "Test Course",
         description: "Description",
-        short_description: "Short Desc",
+        shortDescription: "Short Desc",
         level: CourseLevel.BASIC,
         owner: {
           applicationUser: {
@@ -255,21 +255,21 @@ describe("CoursesService", () => {
         },
         category: { id: "id1", name: "Category 1" },
         sessions: [],
-        created_at: new Date(),
-        updated_at: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
         price: new Decimal(100),
         is_free: false,
-        is_published: true,
-        subscriptions_open: true,
-        max_subscribers: null,
+        isPublished: true,
+        subscriptionsOpen: true,
+        maxSubscribers: null,
         number_of_payments: null,
         tags: [],
         location: null,
         instructors: [],
-        owner_id: "owner1",
-        category_id: "id1",
-        subscription_start_date: new Date(),
-        subscription_end_date: new Date(),
+        ownerId: "owner1",
+        categoryId: "id1",
+        subscriptionStartDate: new Date(),
+        subscriptionEndDate: new Date(),
       };
 
       prismaMock.course.findUniqueOrThrow.mockResolvedValue(mockCourse);
@@ -296,15 +296,15 @@ describe("CoursesService", () => {
 
       const updateDto: UpdateCourseDto = {
         name: "Updated Course",
-        is_published: true,
-        subscriptions_open: true,
+        isPublished: true,
+        subscriptionsOpen: true,
         sessions: [
           {
             id: existingSessionId,
-            start_time: newSessionStartTime,
-            end_time: newSessionEndTime,
+            startTime: newSessionStartTime,
+            endTime: newSessionEndTime,
           },
-          { start_time: new Date(), end_time: new Date(Date.now() + 7200000) },
+          { startTime: new Date(), endTime: new Date(Date.now() + 7200000) },
         ],
       };
 
@@ -317,9 +317,9 @@ describe("CoursesService", () => {
         id: courseId,
         name: "Updated Course",
         description: "Original description",
-        short_description: "Original short description",
-        is_published: true,
-        subscriptions_open: true,
+        shortDescription: "Original short description",
+        isPublished: true,
+        subscriptionsOpen: true,
         owner: {
           applicationUser: {
             id: randomUUID(),
@@ -333,29 +333,29 @@ describe("CoursesService", () => {
         sessions: [
           {
             id: existingSessionId,
-            start_time: newSessionStartTime,
-            end_time: newSessionEndTime,
-            course_id: courseId,
+            startTime: newSessionStartTime,
+            endTime: newSessionEndTime,
+            courseId: courseId,
           },
           {
             id: randomUUID(),
-            start_time: updateDto.sessions![1].start_time,
-            end_time: updateDto.sessions![1].end_time,
-            course_id: courseId,
+            startTime: updateDto.sessions![1].startTime,
+            endTime: updateDto.sessions![1].endTime,
+            courseId: courseId,
           },
         ],
         level: CourseLevel.BASIC,
-        created_at: new Date(),
-        updated_at: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
         price: new Decimal(100),
         is_free: false,
-        max_subscribers: null,
+        maxSubscribers: null,
         number_of_payments: null,
         tags: [],
         location: null,
         instructors: [],
-        owner_id: "owner1",
-        category_id: "category1",
+        ownerId: "owner1",
+        categoryId: "category1",
       };
 
       prismaMock.course.update.mockResolvedValue(updatedCourse);
@@ -404,7 +404,7 @@ describe("CoursesService", () => {
             id: randomUUID(),
             name: "Test Course",
             description: "Description",
-            short_description: "Short description",
+            shortDescription: "Short description",
             owner: {
               applicationUser: {
                 id: randomUUID(),
@@ -416,19 +416,19 @@ describe("CoursesService", () => {
             },
             category: { id: "category1", name: "Category" },
             level: CourseLevel.BASIC,
-            created_at: new Date(),
-            updated_at: new Date(),
+            createdAt: new Date(),
+            updatedAt: new Date(),
             price: new Decimal(100),
             is_free: false,
-            is_published: true,
-            subscriptions_open: true,
-            max_subscribers: null,
+            isPublished: true,
+            subscriptionsOpen: true,
+            maxSubscribers: null,
             number_of_payments: null,
             tags: [],
             location: null,
             instructors: [],
-            owner_id: "owner1",
-            category_id: "category1",
+            ownerId: "owner1",
+            categoryId: "category1",
           },
         },
       ];
@@ -447,7 +447,7 @@ describe("CoursesService", () => {
       expect(prismaMock.$transaction).toHaveBeenCalledTimes(1);
 
       /*expect(prismaMock.subscription.count).toHaveBeenCalledWith({
-        where: { patient_id: userId, isPending: false },
+        where: { patientId: userId, isPending: false },
       });
 
       expect(prismaMock.subscription.findMany).toHaveBeenCalledWith(
@@ -482,6 +482,6 @@ describe("CoursesService", () => {
     const result = await service.updateImage(courseId, buffer, mimeType);
 
     expect(result).toBeDefined();
-    expect(result.image_path).toBeDefined();
+    expect(result.imagePath).toBeDefined();
   });
 });

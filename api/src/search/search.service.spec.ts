@@ -28,9 +28,9 @@ describe("SearchService", () => {
     id: "1",
     name: "Test Course",
     description: "Test Description",
-    short_description: "Short Test",
-    image_path: "test.jpg",
-    is_published: true,
+    shortDescription: "Short Test",
+    imagePath: "test.jpg",
+    isPublished: true,
     category: {
       name: "Fitness",
     },

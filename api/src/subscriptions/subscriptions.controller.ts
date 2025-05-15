@@ -84,7 +84,7 @@ export class SubscriptionsController {
   ) {
     await this.subscriptionsService.createSubscriptionRequest(
       req.user.sub,
-      subscriptionRequestDto.course_id
+      subscriptionRequestDto.courseId
     );
   }
 
@@ -166,16 +166,16 @@ export class SubscriptionsController {
     @Body() subscriptionCreateDto: SubscriptionCreateDto
   ) {
     await this.subscriptionsService.acceptSubscriptionRequest(
-      subscriptionCreateDto.patient_id,
-      subscriptionCreateDto.course_id
+      subscriptionCreateDto.patientId,
+      subscriptionCreateDto.courseId
     );
 
     const course = await this.coursesService.findOne(
-      subscriptionCreateDto.course_id
+      subscriptionCreateDto.courseId
     );
 
     const user = await this.usersManager.getUserById(
-      subscriptionCreateDto.patient_id
+      subscriptionCreateDto.patientId
     );
 
     await this.emailService.sendEmail(
@@ -195,22 +195,22 @@ export class SubscriptionsController {
     @Body() subscriptionCreateDto: SubscriptionCreateDto
   ) {
     await this.subscriptionsService.createDirectSubscription(
-      subscriptionCreateDto.patient_id,
-      subscriptionCreateDto.course_id
+      subscriptionCreateDto.patientId,
+      subscriptionCreateDto.courseId
     );
 
     const course = await this.coursesService.findOne(
-      subscriptionCreateDto.course_id
+      subscriptionCreateDto.courseId
     );
 
     const patient = await this.usersManager.getUserById(
-      subscriptionCreateDto.patient_id
+      subscriptionCreateDto.patientId
     );
 
     await this.emailService.sendEmail(
       course.owner.email,
       "Nuova iscrizione al corso",
-      `Il paziente ${subscriptionCreateDto.patient_id} è stato iscritto al corso ${course.name}.`
+      `Il paziente ${subscriptionCreateDto.patientId} è stato iscritto al corso ${course.name}.`
     );
 
     await this.emailService.sendEmail(
@@ -230,16 +230,16 @@ export class SubscriptionsController {
     @Body() subscriptionDeleteDto: SubscriptionDeleteDto
   ) {
     await this.subscriptionsService.unsubscribeFinalUser(
-      subscriptionDeleteDto.patient_id,
-      subscriptionDeleteDto.course_id
+      subscriptionDeleteDto.patientId,
+      subscriptionDeleteDto.courseId
     );
 
     const course = await this.coursesService.findOne(
-      subscriptionDeleteDto.course_id
+      subscriptionDeleteDto.courseId
     );
 
     const patient = await this.usersManager.getUserById(
-      subscriptionDeleteDto.patient_id
+      subscriptionDeleteDto.patientId
     );
 
     await this.emailService.sendEmail(

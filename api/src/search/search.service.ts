@@ -43,7 +43,7 @@ export class SearchService {
         name: course.name,
         subscriptionCount: course._count.subscriptions,
         categoryName: course.category.name,
-        imagePath: course.image_path,
+        imagePath: course.imagePath,
       })),
     };
 
@@ -122,7 +122,7 @@ export class SearchService {
       where: {
         AND: [
           {
-            is_published: true,
+            isPublished: true,
           },
           {
             OR: [
@@ -139,7 +139,7 @@ export class SearchService {
                 },
               },
               {
-                short_description: {
+                shortDescription: {
                   contains: query,
                   mode: "insensitive",
                 },

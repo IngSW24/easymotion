@@ -38,23 +38,23 @@ export class CoursesService {
       data: {
         name: newCourse.name,
         description: newCourse.description,
-        short_description: newCourse.short_description,
+        shortDescription: newCourse.shortDescription,
         location: newCourse.location,
         instructors: newCourse.instructors,
         level: newCourse.level,
         price: newCourse.price,
-        payment_recurrence: newCourse.payment_recurrence,
-        is_published: newCourse.is_published,
-        subscriptions_open: newCourse.subscriptions_open,
-        max_subscribers: newCourse.max_subscribers,
+        paymentRecurrence: newCourse.paymentRecurrence,
+        isPublished: newCourse.isPublished,
+        subscriptionsOpen: newCourse.subscriptionsOpen,
+        maxSubscribers: newCourse.maxSubscribers,
         tags: newCourse.tags,
-        subscription_start_date: newCourse.subscription_start_date,
-        subscription_end_date: newCourse.subscription_end_date, // TODO: use three dot notation
+        subscriptionStartDate: newCourse.subscriptionStartDate,
+        subscriptionEndDate: newCourse.subscriptionEndDate, // TODO: use three dot notation
         sessions: {
           create: newCourse.sessions,
         },
         category: {
-          connect: { id: newCourse.category_id },
+          connect: { id: newCourse.categoryId },
         },
         owner: {
           connect: { applicationUserId: ownerId },
@@ -91,7 +91,7 @@ export class CoursesService {
         skip: page * perPage,
         take: perPage,
         where: {
-          ...(onlyPublished && { is_published: true }),
+          ...(onlyPublished && { isPublished: true }),
           ...(filter?.ownerId && {
             owner: {
               applicationUser: {
@@ -127,7 +127,7 @@ export class CoursesService {
           sessions: true,
         },
         orderBy: {
-          created_at: "desc",
+          createdAt: "desc",
         },
       });
 
@@ -137,8 +137,8 @@ export class CoursesService {
             plainToInstance(CourseDto, {
               ...course,
               owner: course.owner.applicationUser,
-              current_subscribers: await tx.subscription.count({
-                where: { course_id: course.id },
+              currentSubscribers: await tx.subscription.count({
+                where: { courseId: course.id },
               }),
             })
           )
@@ -171,8 +171,8 @@ export class CoursesService {
       return {
         ...course,
         owner: course.owner.applicationUser,
-        current_subscribers: await tx.subscription.count({
-          where: { course_id: id },
+        currentSubscribers: await tx.subscription.count({
+          where: { courseId: id },
         }),
       };
     });
@@ -193,13 +193,13 @@ export class CoursesService {
     });
 
     delete cleanUpdates.sessions;
-    delete cleanUpdates.category_id;
+    delete cleanUpdates.categoryId;
 
     const data: Prisma.CourseUpdateInput = {
       ...cleanUpdates,
-      ...(updates.category_id && {
+      ...(updates.categoryId && {
         category: {
-          connect: { id: updates.category_id },
+          connect: { id: updates.categoryId },
         },
       }),
     };
@@ -207,7 +207,7 @@ export class CoursesService {
     if (updates.sessions) {
       // get all existing session IDs for this course
       const existingSessions = await this.prismaService.courseSession.findMany({
-        where: { course_id: courseId },
+        where: { courseId: courseId },
         select: { id: true },
       });
 
@@ -220,8 +220,8 @@ export class CoursesService {
         updateMany: sessionsToUpdate.map((session) => ({
           where: { id: session.id },
           data: {
-            start_time: session.start_time,
-            end_time: session.end_time,
+            startTime: session.startTime,
+            endTime: session.endTime,
           },
         })),
         create: sessionsToCreate,
@@ -262,7 +262,7 @@ export class CoursesService {
   setImagePath(id: string, imagePath: string | null) {
     return this.prismaService.course.update({
       where: { id },
-      data: { image_path: imagePath },
+      data: { imagePath: imagePath },
     });
   }
 
@@ -278,8 +278,8 @@ export class CoursesService {
 
     const fileName = `${course.id}-${timestamp}`;
 
-    if (course.image_path) {
-      await this.assetsService.deleteFile(course.image_path);
+    if (course.imagePath) {
+      await this.assetsService.deleteFile(course.imagePath);
     }
 
     const imagePath = await this.assetsService.uploadBuffer(
@@ -295,7 +295,7 @@ export class CoursesService {
 
     await this.setImagePath(id, imagePath);
 
-    return { ...course, image_path: imagePath };
+    return { ...course, imagePath: imagePath };
   }
 
   /**
@@ -305,7 +305,7 @@ export class CoursesService {
    */
   getCourseSubscribers(courseId: string) {
     return this.prismaService.subscription.findMany({
-      where: { course_id: courseId },
+      where: { courseId: courseId },
       include: {
         patient: {
           include: {
@@ -328,14 +328,14 @@ export class CoursesService {
   ) {
     return this.prismaService.$transaction(async (tx) => {
       const count = await tx.subscription.count({
-        where: { patient_id: userId, isPending: false },
+        where: { patientId: userId, isPending: false },
       });
 
       const courses = await tx.subscription.findMany({
         where: {
           AND: [
             { isPending: false },
-            { patient_id: userId },
+            { patientId: userId },
             {
               ...(filters.searchText
                 ? {
@@ -360,7 +360,7 @@ export class CoursesService {
                   }
                 : {}),
               ...(filters.categoryIds
-                ? { category_id: { in: filters.categoryIds.split(",") } }
+                ? { categoryId: { in: filters.categoryIds.split(",") } }
                 : {}),
               ...(filters.level ? { level: filters.level } : {}),
             },
@@ -386,8 +386,8 @@ export class CoursesService {
             plainToInstance(CourseDto, {
               ...x.course,
               owner: x.course.owner.applicationUser,
-              current_subscribers: await tx.subscription.count({
-                where: { course_id: x.course_id },
+              currentSubscribers: await tx.subscription.count({
+                where: { courseId: x.courseId },
               }),
             })
           )

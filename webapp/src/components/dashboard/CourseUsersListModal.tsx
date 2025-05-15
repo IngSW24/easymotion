@@ -43,16 +43,16 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
   const confirmSubscription = async (patientId: string) => {
     if (!courseId) return;
     await acceptSubscriptionRequest.mutateAsync({
-      course_id: courseId,
-      patient_id: patientId,
+      courseId: courseId,
+      patientId: patientId,
     });
   };
 
   const denySubscription = async (patientId: string) => {
     if (!courseId) return;
     await unsubscribe.mutateAsync({
-      course_id: courseId,
-      patient_id: patientId,
+      courseId: courseId,
+      patientId: patientId,
     });
   };
 
@@ -163,7 +163,7 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
                 ml: 1,
               }}
             >
-              {formatDate(value.created_at)}
+              {formatDate(value.createdAt)}
             </Typography>
           </Box>
         </Box>

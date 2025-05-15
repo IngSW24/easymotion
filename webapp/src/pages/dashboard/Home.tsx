@@ -62,12 +62,12 @@ export default function DashboardHome() {
   const activeCourses =
     getAll.data?.pages
       .flatMap((page) => page.data)
-      .filter((course) => course.is_published) || [];
+      .filter((course) => course.isPublished) || [];
 
   const archivedCourses =
     getAll.data?.pages
       .flatMap((page) => page.data)
-      .filter((course) => !course.is_published) || [];
+      .filter((course) => !course.isPublished) || [];
 
   const allCourses = getAll.data?.pages.flatMap((page) => page.data) || [];
 

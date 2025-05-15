@@ -73,13 +73,13 @@ export default function SubscriptionRequest(props: CourseDetailProps) {
 
   const handleSubscriptionRequest = async () => {
     request2Subscribe.mutateAsync({
-      course_id: courseId || "",
+      courseId: courseId || "",
       subscriptionRequestMessage: textLetter,
     });
     setIsReqSended(true);
   };
 
-  /* Function for calculate the difference in milliseconds between subscription_start_date and subscription_end_date */
+  /* Function for calculate the difference in milliseconds between subscriptionStartDate and subscriptionEndDate */
 
   const differenceBetweenDates = () => {
     const now = new Date(Date.now());
@@ -200,7 +200,7 @@ export default function SubscriptionRequest(props: CourseDetailProps) {
                   <Typography fontWeight="bold" sx={{ fontSize: 20 }}>
                     Stato iscrizioni
                   </Typography>
-                  {courseRepo.getSingle.data?.subscriptions_open &&
+                  {courseRepo.getSingle.data?.subscriptionsOpen &&
                   differenceInMinutes() > 0 ? (
                     <Typography sx={{ color: "green" }}>APERTE</Typography>
                   ) : (

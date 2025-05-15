@@ -71,41 +71,41 @@ describe("SubscriptionsService", () => {
         name: "Course name",
         id: uuidCourse,
         description: "Course desc",
-        short_description: "short desc",
+        shortDescription: "short desc",
         location: "LOCATION1",
         instructors: ["A", "B"],
-        image_path: "",
+        imagePath: "",
         level: "BASIC",
         price: new Prisma.Decimal("30"),
-        is_published: true,
-        subscriptions_open: true,
-        max_subscribers: 10,
+        isPublished: true,
+        subscriptionsOpen: true,
+        maxSubscribers: 10,
         tags: ["TAG1", "TAG2"],
-        created_at: new Date(),
-        updated_at: new Date(),
-        owner_id: "1",
-        category_id: "1",
-        subscription_start_date: new Date(),
-        subscription_end_date: new Date(),
-        payment_recurrence: "SINGLE",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        ownerId: "1",
+        categoryId: "1",
+        subscriptionStartDate: new Date(),
+        subscriptionEndDate: new Date(),
+        paymentRecurrence: "SINGLE",
       };
 
       const courseSubscribers = [
         {
           course: course,
-          created_at: new Date(),
-          updated_at: new Date(),
-          course_id: uuidCourse,
-          patient_id: uuidUser1,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          courseId: uuidCourse,
+          patientId: uuidUser1,
           isPending: false,
           subscriptionRequestMessage: "Message 1",
         },
         {
           course: course,
-          created_at: new Date(),
-          updated_at: new Date(),
-          course_id: uuidCourse,
-          patient_id: uuidUser2,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          courseId: uuidCourse,
+          patientId: uuidUser2,
           isPending: false,
           subscriptionRequestMessage: "Message 2",
         },
@@ -121,11 +121,11 @@ describe("SubscriptionsService", () => {
       );
 
       expect(prismaMock.subscription.count).toHaveBeenCalledWith({
-        where: { patient_id: userId, isPending },
+        where: { patientId: userId, isPending },
       });
 
       expect(prismaMock.subscription.findMany).toHaveBeenCalledWith({
-        where: { patient_id: userId, isPending },
+        where: { patientId: userId, isPending },
         include: {
           course: {
             select: {
@@ -155,10 +155,10 @@ describe("SubscriptionsService", () => {
             id: "course-1",
             name: "Pending Course",
           },
-          created_at: new Date(),
-          updated_at: new Date(),
-          course_id: "course-1",
-          patient_id: userId,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          courseId: "course-1",
+          patientId: userId,
           isPending: true,
           subscriptionRequestMessage: "Please approve",
         },
@@ -171,11 +171,11 @@ describe("SubscriptionsService", () => {
       );
 
       expect(prismaMock.subscription.count).toHaveBeenCalledWith({
-        where: { patient_id: userId, isPending },
+        where: { patientId: userId, isPending },
       });
 
       expect(prismaMock.subscription.findMany).toHaveBeenCalledWith({
-        where: { patient_id: userId, isPending },
+        where: { patientId: userId, isPending },
         include: {
           course: {
             select: {
@@ -201,10 +201,10 @@ describe("SubscriptionsService", () => {
 
       const course = {
         id: courseId,
-        subscription_start_date: new Date(),
-        subscription_end_date: new Date(new Date().getTime() + 86400000),
-        max_subscribers: 10,
-        subscriptions_open: true,
+        subscriptionStartDate: new Date(),
+        subscriptionEndDate: new Date(new Date().getTime() + 86400000),
+        maxSubscribers: 10,
+        subscriptionsOpen: true,
       };
 
       const patient = {
@@ -219,8 +219,8 @@ describe("SubscriptionsService", () => {
 
       expect(prismaMock.subscription.create).toHaveBeenCalledWith({
         data: {
-          course_id: courseId,
-          patient_id: patientId,
+          courseId: courseId,
+          patientId: patientId,
           isPending: true,
         },
       });
@@ -232,10 +232,10 @@ describe("SubscriptionsService", () => {
 
       const course = {
         id: courseId,
-        subscription_start_date: new Date(),
-        subscription_end_date: new Date(new Date().getTime() + 86400000),
-        max_subscribers: 10,
-        subscriptions_open: false,
+        subscriptionStartDate: new Date(),
+        subscriptionEndDate: new Date(new Date().getTime() + 86400000),
+        maxSubscribers: 10,
+        subscriptionsOpen: false,
       };
 
       prismaMock.course.findUniqueOrThrow.mockResolvedValue(course);
@@ -253,10 +253,10 @@ describe("SubscriptionsService", () => {
 
       const course = {
         id: courseId,
-        subscription_start_date: new Date(),
-        subscription_end_date: new Date(new Date().getTime() + 86400000),
-        max_subscribers: 10,
-        subscriptions_open: true,
+        subscriptionStartDate: new Date(),
+        subscriptionEndDate: new Date(new Date().getTime() + 86400000),
+        maxSubscribers: 10,
+        subscriptionsOpen: true,
       };
 
       prismaMock.course.findUniqueOrThrow.mockResolvedValue(course);
@@ -275,10 +275,10 @@ describe("SubscriptionsService", () => {
 
       const course = {
         id: courseId,
-        subscription_start_date: new Date(new Date().getTime() - 86400000 * 2), // 2 days ago
-        subscription_end_date: new Date(new Date().getTime() - 86400000),
-        max_subscribers: 10,
-        subscriptions_open: true,
+        subscriptionStartDate: new Date(new Date().getTime() - 86400000 * 2), // 2 days ago
+        subscriptionEndDate: new Date(new Date().getTime() - 86400000),
+        maxSubscribers: 10,
+        subscriptionsOpen: true,
       };
 
       prismaMock.course.findUniqueOrThrow.mockResolvedValue(course);
@@ -312,8 +312,8 @@ describe("SubscriptionsService", () => {
 
       prismaMock.subscription.upsert.mockImplementation((args) => {
         return Promise.resolve({
-          course_id: args.create.course_id,
-          patient_id: args.create.patient_id,
+          courseId: args.create.courseId,
+          patientId: args.create.patientId,
           isPending: args.create.isPending,
         });
       });
@@ -322,17 +322,17 @@ describe("SubscriptionsService", () => {
 
       expect(prismaMock.subscription.upsert).toHaveBeenCalledWith({
         create: {
-          course_id: courseId,
-          patient_id: patientId,
+          courseId: courseId,
+          patientId: patientId,
           isPending: false,
         },
         update: {
           isPending: false,
         },
         where: {
-          course_id_patient_id: {
-            course_id: courseId,
-            patient_id: patientId,
+          courseId_patientId: {
+            courseId: courseId,
+            patientId: patientId,
           },
         },
       });
@@ -347,26 +347,26 @@ describe("SubscriptionsService", () => {
       // Mock findUnique instead of findUniqueOrThrow since that's what the service uses
       prismaMock.subscription.findUnique.mockResolvedValue({
         isPending: true,
-        patient_id: patientId,
-        course_id: courseId,
+        patientId: patientId,
+        courseId: courseId,
       });
 
       await service.acceptSubscriptionRequest(patientId, courseId);
 
       expect(prismaMock.subscription.findUnique).toHaveBeenCalledWith({
         where: {
-          course_id_patient_id: {
-            course_id: courseId,
-            patient_id: patientId,
+          courseId_patientId: {
+            courseId: courseId,
+            patientId: patientId,
           },
         },
       });
 
       expect(prismaMock.subscription.update).toHaveBeenCalledWith({
         where: {
-          course_id_patient_id: {
-            course_id: courseId,
-            patient_id: patientId,
+          courseId_patientId: {
+            courseId: courseId,
+            patientId: patientId,
           },
         },
         data: {
@@ -395,8 +395,8 @@ describe("SubscriptionsService", () => {
 
       prismaMock.subscription.findUnique.mockResolvedValue({
         isPending: false, // already accepted
-        patient_id: patientId,
-        course_id: courseId,
+        patientId: patientId,
+        courseId: courseId,
       });
 
       await expect(
@@ -416,8 +416,8 @@ describe("SubscriptionsService", () => {
 
       expect(prismaMock.subscription.deleteMany).toHaveBeenCalledWith({
         where: {
-          course_id: courseId,
-          patient_id: patientId,
+          courseId: courseId,
+          patientId: patientId,
         },
       });
     });
@@ -435,10 +435,10 @@ describe("SubscriptionsService", () => {
       prismaMock.subscription.count.mockResolvedValue(1);
       prismaMock.subscription.findMany.mockResolvedValue([
         {
-          course_id: courseId,
-          patient_id: userMock.id,
-          created_at: new Date(),
-          updated_at: new Date(),
+          courseId: courseId,
+          patientId: userMock.id,
+          createdAt: new Date(),
+          updatedAt: new Date(),
           isPending: false,
           subscriptionRequestMessage: "Hello",
           patient: {
@@ -460,11 +460,11 @@ describe("SubscriptionsService", () => {
       );
 
       expect(prismaMock.subscription.count).toHaveBeenCalledWith({
-        where: { course_id: courseId, isPending },
+        where: { courseId: courseId, isPending },
       });
 
       expect(prismaMock.subscription.findMany).toHaveBeenCalledWith({
-        where: { course_id: courseId, isPending },
+        where: { courseId: courseId, isPending },
         include: {
           patient: { include: { applicationUser: true } },
           course: { select: { id: true, name: true } },
@@ -486,10 +486,10 @@ describe("SubscriptionsService", () => {
       prismaMock.subscription.count.mockResolvedValue(2);
       prismaMock.subscription.findMany.mockResolvedValue([
         {
-          course_id: courseId,
-          patient_id: "user-1",
-          created_at: new Date(),
-          updated_at: new Date(),
+          courseId: courseId,
+          patientId: "user-1",
+          createdAt: new Date(),
+          updatedAt: new Date(),
           isPending: true,
           subscriptionRequestMessage: "Request 1",
           patient: {
@@ -507,10 +507,10 @@ describe("SubscriptionsService", () => {
           },
         },
         {
-          course_id: courseId,
-          patient_id: "user-2",
-          created_at: new Date(),
-          updated_at: new Date(),
+          courseId: courseId,
+          patientId: "user-2",
+          createdAt: new Date(),
+          updatedAt: new Date(),
           isPending: true,
           subscriptionRequestMessage: "Request 2",
           patient: {
@@ -537,7 +537,7 @@ describe("SubscriptionsService", () => {
 
       // Update expectations to include isPending in where clause
       expect(prismaMock.subscription.count).toHaveBeenCalledWith({
-        where: { course_id: courseId, isPending },
+        where: { courseId: courseId, isPending },
       });
 
       expect(result.data.length).toBe(2);

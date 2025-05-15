@@ -25,7 +25,7 @@ export default function CourseDetailsPage() {
       <Hero
         opacity={0.5}
         title={courseRepo.getSingle.data?.name ?? ""}
-        subtitle={courseRepo.getSingle.data?.short_description ?? ""}
+        subtitle={courseRepo.getSingle.data?.shortDescription ?? ""}
         backgroundImage={getCourseImageUrl({
           course: courseRepo.getSingle.data,
         })}

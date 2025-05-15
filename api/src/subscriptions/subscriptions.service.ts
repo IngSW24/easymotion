@@ -25,11 +25,11 @@ export class SubscriptionsService {
     isPending: boolean = false
   ) {
     const count = await this.prismaService.subscription.count({
-      where: { patient_id: customerId, isPending },
+      where: { patientId: customerId, isPending },
     });
 
     const courses = await this.prismaService.subscription.findMany({
-      where: { patient_id: customerId, isPending },
+      where: { patientId: customerId, isPending },
       include: { course: { select: { id: true, name: true } } },
       orderBy: { course: { name: "asc" } },
       skip: pagination.page * pagination.perPage,
@@ -65,12 +65,12 @@ export class SubscriptionsService {
     isPending: boolean = false
   ) {
     const count = await this.prismaService.subscription.count({
-      where: { course_id: courseId, isPending },
+      where: { courseId: courseId, isPending },
     });
 
     const paginatedSubscribers = await this.prismaService.subscription.findMany(
       {
-        where: { course_id: courseId, isPending },
+        where: { courseId: courseId, isPending },
         include: {
           patient: { include: { applicationUser: true } },
           course: { select: { id: true, name: true } },
@@ -100,45 +100,45 @@ export class SubscriptionsService {
 
   /**
    * Creates a subscription request from a patient to a course.
-   * @param patient_id Unique identifier of the patient.
-   * @param course_id Unique identifier of the course.
+   * @param patientId Unique identifier of the patient.
+   * @param courseId Unique identifier of the course.
    * @throws BadRequestException if course is full or subscriptions are closed.
    */
-  async createSubscriptionRequest(patient_id: string, course_id: string) {
+  async createSubscriptionRequest(patientId: string, courseId: string) {
     const user = await this.prismaService.patient.findUniqueOrThrow({
-      where: { applicationUserId: patient_id },
+      where: { applicationUserId: patientId },
     });
 
     const course = await this.prismaService.course.findUniqueOrThrow({
-      where: { id: course_id },
+      where: { id: courseId },
     });
 
     const numExistingSubscriptions =
       await this.prismaService.subscription.count({
         where: {
-          course_id: course.id,
+          courseId: course.id,
         },
       });
 
     if (
-      numExistingSubscriptions >= course.max_subscribers ||
-      !course.subscriptions_open
+      numExistingSubscriptions >= course.maxSubscribers ||
+      !course.subscriptionsOpen
     ) {
       throw new BadRequestException("Course is full");
     }
 
     const now = new Date();
     if (
-      now.getTime() < course.subscription_start_date.getTime() ||
-      now.getTime() > course.subscription_end_date.getTime()
+      now.getTime() < course.subscriptionStartDate.getTime() ||
+      now.getTime() > course.subscriptionEndDate.getTime()
     ) {
       throw new BadRequestException("Subscriptions closed");
     }
 
     await this.prismaService.subscription.create({
       data: {
-        course_id: course.id,
-        patient_id: user.applicationUserId,
+        courseId: course.id,
+        patientId: user.applicationUserId,
         isPending: true,
       },
     });
@@ -146,31 +146,31 @@ export class SubscriptionsService {
 
   /**
    * Creates a direct subscription for a patient to a course (admin action).
-   * @param patient_id Unique identifier of the patient.
-   * @param course_id Unique identifier of the course.
+   * @param patientId Unique identifier of the patient.
+   * @param courseId Unique identifier of the course.
    */
-  async createDirectSubscription(patient_id: string, course_id: string) {
+  async createDirectSubscription(patientId: string, courseId: string) {
     const user = await this.prismaService.patient.findUniqueOrThrow({
-      where: { applicationUserId: patient_id },
+      where: { applicationUserId: patientId },
     });
 
     const course = await this.prismaService.course.findUniqueOrThrow({
-      where: { id: course_id },
+      where: { id: courseId },
     });
 
     await this.prismaService.subscription.upsert({
       create: {
-        course_id: course.id,
-        patient_id: user.applicationUserId,
+        courseId: course.id,
+        patientId: user.applicationUserId,
         isPending: false,
       },
       update: {
         isPending: false,
       },
       where: {
-        course_id_patient_id: {
-          course_id: course.id,
-          patient_id: user.applicationUserId,
+        courseId_patientId: {
+          courseId: course.id,
+          patientId: user.applicationUserId,
         },
       },
     });
@@ -178,16 +178,16 @@ export class SubscriptionsService {
 
   /**
    * Accepts a pending subscription request.
-   * @param patient_id Unique identifier of the patient.
-   * @param course_id Unique identifier of the course.
+   * @param patientId Unique identifier of the patient.
+   * @param courseId Unique identifier of the course.
    * @throws BadRequestException if no pending subscription exists.
    */
-  async acceptSubscriptionRequest(patient_id: string, course_id: string) {
+  async acceptSubscriptionRequest(patientId: string, courseId: string) {
     const subscription = await this.prismaService.subscription.findUnique({
       where: {
-        course_id_patient_id: {
-          course_id,
-          patient_id,
+        courseId_patientId: {
+          courseId,
+          patientId,
         },
       },
     });
@@ -202,9 +202,9 @@ export class SubscriptionsService {
 
     await this.prismaService.subscription.update({
       where: {
-        course_id_patient_id: {
-          course_id,
-          patient_id,
+        courseId_patientId: {
+          courseId,
+          patientId,
         },
       },
       data: {
@@ -221,8 +221,8 @@ export class SubscriptionsService {
   async unsubscribeFinalUser(patientId: string, courseId: string) {
     await this.prismaService.subscription.deleteMany({
       where: {
-        course_id: courseId,
-        patient_id: patientId,
+        courseId: courseId,
+        patientId: patientId,
       },
     });
   }
