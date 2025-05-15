@@ -31,37 +31,38 @@ model Course {
   id   String @id @default(uuid())
   name String
 
-  description       String
-  short_description String
+  description      String
+  shortDescription String
 
   location    String?
   instructors String[]
 
   level CourseLevel
 
-  price              Decimal
-  payment_recurrence PaymentRecurrence
+  price             Decimal
+  paymentRecurrence PaymentRecurrence
 
-  is_published       Boolean
-  subscriptions_open Boolean
-  max_subscribers    Int?
+  isPublished       Boolean
+  subscriptionsOpen Boolean
+  maxSubscribers    Int?
 
-  image_path String?
+  imagePath String?
 
   tags String[]
 
-  created_at DateTime @default(now()) @db.Timestamptz(3)
-  updated_at DateTime @updatedAt @db.Timestamptz(3)
+  categoryId String
+  category   CourseCategory @relation(fields: [categoryId], references: [id])
 
-  category_id   String
-  category      CourseCategory  @relation(fields: [category_id], references: [id])
-  owner_id      String
-  owner         Physiotherapist @relation(fields: [owner_id], references: [applicationUserId])
-  subscriptions Subscription[]
+  ownerId String
+  owner   Physiotherapist @relation(fields: [ownerId], references: [applicationUserId])
 
-  subscription_start_date DateTime        @default(now()) @db.Timestamptz(3)
-  subscription_end_date   DateTime        @db.Timestamptz(3)
-  sessions                CourseSession[]
+  subscriptionStartDate DateTime        @default(now()) @db.Timestamptz(3)
+  subscriptionEndDate   DateTime        @db.Timestamptz(3)
+  sessions              CourseSession[]
+  subscriptions         Subscription[]
+
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
 }
 
 model CourseCategory {
@@ -71,25 +72,27 @@ model CourseCategory {
 }
 
 model CourseSession {
-  id         String   @id @default(uuid())
-  start_time DateTime
-  end_time   DateTime
-  course     Course   @relation(fields: [course_id], references: [id], onDelete: Cascade)
-  course_id  String
+  id        String   @id @default(uuid())
+  startTime DateTime
+  endTime   DateTime
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId  String
 }
 
 model Subscription {
-  course_id                  String
-  patient_id                 String
-  course                     Course  @relation(fields: [course_id], references: [id])
-  patient                    Patient @relation(fields: [patient_id], references: [applicationUserId])
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id])
+
+  patientId String
+  patient   Patient @relation(fields: [patientId], references: [applicationUserId])
+
   isPending                  Boolean
   subscriptionRequestMessage String?
 
-  created_at DateTime @default(now()) @db.Timestamptz(3)
-  updated_at DateTime @updatedAt @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
 
-  @@id([course_id, patient_id])
+  @@id([courseId, patientId])
 }
 
 enum Sex {
@@ -102,18 +105,6 @@ enum Role {
   USER
   ADMIN
   PHYSIOTHERAPIST
-}
-
-enum ActivityLevel {
-  LOW
-  MEDIUM
-  HIGH
-}
-
-enum MobilityLevel {
-  LIMITED
-  MODERATE
-  FULL
 }
 
 model ApplicationUser {
@@ -161,6 +152,18 @@ model Physiotherapist {
   applicationUserId String          @id
   applicationUser   ApplicationUser @relation(fields: [applicationUserId], references: [id])
   courses           Course[]
+}
+
+enum ActivityLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum MobilityLevel {
+  LIMITED
+  MODERATE
+  FULL
 }
 
 model Patient {

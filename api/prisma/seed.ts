@@ -44,9 +44,9 @@ async function main() {
   for (const e of subscriptions) {
     await prisma.subscription.upsert({
       where: {
-        course_id_patient_id: {
-          course_id: e.course_id,
-          patient_id: e.patient_id,
+        courseId_patientId: {
+          courseId: e.courseId,
+          patientId: e.patientId,
         },
       },
       update: {},
