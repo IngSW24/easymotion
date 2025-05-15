@@ -7,14 +7,17 @@ import { AuthUserDto } from "./dto/auth-user/auth-user.dto";
 import { PhysiotherapistDto } from "src/users/dto/physiotherapist/physiotherapist.dto";
 import jwtConfig from "src/config/jwt.config";
 import frontendConfig from "src/config/frontend.config";
-import { ASSETS_SERVICE } from "src/assets/assets.interface";
+import IAssetsService, { ASSETS_SERVICE } from "src/assets/assets.interface";
 import { MockAssetsService } from "src/assets/implementations/mock.service";
 import { ActivityLevel, Sex } from "@prisma/client";
+import { CompressionService } from "src/assets/utilities/compression.service";
 describe("AuthService - validateUser", () => {
   let service: AuthService;
   let userManagerMock: Partial<UserManager>;
   let emailServiceMock: Partial<EmailService>;
   let jwtServiceMock: Partial<JwtService>;
+  let assetsServiceMock: Partial<IAssetsService>;
+  let imageCompressionServiceMock: Partial<CompressionService>;
 
   beforeEach(async () => {
     userManagerMock = {
@@ -33,6 +36,16 @@ describe("AuthService - validateUser", () => {
       sign: jest.fn(),
     };
 
+    assetsServiceMock = {
+      uploadBuffer: jest.fn(),
+      deleteFile: jest.fn(),
+      getFileStream: jest.fn(),
+    };
+
+    imageCompressionServiceMock = {
+      compressImage: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
@@ -43,6 +56,14 @@ describe("AuthService - validateUser", () => {
         {
           provide: JwtService,
           useValue: jwtServiceMock,
+        },
+        {
+          provide: ASSETS_SERVICE,
+          useValue: assetsServiceMock,
+        },
+        {
+          provide: CompressionService,
+          useValue: imageCompressionServiceMock,
         },
         {
           provide: jwtConfig.KEY,

@@ -63,7 +63,7 @@ export default function LandingWhoWeAreSection() {
                 {features.map((feature, index) => (
                   <ListItem key={index} sx={{ p: 0.5 }}>
                     <ListItemIcon sx={{ minWidth: 36 }}>
-                      <GridCheckCircleIcon sx={{ color: "#0d6efd" }} />
+                      <GridCheckCircleIcon color="#0d6efd" />
                     </ListItemIcon>
                     <ListItemText
                       primary={feature}

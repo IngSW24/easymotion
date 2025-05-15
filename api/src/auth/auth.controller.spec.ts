@@ -1,18 +1,12 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
-import { AuthResponseDto } from "./dto/auth-user/auth-response.dto";
 import { UpdateAuthUserDto } from "./dto/auth-user/update-auth-user.dto";
 import { CustomRequest } from "src/common/types/custom-request";
-import IAssetsService, { ASSETS_SERVICE } from "src/assets/assets.interface";
-import { CompressionService } from "src/assets/utilities/compression.service";
-import assetsConfig from "src/config/assets.config";
 
 describe("AuthController", () => {
   let controller: AuthController;
   let serviceMock: Partial<AuthService>;
-  let assetsServiceMock: Partial<IAssetsService>;
-  let imageCompressionServiceMock: Partial<CompressionService>;
 
   beforeEach(async () => {
     serviceMock = {
@@ -25,37 +19,12 @@ describe("AuthController", () => {
       updateUserPicture: jest.fn(),
     };
 
-    assetsServiceMock = {
-      uploadBuffer: jest.fn(),
-      deleteFile: jest.fn(),
-      getFileStream: jest.fn(),
-    };
-
-    imageCompressionServiceMock = {
-      compressImage: jest.fn(),
-    };
-
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
       providers: [
         {
           provide: AuthService,
           useValue: serviceMock,
-        },
-        {
-          provide: ASSETS_SERVICE,
-          useValue: assetsServiceMock,
-        },
-        {
-          provide: CompressionService,
-          useValue: imageCompressionServiceMock,
-        },
-        {
-          provide: assetsConfig.KEY,
-          useValue: {
-            maxSize: 1024 * 1024 * 10,
-            compressionFactor: 0.5,
-          },
         },
       ],
     }).compile();

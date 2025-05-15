@@ -38,8 +38,6 @@ import {
 } from "./guards/local-auth.guard";
 import { AuthResponseDto } from "./dto/auth-user/auth-response.dto";
 import { ApiFileBody } from "src/common/decorators/api-file-body.decorator";
-import IAssetsService, { ASSETS_SERVICE } from "src/assets/assets.interface";
-import { CompressionService } from "src/assets/utilities/compression.service";
 import { AuthUserDto } from "./dto/auth-user/auth-user.dto";
 
 // avoids having to bloat the code with the same multiple decorators
