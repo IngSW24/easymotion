@@ -148,9 +148,9 @@ export class AuthService {
   ): Promise<AuthResponseDto> {
     await this.userManager.setLastLogin(user.id);
     await this.userManager.clearFailedLoginAttempts(user.id);
-    const payload = JwtPayloadDto.fromUser(user).toObject();
+    const payload = JwtPayloadDto.fromUser(user);
 
-    return new AuthResponseDto({
+    return {
       user,
       tokens: {
         accessToken: this.jwtService.sign(payload),
@@ -160,7 +160,7 @@ export class AuthService {
         ),
       },
       requiresOtp: false,
-    });
+    };
   }
 
   /**

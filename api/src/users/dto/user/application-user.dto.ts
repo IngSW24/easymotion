@@ -11,7 +11,7 @@ import {
   IsBoolean,
   IsEnum,
 } from "class-validator";
-import { Expose, Type } from "class-transformer";
+import { Exclude, Expose, Type } from "class-transformer";
 import { ApplicationUser, Role } from "@prisma/client";
 import { PhysiotherapistDto } from "../physiotherapist/physiotherapist.dto";
 import { PatientDto } from "../patient/patient.dto";
@@ -151,30 +151,34 @@ export class ApplicationUserDto implements Readonly<ApplicationUser> {
   patient: PatientDto | null;
 
   @ApiHideProperty()
+  @Exclude()
   emailConfirmationToken: string;
 
   @ApiHideProperty()
+  @Exclude()
   emailConfirmationTokenExpiry: Date;
 
   @ApiHideProperty()
+  @Exclude()
   passwordHash: string;
 
   @ApiHideProperty()
+  @Exclude()
   passwordResetToken: string;
 
   @ApiHideProperty()
+  @Exclude()
   passwordResetTokenExpiry: Date;
 
   @ApiHideProperty()
+  @Exclude()
   twoFactorCode: string;
 
   @ApiHideProperty()
+  @Exclude()
   twoFactorExpiry: Date;
 
   @ApiHideProperty()
+  @Exclude()
   failedLoginAttempts: number;
-
-  constructor(partial: Partial<ApplicationUserDto>) {
-    Object.assign(this, partial);
-  }
 }

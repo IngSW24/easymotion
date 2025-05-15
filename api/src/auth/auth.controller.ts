@@ -13,6 +13,7 @@ import {
   Query,
   Req,
   Res,
+  SerializeOptions,
   UploadedFile,
   UseGuards,
 } from "@nestjs/common";
@@ -42,6 +43,7 @@ import { ApiFileBody } from "src/common/decorators/api-file-body.decorator";
 import IAssetsService, { ASSETS_SERVICE } from "src/assets/assets.interface";
 import { CompressionService } from "src/assets/utilities/compression.service";
 import { ApplicationUserDto } from "src/users/dto/user/application-user.dto";
+import { AuthUserDto } from "./dto/auth-user/auth-user.dto";
 
 // avoids having to bloat the code with the same multiple decorators
 const ApiLoginResponse = (description: string = "Successful login") =>
@@ -51,7 +53,8 @@ const ApiLoginResponse = (description: string = "Successful login") =>
       description,
       type: AuthResponseDto,
     }),
-    AuthFlowHeader()
+    AuthFlowHeader(),
+    SerializeOptions({ type: AuthResponseDto })
   );
 
 @Controller("auth")
@@ -64,13 +67,12 @@ export class AuthController {
 
   private async login(req: CustomRequest, res: any) {
     if (req.user.requiresOtp) {
-      res.send(
-        new AuthResponseDto({
-          user: null,
-          tokens: null,
-          requiresOtp: true,
-        })
-      );
+      const response: AuthResponseDto = {
+        user: null,
+        tokens: null,
+        requiresOtp: true,
+      };
+      res.send(response);
       return;
     }
 
@@ -155,6 +157,8 @@ export class AuthController {
    */
   @UseAuth()
   @Get("profile")
+  @ApiOkResponse({ type: AuthUserDto })
+  @SerializeOptions({ type: AuthUserDto })
   getUserProfile(@Req() req) {
     return this.authService.getUserProfile(req.user.sub);
   }

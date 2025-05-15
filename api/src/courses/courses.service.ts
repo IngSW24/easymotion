@@ -208,13 +208,13 @@ export class CoursesService {
         },
       });
 
-      return plainToInstance(CourseDto, {
+      return {
         ...course,
         owner: course.owner.applicationUser,
         current_subscribers: await tx.subscription.count({
           where: { course_id: id },
         }),
-      });
+      };
     });
   }
 

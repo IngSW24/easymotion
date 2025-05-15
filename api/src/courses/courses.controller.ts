@@ -11,6 +11,7 @@ import {
   UploadedFile,
   ParseFilePipeBuilder,
   Inject,
+  SerializeOptions,
 } from "@nestjs/common";
 import { CoursesService } from "./courses.service";
 import { CreateCourseDto } from "./dto/create-course.dto";
@@ -29,6 +30,7 @@ import { ConfigType } from "@nestjs/config";
 import frontendConfig from "src/config/frontend.config";
 
 @Controller("courses")
+@SerializeOptions({ type: CourseDto })
 export class CoursesController {
   constructor(
     private readonly coursesService: CoursesService,

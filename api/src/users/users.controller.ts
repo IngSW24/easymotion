@@ -7,6 +7,7 @@ import {
   Delete,
   Put,
   Query,
+  SerializeOptions,
 } from "@nestjs/common";
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 
@@ -28,6 +29,7 @@ import { PatientProfileDto } from "./dto/patient/patient-profile.dto";
  */
 @ApiTags("Users")
 @Controller("users")
+@SerializeOptions({ type: ApplicationUserDto })
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -48,6 +50,7 @@ export class UsersController {
   }
 
   @Get("physiotherapists/:id")
+  @SerializeOptions({ type: PhysiotherapistProfileDto })
   @ApiOkResponse({ type: PhysiotherapistProfileDto })
   @UseAuth()
   findPhysiotherapist(@Param("id") id: string) {

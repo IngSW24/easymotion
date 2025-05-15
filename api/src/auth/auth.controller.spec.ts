@@ -109,13 +109,11 @@ describe("AuthController", () => {
     await controller.userLogin(req, res);
 
     // Verifica che sia stata inviata la risposta OTP
-    expect(res.send).toHaveBeenCalledWith(
-      new AuthResponseDto({
-        user: null,
-        tokens: null,
-        requiresOtp: true,
-      })
-    );
+    expect(res.send).toHaveBeenCalledWith({
+      user: null,
+      tokens: null,
+      requiresOtp: true,
+    });
   });
 
   it("should call getAuthResponseFromUserId and sendAuthenticationTokens for userLogin", async () => {
@@ -160,7 +158,7 @@ describe("AuthController", () => {
       },
     }; // Simula un utente senza OTP richiesto
     const res = { send: jest.fn() }; // Mock della risposta
-    const mockAuthResponse = new AuthResponseDto({
+    const mockAuthResponse = {
       user: {
         id: "user123",
         birthDate: "",
@@ -179,7 +177,7 @@ describe("AuthController", () => {
         refreshToken: "mockRefreshToken",
       },
       requiresOtp: false,
-    });
+    };
 
     // Mock del servizio
     serviceMock.getAuthResponseFromUserId = jest
@@ -236,7 +234,7 @@ describe("AuthController", () => {
       },
     }; // Simula un amministratore senza OTP richiesto
     const res = { send: jest.fn() }; // Mock della risposta
-    const mockAuthResponse = new AuthResponseDto({
+    const mockAuthResponse = {
       user: {
         id: "admin123",
         birthDate: "",
@@ -255,7 +253,7 @@ describe("AuthController", () => {
         refreshToken: "mockRefreshToken",
       },
       requiresOtp: false,
-    });
+    };
 
     // Mock del servizio
     serviceMock.getAuthResponseFromUserId = jest

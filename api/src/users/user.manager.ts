@@ -10,6 +10,7 @@ import { randomBytes, randomInt } from "node:crypto";
 import { v4 as uuidv4 } from "uuid";
 import { PrismaService } from "nestjs-prisma";
 import { UpdateUserDto } from "./dto/user/update-user.dto";
+import { AuthUserDto } from "src/auth/dto/auth-user/auth-user.dto";
 
 @Injectable()
 export class UserManager {
@@ -42,6 +43,7 @@ export class UserManager {
           ...newUser,
           passwordHash: hashedPassword,
         },
+        include: { patient: true, physiotherapist: true },
       });
 
       switch (createdUser.role) {
@@ -77,7 +79,10 @@ export class UserManager {
    * @returns A promise that resolves with a success Result if the user is found,
    *          or an error Result if not found.
    */
-  async getUserById(userId: string, roles: Role[] = undefined) {
+  async getUserById(
+    userId: string,
+    roles: Role[] = undefined
+  ): Promise<AuthUserDto> {
     return this.prisma.applicationUser.findUniqueOrThrow({
       where: { id: userId, ...(roles && { role: { in: roles } }) },
       include: { physiotherapist: true, patient: true },

@@ -44,9 +44,7 @@ export class UsersService {
       newUser.password
     );
 
-    return plainToInstance(ApplicationUserDto, result, {
-      excludeExtraneousValues: true,
-    });
+    return result;
   }
 
   /**
