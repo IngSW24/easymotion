@@ -2598,6 +2598,45 @@
           "Search"
         ]
       }
+    },
+    "/ai/summarize": {
+      "post": {
+        "operationId": "AiController_getSummarization",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TextDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextDto"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Ai"
+        ]
+      }
     }
   },
   "info": {
@@ -4668,6 +4707,18 @@
         "required": [
           "physiotherapists",
           "courses"
+        ]
+      },
+      "TextDto": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "text exchanged with the model"
+          }
+        },
+        "required": [
+          "text"
         ]
       }
     }
