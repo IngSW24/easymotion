@@ -140,7 +140,10 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
     onSuccess: () => {
       // Invalidate queries so that data is refreshed
       queryClient.invalidateQueries({
-        queryKey: ["userSubscriptions", "course-subscribers"],
+        queryKey: ["userSubscriptions"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["course-subscribers"],
       });
       snack.showSuccess("Iscrizione avvenuta con successo!");
     },
@@ -158,12 +161,16 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [
-          "pendingSubscriptions",
-          "userPendingSubscriptions",
-          "userSubscriptions",
-          "course-subscribers",
-        ],
+        queryKey: ["pendingSubscriptions"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["userPendingSubscriptions"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["userSubscriptions"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["course-subscribers"],
       });
       snack.showSuccess("Richiesta di iscrizione accettata!");
     },
@@ -181,7 +188,10 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["userSubscriptions", "course-subscribers"],
+        queryKey: ["pendingSubscriptions"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["userPendingSubscriptions"],
       });
       snack.showSuccess("Disiscrizione avvenuta con successo!");
     },

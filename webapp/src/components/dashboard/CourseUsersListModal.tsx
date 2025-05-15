@@ -42,31 +42,18 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
 
   const confirmSubscription = async (patientId: string) => {
     if (!courseId) return;
-    try {
-      await acceptSubscriptionRequest.mutateAsync({
-        course_id: courseId,
-        patient_id: patientId,
-      });
-
-      getCourseSubscribers.refetch();
-      getPendingCourseSubscriptions.refetch();
-    } catch (err) {
-      console.error("Error accepting subscription:", err);
-    }
+    acceptSubscriptionRequest.mutateAsync({
+      course_id: courseId,
+      patient_id: patientId,
+    });
   };
 
   const denySubscription = async (patientId: string) => {
     if (!courseId) return;
-    try {
-      await unsubscribe.mutateAsync({
-        course_id: courseId,
-        patient_id: patientId,
-      });
-
-      getPendingCourseSubscriptions.refetch();
-    } catch (error) {
-      console.error("Error denying subscription:", error);
-    }
+    await unsubscribe.mutateAsync({
+      course_id: courseId,
+      patient_id: patientId,
+    });
   };
 
   const [currentPageState, setCurrentPageState] = useState(
