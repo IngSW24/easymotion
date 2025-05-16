@@ -9,7 +9,7 @@ import {
   TextField,
 } from "@mui/material";
 import { PhysiotherapistDto, UpdateAuthUserDto } from "@easymotion/openapi";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useEffect } from "react";
@@ -142,19 +142,15 @@ export default function PhysiotherapistSettings(
             <Typography variant="subtitle2" color="text.secondary" mb={1}>
               Bio
             </Typography>
-            <Controller
-              name="bio"
-              render={({ field, fieldState }) => (
-                <MarkdownTextField
-                  {...field}
-                  label="Descrizione"
-                  placeholder="Inserisci la tua bio in formato markdown"
-                  error={!!fieldState.error}
-                  helperText={fieldState.error?.message}
-                  fullWidth
-                  multiline
-                />
-              )}
+            <MarkdownTextField
+              value={watch("bio") ?? ""}
+              onChange={(e) => setValue("bio", e)}
+              fullWidth
+              multiline
+              rows={15}
+              placeholder="Inserisci la tua bio in formato markdown"
+              error={!!errors.bio}
+              helperText={errors.bio?.message}
             />
           </Grid>
 
