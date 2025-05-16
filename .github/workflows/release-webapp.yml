@@ -13,6 +13,7 @@ jobs:
     env:
       VITE_API_URL: "${{ vars.VITE_API_URL }}"
       VITE_STAGING_API_URL: "${{ vars.VITE_STAGING_API_URL }}"
+      VITE_STATIC_URL: "${{ vars.VITE_STATIC_URL }}"
       HUSKY: 0
 
     steps:
@@ -34,9 +35,11 @@ jobs:
 
           if [[ "$version" == *"-beta" ]]; then
             echo "API_URL=${{ env.VITE_STAGING_API_URL }}" >> $GITHUB_ENV
+            echo "STATIC_URL=${{ env.VITE_STATIC_URL }}" >> $GITHUB_ENV
             echo "LATEST_TAG=latest-beta" >> $GITHUB_ENV
           else
             echo "API_URL=${{ env.VITE_API_URL }}" >> $GITHUB_ENV
+            echo "STATIC_URL=${{ env.VITE_STATIC_URL }}" >> $GITHUB_ENV
             echo "LATEST_TAG=latest" >> $GITHUB_ENV
           fi
 
@@ -49,6 +52,7 @@ jobs:
           # Build the image (version tag first)
           docker build \
             --build-arg VITE_API_URL=$API_URL \
+            --build-arg VITE_STATIC_URL=$STATIC_URL \
             . \
             --target webapp \
             --tag $IMAGE_NAME:$VERSION \

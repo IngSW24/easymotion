@@ -1,7 +1,7 @@
 import {
   Box,
   Container,
-  Grid2,
+  Grid,
   IconButton,
   Stack,
   Typography,
@@ -22,11 +22,11 @@ export default function LandingContactUsSection() {
   return (
     <Box sx={{ py: 6, backgroundColor: "#f7f9fc" }}>
       <Container maxWidth="lg" sx={{ padding: 0, px: { xs: 0 } }}>
-        <Grid2 container alignItems="center" justifyContent={"space-between"}>
-          <Grid2 size={{ xs: 12, md: 6 }}>
+        <Grid container alignItems="center" justifyContent={"space-between"}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <ContactUsForm />
-          </Grid2>
-          <Grid2 size={{ xs: 12, md: 6 }}>
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Box sx={{ px: 5 }} pt={{ xs: 5, md: 0 }}>
               <Typography variant="h4" color="primary" gutterBottom>
                 Contatti
@@ -51,8 +51,8 @@ export default function LandingContactUsSection() {
               {/* Email */}
               <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
                 <Email sx={{ color: "#0a4b87", mr: 1.5, fontSize: 24 }} />
-                <Link to="mailto:contact@easymotion.com" color="text.primary">
-                  contact@easymotion.it
+                <Link to="mailto:info@easymotion.it" color="text.primary">
+                  info@easymotion.it
                 </Link>
               </Box>
 
@@ -121,8 +121,8 @@ export default function LandingContactUsSection() {
                 </IconButton>
               </Stack>
             </Box>
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </Container>
     </Box>
   );

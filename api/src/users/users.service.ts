@@ -1,16 +1,20 @@
-import { Injectable } from "@nestjs/common";
-import { PrismaService } from "nestjs-prisma";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { UpdateUserDto } from "./dto/update-user.dto";
-import { ApplicationUserDto } from "./dto/application-user.dto";
+import { Inject, Injectable } from "@nestjs/common";
+import { CreateUserDto } from "./dto/user/create-user.dto";
+import { UpdateUserDto } from "./dto/user/update-user.dto";
 import { UserManager } from "./user.manager";
-import {
-  isSuccessResult,
-  resultToHttpException,
-} from "src/common/types/result";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { PaginatedOutput } from "src/common/dto/paginated-output.dto";
 import { plainToInstance } from "class-transformer";
+import { ApplicationUser } from "@prisma/client";
+import ApplicationUserCreateDto from "./dto/user/create-application-user.dto";
+import { PhysiotherapistProfileDto } from "./dto/physiotherapist/physiotherapist-profile.dto";
+import {
+  EXTENDED_PRISMA_SERVICE,
+  ExtendedPrismaService,
+} from "src/common/prisma/pagination";
+import { ApplicationUserDto } from "./dto/user/application-user.dto";
+import { PatientProfileDto } from "./dto/patient/patient-profile.dto";
+import { FindProfileArgs, FindProfilesArgsMap } from "./types";
 
 /**
  * The UsersService class provides high-level CRUD operations for ApplicationUsers,
@@ -20,7 +24,8 @@ import { plainToInstance } from "class-transformer";
 @Injectable()
 export class UsersService {
   constructor(
-    private readonly prisma: PrismaService,
+    @Inject(EXTENDED_PRISMA_SERVICE)
+    private readonly prisma: ExtendedPrismaService,
     private readonly userManager: UserManager
   ) {}
 
@@ -28,10 +33,9 @@ export class UsersService {
    * Creates a new user.
    * @param newUser - The DTO containing new user data (email, etc.) and password.
    * @returns A promise that resolves to an ApplicationUserDto representing the created user.
-   * @throws HttpException (mapped from Result) if user creation fails, e.g., if the user already exists.
    */
   async create(newUser: CreateUserDto): Promise<ApplicationUserDto> {
-    const mappedUser = plainToInstance(ApplicationUserDto, newUser, {
+    const mappedUser = plainToInstance(ApplicationUserCreateDto, newUser, {
       excludeExtraneousValues: true,
     });
 
@@ -40,11 +44,7 @@ export class UsersService {
       newUser.password
     );
 
-    if (!isSuccessResult(result)) {
-      throw resultToHttpException(result);
-    }
-
-    return plainToInstance(ApplicationUserDto, result.data, {
+    return plainToInstance(ApplicationUserDto, result, {
       excludeExtraneousValues: true,
     });
   }
@@ -58,56 +58,40 @@ export class UsersService {
   async findAll(
     pagination: PaginationFilter
   ): Promise<PaginatedOutput<ApplicationUserDto>> {
-    const { page, perPage } = pagination;
-
-    const count = await this.prisma.applicationUser.count();
-    const users = await this.prisma.applicationUser.findMany({
-      skip: page * perPage,
-      take: perPage,
-    });
-
-    return {
-      data: users.map((u) => new ApplicationUserDto(u)),
-      meta: {
-        currentPage: page,
-        items: users.length,
-        hasNextPage: (page + 1) * perPage < count,
-        totalItems: count,
-        totalPages: Math.ceil(count / perPage),
+    return this.prisma.client.applicationUser.paginate(
+      pagination,
+      {
+        include: { physiotherapist: true, patient: true },
       },
-    };
+      {
+        mapType: ApplicationUserDto,
+      }
+    );
   }
 
   /**
    * Finds a user by their unique ID.
    * @param id - The user ID to look up.
    * @returns A promise that resolves to an ApplicationUserDto if the user is found.
-   * @throws HttpException (mapped from Result) if the user does not exist.
    */
   async findOne(id: string): Promise<ApplicationUserDto> {
     const result = await this.userManager.getUserById(id);
 
-    if (!isSuccessResult(result)) {
-      throw resultToHttpException(result);
-    }
-
-    return new ApplicationUserDto(result.data);
+    return plainToInstance(ApplicationUserDto, result, {
+      excludeExtraneousValues: true,
+    });
   }
 
   /**
    * Finds a user by their email address.
    * @param email - The email to look up.
    * @returns A promise that resolves to an ApplicationUserDto if the user is found.
-   * @throws HttpException (mapped from Result) if the user does not exist.
    */
   async findOneByEmail(email: string): Promise<ApplicationUserDto> {
     const result = await this.userManager.getUserByEmail(email);
-
-    if (!isSuccessResult(result)) {
-      throw resultToHttpException(result);
-    }
-
-    return new ApplicationUserDto(result.data);
+    return plainToInstance(ApplicationUserDto, result, {
+      excludeExtraneousValues: true,
+    });
   }
 
   /**
@@ -115,29 +99,132 @@ export class UsersService {
    * @param id - The ID of the user to update.
    * @param data - The DTO containing fields to update (e.g., firstName, lastName, etc.).
    * @returns A promise that resolves to an ApplicationUserDto representing the updated user.
-   * @throws HttpException (mapped from Result) if the user is not found or update fails.
    */
   async update(id: string, data: UpdateUserDto): Promise<ApplicationUserDto> {
     const result = await this.userManager.updateUser(id, data);
 
-    if (!isSuccessResult(result)) {
-      throw resultToHttpException(result);
-    }
-
-    return new ApplicationUserDto(result.data);
+    return plainToInstance(ApplicationUserDto, result, {
+      excludeExtraneousValues: true,
+    });
   }
 
   /**
    * Removes (deletes) a user by their unique ID.
    * @param id - The ID of the user to remove.
    * @returns A promise that resolves to void if successful.
-   * @throws HttpException (mapped from Result) if the user does not exist or removal fails.
    */
-  async remove(id: string): Promise<void> {
-    const result = await this.userManager.deleteUser(id);
+  async remove(id: string) {
+    return this.userManager.deleteUser(id);
+  }
 
-    if (!isSuccessResult(result)) {
-      throw resultToHttpException(result);
+  /**
+   * Finds a profile by its unique ID.
+   * @param id - The ID of the profile to look up.
+   * @param args - An object containing the type of profile and the DTO to map to.
+   * @returns A promise that resolves to a PhysiotherapistProfileDto or PatientProfileDto.
+   */
+  async findProfile<T extends "physiotherapist" | "patient">(
+    id: string,
+    args: FindProfileArgs<T>
+  ): Promise<
+    T extends "physiotherapist" ? PhysiotherapistProfileDto : PatientProfileDto
+  > {
+    const client = this.prisma.client[args.type];
+
+    let result: { applicationUser: ApplicationUser } | never;
+
+    if (client === this.prisma.client.physiotherapist) {
+      result = await client.findUniqueOrThrow({
+        where: { applicationUserId: id },
+        include: { applicationUser: true },
+      });
+    } else if (client === this.prisma.client.patient) {
+      result = await client.findUniqueOrThrow({
+        where: { applicationUserId: id },
+        include: { applicationUser: true },
+      });
     }
+
+    return this.mapToProfile(
+      args.dto as new () => unknown,
+      result
+    ) as T extends "physiotherapist"
+      ? PhysiotherapistProfileDto
+      : PatientProfileDto;
+  }
+
+  /**
+   * Finds paginated profiles of a specific type.
+   * @param pagination - The pagination filter for the paginated results.
+   * @param args - The arguments for finding profiles, including the type and DTO.
+   * @returns A promise that resolves to a paginated list of profiles of the specified type.
+   */
+  async findProfiles<T extends "physiotherapist" | "patient">(
+    pagination: PaginationFilter,
+    args: FindProfilesArgsMap<T>
+  ): Promise<
+    T extends "physiotherapist"
+      ? PaginatedOutput<PhysiotherapistProfileDto>
+      : PaginatedOutput<PatientProfileDto>
+  > {
+    const client = this.prisma.client[args.type];
+
+    return client.paginate(
+      pagination,
+      {
+        where: args.searchText
+          ? {
+              applicationUser: {
+                OR: [
+                  {
+                    firstName: {
+                      contains: args.searchText,
+                      mode: "insensitive",
+                    },
+                  },
+                  {
+                    lastName: {
+                      contains: args.searchText,
+                      mode: "insensitive",
+                    },
+                  },
+                  {
+                    middleName: {
+                      contains: args.searchText,
+                      mode: "insensitive",
+                    },
+                  },
+                ],
+              },
+            }
+          : undefined,
+        include: { applicationUser: true },
+      },
+      {
+        mapFn: (o) => this.mapToProfile(args.dto as new () => unknown, o),
+      }
+    );
+  }
+
+  /**
+   * Maps a profile to a DTO.
+   * @param type - The DTO type to map to.
+   * @param profile - The profile to map.
+   * @returns A promise that resolves to a DTO.
+   */
+  private mapToProfile<T extends { applicationUser: ApplicationUser }, K>(
+    type: new () => K,
+    profile: T
+  ) {
+    const { applicationUser, ...rest } = profile;
+
+    return plainToInstance(
+      type,
+      {
+        ...rest,
+        ...applicationUser,
+      },
+      { excludeExtraneousValues: true }
+    );
   }
 }

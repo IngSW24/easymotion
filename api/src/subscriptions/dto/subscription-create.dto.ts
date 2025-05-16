@@ -1,22 +1,28 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Expose } from "class-transformer";
-import { IsDate, IsOptional, IsUUID } from "class-validator";
+import { IsOptional, IsString } from "class-validator";
+
+export class SubscriptionRequestDto {
+  @ApiProperty({ description: "Course ID of the subscription request" })
+  @IsString()
+  @Expose()
+  course_id: string;
+
+  @ApiProperty({ description: "Subscription request message" })
+  @IsString()
+  @IsOptional()
+  @Expose()
+  subscriptionRequestMessage: string;
+}
 
 export class SubscriptionCreateDto {
-  @ApiProperty({ description: "Date of subscription to the course" })
-  @IsDate()
+  @ApiProperty({ description: "Subscribed course ID" })
+  @IsString()
   @Expose()
-  @IsOptional()
-  subscriptionDate?: Date;
+  course_id: string;
 
-  @ApiProperty({ description: "Subscribed course id" })
-  @IsUUID()
+  @ApiProperty({ description: "Subscribed user ID" })
+  @IsString()
   @Expose()
-  courseId: string;
-
-  @ApiProperty({ description: "Id of the user to subscribe (only for admins)" })
-  @IsUUID()
-  @Expose()
-  @IsOptional()
-  userId?: string;
+  patient_id: string;
 }

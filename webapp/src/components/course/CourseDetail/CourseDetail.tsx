@@ -1,330 +1,343 @@
-import { Box, Chip, Grid2, Stack, Typography } from "@mui/material";
-import { useState } from "react";
-import { CourseEntity } from "@easymotion/openapi";
-import { useSnack } from "../../../hooks/useSnack";
-import ProductCard from "./ProductCard";
-import LockUnlockButton from "../../atoms/Button/LockUnlockButton";
-import { Duration } from "luxon";
-import DurationPicker from "../../editors/DurationPicker/DurationPicker";
-import ProductCardSelector from "./ProductCardSelector";
-import ListEditor from "../../editors/ListEditor/ListEditor";
-import EventAvailableOutlinedIcon from "@mui/icons-material/EventAvailableOutlined";
-import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
-import LiveHelpIcon from "@mui/icons-material/LiveHelp";
-import TagIcon from "@mui/icons-material/Tag";
-import WatchIcon from "@mui/icons-material/Watch";
-import {
-  courseCategories,
-  courseLevels,
-} from "../../../data/courseEnumerations";
-import FormTextField from "../../atoms/TextField/FormTextField";
-import SubscribeButton from "../../../pages/user/SubscribeButton";
+import React, { useState } from "react";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Chip from "@mui/material/Chip";
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
+import Avatar from "@mui/material/Avatar";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import Divider from "@mui/material/Divider";
+import Grid from "@mui/material/Grid";
+import EventIcon from "@mui/icons-material/Event";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import PersonIcon from "@mui/icons-material/Person";
+import EuroIcon from "@mui/icons-material/Euro";
+import CalendarMonth from "@mui/icons-material/CalendarMonth";
+import { DateTime } from "luxon";
+import { getCourseLevelName } from "../../../data/course-levels";
+import InfoOutlined from "@mui/icons-material/InfoOutlined";
+import CategoryOutlined from "@mui/icons-material/CategoryOutlined";
+import GroupOutlined from "@mui/icons-material/GroupOutlined";
+import { CourseDto } from "@easymotion/openapi";
+import { calculateDuration } from "../../../utils/format";
+import { getPaymentRecurrenceName } from "../../../data/payment-type";
+import { useAuth } from "@easymotion/auth-context";
+import { Link } from "react-router";
+import SubscriptionRequestForm from "./SubscriptionRequest";
+import SubscribeSection from "./SubscribeSection";
+import MarkdownBlock from "../../atoms/MarkdownBlock/MarkdownBlock";
 
 export interface CourseDetailProps {
-  isNew?: boolean;
-  canEdit?: boolean;
-  course: CourseEntity;
-  onSave: (course: CourseEntity) => Promise<CourseEntity>;
+  course: CourseDto;
+  hideTitle?: boolean;
 }
 
-/**
- * Defines a react component that displays the details of a course and allows edits
- * @param props the properties for the component, including the course id
- * @returns a react component
- */
-export default function CourseDetail(props: CourseDetailProps) {
-  const { isNew = false, canEdit = false, course, onSave } = props;
+const CourseDetail: React.FC<CourseDetailProps> = (
+  props: CourseDetailProps
+) => {
+  const { course, hideTitle = false } = props;
 
-  const [editCourse, setEditCourse] = useState<CourseEntity>(course);
+  const { isAuthenticated, isPhysiotherapist, user } = useAuth();
 
-  // If the course is new, start in edit mode
-  const [isEditing, setIsEditing] = useState(isNew);
+  const [openSubReqModal, setOpenSubReqModal] = useState(false);
 
-  const snack = useSnack();
+  const startSubscriptionDate = new Date(
+    Date.parse(course.subscription_start_date)
+  );
 
-  const handleSave = async () => {
-    await onSave(editCourse);
+  const endSubscriptionDate = new Date(
+    Date.parse(course.subscription_end_date)
+  );
 
-    setIsEditing(false);
-
-    snack.showSuccess(
-      `Il corso è stato ${!isNew ? "aggiornato" : "creato"} con successo`
-    );
+  const getPaymentDetails = () => {
+    if (course.price === 0) return "Gratuito";
+    return `Pagamento ${getPaymentRecurrenceName(course.payment_recurrence)}: €${course.price?.toFixed(2)}`;
   };
 
-  const updateField = (field: string, value: string) =>
-    setEditCourse((prev) => ({ ...prev, [field]: value }));
-
-  const lockUnlockClick = () => {
-    if (!isEditing) {
-      setIsEditing(true);
-      return;
-    }
-
-    handleSave();
+  const getAvailableSubscriptions = () => {
+    return (course.max_subscribers ?? 0) == 0
+      ? 0
+      : (course.max_subscribers ?? 0) - course.current_subscribers;
   };
 
   return (
     <>
-      <Grid2 container spacing={4}>
-        <Grid2 container size={12} sx={{ mt: 2, mb: 3 }}>
-          <Grid2
-            size={{ xs: 12, md: 9 }}
-            alignItems="center"
-            textAlign={{ xs: "center", md: "start" }}
-            order={{ xs: 2, md: 1 }}
+      {!hideTitle && (
+        <Box textAlign="center" mb={5}>
+          <Typography
+            variant="h2"
+            fontWeight="bold"
+            gutterBottom
+            color="primary"
+            sx={{
+              fontSize: {
+                xs: "2rem",
+                sm: "3rem",
+                md: "3.75rem",
+              },
+            }}
           >
-            {!isEditing ? (
-              <Stack spacing={3}>
-                <Typography variant="h4" color="primary.dark" fontWeight={500}>
-                  {editCourse.short_description}
-                </Typography>
-              </Stack>
-            ) : (
-              <Stack spacing={3}>
-                <FormTextField
-                  id="outlined-basic"
-                  value={editCourse.name}
-                  label="Nome del corso"
-                  onChange={(v) =>
-                    setEditCourse((prev) => ({
-                      ...prev,
-                      name: v,
-                    }))
-                  }
-                />
+            {course.name}
+          </Typography>
 
-                <FormTextField
-                  id="outlined-basic"
-                  value={editCourse.short_description}
-                  label="Breve descrizione"
-                  onChange={(v) =>
-                    setEditCourse((prev) => ({
-                      ...prev,
-                      short_description: v,
-                    }))
-                  }
-                />
+          <Typography
+            variant="h5"
+            color="text.secondary"
+            sx={{
+              fontSize: {
+                xs: "1rem",
+                sm: "1.5rem",
+                md: "1.5rem",
+              },
+            }}
+          >
+            {course.short_description}
+          </Typography>
+        </Box>
+      )}
+
+      <Grid container spacing={4}>
+        <Grid size={{ xs: 12, md: 8 }}>
+          <Card elevation={6} sx={{ borderRadius: 3 }}>
+            <CardContent sx={{ p: 3 }}>
+              <Stack
+                direction="row"
+                spacing={1}
+                flexWrap="wrap"
+                justifyContent="end"
+              >
+                {course.tags?.map((tag, idx) => (
+                  <Chip key={idx} label={tag} color="info" variant="outlined" />
+                ))}
               </Stack>
-            )}
-          </Grid2>
-          {canEdit && (
-            <Grid2
-              size={{ xs: 12, md: 3 }}
-              textAlign={{ xs: "center", md: "end" }}
-              alignItems="center"
-              order={{ xs: 1, md: 2 }}
-            >
-              <LockUnlockButton
-                isEditing={isEditing}
-                onClick={lockUnlockClick}
-              />
-            </Grid2>
-          )}
-        </Grid2>
-        <Grid2 size={{ xs: 12, md: 8 }}>
-          <Stack spacing={6}>
-            <div>
-              <Typography variant="h4" color="primary.dark" fontWeight="bold">
-                Descrizione
-              </Typography>
-              <Box sx={{ mt: 3 }}>
-                {!isEditing ? (
-                  <Typography
-                    variant="body1"
-                    sx={{ overflowWrap: "break-word" }}
-                  >
-                    {editCourse.description}
-                  </Typography>
-                ) : (
-                  <FormTextField
-                    multiline
-                    value={editCourse.description}
-                    onChange={(v) => updateField("description", v)}
-                  />
-                )}
+              <Box
+                sx={{ gap: 2, display: "flex", flexDirection: "column", mt: 2 }}
+              >
+                <Typography variant="h5" fontWeight="bold">
+                  Descrizione
+                </Typography>
+                <MarkdownBlock content={course.description} />
               </Box>
-            </div>
-            <div>
-              <Typography variant="h4" color="primary.dark" fontWeight="bold">
-                Programma
-              </Typography>
-              {!isEditing ? (
-                <Stack spacing={2} sx={{ mt: 3 }}>
-                  {editCourse.schedule?.map((item, index) => (
-                    <Stack
-                      key={`schedule-${index}`}
-                      direction="row"
-                      spacing={2}
-                      alignItems="center"
-                    >
-                      <EventAvailableOutlinedIcon
-                        fontSize="large"
-                        color="secondary"
-                      />
-                      <Typography
-                        component="div"
-                        variant="h5"
-                        letterSpacing={1}
-                      >
-                        {item}
-                      </Typography>
-                    </Stack>
-                  ))}
-                </Stack>
-              ) : (
-                <ListEditor
-                  entries={editCourse.schedule || []}
-                  onChange={(schedule) =>
-                    setEditCourse((prev) => ({ ...prev, schedule }))
-                  }
-                  entryIcon={<EventAvailableOutlinedIcon fontSize="large" />}
-                  buttonText="Aggiungi voce"
-                />
-              )}
-            </div>
-            <div>
-              <Typography variant="h4" color="primary.dark" fontWeight="bold">
-                Durata di ogni sessione
-              </Typography>
-              <Box sx={{ mt: 3 }}>
-                {!isEditing ? (
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <WatchIcon fontSize="large" color="secondary" />
-                    <Typography
-                      variant="h5"
-                      sx={{ overflowWrap: "break-word" }}
-                    >
-                      {Duration.fromISO(editCourse.session_duration).toHuman()}
+
+              <Divider sx={{ my: 3 }} />
+
+              <Box>
+                <Typography variant="h5" fontWeight="bold">
+                  Sessioni
+                </Typography>
+                <List>
+                  {course.sessions.map((session, idx) => {
+                    const start = DateTime.fromISO(session.start_time);
+                    const end = DateTime.fromISO(session.end_time);
+                    return (
+                      <ListItem key={idx}>
+                        <ListItemIcon>
+                          <Avatar sx={{ bgcolor: "primary.main" }}>
+                            <EventIcon />
+                          </Avatar>
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={`${start.toLocaleString(DateTime.DATE_FULL, { locale: "it" })} – ${end.toLocaleString(DateTime.TIME_SIMPLE, { locale: "it" })}`}
+                          secondary={calculateDuration(start, end)}
+                          slotProps={{
+                            primary: {
+                              sx: {
+                                fontSize: "1.1rem",
+                                fontWeight: "medium",
+                                mb: 0.5,
+                              },
+                            },
+                            secondary: {
+                              sx: {
+                                fontSize: "0.9rem",
+                              },
+                            },
+                          }}
+                        />
+                      </ListItem>
+                    );
+                  })}
+                </List>
+              </Box>
+
+              <Divider sx={{ my: 3 }} />
+
+              <Box>
+                <Typography variant="h5" fontWeight="bold" mb={3}>
+                  Periodo d'iscrizione:
+                </Typography>
+
+                <Typography mb={3}>
+                  Le iscrizioni cominciano a partire dal giorno{" "}
+                  {startSubscriptionDate.toLocaleDateString()} alle ore{" "}
+                  {startSubscriptionDate.toLocaleTimeString()}
+                </Typography>
+                <Typography mb={3}>
+                  Le iscrizioni terminano il giorno{" "}
+                  {endSubscriptionDate.toLocaleDateString()} alle ore{" "}
+                  {endSubscriptionDate.toLocaleTimeString()}
+                </Typography>
+
+                {(course.max_subscribers ?? 0) > 0 && (
+                  <Box
+                    sx={{
+                      gap: 2,
+                      display: "flex",
+                      flexDirection: "column",
+                      mt: 2,
+                    }}
+                  >
+                    <Typography color="green" fontWeight="bold">
+                      Posti ancora disponibili: {getAvailableSubscriptions()}
                     </Typography>
                   </Box>
-                ) : (
-                  <DurationPicker
-                    value={Duration.fromISO(editCourse.session_duration)}
-                    onDurationChange={(d) => {
-                      setEditCourse((prev) => ({
-                        ...prev,
-                        session_duration: d.toISO() ?? "",
-                      }));
-                    }}
-                  />
                 )}
               </Box>
-            </div>
-            <div>
-              <Typography variant="h4" color="primary.dark" fontWeight="bold">
-                Tags
-              </Typography>
-              {!isEditing ? (
-                <Grid2 container spacing={2} sx={{ mt: 3 }}>
-                  {editCourse.tags?.map((item, index) => (
-                    <Grid2 key={`tag-${index}`}>
-                      <Chip
-                        label={
-                          <Typography
-                            component="div"
-                            variant="h6"
-                            letterSpacing={1}
-                          >
-                            {item}
-                          </Typography>
-                        }
-                        color="primary"
-                        variant="outlined" // Optional: Makes the chip outlined
-                      />
-                    </Grid2>
-                  ))}
-                </Grid2>
-              ) : (
-                <ListEditor
-                  entries={editCourse.tags || []}
-                  onChange={(tags) =>
-                    setEditCourse((prev) => ({ ...prev, tags }))
-                  }
-                  entryIcon={<TagIcon fontSize="medium" />}
-                  buttonText="Aggiungi tag"
+
+              <Divider sx={{ my: 3 }} />
+
+              <Box sx={{ textAlign: "center" }}>
+                {isAuthenticated && !isPhysiotherapist && (
+                  <SubscribeSection
+                    course={course}
+                    onSubscribeClick={() => setOpenSubReqModal(true)}
+                  />
+                )}
+                <SubscriptionRequestForm
+                  open={openSubReqModal}
+                  setOpen={setOpenSubReqModal}
+                  numberSubscribers={course.current_subscribers}
+                  startSubscriptionDate={startSubscriptionDate.getTime()}
+                  endSubscriptionDate={endSubscriptionDate}
+                  maxSubscribers={course.max_subscribers ?? 0}
+                  price={getPaymentDetails()}
+                  courseId={course.id}
+                  userId={user?.id}
                 />
-              )}
-            </div>
-          </Stack>
-        </Grid2>
-        <Grid2 size={{ xs: 12, md: 4 }}>
+                {!isAuthenticated && (
+                  <Box sx={{ mt: 2 }}>
+                    <Typography
+                      component={Link}
+                      to="/login"
+                      variant="body1"
+                      sx={{
+                        textDecoration: "none",
+                        color: "primary.main",
+                        fontWeight: "bold",
+                        "&:hover": {
+                          color: "primary.dark",
+                          textDecoration: "underline",
+                        },
+                      }}
+                    >
+                      Accedi
+                    </Typography>
+                    <Typography component="span" sx={{ mx: 1 }}>
+                      oppure
+                    </Typography>
+                    <Typography
+                      component={Link}
+                      to="/signup"
+                      variant="body1"
+                      sx={{
+                        textDecoration: "none",
+                        color: "primary.main",
+                        fontWeight: "bold",
+                        "&:hover": {
+                          color: "primary.dark",
+                          textDecoration: "underline",
+                        },
+                      }}
+                    >
+                      Entra a far parte di EasyMotion!
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid size={{ xs: 12, md: 4 }}>
           <Stack spacing={3}>
-            {/* Product Card (dx screen) */}
-
-            <ProductCard
-              typeInfo="Istruttori"
-              info={editCourse.instructors?.join(", ") ?? ""}
-              isEditing={isEditing}
-              onSave={(value) => {
-                setEditCourse((prev) => ({
-                  ...prev,
-                  instructors: value
-                    .toString()
-                    .split(",")
-                    .map((str) => str.trim()),
-                }));
-              }}
-            />
-
-            <ProductCard
-              typeInfo="Posizione"
-              info={editCourse.location}
-              isEditing={isEditing}
-              onSave={(value) => {
-                setEditCourse((prev) => ({
-                  ...prev,
-                  location: value.toString(),
-                }));
-              }}
-            />
-
-            <ProductCard
-              typeInfo="Costo"
-              cost={editCourse.cost}
-              isEditing={isEditing}
-              onSave={(value) => {
-                setEditCourse((prev) => ({
-                  ...prev,
-                  cost: Number(value),
-                }));
-              }}
-            />
-
-            <ProductCardSelector<CourseEntity["category"]>
-              label="Categoria"
-              icon={
-                <FitnessCenterIcon
-                  sx={{ fontSize: 48, color: "secondary.dark" }}
-                />
-              }
-              options={courseCategories}
-              value={editCourse.category}
-              isEdit={isEditing}
-              onChange={(v) =>
-                setEditCourse((prev) => ({ ...prev, category: v }))
-              }
-            />
-
-            <ProductCardSelector<CourseEntity["level"]>
-              label="Livello"
-              icon={
-                <LiveHelpIcon sx={{ fontSize: 48, color: "secondary.dark" }} />
-              }
-              isEdit={isEditing}
-              options={courseLevels}
-              value={editCourse.level}
-              onChange={(v) => setEditCourse((prev) => ({ ...prev, level: v }))}
-            />
+            {[
+              {
+                icon: <PersonIcon />,
+                label:
+                  course.instructors.length > 1 ? "Istruttori" : "Istruttore",
+                value: course.instructors?.join(", "),
+              },
+              {
+                icon: <LocationOnIcon />,
+                label: "Luogo",
+                value: course.location?.toString(),
+              },
+              {
+                icon: <EuroIcon />,
+                label: "Prezzo",
+                value: getPaymentDetails(),
+              },
+              {
+                icon: <CategoryOutlined />,
+                label: "Categoria",
+                value: course.category.name,
+              },
+              {
+                icon: <InfoOutlined />,
+                label: "Livello",
+                value: getCourseLevelName(course.level),
+              },
+              {
+                icon: <CalendarMonth />,
+                label: "Periodo di iscrizione",
+                value:
+                  startSubscriptionDate.toLocaleDateString() +
+                  " - " +
+                  endSubscriptionDate.toLocaleDateString(),
+              },
+              {
+                icon: <GroupOutlined />,
+                label: "Numero massimo di partecipanti",
+                value: course.max_subscribers ?? "Illimitato",
+              },
+              {
+                icon: <GroupOutlined />,
+                label: "Numero di partecipanti",
+                value: course.current_subscribers,
+              },
+            ].map((detail, idx) => (
+              <Paper
+                key={idx}
+                elevation={4}
+                sx={{
+                  p: 2,
+                  display: "flex",
+                  alignItems: "center",
+                  borderLeft: "5px solid",
+                  borderColor: "primary.light",
+                }}
+              >
+                <Avatar sx={{ bgcolor: "primary.main", mr: 2 }}>
+                  {detail.icon}
+                </Avatar>
+                <Box>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    {detail.label}
+                  </Typography>
+                  <Typography variant="body1">{detail.value}</Typography>
+                </Box>
+              </Paper>
+            ))}
           </Stack>
-          <Grid2
-            size={12}
-            sx={{ display: "flex", justifyContent: "flex-end", mt: 4 }}
-          >
-            <SubscribeButton />
-          </Grid2>
-        </Grid2>
-      </Grid2>
+        </Grid>
+      </Grid>
     </>
   );
-}
+};
+
+export default CourseDetail;

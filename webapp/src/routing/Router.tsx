@@ -1,6 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router";
 import CourseDetailsPage from "../pages/CourseDetailsPage";
-import CourseCreatePage from "../pages/CourseCreatePage";
 import Layout, { MenuEntry } from "../components/Layout/Layout";
 
 import ProfilePage from "../pages/ProfilePage";
@@ -13,10 +12,11 @@ import TermsOfServicePage from "../pages/TermsOfServicePage";
 import UnauthenticatedRoute from "./UnauthenticatedRoute";
 import { useAuth } from "@easymotion/auth-context";
 import RestorePasswordPage from "../pages/RestorePasswordPage";
-import Dashboard from "../pages/physiotherapist/Dashboard";
+import Dashboard from "../pages/dashboard/Dashboard";
 import LandingPage from "../pages/LandingPage";
 import UserArea from "../pages/user/UserArea";
 import CourseListPage from "../pages/CourseListPage";
+import PhysiotherapistProfilePage from "../pages/PhysiotherapistProfilePage";
 
 const menuEntries: MenuEntry[] = [
   {
@@ -58,17 +58,23 @@ export default function Router() {
           {/* Accessible only all the authenticated users */}
           <Route element={<AuthenticatedRoute />}>
             <Route path="profile" element={<ProfilePage />} />
+            <Route
+              path="physiotherapist/:id"
+              element={<PhysiotherapistProfilePage />}
+            />
           </Route>
 
           {/* Accessible only by physhiotherapists */}
-          <Route element={<AuthenticatedRoute roles={["PHYSIOTHERAPIST"]} />}>
-            <Route path="physiotherapist/dashboard" element={<Dashboard />} />
-            <Route path="physiotherapist/new" element={<CourseCreatePage />} />
+          <Route
+            path="dashboard"
+            element={<AuthenticatedRoute roles={["PHYSIOTHERAPIST"]} />}
+          >
+            <Route index element={<Dashboard />} />
           </Route>
 
           {/* Accessible only by user */}
-          <Route element={<AuthenticatedRoute roles={["USER"]} />}>
-            <Route path="my-courses" element={<UserArea />} />
+          <Route path="user" element={<AuthenticatedRoute roles={["USER"]} />}>
+            <Route index element={<UserArea />} />
           </Route>
         </Route>
       </Routes>

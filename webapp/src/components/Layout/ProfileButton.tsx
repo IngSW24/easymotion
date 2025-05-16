@@ -1,5 +1,4 @@
 import {
-  Avatar,
   Box,
   IconButton,
   Menu,
@@ -7,16 +6,17 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "@easymotion/auth-context";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Explore, Logout, Settings, SpaceDashboard } from "@mui/icons-material";
 import { AuthUserDto } from "@easymotion/openapi";
+import ProfileAvatar from "./ProfileAvatar";
 
 type ProfileButtonActionProps = {
   label: string;
-  icon: JSX.Element;
+  icon: React.ReactNode;
   action: () => void | Promise<void>;
   targetRoles?: AuthUserDto["role"][];
 };
@@ -38,13 +38,13 @@ export default function ProfileButton() {
     {
       label: "Dashboard",
       icon: <SpaceDashboard />,
-      action: () => navigate("/physiotherapist/dashboard"),
+      action: () => navigate("/dashboard"),
       targetRoles: ["PHYSIOTHERAPIST"],
     },
     {
       label: "I miei corsi",
       icon: <MenuIcon />,
-      action: () => navigate("/my-courses"),
+      action: () => navigate("/user"),
       targetRoles: ["USER"],
     },
     {
@@ -61,7 +61,10 @@ export default function ProfileButton() {
     {
       label: "Logout",
       icon: <Logout />,
-      action: () => auth.logout(),
+      action: () => {
+        auth.logout();
+        navigate("/");
+      },
       targetRoles: [],
     },
   ];
@@ -80,10 +83,7 @@ export default function ProfileButton() {
     <Box sx={{ flexGrow: 0 }}>
       <Tooltip title="Utente">
         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-          <Avatar>
-            {auth.user?.firstName.charAt(0).toUpperCase()}
-            {auth.user?.lastName.charAt(0).toUpperCase()}
-          </Avatar>
+          <ProfileAvatar />
         </IconButton>
       </Tooltip>
       <Menu

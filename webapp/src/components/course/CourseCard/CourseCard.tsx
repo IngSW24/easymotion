@@ -8,18 +8,15 @@ import {
   Chip,
   Stack,
 } from "@mui/material";
-import { Delete, Launch } from "@mui/icons-material";
+import LaunchIcon from "@mui/icons-material/Launch";
 import { Link } from "react-router";
-import { CourseEntity } from "@easymotion/openapi";
-import {
-  courseCategories,
-  courseLevels,
-} from "../../../data/courseEnumerations";
+import { courseLevels } from "../../../data/course-levels";
+import { CourseDto } from "@easymotion/openapi";
+import { getCourseImageUrl } from "../../../utils/format";
+import { useState } from "react";
 
 export interface CourseCardProps {
-  course: CourseEntity;
-  canEdit?: boolean;
-  onDelete: (id: string) => void;
+  course: CourseDto;
 }
 
 const getLabel = (value: string, options: LiteralUnionDescriptor<string>) =>
@@ -31,7 +28,9 @@ const getLabel = (value: string, options: LiteralUnionDescriptor<string>) =>
  * @returns a react component
  */
 export default function CourseCard(props: CourseCardProps) {
-  const { course, canEdit = false, onDelete } = props;
+  const { course } = props;
+  const [imageUrl, setImageUrl] = useState(getCourseImageUrl({ course }));
+
   return (
     <Card
       sx={{
@@ -45,7 +44,9 @@ export default function CourseCard(props: CourseCardProps) {
     >
       <CardMedia
         sx={{ height: 180 }}
-        image={`/${course.category.toLowerCase()}.jpg`}
+        component="img"
+        image={imageUrl}
+        onError={() => setImageUrl("/hero.jpg")}
       />
       <CardContent
         sx={{
@@ -54,7 +55,7 @@ export default function CourseCard(props: CourseCardProps) {
         }}
       >
         <Typography variant="body1" fontWeight="fontWeightBold" color="primary">
-          <span>{getLabel(course.category, courseCategories)}</span> {" · "}
+          <span>{course.category.name}</span> {" · "}
           <span>{getLabel(course.level, courseLevels)}</span>
         </Typography>
         <Typography variant="h5" fontWeight="fontWeightBold" gutterBottom>
@@ -76,17 +77,8 @@ export default function CourseCard(props: CourseCardProps) {
         ))}
       </Stack>
       <CardActions sx={{ justifyContent: "right", paddingX: 2 }}>
-        {canEdit && (
-          <Button
-            startIcon={<Delete />}
-            color="error"
-            onClick={() => onDelete(course.id)}
-          >
-            Elimina
-          </Button>
-        )}
         <Button
-          startIcon={<Launch />}
+          startIcon={<LaunchIcon />}
           component={Link}
           variant="contained"
           to={"/details/" + course.id}

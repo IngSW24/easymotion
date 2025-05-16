@@ -1,7 +1,7 @@
 import { MiddlewareConsumer, Module } from "@nestjs/common";
-import { ConfigModule, ConfigService } from "@nestjs/config";
+import { ConfigModule, ConfigType } from "@nestjs/config";
 import { CourseModule } from "./courses/courses.module";
-import { PrismaModule } from "nestjs-prisma";
+import { CustomPrismaModule, PrismaModule } from "nestjs-prisma";
 import { AuthModule } from "./auth/auth.module";
 import { UsersModule } from "./users/users.module";
 import { EmailModule } from "./email/email.module";
@@ -9,6 +9,21 @@ import { SubscriptionsModule } from "./subscriptions/subscriptions.module";
 import configurations from "./config";
 import { RequestMiddleware } from "./middlewares/request.middleware";
 import { AuthController } from "./auth/auth.controller";
+import { CategoriesModule } from "./categories/categories.module";
+import { AssetsModule } from "./assets/assets.module";
+import { ServeStaticModule } from "@nestjs/serve-static";
+import { join } from "path";
+import { AwsModule } from "./aws/aws.module";
+import { SearchModule } from "./search/search.module";
+import dbConfig from "./config/db.config";
+import {
+  extendClient,
+  EXTENDED_PRISMA_SERVICE,
+} from "./common/prisma/pagination";
+import { PrismaClient } from "@prisma/client";
+
+const shouldServeStaticFiles =
+  process.env.NODE_ENV === "development" && process.env.USE_S3 !== "true";
 
 @Module({
   imports: [
@@ -18,26 +33,48 @@ import { AuthController } from "./auth/auth.controller";
       expandVariables: true,
     }),
     CourseModule,
-    PrismaModule,
+    CustomPrismaModule.forRootAsync({
+      name: EXTENDED_PRISMA_SERVICE,
+      isGlobal: true,
+      useFactory: async (config: ConfigType<typeof dbConfig>) => {
+        return extendClient(
+          new PrismaClient({ datasources: { db: { url: config.url } } })
+        );
+      },
+      inject: [dbConfig.KEY],
+    }),
     PrismaModule.forRootAsync({
       isGlobal: true,
-      useFactory: async (configService: ConfigService) => {
+      useFactory: async (config: ConfigType<typeof dbConfig>) => {
         return {
           prismaOptions: {
             datasources: {
               db: {
-                url: configService.get<string>("db.url"),
+                url: config.url,
               },
             },
           },
         };
       },
-      inject: [ConfigService],
+      inject: [dbConfig.KEY],
     }),
+    // Serve static files in development mode to provide s3 alternative
+    ...(shouldServeStaticFiles
+      ? [
+          ServeStaticModule.forRoot({
+            rootPath: join(__dirname, "..", "..", "uploads"),
+            serveRoot: "/uploads",
+          }),
+        ]
+      : []),
     AuthModule,
     UsersModule,
     EmailModule,
     SubscriptionsModule,
+    CategoriesModule,
+    AssetsModule,
+    AwsModule,
+    SearchModule,
   ],
 })
 export class AppModule {

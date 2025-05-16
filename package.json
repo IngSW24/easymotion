@@ -4,8 +4,10 @@
   "scripts": {
     "all": "concurrently \"pnpm --filter api start:dev\" \"pnpm --filter webapp dev\"",
     "format": "prettier --write .",
+    "build": "pnpm -r build",
     "lint": "pnpm -r lint",
     "test": "pnpm -r test",
+    "full-check": "pnpm lint && pnpm test && pnpm build",
     "services:up": "docker compose up -d",
     "services:down": "docker compose -f docker-compose.yml -f docker-compose.dev.yml down",
     "env:bootstrap": "cp webapp/.env.example webapp/.env && cp api/.env.example api/.env",
@@ -13,15 +15,16 @@
     "openapi:generate": "pnpm --filter openapi build",
     "api:schema": "pnpm --filter api swagger:generate -- ../openapi/schema.json",
     "api:migrate": "pnpm --filter api prisma:migrate-dev",
-    "api:client": "pnpm --filter api prisma:gen-client",
+    "api:client": "pnpm --filter api prisma:generate-client",
     "api:seed": "pnpm --filter api seed",
     "api:migrate-reset": "pnpm --filter api prisma:migrate-reset",
+    "blast": "pnpm install && pnpm api:migrate-reset && pnpm api:migrate && pnpm api:seed && pnpm openapi:generate",
     "prepare": "husky || true"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",
     "husky": "^9.1.7",
-    "prettier": "^3.4.2"
+    "prettier": "^3.5.3"
   },
   "engines": {
     "node": ">=20",

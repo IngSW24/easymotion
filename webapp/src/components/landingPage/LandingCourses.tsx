@@ -1,14 +1,14 @@
-import { Box, Container, Grid2, Typography } from "@mui/material";
+import { Box, Container, Grid, Typography } from "@mui/material";
 import { useCourses } from "../../hooks/useCourses";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
-import LandingCourseCard from "./LandingCourseCard";
+import CourseCard from "../course/CourseCard/CourseCard";
 
 /**
  * LandingCoursesSection displays featured courses on the landing page.
  * It fetches course data and renders up to 3 course cards.
  */
 export default function LandingCoursesSection() {
-  const { get: getCourses } = useCourses();
+  const { get: getCourses } = useCourses({ page: 0, perPage: 3 });
 
   return (
     <Box
@@ -43,19 +43,18 @@ export default function LandingCoursesSection() {
             <LoadingSpinner />
           </Box>
         ) : (
-          <Grid2
+          <Grid
             container
             spacing={{ xs: 2 }}
             columns={{ xs: 1, sm: 1, md: 2, lg: 3, xl: 3 }}
             justifyContent={{ xs: "center", lg: "space-between" }}
           >
-            {getCourses.data &&
-              getCourses.data.slice(0, 3).map((course) => (
-                <Grid2 key={course.id} sx={{ xs: 1 }}>
-                  <LandingCourseCard course={course} />
-                </Grid2>
-              ))}
-          </Grid2>
+            {getCourses.data?.map((course) => (
+              <Grid key={course.id} sx={{ xs: 1 }}>
+                <CourseCard course={course} />
+              </Grid>
+            ))}
+          </Grid>
         )}
       </Container>
     </Box>

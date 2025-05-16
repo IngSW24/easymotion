@@ -3,9 +3,8 @@ import { Container } from "@mui/material";
 import CourseDetail from "../components/course/CourseDetail/CourseDetail";
 import { useCourses } from "../hooks/useCourses";
 import LoadingSpinner from "../components/LoadingSpinner/LoadingSpinner";
-import { CourseEntity, UpdateCoursesDto } from "@easymotion/openapi";
-import { useAuth } from "@easymotion/auth-context";
 import Hero from "../components/Hero/Hero";
+import { getCourseImageUrl } from "../utils/format";
 
 /**
  * Defines the page to view and edit details of a course
@@ -13,15 +12,8 @@ import Hero from "../components/Hero/Hero";
  */
 export default function CourseDetailsPage() {
   const { id } = useParams();
-  const auth = useAuth();
 
   const courseRepo = useCourses({ fetchId: id });
-
-  const handleSave = (course: CourseEntity) =>
-    courseRepo.update.mutateAsync({
-      courseData: course as UpdateCoursesDto,
-      courseId: id ?? "",
-    });
 
   if (courseRepo.getSingle.isLoading) return <LoadingSpinner />;
 
@@ -31,19 +23,17 @@ export default function CourseDetailsPage() {
   return (
     <>
       <Hero
-        backgroundImage="/hero.jpg"
+        opacity={0.5}
         title={courseRepo.getSingle.data?.name ?? ""}
-        showSignupButton={false}
+        subtitle={courseRepo.getSingle.data?.short_description ?? ""}
+        backgroundImage={getCourseImageUrl({
+          course: courseRepo.getSingle.data,
+        })}
+        fallbackImage={`/hero.jpg`}
       />
       <Container sx={{ my: 5 }}>
         {courseRepo.getSingle.data && (
-          <CourseDetail
-            course={courseRepo.getSingle.data}
-            onSave={handleSave}
-            canEdit={
-              auth.user?.role == "ADMIN" || auth.user?.role == "PHYSIOTHERAPIST"
-            }
-          />
+          <CourseDetail course={courseRepo.getSingle.data} hideTitle />
         )}
       </Container>
     </>

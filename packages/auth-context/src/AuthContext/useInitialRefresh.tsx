@@ -1,10 +1,10 @@
-import { Api, AuthUserDto } from "@easymotion/openapi";
+import { Api, BaseAuthUserDto } from "@easymotion/openapi";
 import { useEffect, useRef, useState } from "react";
 
 export interface UseInitialRefreshProps {
   apiInstance: typeof Api.prototype.auth;
   updateAccessToken: (newToken: string | null) => void;
-  setUser: (user: AuthUserDto | null) => void;
+  setUser: (user: BaseAuthUserDto | null) => void;
 }
 
 /**

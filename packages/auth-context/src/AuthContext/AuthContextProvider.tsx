@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useApiClient } from "../hooks/useApiClient";
 import { AuthContext } from "./AuthContext";
 import { useInitialRefresh } from "./useInitialRefresh";
-import { Api, AuthUserDto, SignUpDto } from "@easymotion/openapi";
+import { Api, BaseAuthUserDto, SignUpDto } from "@easymotion/openapi";
 
 export interface AuthContextProviderProps {
   children: React.ReactNode;
@@ -39,7 +39,7 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
   );
 
   // State to store the authenticated user's details
-  const [user, setUser] = useState<AuthUserDto | null>(null);
+  const [user, setUser] = useState<BaseAuthUserDto | null>(null);
 
   // Automatically attempt to get an access token when the app loads
   const initialized = useInitialRefresh({
@@ -139,9 +139,29 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
     const response = await apiInstance.authControllerConfirmEmail(payload);
 
     if (response.ok) {
-      updateAccessToken(response.data.tokens?.accessToken ?? "");
+      updateAccessToken(response.data?.tokens?.accessToken ?? "");
       if (response.data.user) setUser(response.data.user);
     }
+  };
+
+  const updateProfilePicture = async (file: File) => {
+    const response = await apiInstance.authControllerUpdateProfilePicture(
+      {
+        file,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`, // Include the access token for authenticated logout
+        },
+      }
+    );
+
+    if (response.ok && response.data) {
+      setUser(response.data);
+      return response.data.picturePath;
+    }
+
+    return null;
   };
 
   /**
@@ -165,6 +185,7 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
         updateOtpStatus,
         updateEmail,
         signup,
+        updateProfilePicture,
         updateUser: setUser,
         initialized,
       }}

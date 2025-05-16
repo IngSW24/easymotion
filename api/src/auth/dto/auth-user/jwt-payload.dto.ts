@@ -1,4 +1,4 @@
-import { AuthUserDto } from "./auth-user.dto";
+import { BaseAuthUserDto } from "./auth-user.dto";
 
 export class JwtPayloadDto {
   sub: string;
@@ -13,7 +13,7 @@ export class JwtPayloadDto {
     return new JwtPayloadDto(jwtPayload);
   }
 
-  static fromUser(authUserDto: AuthUserDto): JwtPayloadDto {
+  static fromUser(authUserDto: BaseAuthUserDto): JwtPayloadDto {
     return new JwtPayloadDto({
       sub: authUserDto.id,
       email: authUserDto.email,

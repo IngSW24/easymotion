@@ -14,19 +14,15 @@ const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
   },
 }));
 
-export default function DashboardBreadCrumbs() {
+// Accept current page name as a prop
+export default function DashboardBreadCrumbs({ currentPage = "Home" }) {
   return (
     <StyledBreadcrumbs
-      aria-label="breadcrumb"
       separator={<NavigateNextRoundedIcon fontSize="small" />}
+      aria-label="breadcrumb"
     >
-      <Typography variant="body1">Dashboard</Typography>
-      <Typography
-        variant="body1"
-        sx={{ color: "text.primary", fontWeight: 600 }}
-      >
-        Home
-      </Typography>
+      <Typography color="text.primary">Dashboard</Typography>
+      <Typography color="text.primary">{currentPage}</Typography>
     </StyledBreadcrumbs>
   );
 }

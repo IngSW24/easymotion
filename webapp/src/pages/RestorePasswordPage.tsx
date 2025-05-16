@@ -14,7 +14,21 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { useSearchParams } from "react-router";
 import { Home, Login } from "@mui/icons-material";
-import { ensurePasswordConstraints } from "../data/validators";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { passwordValidationSchema } from "../utils/validation";
+
+const passwordSchema = z
+  .object({
+    newPassword: passwordValidationSchema,
+    newPassword2: passwordValidationSchema,
+  })
+  .refine((data) => data.newPassword === data.newPassword2, {
+    message: "Le password non corrispondono.",
+    path: ["newPassword2"],
+  });
 
 export default function RestorePasswordPage() {
   const { apiClient } = useApiClient();
@@ -24,12 +38,17 @@ export default function RestorePasswordPage() {
   const [status, setStatus] = useState<
     "loading" | "stall" | "success" | "failed"
   >("loading");
-  const [newPassword, setNewPassword] = useState("");
-  const [newPassword2, setNewPassword2] = useState("");
-  const [passwordError, setPasswordError] = useState("");
   const [passwordUpdateParams, setPasswordUpdateParams] = useState({
     token: "",
     userId: "",
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(passwordSchema),
   });
 
   useEffect(() => {
@@ -50,29 +69,15 @@ export default function RestorePasswordPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const updatePassword = async () => {
-    if (newPassword !== newPassword2) {
-      setPasswordError("Le password non corrispondono.");
-      return;
-    }
-
-    if (!ensurePasswordConstraints(newPassword)) {
-      setPasswordError(
-        "La password deve contenere almeno 6 caratteri e un numero."
-      );
-      return;
-    }
-
+  const updatePassword = async (data: { newPassword: string }) => {
     try {
       await apiClient.auth.authControllerUpdatePassword({
         ...passwordUpdateParams,
-        newPassword,
+        newPassword: data.newPassword,
       });
       setStatus("success");
-    } catch (_e) {
+    } catch (_) {
       setStatus("failed");
-    } finally {
-      setPasswordError("");
     }
   };
 
@@ -111,7 +116,7 @@ export default function RestorePasswordPage() {
       >
         <CardContent>
           {status === "stall" ? (
-            <>
+            <form onSubmit={handleSubmit(updatePassword)}>
               <Typography variant="h5" gutterBottom>
                 Aggiorna la tua password
               </Typography>
@@ -120,29 +125,29 @@ export default function RestorePasswordPage() {
                 label="Nuova Password"
                 type="password"
                 margin="normal"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
+                {...register("newPassword")}
+                error={!!errors.newPassword}
+                helperText={errors.newPassword?.message}
               />
               <TextField
                 fullWidth
                 label="Conferma Nuova Password"
                 type="password"
                 margin="normal"
-                value={newPassword2}
-                onChange={(e) => setNewPassword2(e.target.value)}
-                error={!!passwordError}
-                helperText={passwordError}
+                {...register("newPassword2")}
+                error={!!errors.newPassword2}
+                helperText={errors.newPassword2?.message}
               />
               <Button
                 variant="contained"
                 color="primary"
                 size="large"
                 sx={{ mt: 3, borderRadius: 2, textTransform: "none" }}
-                onClick={updatePassword}
+                type="submit"
               >
                 Aggiorna Password
               </Button>
-            </>
+            </form>
           ) : status === "success" ? (
             <>
               <CheckCircleOutlineIcon

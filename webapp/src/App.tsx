@@ -8,6 +8,12 @@ import { ApiContextProvider } from "@easymotion/auth-context";
 import { AuthContextProvider } from "@easymotion/auth-context";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
+import { ErrorBoundary } from "react-error-boundary";
+import { GlobalErrorFallback } from "./components/fallbacks/GlobalErrorFallback";
+import { Settings } from "luxon";
+
+// Set the default luxon locale to Italian
+Settings.defaultLocale = "it";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,7 +31,7 @@ const queryClient = new QueryClient({
  */
 export default function App() {
   return (
-    <LocalizationProvider dateAdapter={AdapterLuxon}>
+    <LocalizationProvider dateAdapter={AdapterLuxon} adapterLocale="it">
       <ApiContextProvider apiBaseUrl={import.meta.env.VITE_API_URL}>
         <AuthContextProvider apiBaseUrl={import.meta.env.VITE_API_URL}>
           <QueryClientProvider client={queryClient}>
@@ -35,7 +41,9 @@ export default function App() {
                   <SnackbarCloseButton snackbarKey={snackbarKey} />
                 )}
               >
-                <Router />
+                <ErrorBoundary FallbackComponent={GlobalErrorFallback}>
+                  <Router />
+                </ErrorBoundary>
               </SnackbarProvider>
             </DialogContextProvider>
             <ReactQueryDevtools buttonPosition="bottom-left" />

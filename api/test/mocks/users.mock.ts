@@ -1,6 +1,7 @@
-import { CreateUserDto } from "src/users/dto/create-user.dto";
-import { ApplicationUserDto } from "src/users/dto/application-user.dto";
-import { UpdateUserDto } from "src/users/dto/update-user.dto";
+import { ActivityLevel, MobilityLevel } from "@prisma/client";
+import { ApplicationUserDto } from "src/users/dto/user/application-user.dto";
+import { CreateUserDto } from "src/users/dto/user/create-user.dto";
+import { UpdateUserDto } from "src/users/dto/user/update-user.dto";
 
 export const createUserDtoMock = (): CreateUserDto => ({
   email: "test@example.com",
@@ -58,6 +59,45 @@ export const applicationUserDtoMock = (): ApplicationUserDto => ({
   twoFactorExpiry: new Date(),
   twoFactorEnabled: false,
   failedLoginAttempts: 0,
+  picturePath: "",
+  physiotherapist: {
+    bio: "Physiotherapist 1",
+    specialization: "",
+    publicPhoneNumber: "",
+    publicEmail: "",
+    publicAddress: "",
+    website: "",
+    socialMediaLinks: [],
+    applicationUserId: "",
+  },
+  patient: {
+    sex: "MALE",
+    height: 170,
+    weight: 70,
+    smoker: false,
+    activityLevel: ActivityLevel.MEDIUM,
+    mobilityLevel: MobilityLevel.LIMITED,
+    restingHeartRate: 70,
+    bloodPressure: "120/80",
+    lastMedicalCheckup: new Date(),
+    notes: "Notes",
+    applicationUserId: "",
+    alcoholUnits: 0,
+    profession: "",
+    sport: "",
+    sportFrequency: 0,
+    medications: "",
+    allergies: "",
+    otherPathologies: "",
+    painZone: "",
+    painIntensity: 0,
+    painFrequency: "CONSTANT",
+    painCharacteristics: "",
+    painModifiers: "",
+    sleepHours: 8,
+    perceivedStress: 0,
+    personalGoals: "",
+  },
 });
 
 export const applicationUsersList = () => [

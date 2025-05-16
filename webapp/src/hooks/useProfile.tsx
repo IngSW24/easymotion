@@ -33,6 +33,24 @@ export const useProfile = () => {
     onError: (error) => snack.showError(error),
   });
 
+  const updatePhysiotherapist = useMutation({
+    mutationFn: async (data: UpdateAuthUserDto["physiotherapist"]) => {
+      const response = await apiClient.auth.authControllerUpdateUserProfile({
+        physiotherapist: data,
+      });
+      return response.data;
+    },
+  });
+
+  const updatePatient = useMutation({
+    mutationFn: async (data: UpdateAuthUserDto["patient"]) => {
+      const response = await apiClient.auth.authControllerUpdateUserProfile({
+        patient: data,
+      });
+      return response.data;
+    },
+  });
+
   const remove = useMutation({
     mutationFn: async () => {
       await apiClient.auth.authControllerDeleteUserProfile();
@@ -45,5 +63,5 @@ export const useProfile = () => {
     },
   });
 
-  return { get, update, remove };
+  return { get, update, remove, updatePhysiotherapist, updatePatient };
 };
