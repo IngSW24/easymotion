@@ -41,16 +41,17 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
   } = useSubscriptions({ courseId: courseId });
 
   const confirmSubscription = async (patientId: string) => {
-    console.log(courseId, patientId);
-    acceptSubscriptionRequest.mutateAsync({
-      course_id: courseId!,
+    if (!courseId) return;
+    await acceptSubscriptionRequest.mutateAsync({
+      course_id: courseId,
       patient_id: patientId,
     });
   };
 
   const denySubscription = async (patientId: string) => {
-    unsubscribe.mutateAsync({
-      course_id: courseId!,
+    if (!courseId) return;
+    await unsubscribe.mutateAsync({
+      course_id: courseId,
       patient_id: patientId,
     });
   };
@@ -69,21 +70,24 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
   };
 
   useEffect(() => {
-    if (
-      getCourseSubscribers.isError ||
-      getPendingCourseSubscriptions.isError ||
-      !courseId
-    ) {
+    if (getCourseSubscribers.isError || getPendingCourseSubscriptions.isError) {
       setCurrentPageState(CurrentState.ERROR);
     } else if (
-      getCourseSubscribers.isSuccess &&
-      getPendingCourseSubscriptions.isSuccess
+      (getCourseSubscribers.isSuccess || getCourseSubscribers.data) &&
+      (getPendingCourseSubscriptions.isSuccess ||
+        getPendingCourseSubscriptions.data)
     ) {
       setCurrentPageState(CurrentState.READY);
     } else {
       setCurrentPageState(CurrentState.LOADING);
     }
-  }, [getCourseSubscribers, getPendingCourseSubscriptions, courseId]);
+  }, [
+    getCourseSubscribers,
+    getPendingCourseSubscriptions,
+    getCourseSubscribers.data,
+    getPendingCourseSubscriptions.data,
+    courseId,
+  ]);
 
   // Render already subscribed user (simplified)
   const renderSubscribedUserItem = (
