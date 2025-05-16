@@ -4,7 +4,7 @@
 
 ### CORS
 
-- `FRONTEND_URL`: The url of the frontend application
+- `FRONTEND_URL`: The url of the frontend application (if multiple use comma separated URLs)
 
 ### Database
 
@@ -41,3 +41,9 @@
 
 - `USE_S3`: if set to 'true' uses the S3 client, otherwise uses a mockup
 - `MAX_IMAGE_SIZE`: maximum size in bytes for images before compressing them. Defaults to 500000 if not set
+
+### Ollama (for small AI tasks)
+
+- `OLLAMA_BASE_URL`: the base url where the model is currently being hosted
+- `OLLAMA_API_KEY`: the api key to access the model endpoint
+- `OLLAMA_MODEL`: type of model to use
