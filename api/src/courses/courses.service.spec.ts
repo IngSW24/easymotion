@@ -107,7 +107,7 @@ describe("CoursesService", () => {
         createdAt: new Date(),
         updatedAt: new Date(),
         owner: {
-          applicationUser: {
+          user: {
             id: ownerId,
             email: "test@example.com",
             firstName: "John",
@@ -147,11 +147,11 @@ describe("CoursesService", () => {
             connect: { id: createDto.categoryId },
           },
           owner: {
-            connect: { applicationUserId: ownerId },
+            connect: { userId: ownerId },
           },
         }),
         include: {
-          owner: { include: { applicationUser: true } },
+          owner: { include: { user: true } },
           category: true,
           sessions: true,
         },
@@ -182,7 +182,7 @@ describe("CoursesService", () => {
           shortDescription: "Short Desc",
           level: CourseLevel.BASIC,
           owner: {
-            applicationUser: {
+            user: {
               id: randomUUID(),
               email: "test@example.com",
               firstName: "John",
@@ -245,7 +245,7 @@ describe("CoursesService", () => {
         shortDescription: "Short Desc",
         level: CourseLevel.BASIC,
         owner: {
-          applicationUser: {
+          user: {
             id: randomUUID(),
             email: "test@example.com",
             firstName: "John",
@@ -321,7 +321,7 @@ describe("CoursesService", () => {
         isPublished: true,
         subscriptionsOpen: true,
         owner: {
-          applicationUser: {
+          user: {
             id: randomUUID(),
             email: "test@example.com",
             firstName: "John",
@@ -406,7 +406,7 @@ describe("CoursesService", () => {
             description: "Description",
             shortDescription: "Short description",
             owner: {
-              applicationUser: {
+              user: {
                 id: randomUUID(),
                 email: "test@example.com",
                 firstName: "John",

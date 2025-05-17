@@ -1,7 +1,7 @@
 import { ActivityLevel, MobilityLevel } from "@prisma/client";
-import { ApplicationUserDto } from "src/users/dto/user/application-user.dto";
+import { UserDto } from "src/users/dto/user/user.dto";
 import { CreateUserDto } from "src/users/dto/user/create-user.dto";
-import { UpdateUserDto } from "src/users/dto/user/update-user.dto";
+import { UpdateUserDto } from "src/users/dto/user/update.user.dto";
 
 export const createUserDtoMock = (): CreateUserDto => ({
   email: "test@example.com",
@@ -37,7 +37,7 @@ export const mappedUserPlainToInstanceMock = () => ({
   updatedAt: undefined,
 });
 
-export const applicationUserDtoMock = (): ApplicationUserDto => ({
+export const userDtoMock = (): UserDto => ({
   id: "2aa48862-4f03-409d-b0db-499de5715b26",
   email: "test@example.com",
   passwordHash: "securepassword123",
@@ -68,7 +68,7 @@ export const applicationUserDtoMock = (): ApplicationUserDto => ({
     publicAddress: "",
     website: "",
     socialMediaLinks: [],
-    applicationUserId: "",
+    userId: "",
   },
   patient: {
     sex: "MALE",
@@ -81,7 +81,7 @@ export const applicationUserDtoMock = (): ApplicationUserDto => ({
     bloodPressure: "120/80",
     lastMedicalCheckup: new Date(),
     notes: "Notes",
-    applicationUserId: "",
+    userId: "",
     alcoholUnits: 0,
     profession: "",
     sport: "",
@@ -100,7 +100,7 @@ export const applicationUserDtoMock = (): ApplicationUserDto => ({
   },
 });
 
-export const applicationUsersList = () => [
+export const usersList = () => [
   {
     id: "27b10d39-b26f-4786-874b-ee53556e6bdd",
     email: "user1@example.com",

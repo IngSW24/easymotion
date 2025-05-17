@@ -12,11 +12,11 @@ import {
   IsEnum,
 } from "class-validator";
 import { Exclude, Expose, Type } from "class-transformer";
-import { ApplicationUser, Role } from "@prisma/client";
+import { User, Role } from "@prisma/client";
 import { PhysiotherapistDto } from "../physiotherapist/physiotherapist.dto";
 import { PatientDto } from "../patient/patient.dto";
 
-export class ApplicationUserDto implements Readonly<ApplicationUser> {
+export class UserDto implements Readonly<User> {
   @ApiProperty({
     description: "Unique user identifier (UUID)",
     example: "b3bf4d18-8dd0-43a1-b1da-fd3f7b9553a1",

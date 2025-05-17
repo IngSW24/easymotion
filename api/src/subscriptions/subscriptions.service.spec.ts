@@ -4,7 +4,7 @@ import { PrismaService } from "nestjs-prisma";
 import { BadRequestException } from "@nestjs/common";
 import { Course, Prisma } from "@prisma/client";
 import { randomUUID } from "crypto";
-import { applicationUserDtoMock } from "test/mocks/users.mock";
+import { userDtoMock } from "test/mocks/users.mock";
 
 describe("SubscriptionsService", () => {
   let service: SubscriptionsService;
@@ -208,7 +208,7 @@ describe("SubscriptionsService", () => {
       };
 
       const patient = {
-        applicationUserId: patientId,
+        userId: patientId,
       };
 
       prismaMock.course.findUniqueOrThrow.mockResolvedValue(course);
@@ -300,7 +300,7 @@ describe("SubscriptionsService", () => {
       const courseId = "course-1";
 
       const patient = {
-        applicationUserId: patientId,
+        userId: patientId,
       };
 
       const course = {
@@ -429,7 +429,7 @@ describe("SubscriptionsService", () => {
       const pagination = { page: 1, perPage: 10 };
       const isPending = false;
 
-      const userMock = applicationUserDtoMock();
+      const userMock = userDtoMock();
 
       // Update count to include isPending in the where clause
       prismaMock.subscription.count.mockResolvedValue(1);
@@ -442,7 +442,7 @@ describe("SubscriptionsService", () => {
           isPending: false,
           subscriptionRequestMessage: "Hello",
           patient: {
-            applicationUser: {
+            user: {
               ...userMock,
             },
           },
@@ -466,10 +466,10 @@ describe("SubscriptionsService", () => {
       expect(prismaMock.subscription.findMany).toHaveBeenCalledWith({
         where: { courseId: courseId, isPending },
         include: {
-          patient: { include: { applicationUser: true } },
+          patient: { include: { user: true } },
           course: { select: { id: true, name: true } },
         },
-        orderBy: { patient: { applicationUser: { firstName: "asc" } } },
+        orderBy: { patient: { user: { firstName: "asc" } } },
         skip: pagination.page * pagination.perPage,
         take: pagination.perPage,
       });
@@ -493,7 +493,7 @@ describe("SubscriptionsService", () => {
           isPending: true,
           subscriptionRequestMessage: "Request 1",
           patient: {
-            applicationUser: {
+            user: {
               id: "user-1",
               email: "user1@example.com",
               firstName: "User",
@@ -514,7 +514,7 @@ describe("SubscriptionsService", () => {
           isPending: true,
           subscriptionRequestMessage: "Request 2",
           patient: {
-            applicationUser: {
+            user: {
               id: "user-2",
               email: "user2@example.com",
               firstName: "User",

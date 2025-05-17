@@ -139,7 +139,7 @@ describe("CoursesController", () => {
         maxSubscribers: 0,
         owner: {
           connect: {
-            applicationUserId: "1",
+            userId: "1",
           },
         },
         sessions: {
@@ -152,7 +152,7 @@ describe("CoursesController", () => {
         category: true,
         owner: {
           include: {
-            applicationUser: true,
+            user: true,
           },
         },
         sessions: true,
@@ -219,7 +219,7 @@ describe("CoursesController", () => {
       include: {
         owner: {
           include: {
-            applicationUser: true,
+            user: true,
           },
         },
         category: true,
@@ -275,7 +275,7 @@ describe("CoursesController", () => {
       ownerId: randomUUID(),
       categoryId: randomUUID(),
       owner: {
-        applicationUser: {
+        user: {
           id: randomUUID(),
           email: "test@email.com",
           firstName: "fname",
@@ -293,7 +293,7 @@ describe("CoursesController", () => {
     const result = await controller.findOne(id);
     const expected = plainToInstance(CourseDto, {
       ...mockCourse,
-      owner: mockCourse.owner.applicationUser,
+      owner: mockCourse.owner.user,
       available_slots: null,
     });
 
@@ -302,7 +302,7 @@ describe("CoursesController", () => {
       include: {
         owner: {
           include: {
-            applicationUser: true,
+            user: true,
           },
         },
         category: true,
@@ -355,7 +355,7 @@ describe("CoursesController", () => {
         name: "Category",
       },
       owner: {
-        applicationUser: {
+        user: {
           id: randomUUID(),
           email: "test@email.com",
           firstName: "fname",
@@ -394,7 +394,7 @@ describe("CoursesController", () => {
     expect(prismaMock.course.update.mock.calls[0][0].include).toEqual({
       owner: {
         include: {
-          applicationUser: true,
+          user: true,
         },
       },
       category: true,
@@ -405,7 +405,7 @@ describe("CoursesController", () => {
     expect(result).toEqual(
       plainToInstance(CourseDto, {
         ...updatedCourse,
-        owner: updatedCourse.owner.applicationUser,
+        owner: updatedCourse.owner.user,
       })
     );
   });

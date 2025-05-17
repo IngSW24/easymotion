@@ -2,17 +2,12 @@ import {
   applyDecorators,
   Body,
   Controller,
-  Delete,
-  Get,
-  Inject,
-  ParseFilePipeBuilder,
   Post,
   Put,
   Query,
   Req,
   Res,
   SerializeOptions,
-  UploadedFile,
   UseGuards,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
@@ -27,7 +22,6 @@ import { SignInDto } from "./dto/actions/sign-in.dto";
 import { DateTime } from "luxon";
 import { RefreshGuard } from "./guards/refresh.guard";
 import UseAuth from "./decorators/auth-with-role.decorator";
-import { UpdateAuthUserDto } from "./dto/auth-user/update-auth-user.dto";
 import AuthFlowHeader from "./decorators/authflow-header.decorator";
 import { CustomRequest } from "src/common/types/custom-request";
 import { RefreshTokenDto } from "./dto/actions/refresh-token.dto";
@@ -37,8 +31,6 @@ import {
   UserLocalAuthGuard,
 } from "./guards/local-auth.guard";
 import { AuthResponseDto } from "./dto/auth-user/auth-response.dto";
-import { ApiFileBody } from "src/common/decorators/api-file-body.decorator";
-import { AuthUserDto } from "./dto/auth-user/auth-user.dto";
 
 // avoids having to bloat the code with the same multiple decorators
 const ApiLoginResponse = (description: string = "Successful login") =>
@@ -139,74 +131,6 @@ export class AuthController {
   @UseAuth()
   async logout(@Res() res) {
     this.clearRefreshTokenCookie(res);
-  }
-
-  /**
-   * Retrieves the profile of the currently authenticated user.
-   * @param req The request object, containing the user's ID.
-   */
-  @UseAuth()
-  @Get("profile")
-  @ApiOkResponse({ type: AuthUserDto })
-  @SerializeOptions({ type: AuthUserDto })
-  getUserProfile(@Req() req) {
-    // this returns an ApplicationUser that will be converted into a AuthUser
-    return this.authService.getUserProfile(req.user.sub);
-  }
-
-  /**
-   * Updates the profile of the currently authenticated user.
-   * @param req The request object, containing the user's ID.
-   * @param updateProfileDto The data to update the user's profile.
-   */
-  @UseAuth()
-  @Put("profile")
-  @ApiOkResponse({ type: AuthUserDto })
-  @SerializeOptions({ type: AuthUserDto })
-  updateUserProfile(@Req() req, @Body() updateProfileDto: UpdateAuthUserDto) {
-    return this.authService.updateUserProfile(req.user.sub, updateProfileDto);
-  }
-
-  /**
-   * Deletes the profile of the currently authenticated user.
-   * @param req The request object, containing the user's ID.
-   * @param res The response object.
-   */
-  @UseAuth()
-  @Delete("profile")
-  @ApiOkResponse()
-  async deleteUserProfile(@Req() req, @Res() res) {
-    this.clearRefreshTokenCookie(res);
-    await this.authService.deleteUserProfile(req.user.sub);
-  }
-
-  /**
-   * Updates the profile picture of the currently authenticated user.
-   * @param req The request object, containing the user's ID.
-   * @param file The file to update the profile picture with.
-   */
-  @UseAuth()
-  @Post("profile/picture")
-  @ApiOkResponse({ type: AuthUserDto })
-  @SerializeOptions({ type: AuthUserDto })
-  @ApiFileBody()
-  async updateProfilePicture(
-    @Req() req,
-    @UploadedFile(
-      new ParseFilePipeBuilder()
-        .addMaxSizeValidator({ maxSize: 1024 * 1024 * 10 })
-        .addFileTypeValidator({ fileType: "image" })
-        .build()
-    )
-    file: Express.Multer.File
-  ) {
-    const userId = req.user.sub;
-
-    return this.authService.updateUserPicture(
-      userId,
-      file.buffer,
-      file.mimetype
-    );
   }
 
   /**

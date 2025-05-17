@@ -13,14 +13,14 @@ import { ApiCreatedResponse, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 
 import { UsersService } from "./users.service";
 import { CreateUserDto } from "./dto/user/create-user.dto";
-import { UpdateUserDto } from "./dto/user/update-user.dto";
+import { UpdateUserDto } from "./dto/user/update.user.dto";
 import { PaginationFilter } from "src/common/dto/pagination-filter.dto";
 import { ApiPaginatedResponse } from "src/common/decorators/api-paginated-response.decorator";
 import UseAuth from "src/auth/decorators/auth-with-role.decorator";
 import { Role } from "@prisma/client";
 import { ProfilesFilter } from "./filters/profiles-filter.dto";
 import { PhysiotherapistProfileDto } from "./dto/physiotherapist/physiotherapist-profile.dto";
-import { ApplicationUserDto } from "./dto/user/application-user.dto";
+import { UserDto } from "./dto/user/user.dto";
 import { PatientProfileDto } from "./dto/patient/patient-profile.dto";
 
 /**
@@ -29,7 +29,7 @@ import { PatientProfileDto } from "./dto/patient/patient-profile.dto";
  */
 @ApiTags("Users")
 @Controller("users")
-@SerializeOptions({ type: ApplicationUserDto })
+@SerializeOptions({ type: UserDto })
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -76,7 +76,8 @@ export class UsersController {
   }
 
   @Get("patient/:id")
-  @ApiPaginatedResponse(PatientProfileDto)
+  @SerializeOptions({ type: PatientProfileDto })
+  @ApiOkResponse({ type: PatientProfileDto })
   @UseAuth([Role.ADMIN, Role.PHYSIOTHERAPIST])
   findPatient(@Param("id") id: string) {
     return this.usersService.findProfile(id, {
@@ -88,10 +89,10 @@ export class UsersController {
   /**
    * Create a new user.
    * @param createUserDto - The DTO containing user creation data (e.g., email, password).
-   * @returns The created user as ApplicationUserDto.
+   * @returns The created user as UserDto.
    */
   @Post()
-  @ApiCreatedResponse({ type: ApplicationUserDto })
+  @ApiCreatedResponse({ type: UserDto })
   @UseAuth([Role.ADMIN])
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
@@ -100,10 +101,10 @@ export class UsersController {
   /**
    * Retrieve a paginated list of users.
    * @param pagination - The pagination filters: page, perPage, etc.
-   * @returns A paginated response containing ApplicationUserDto items.
+   * @returns A paginated response containing UserDto items.
    */
   @Get()
-  @ApiPaginatedResponse(ApplicationUserDto)
+  @ApiPaginatedResponse(UserDto)
   @UseAuth([Role.ADMIN])
   findAll(@Query() pagination: PaginationFilter) {
     return this.usersService.findAll(pagination);
@@ -112,10 +113,10 @@ export class UsersController {
   /**
    * Retrieve a single user by its unique ID.
    * @param id - The UUID of the user.
-   * @returns The user as ApplicationUserDto, if found.
+   * @returns The user as UserDto, if found.
    */
   @Get(":id")
-  @ApiOkResponse({ type: ApplicationUserDto })
+  @ApiOkResponse({ type: UserDto })
   @UseAuth([Role.ADMIN])
   findOne(@Param("id") id: string) {
     return this.usersService.findOne(id);
@@ -125,10 +126,10 @@ export class UsersController {
    * Update a user by its unique ID.
    * @param id - The UUID of the user.
    * @param updateUserDto - The fields to update (e.g., firstName, lastName).
-   * @returns The updated user as ApplicationUserDto.
+   * @returns The updated user as UserDto.
    */
   @Put(":id")
-  @ApiOkResponse({ type: ApplicationUserDto })
+  @ApiOkResponse({ type: UserDto })
   @UseAuth([Role.ADMIN])
   update(@Param("id") id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);

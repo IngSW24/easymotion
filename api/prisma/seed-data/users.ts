@@ -1,7 +1,7 @@
 import { Prisma, Sex } from "@prisma/client";
 import * as argon2 from "argon2";
 
-const getUsers = async (): Promise<Prisma.ApplicationUserCreateInput[]> => {
+const getUsers = async (): Promise<Prisma.UserCreateInput[]> => {
   const passwordHash = await argon2.hash("password1234");
   return [
     {

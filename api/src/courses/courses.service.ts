@@ -57,11 +57,11 @@ export class CoursesService {
           connect: { id: newCourse.categoryId },
         },
         owner: {
-          connect: { applicationUserId: ownerId },
+          connect: { userId: ownerId },
         },
       },
       include: {
-        owner: { include: { applicationUser: true } },
+        owner: { include: { user: true } },
         category: true,
         sessions: true,
       },
@@ -94,7 +94,7 @@ export class CoursesService {
           ...(onlyPublished && { isPublished: true }),
           ...(filter?.ownerId && {
             owner: {
-              applicationUser: {
+              user: {
                 id: filter.ownerId,
               },
             },
@@ -120,7 +120,7 @@ export class CoursesService {
         include: {
           owner: {
             include: {
-              applicationUser: true,
+              user: true,
             },
           },
           category: true,
@@ -136,7 +136,7 @@ export class CoursesService {
           courses.map(async (course) =>
             plainToInstance(CourseDto, {
               ...course,
-              owner: course.owner.applicationUser,
+              owner: course.owner.user,
               currentSubscribers: await tx.subscription.count({
                 where: { courseId: course.id },
               }),
@@ -161,7 +161,7 @@ export class CoursesService {
         where: { id },
         include: {
           owner: {
-            include: { applicationUser: true },
+            include: { user: true },
           },
           sessions: true,
           category: true,
@@ -170,7 +170,7 @@ export class CoursesService {
 
       return {
         ...course,
-        owner: course.owner.applicationUser,
+        owner: course.owner.user,
         currentSubscribers: await tx.subscription.count({
           where: { courseId: id },
         }),
@@ -232,7 +232,7 @@ export class CoursesService {
       where: { id: courseId },
       data,
       include: {
-        owner: { include: { applicationUser: true } },
+        owner: { include: { user: true } },
         category: true,
         sessions: true,
       },
@@ -240,7 +240,7 @@ export class CoursesService {
 
     return plainToInstance(CourseDto, {
       ...updatedCourse,
-      owner: updatedCourse.owner.applicationUser,
+      owner: updatedCourse.owner.user,
     });
   }
 
@@ -309,7 +309,7 @@ export class CoursesService {
       include: {
         patient: {
           include: {
-            applicationUser: true,
+            user: true,
           },
         },
       },
@@ -370,7 +370,7 @@ export class CoursesService {
           course: {
             include: {
               owner: {
-                include: { applicationUser: true },
+                include: { user: true },
               },
               category: true,
             },
@@ -385,7 +385,7 @@ export class CoursesService {
           courses.map(async (x) =>
             plainToInstance(CourseDto, {
               ...x.course,
-              owner: x.course.owner.applicationUser,
+              owner: x.course.owner.user,
               currentSubscribers: await tx.subscription.count({
                 where: { courseId: x.courseId },
               }),

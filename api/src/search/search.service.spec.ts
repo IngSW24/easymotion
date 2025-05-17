@@ -2,14 +2,14 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { SearchService } from "./search.service";
 import { EXTENDED_PRISMA_SERVICE } from "src/common/prisma/pagination";
 import { SearchFilter } from "./dto/search-filter.dto";
-import { ApplicationUser, Role } from "@prisma/client";
+import { User, Role } from "@prisma/client";
 
 describe("SearchService", () => {
   let service: SearchService;
   let mockPrismaService: any;
 
   const mockPhysiotherapist = {
-    applicationUser: {
+    user: {
       id: "1",
       firstName: "John",
       middleName: null,
@@ -39,9 +39,7 @@ describe("SearchService", () => {
     },
   };
 
-  const createMockUser = (
-    middleName: string | null = null
-  ): ApplicationUser => ({
+  const createMockUser = (middleName: string | null = null): User => ({
     id: "1",
     firstName: "John",
     middleName,
@@ -150,8 +148,8 @@ describe("SearchService", () => {
       // Arrange
       const physiotherapistWithMiddleName = {
         ...mockPhysiotherapist,
-        applicationUser: {
-          ...mockPhysiotherapist.applicationUser,
+        user: {
+          ...mockPhysiotherapist.user,
           middleName: "Middle",
         },
       };

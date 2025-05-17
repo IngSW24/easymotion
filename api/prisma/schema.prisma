@@ -54,7 +54,7 @@ model Course {
   category   CourseCategory @relation(fields: [categoryId], references: [id])
 
   ownerId String
-  owner   Physiotherapist @relation(fields: [ownerId], references: [applicationUserId])
+  owner   Physiotherapist @relation(fields: [ownerId], references: [userId])
 
   subscriptionStartDate DateTime        @default(now()) @db.Timestamptz(3)
   subscriptionEndDate   DateTime        @db.Timestamptz(3)
@@ -84,7 +84,7 @@ model Subscription {
   course   Course @relation(fields: [courseId], references: [id])
 
   patientId String
-  patient   Patient @relation(fields: [patientId], references: [applicationUserId])
+  patient   Patient @relation(fields: [patientId], references: [userId])
 
   isPending                  Boolean
   subscriptionRequestMessage String?
@@ -107,7 +107,7 @@ enum Role {
   PHYSIOTHERAPIST
 }
 
-model ApplicationUser {
+model User {
   id    String @id @default(uuid())
   email String @unique
   role  Role   @default(USER)
@@ -149,9 +149,9 @@ model Physiotherapist {
   website           String?
   socialMediaLinks  String[] @default([])
 
-  applicationUserId String          @id
-  applicationUser   ApplicationUser @relation(fields: [applicationUserId], references: [id])
-  courses           Course[]
+  userId  String   @id
+  user    User     @relation(fields: [userId], references: [id])
+  courses Course[]
 }
 
 enum ActivityLevel {
@@ -167,9 +167,9 @@ enum MobilityLevel {
 }
 
 model Patient {
-  applicationUserId String          @id
-  applicationUser   ApplicationUser @relation(fields: [applicationUserId], references: [id])
-  subscriptions     Subscription[]
+  userId        String         @id
+  user          User           @relation(fields: [userId], references: [id])
+  subscriptions Subscription[]
 
   sex                 Sex?
   height              Float?

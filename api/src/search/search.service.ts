@@ -4,7 +4,7 @@ import {
   ExtendedPrismaService,
 } from "src/common/prisma/pagination";
 import { SearchFilter } from "./dto/search-filter.dto";
-import { ApplicationUser } from "@prisma/client";
+import { User } from "@prisma/client";
 import { SearchResultDto } from "./dto/search-result.dto";
 
 @Injectable()
@@ -29,14 +29,12 @@ export class SearchService {
 
     const result: SearchResultDto = {
       physiotherapists: physiotherapists.map((physiotherapist) => ({
-        id: physiotherapist.applicationUser.id,
-        fullName: SearchService.getPhysiotherapistName(
-          physiotherapist.applicationUser
-        ),
+        id: physiotherapist.user.id,
+        fullName: SearchService.getPhysiotherapistName(physiotherapist.user),
         address: physiotherapist.publicAddress,
         specialization: physiotherapist.specialization,
         numberOfCourses: physiotherapist._count.courses,
-        picturePath: physiotherapist.applicationUser.picturePath,
+        picturePath: physiotherapist.user.picturePath,
       })),
       courses: courses.map((course) => ({
         id: course.id,
@@ -50,7 +48,7 @@ export class SearchService {
     return result;
   }
 
-  private static getPhysiotherapistName(user: ApplicationUser) {
+  private static getPhysiotherapistName(user: User) {
     return [user.firstName, user.middleName, user.lastName]
       .filter(Boolean)
       .join(" ");
@@ -65,7 +63,7 @@ export class SearchService {
   private searchPhysiotherapists(query: string, limit: number = 10) {
     return this.prisma.client.physiotherapist.findMany({
       include: {
-        applicationUser: true,
+        user: true,
         _count: {
           select: { courses: true },
         },
@@ -73,12 +71,12 @@ export class SearchService {
       where: {
         AND: [
           {
-            applicationUser: {
+            user: {
               isEmailVerified: true,
             },
             OR: [
               {
-                applicationUser: {
+                user: {
                   OR: [
                     { firstName: { contains: query, mode: "insensitive" } },
                     { middleName: { contains: query, mode: "insensitive" } },
@@ -93,7 +91,7 @@ export class SearchService {
                 },
               },
               {
-                applicationUser: {
+                user: {
                   email: { contains: query, mode: "insensitive" },
                 },
               },

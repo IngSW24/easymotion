@@ -72,10 +72,10 @@ export class SubscriptionsService {
       {
         where: { courseId: courseId, isPending },
         include: {
-          patient: { include: { applicationUser: true } },
+          patient: { include: { user: true } },
           course: { select: { id: true, name: true } },
         },
-        orderBy: { patient: { applicationUser: { firstName: "asc" } } },
+        orderBy: { patient: { user: { firstName: "asc" } } },
         skip: pagination.page * pagination.perPage,
         take: pagination.perPage,
       }
@@ -88,7 +88,7 @@ export class SubscriptionsService {
           {
             ...subscription,
             course: subscription.course,
-            user: subscription.patient.applicationUser,
+            user: subscription.patient.user,
           },
           { excludeExtraneousValues: true }
         )
@@ -106,7 +106,7 @@ export class SubscriptionsService {
    */
   async createSubscriptionRequest(patientId: string, courseId: string) {
     const user = await this.prismaService.patient.findUniqueOrThrow({
-      where: { applicationUserId: patientId },
+      where: { userId: patientId },
     });
 
     const course = await this.prismaService.course.findUniqueOrThrow({
@@ -138,7 +138,7 @@ export class SubscriptionsService {
     await this.prismaService.subscription.create({
       data: {
         courseId: course.id,
-        patientId: user.applicationUserId,
+        patientId: user.userId,
         isPending: true,
       },
     });
@@ -151,7 +151,7 @@ export class SubscriptionsService {
    */
   async createDirectSubscription(patientId: string, courseId: string) {
     const user = await this.prismaService.patient.findUniqueOrThrow({
-      where: { applicationUserId: patientId },
+      where: { userId: patientId },
     });
 
     const course = await this.prismaService.course.findUniqueOrThrow({
@@ -161,7 +161,7 @@ export class SubscriptionsService {
     await this.prismaService.subscription.upsert({
       create: {
         courseId: course.id,
-        patientId: user.applicationUserId,
+        patientId: user.userId,
         isPending: false,
       },
       update: {
@@ -170,7 +170,7 @@ export class SubscriptionsService {
       where: {
         courseId_patientId: {
           courseId: course.id,
-          patientId: user.applicationUserId,
+          patientId: user.userId,
         },
       },
     });

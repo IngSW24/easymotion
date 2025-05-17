@@ -73,7 +73,7 @@ CREATE TABLE "Subscription" (
 );
 
 -- CreateTable
-CREATE TABLE "ApplicationUser" (
+CREATE TABLE "User" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "role" "Role" NOT NULL DEFAULT 'USER',
@@ -97,7 +97,7 @@ CREATE TABLE "ApplicationUser" (
     "updatedAt" TIMESTAMPTZ(3) NOT NULL,
     "picturePath" TEXT,
 
-    CONSTRAINT "ApplicationUser_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -109,14 +109,14 @@ CREATE TABLE "Physiotherapist" (
     "publicAddress" TEXT,
     "website" TEXT,
     "socialMediaLinks" TEXT[] DEFAULT ARRAY[]::TEXT[],
-    "applicationUserId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
 
-    CONSTRAINT "Physiotherapist_pkey" PRIMARY KEY ("applicationUserId")
+    CONSTRAINT "Physiotherapist_pkey" PRIMARY KEY ("userId")
 );
 
 -- CreateTable
 CREATE TABLE "Patient" (
-    "applicationUserId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
     "sex" "Sex",
     "height" DOUBLE PRECISION,
     "weight" DOUBLE PRECISION,
@@ -143,17 +143,17 @@ CREATE TABLE "Patient" (
     "personalGoals" TEXT,
     "notes" TEXT,
 
-    CONSTRAINT "Patient_pkey" PRIMARY KEY ("applicationUserId")
+    CONSTRAINT "Patient_pkey" PRIMARY KEY ("userId")
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "ApplicationUser_email_key" ON "ApplicationUser"("email");
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- AddForeignKey
 ALTER TABLE "Course" ADD CONSTRAINT "Course_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "CourseCategory"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Course" ADD CONSTRAINT "Course_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "Physiotherapist"("applicationUserId") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Course" ADD CONSTRAINT "Course_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "Physiotherapist"("userId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "CourseSession" ADD CONSTRAINT "CourseSession_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "Course"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -162,10 +162,10 @@ ALTER TABLE "CourseSession" ADD CONSTRAINT "CourseSession_courseId_fkey" FOREIGN
 ALTER TABLE "Subscription" ADD CONSTRAINT "Subscription_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "Course"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Subscription" ADD CONSTRAINT "Subscription_patientId_fkey" FOREIGN KEY ("patientId") REFERENCES "Patient"("applicationUserId") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Subscription" ADD CONSTRAINT "Subscription_patientId_fkey" FOREIGN KEY ("patientId") REFERENCES "Patient"("userId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Physiotherapist" ADD CONSTRAINT "Physiotherapist_applicationUserId_fkey" FOREIGN KEY ("applicationUserId") REFERENCES "ApplicationUser"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Physiotherapist" ADD CONSTRAINT "Physiotherapist_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Patient" ADD CONSTRAINT "Patient_applicationUserId_fkey" FOREIGN KEY ("applicationUserId") REFERENCES "ApplicationUser"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Patient" ADD CONSTRAINT "Patient_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

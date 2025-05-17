@@ -44,7 +44,7 @@ describe("SubscriptionsController", () => {
       firstName: "Test",
       lastName: "User",
       patient: {
-        applicationUserId: "user-id",
+        userId: "user-id",
       },
       physiotherapist: null,
     }),

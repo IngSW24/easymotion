@@ -27,7 +27,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
         connect: { id: categories[0].id },
       },
       owner: {
-        connect: { applicationUserId: physiotherapist.id },
+        connect: { userId: physiotherapist.id },
       },
       subscriptionStartDate: new Date("2025-04-08T20:30:00Z"),
       subscriptionEndDate: new Date("2025-08-08T20:30:00Z"),
@@ -65,7 +65,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
         connect: { id: categories[1].id },
       },
       owner: {
-        connect: { applicationUserId: physiotherapist.id },
+        connect: { userId: physiotherapist.id },
       },
       subscriptionStartDate: new Date("2025-04-08T20:30:00Z"),
       subscriptionEndDate: new Date("2025-08-08T20:30:00Z"),
@@ -109,7 +109,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
         connect: { id: categories[2].id },
       },
       owner: {
-        connect: { applicationUserId: physiotherapist.id },
+        connect: { userId: physiotherapist.id },
       },
       subscriptionStartDate: new Date("2025-04-08T20:30:00Z"),
       subscriptionEndDate: new Date("2025-08-08T20:30:00Z"),
@@ -147,7 +147,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
         connect: { id: categories[3].id },
       },
       owner: {
-        connect: { applicationUserId: physiotherapist.id },
+        connect: { userId: physiotherapist.id },
       },
       subscriptionStartDate: new Date("2025-04-08T20:30:00Z"),
       subscriptionEndDate: new Date("2025-08-08T20:30:00Z"),
@@ -185,7 +185,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
         connect: { id: categories[5].id },
       },
       owner: {
-        connect: { applicationUserId: physiotherapist.id },
+        connect: { userId: physiotherapist.id },
       },
       subscriptionStartDate: new Date("2025-04-08T20:30:00Z"),
       subscriptionEndDate: new Date("2025-08-08T20:30:00Z"),
@@ -223,7 +223,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
         connect: { id: categories[4].id },
       },
       owner: {
-        connect: { applicationUserId: physiotherapist.id },
+        connect: { userId: physiotherapist.id },
       },
       subscriptionStartDate: new Date("2025-04-08T20:30:00Z"),
       subscriptionEndDate: new Date("2025-08-08T20:30:00Z"),
@@ -261,7 +261,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
         connect: { id: categories[3].id },
       },
       owner: {
-        connect: { applicationUserId: physiotherapist.id },
+        connect: { userId: physiotherapist.id },
       },
       subscriptionStartDate: new Date("2025-04-08T20:30:00Z"),
       subscriptionEndDate: new Date("2025-08-08T20:30:00Z"),
@@ -299,7 +299,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
         connect: { id: categories[4].id },
       },
       owner: {
-        connect: { applicationUserId: physiotherapist.id },
+        connect: { userId: physiotherapist.id },
       },
       subscriptionStartDate: new Date("2025-04-08T20:30:00Z"),
       subscriptionEndDate: new Date("2025-08-08T20:30:00Z"),
@@ -337,7 +337,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
         connect: { id: categories[3].id },
       },
       owner: {
-        connect: { applicationUserId: physiotherapist.id },
+        connect: { userId: physiotherapist.id },
       },
       subscriptionStartDate: new Date("2025-04-08T20:30:00Z"),
       subscriptionEndDate: new Date("2025-08-08T20:30:00Z"),
@@ -375,7 +375,7 @@ const getCourses = async (): Promise<Prisma.CourseCreateInput[]> => {
         connect: { id: categories[1].id },
       },
       owner: {
-        connect: { applicationUserId: physiotherapist.id },
+        connect: { userId: physiotherapist.id },
       },
       subscriptionStartDate: new Date("2025-04-08T20:30:00Z"),
       subscriptionEndDate: new Date("2025-08-08T20:30:00Z"),

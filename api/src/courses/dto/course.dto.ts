@@ -2,7 +2,6 @@ import {
   IsArray,
   IsBoolean,
   IsDate,
-  IsDateString,
   IsDefined,
   IsEnum,
   IsNumber,
@@ -25,11 +24,13 @@ export class CourseSessionDto {
 
   @ApiProperty({ description: "Start time of the session", type: Date })
   @IsDate()
+  @Type(() => Date)
   @Expose()
   startTime: Date;
 
   @ApiProperty({ description: "End time of the session", type: Date })
   @IsDate()
+  @Type(() => Date)
   @Expose()
   endTime: Date;
 }
@@ -37,26 +38,31 @@ export class CourseSessionDto {
 export class CourseDto implements Course {
   @ApiProperty({ description: "The id of the course" })
   @IsString()
+  @IsDefined()
   @Expose()
   id: string;
 
   @ApiProperty({ description: "The image path of the course" })
   @IsString()
+  @IsDefined()
   @Expose()
   imagePath: string | null;
 
   @ApiProperty({ description: "The name of the course" })
   @IsString()
+  @IsDefined()
   @Expose()
   name: string;
 
   @ApiProperty({ description: "The complete description of the course" })
   @IsString()
+  @IsDefined()
   @Expose()
   description: string;
 
   @ApiProperty({ description: "A brief description of the course" })
   @IsString()
+  @IsDefined()
   @Expose()
   shortDescription: string;
 
@@ -72,11 +78,13 @@ export class CourseDto implements Course {
   @ApiProperty({ description: "List of instructors for the course" })
   @IsArray()
   @IsString({ each: true })
+  @IsDefined()
   @Expose()
   instructors: string[];
 
   @ApiProperty({ description: "Level of the course", enum: CourseLevel })
   @IsEnum(CourseLevel)
+  @IsDefined()
   @Expose()
   level: CourseLevel;
 
@@ -88,6 +96,7 @@ export class CourseDto implements Course {
   @Type(() => Number)
   @IsNumber()
   @Min(0)
+  @IsDefined()
   @Expose()
   price: Decimal;
 
@@ -96,16 +105,19 @@ export class CourseDto implements Course {
     enum: PaymentRecurrence,
   })
   @IsEnum(PaymentRecurrence)
+  @IsDefined()
   @Expose()
   paymentRecurrence: PaymentRecurrence;
 
   @ApiProperty({ description: "Indicates if the course is public" })
   @IsBoolean()
+  @IsDefined()
   @Expose()
   isPublished: boolean;
 
   @ApiProperty({ description: "Indicates if subscriptions are open" })
   @IsBoolean()
+  @IsDefined()
   @Expose()
   subscriptionsOpen: boolean;
 
@@ -129,34 +141,43 @@ export class CourseDto implements Course {
   @ApiProperty({ description: "Related tags" })
   @IsArray()
   @IsString({ each: true })
+  @IsDefined()
   @Expose()
   tags: string[];
 
   @ApiProperty({ description: "Date of creation" })
   @IsDate()
+  @Type(() => Date)
+  @IsDefined()
   @Expose()
   createdAt: Date;
 
   @ApiProperty({ description: "Date of last update" })
   @IsDate()
+  @Type(() => Date)
+  @IsDefined()
   @Expose()
   updatedAt: Date;
 
   @ApiProperty({ description: "The owner of the course" })
   @Type(() => CourseOwnerDto)
+  @IsDefined()
   @Expose()
   owner: CourseOwnerDto;
 
   @Exclude()
+  @IsDefined()
   @ApiHideProperty()
   ownerId: string;
 
   @ApiProperty({ description: "The category of the course" })
   @Type(() => CourseCategoryDto)
+  @IsDefined()
   @Expose()
   category: CourseCategoryDto;
 
   @ApiHideProperty()
+  @IsDefined()
   @Exclude()
   categoryId: string;
 
@@ -167,6 +188,7 @@ export class CourseDto implements Course {
   })
   @IsArray()
   @Type(() => CourseSessionDto)
+  @IsDefined()
   @Expose()
   sessions: CourseSessionDto[];
 
@@ -174,7 +196,9 @@ export class CourseDto implements Course {
     description: "Subscription start date",
     required: true,
   })
-  @IsDateString() // TODO: use IsDateString() because it does not use class-transformer Type(()=>Date)
+  @IsDate()
+  @Type(() => Date)
+  @IsDefined()
   @Expose()
   subscriptionStartDate: Date;
 
@@ -182,7 +206,9 @@ export class CourseDto implements Course {
     description: "Subscription end date",
     required: true,
   })
-  @IsDateString()
+  @IsDate()
+  @Type(() => Date)
+  @IsDefined()
   @Expose()
   subscriptionEndDate: Date;
 }

@@ -1,10 +1,10 @@
 import { IntersectionType, PickType } from "@nestjs/swagger";
 import { PatientDto } from "./patient.dto";
-import { ApplicationUserDto } from "../user/application-user.dto";
+import { UserDto } from "../user/user.dto";
 
 export class PatientProfileDto extends IntersectionType(
   PatientDto,
-  PickType(ApplicationUserDto, [
+  PickType(UserDto, [
     "createdAt",
     "lastLogin",
     "firstName",

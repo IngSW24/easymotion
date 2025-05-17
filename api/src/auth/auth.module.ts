@@ -12,12 +12,10 @@ import {
 import { JwtStrategy } from "./strategies/jwt.strategy";
 import { RefreshStrategy } from "./strategies/refresh.strategy";
 import { OtpStrategy } from "./strategies/otp.strategy";
-import { AssetsModule } from "src/assets/assets.module";
 
 @Module({
   imports: [
     UsersModule,
-    AssetsModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({

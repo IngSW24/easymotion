@@ -11,7 +11,7 @@ async function main() {
 
   for (const e of users) {
     await prisma.$transaction(async (tx) => {
-      await tx.applicationUser.upsert({
+      await tx.user.upsert({
         where: { id: e.id },
         update: {},
         create: { ...e },

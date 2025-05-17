@@ -133,7 +133,7 @@ export class CoursesController {
     await Promise.allSettled(
       subscribers.map((subscriber) =>
         this.emailService.sendEmail(
-          subscriber.patient.applicationUser.email,
+          subscriber.patient.user.email,
           "Corso aggiornato",
           `Il corso ${updatedCourse.name} al quale sei iscritto è stato aggiornato.<br/>
           <a href="${this.config.url}/details/${id}">Visualizza le modifiche.</a>`

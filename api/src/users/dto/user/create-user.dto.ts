@@ -3,13 +3,13 @@ import {
   IsString,
   IsEmail,
   IsOptional,
-  IsDateString,
   IsEnum,
   Length,
   IsBoolean,
+  IsDate,
 } from "class-validator";
 import { Role, Sex } from "@prisma/client";
-import { Expose } from "class-transformer";
+import { Expose, Type } from "class-transformer";
 import CheckPasswordConstraints from "src/auth/decorators/strong-password.decorator";
 
 export class CreateUserDto {
@@ -79,7 +79,8 @@ export class CreateUserDto {
     example: "1990-01-01",
   })
   @IsOptional()
-  @IsDateString()
+  @IsDate()
+  @Type(() => Date)
   @Expose()
   birthDate?: string;
 

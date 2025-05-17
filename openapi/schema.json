@@ -782,139 +782,6 @@
         ]
       }
     },
-    "/auth/profile": {
-      "get": {
-        "operationId": "AuthController_getUserProfile",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthUserDto"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Retrieves the profile of the currently authenticated user.",
-        "tags": [
-          "Auth"
-        ]
-      },
-      "put": {
-        "operationId": "AuthController_updateUserProfile",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateAuthUserDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthUserDto"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Updates the profile of the currently authenticated user.",
-        "tags": [
-          "Auth"
-        ]
-      },
-      "delete": {
-        "operationId": "AuthController_deleteUserProfile",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Deletes the profile of the currently authenticated user.",
-        "tags": [
-          "Auth"
-        ]
-      }
-    },
-    "/auth/profile/picture": {
-      "post": {
-        "operationId": "AuthController_updateProfilePicture",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "file": {
-                    "type": "string",
-                    "format": "binary"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthUserDto"
-                }
-              }
-            }
-          },
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthUserDto"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Updates the profile picture of the currently authenticated user.",
-        "tags": [
-          "Auth"
-        ]
-      }
-    },
     "/auth/signup/customer": {
       "post": {
         "operationId": "AuthController_signUp",
@@ -1393,56 +1260,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "PaginatedResponseOfPatientProfileDto",
-                  "allOf": [
-                    {
-                      "properties": {
-                        "data": {
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/components/schemas/PatientProfileDto"
-                          }
-                        }
-                      },
-                      "required": [
-                        "data"
-                      ]
-                    },
-                    {
-                      "properties": {
-                        "meta": {
-                          "type": "object",
-                          "properties": {
-                            "items": {
-                              "type": "number"
-                            },
-                            "hasNextPage": {
-                              "type": "boolean"
-                            },
-                            "currentPage": {
-                              "type": "number"
-                            },
-                            "totalItems": {
-                              "type": "number"
-                            },
-                            "totalPages": {
-                              "type": "number"
-                            }
-                          },
-                          "required": [
-                            "items",
-                            "hasNextPage",
-                            "currentPage",
-                            "totalItems",
-                            "totalPages"
-                          ]
-                        }
-                      },
-                      "required": [
-                        "meta"
-                      ]
-                    }
-                  ]
+                  "$ref": "#/components/schemas/PatientProfileDto"
                 }
               }
             }
@@ -1478,7 +1296,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApplicationUserDto"
+                  "$ref": "#/components/schemas/UserDto"
                 }
               }
             }
@@ -1524,14 +1342,14 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "PaginatedResponseOfApplicationUserDto",
+                  "title": "PaginatedResponseOfUserDto",
                   "allOf": [
                     {
                       "properties": {
                         "data": {
                           "type": "array",
                           "items": {
-                            "$ref": "#/components/schemas/ApplicationUserDto"
+                            "$ref": "#/components/schemas/UserDto"
                           }
                         }
                       },
@@ -1609,7 +1427,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApplicationUserDto"
+                  "$ref": "#/components/schemas/UserDto"
                 }
               }
             }
@@ -1653,7 +1471,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApplicationUserDto"
+                  "$ref": "#/components/schemas/UserDto"
                 }
               }
             }
@@ -2634,6 +2452,139 @@
           "Search"
         ]
       }
+    },
+    "/profile": {
+      "get": {
+        "operationId": "ProfileController_getUserProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthUserDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Retrieves the profile of the currently authenticated user.",
+        "tags": [
+          "Profile"
+        ]
+      },
+      "put": {
+        "operationId": "ProfileController_updateUserProfile",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAuthUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthUserDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Updates the profile of the currently authenticated user.",
+        "tags": [
+          "Profile"
+        ]
+      },
+      "delete": {
+        "operationId": "ProfileController_deleteUserProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Deletes the profile of the currently authenticated user.",
+        "tags": [
+          "Profile"
+        ]
+      }
+    },
+    "/profile/picture": {
+      "post": {
+        "operationId": "ProfileController_updateProfilePicture",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthUserDto"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthUserDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Updates the profile picture of the currently authenticated user.",
+        "tags": [
+          "Profile"
+        ]
+      }
     }
   },
   "info": {
@@ -3301,374 +3252,6 @@
           }
         }
       },
-      "PhysiotherapistDto": {
-        "type": "object",
-        "properties": {
-          "bio": {
-            "type": "string",
-            "nullable": true,
-            "description": "The bio of the physiotherapist",
-            "example": "I am a physiotherapist with a passion for helping people"
-          },
-          "specialization": {
-            "type": "string",
-            "description": "The specialization of the physiotherapist",
-            "example": "I am a physiotherapist with a passion for helping people"
-          },
-          "publicPhoneNumber": {
-            "type": "string",
-            "description": "The public phone number of the physiotherapist",
-            "example": "1234567890"
-          },
-          "publicEmail": {
-            "type": "string",
-            "description": "The public email of the physiotherapist",
-            "example": "physio@example.com"
-          },
-          "publicAddress": {
-            "type": "string",
-            "description": "The public address of the physiotherapist",
-            "example": "123 Main St, Anytown, USA"
-          },
-          "website": {
-            "type": "string",
-            "description": "The website of the physiotherapist",
-            "example": "https://www.physio.com"
-          },
-          "socialMediaLinks": {
-            "description": "The social media links of the physiotherapist",
-            "example": [
-              "https://www.facebook.com/physio",
-              "https://www.instagram.com/physio"
-            ],
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "applicationUserId": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "bio",
-          "specialization",
-          "publicPhoneNumber",
-          "publicEmail",
-          "publicAddress",
-          "website",
-          "socialMediaLinks",
-          "applicationUserId"
-        ]
-      },
-      "PatientDto": {
-        "type": "object",
-        "properties": {
-          "sex": {
-            "type": "string",
-            "nullable": true,
-            "description": "Sex of the user",
-            "enum": [
-              "MALE",
-              "FEMALE",
-              "OTHER"
-            ]
-          },
-          "height": {
-            "type": "number",
-            "nullable": true,
-            "description": "Height in cm"
-          },
-          "weight": {
-            "type": "number",
-            "nullable": true,
-            "description": "Weight in kg"
-          },
-          "smoker": {
-            "type": "boolean",
-            "nullable": true,
-            "description": "Smoker"
-          },
-          "alcoholUnits": {
-            "type": "number",
-            "nullable": true,
-            "description": "Alcohol consumption (integer)"
-          },
-          "activityLevel": {
-            "type": "string",
-            "nullable": true,
-            "description": "Activity level",
-            "enum": [
-              "LOW",
-              "MEDIUM",
-              "HIGH"
-            ]
-          },
-          "mobilityLevel": {
-            "type": "string",
-            "nullable": true,
-            "description": "Mobility level",
-            "enum": [
-              "LIMITED",
-              "MODERATE",
-              "FULL"
-            ]
-          },
-          "restingHeartRate": {
-            "type": "number",
-            "nullable": true,
-            "description": "Resting heart rate"
-          },
-          "bloodPressure": {
-            "type": "string",
-            "nullable": true,
-            "description": "Blood pressure"
-          },
-          "profession": {
-            "type": "string",
-            "nullable": true,
-            "description": "Profession"
-          },
-          "sport": {
-            "type": "string",
-            "nullable": true,
-            "description": "Sport"
-          },
-          "sportFrequency": {
-            "type": "number",
-            "nullable": true,
-            "description": "Sport frequency"
-          },
-          "medications": {
-            "type": "string",
-            "nullable": true,
-            "description": "Medications"
-          },
-          "allergies": {
-            "type": "string",
-            "nullable": true,
-            "description": "Allergies"
-          },
-          "otherPathologies": {
-            "type": "string",
-            "nullable": true,
-            "description": "Other concomitant pathologies"
-          },
-          "painZone": {
-            "type": "string",
-            "nullable": true,
-            "description": "Pain zone"
-          },
-          "painIntensity": {
-            "type": "number",
-            "nullable": true,
-            "description": "Pain intensity"
-          },
-          "painFrequency": {
-            "type": "string",
-            "nullable": true,
-            "description": "Pain frequency"
-          },
-          "painCharacteristics": {
-            "type": "string",
-            "nullable": true,
-            "description": "Pain characteristics"
-          },
-          "painModifiers": {
-            "type": "string",
-            "nullable": true,
-            "description": "Aspects that modify the intensity of pain"
-          },
-          "sleepHours": {
-            "type": "number",
-            "nullable": true,
-            "description": "Sleep hours"
-          },
-          "perceivedStress": {
-            "type": "number",
-            "nullable": true,
-            "description": "Perceived stress"
-          },
-          "lastMedicalCheckup": {
-            "format": "date-time",
-            "type": "string",
-            "nullable": true,
-            "description": "Last medical checkup"
-          },
-          "personalGoals": {
-            "type": "string",
-            "nullable": true,
-            "description": "Personal goals"
-          },
-          "notes": {
-            "type": "string",
-            "nullable": true,
-            "description": "Notes"
-          },
-          "applicationUserId": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "applicationUserId"
-        ]
-      },
-      "AuthUserDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Unique user identifier (UUID)",
-            "example": "b3bf4d18-8dd0-43a1-b1da-fd3f7b9553a1"
-          },
-          "email": {
-            "type": "string",
-            "format": "email",
-            "description": "Email address of the user",
-            "example": "user@example.com"
-          },
-          "firstName": {
-            "type": "string",
-            "description": "User first name",
-            "example": "John"
-          },
-          "middleName": {
-            "type": "string",
-            "nullable": true,
-            "description": "User middle name",
-            "example": "Alexander"
-          },
-          "lastName": {
-            "type": "string",
-            "description": "User last name",
-            "example": "Doe"
-          },
-          "phoneNumber": {
-            "type": "string",
-            "nullable": true,
-            "description": "User phone number",
-            "example": "+1234567890"
-          },
-          "birthDate": {
-            "type": "string",
-            "nullable": true,
-            "description": "User birth date",
-            "example": "1990-01-01"
-          },
-          "role": {
-            "type": "string",
-            "description": "User role in the system",
-            "enum": [
-              "USER",
-              "ADMIN",
-              "PHYSIOTHERAPIST"
-            ],
-            "default": "USER"
-          },
-          "isEmailVerified": {
-            "type": "boolean",
-            "description": "Indicates if the user email has been verified",
-            "default": false,
-            "example": false
-          },
-          "picturePath": {
-            "type": "string",
-            "nullable": true,
-            "description": "Profile picture path"
-          },
-          "twoFactorEnabled": {
-            "type": "boolean",
-            "description": "Indicates if two-factor authentication is enabled",
-            "default": false
-          },
-          "physiotherapist": {
-            "nullable": true,
-            "description": "Physiotherapist data",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/PhysiotherapistDto"
-              }
-            ]
-          },
-          "patient": {
-            "nullable": true,
-            "description": "Patient data",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/PatientDto"
-              }
-            ]
-          }
-        },
-        "required": [
-          "id",
-          "email",
-          "firstName",
-          "lastName",
-          "role",
-          "isEmailVerified",
-          "picturePath",
-          "twoFactorEnabled",
-          "physiotherapist",
-          "patient"
-        ]
-      },
-      "UpdateAuthUserDto": {
-        "type": "object",
-        "properties": {
-          "firstName": {
-            "type": "string",
-            "description": "User first name",
-            "example": "John"
-          },
-          "middleName": {
-            "type": "string",
-            "nullable": true,
-            "description": "User middle name",
-            "example": "Alexander"
-          },
-          "lastName": {
-            "type": "string",
-            "description": "User last name",
-            "example": "Doe"
-          },
-          "phoneNumber": {
-            "type": "string",
-            "nullable": true,
-            "description": "User phone number",
-            "example": "+1234567890"
-          },
-          "birthDate": {
-            "type": "string",
-            "nullable": true,
-            "description": "User birth date",
-            "example": "1990-01-01"
-          },
-          "twoFactorEnabled": {
-            "type": "boolean",
-            "description": "Indicates if two-factor authentication is enabled",
-            "default": false
-          },
-          "physiotherapist": {
-            "nullable": true,
-            "description": "Physiotherapist data",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/PhysiotherapistDto"
-              }
-            ]
-          },
-          "patient": {
-            "nullable": true,
-            "description": "Patient data",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/PatientDto"
-              }
-            ]
-          }
-        }
-      },
       "SignUpDto": {
         "type": "object",
         "properties": {
@@ -3846,6 +3429,11 @@
               "type": "string"
             }
           },
+          "userId": {
+            "type": "string",
+            "description": "User ID",
+            "example": "b3bf4d18-8dd0-43a1-b1da-fd3f7b9553a1"
+          },
           "firstName": {
             "type": "string",
             "description": "User first name",
@@ -3878,9 +3466,6 @@
             "type": "string",
             "nullable": true,
             "description": "Profile picture path"
-          },
-          "applicationUserId": {
-            "type": "string"
           }
         },
         "required": [
@@ -3891,12 +3476,12 @@
           "publicAddress",
           "website",
           "socialMediaLinks",
+          "userId",
           "firstName",
           "lastName",
           "lastLogin",
           "createdAt",
-          "picturePath",
-          "applicationUserId"
+          "picturePath"
         ]
       },
       "PatientProfileDto": {
@@ -4043,6 +3628,11 @@
             "nullable": true,
             "description": "Notes"
           },
+          "userId": {
+            "type": "string",
+            "description": "User ID",
+            "example": "b3bf4d18-8dd0-43a1-b1da-fd3f7b9553a1"
+          },
           "email": {
             "type": "string",
             "format": "email",
@@ -4093,19 +3683,16 @@
             "type": "string",
             "nullable": true,
             "description": "Profile picture path"
-          },
-          "applicationUserId": {
-            "type": "string"
           }
         },
         "required": [
+          "userId",
           "email",
           "firstName",
           "lastName",
           "lastLogin",
           "createdAt",
-          "picturePath",
-          "applicationUserId"
+          "picturePath"
         ]
       },
       "CreateUserDto": {
@@ -4182,7 +3769,223 @@
           "lastName"
         ]
       },
-      "ApplicationUserDto": {
+      "PhysiotherapistDto": {
+        "type": "object",
+        "properties": {
+          "bio": {
+            "type": "string",
+            "nullable": true,
+            "description": "The bio of the physiotherapist",
+            "example": "I am a physiotherapist with a passion for helping people"
+          },
+          "specialization": {
+            "type": "string",
+            "description": "The specialization of the physiotherapist",
+            "example": "I am a physiotherapist with a passion for helping people"
+          },
+          "publicPhoneNumber": {
+            "type": "string",
+            "description": "The public phone number of the physiotherapist",
+            "example": "1234567890"
+          },
+          "publicEmail": {
+            "type": "string",
+            "description": "The public email of the physiotherapist",
+            "example": "physio@example.com"
+          },
+          "publicAddress": {
+            "type": "string",
+            "description": "The public address of the physiotherapist",
+            "example": "123 Main St, Anytown, USA"
+          },
+          "website": {
+            "type": "string",
+            "description": "The website of the physiotherapist",
+            "example": "https://www.physio.com"
+          },
+          "socialMediaLinks": {
+            "description": "The social media links of the physiotherapist",
+            "example": [
+              "https://www.facebook.com/physio",
+              "https://www.instagram.com/physio"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "userId": {
+            "type": "string",
+            "description": "User ID",
+            "example": "b3bf4d18-8dd0-43a1-b1da-fd3f7b9553a1"
+          }
+        },
+        "required": [
+          "bio",
+          "specialization",
+          "publicPhoneNumber",
+          "publicEmail",
+          "publicAddress",
+          "website",
+          "socialMediaLinks",
+          "userId"
+        ]
+      },
+      "PatientDto": {
+        "type": "object",
+        "properties": {
+          "sex": {
+            "type": "string",
+            "nullable": true,
+            "description": "Sex of the user",
+            "enum": [
+              "MALE",
+              "FEMALE",
+              "OTHER"
+            ]
+          },
+          "height": {
+            "type": "number",
+            "nullable": true,
+            "description": "Height in cm"
+          },
+          "weight": {
+            "type": "number",
+            "nullable": true,
+            "description": "Weight in kg"
+          },
+          "smoker": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Smoker"
+          },
+          "alcoholUnits": {
+            "type": "number",
+            "nullable": true,
+            "description": "Alcohol consumption (integer)"
+          },
+          "activityLevel": {
+            "type": "string",
+            "nullable": true,
+            "description": "Activity level",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH"
+            ]
+          },
+          "mobilityLevel": {
+            "type": "string",
+            "nullable": true,
+            "description": "Mobility level",
+            "enum": [
+              "LIMITED",
+              "MODERATE",
+              "FULL"
+            ]
+          },
+          "restingHeartRate": {
+            "type": "number",
+            "nullable": true,
+            "description": "Resting heart rate"
+          },
+          "bloodPressure": {
+            "type": "string",
+            "nullable": true,
+            "description": "Blood pressure"
+          },
+          "profession": {
+            "type": "string",
+            "nullable": true,
+            "description": "Profession"
+          },
+          "sport": {
+            "type": "string",
+            "nullable": true,
+            "description": "Sport"
+          },
+          "sportFrequency": {
+            "type": "number",
+            "nullable": true,
+            "description": "Sport frequency"
+          },
+          "medications": {
+            "type": "string",
+            "nullable": true,
+            "description": "Medications"
+          },
+          "allergies": {
+            "type": "string",
+            "nullable": true,
+            "description": "Allergies"
+          },
+          "otherPathologies": {
+            "type": "string",
+            "nullable": true,
+            "description": "Other concomitant pathologies"
+          },
+          "painZone": {
+            "type": "string",
+            "nullable": true,
+            "description": "Pain zone"
+          },
+          "painIntensity": {
+            "type": "number",
+            "nullable": true,
+            "description": "Pain intensity"
+          },
+          "painFrequency": {
+            "type": "string",
+            "nullable": true,
+            "description": "Pain frequency"
+          },
+          "painCharacteristics": {
+            "type": "string",
+            "nullable": true,
+            "description": "Pain characteristics"
+          },
+          "painModifiers": {
+            "type": "string",
+            "nullable": true,
+            "description": "Aspects that modify the intensity of pain"
+          },
+          "sleepHours": {
+            "type": "number",
+            "nullable": true,
+            "description": "Sleep hours"
+          },
+          "perceivedStress": {
+            "type": "number",
+            "nullable": true,
+            "description": "Perceived stress"
+          },
+          "lastMedicalCheckup": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true,
+            "description": "Last medical checkup"
+          },
+          "personalGoals": {
+            "type": "string",
+            "nullable": true,
+            "description": "Personal goals"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "description": "Notes"
+          },
+          "userId": {
+            "type": "string",
+            "description": "User ID",
+            "example": "b3bf4d18-8dd0-43a1-b1da-fd3f7b9553a1"
+          }
+        },
+        "required": [
+          "userId"
+        ]
+      },
+      "UserDto": {
         "type": "object",
         "properties": {
           "id": {
@@ -4705,6 +4508,162 @@
           "physiotherapists",
           "courses"
         ]
+      },
+      "AuthUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique user identifier (UUID)",
+            "example": "b3bf4d18-8dd0-43a1-b1da-fd3f7b9553a1"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the user",
+            "example": "user@example.com"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "User first name",
+            "example": "John"
+          },
+          "middleName": {
+            "type": "string",
+            "nullable": true,
+            "description": "User middle name",
+            "example": "Alexander"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "User last name",
+            "example": "Doe"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true,
+            "description": "User phone number",
+            "example": "+1234567890"
+          },
+          "birthDate": {
+            "type": "string",
+            "nullable": true,
+            "description": "User birth date",
+            "example": "1990-01-01"
+          },
+          "role": {
+            "type": "string",
+            "description": "User role in the system",
+            "enum": [
+              "USER",
+              "ADMIN",
+              "PHYSIOTHERAPIST"
+            ],
+            "default": "USER"
+          },
+          "isEmailVerified": {
+            "type": "boolean",
+            "description": "Indicates if the user email has been verified",
+            "default": false,
+            "example": false
+          },
+          "picturePath": {
+            "type": "string",
+            "nullable": true,
+            "description": "Profile picture path"
+          },
+          "twoFactorEnabled": {
+            "type": "boolean",
+            "description": "Indicates if two-factor authentication is enabled",
+            "default": false
+          },
+          "physiotherapist": {
+            "nullable": true,
+            "description": "Physiotherapist data",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PhysiotherapistDto"
+              }
+            ]
+          },
+          "patient": {
+            "nullable": true,
+            "description": "Patient data",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PatientDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "firstName",
+          "lastName",
+          "role",
+          "isEmailVerified",
+          "picturePath",
+          "twoFactorEnabled",
+          "physiotherapist",
+          "patient"
+        ]
+      },
+      "UpdateAuthUserDto": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "description": "User first name",
+            "example": "John"
+          },
+          "middleName": {
+            "type": "string",
+            "nullable": true,
+            "description": "User middle name",
+            "example": "Alexander"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "User last name",
+            "example": "Doe"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true,
+            "description": "User phone number",
+            "example": "+1234567890"
+          },
+          "birthDate": {
+            "type": "string",
+            "nullable": true,
+            "description": "User birth date",
+            "example": "1990-01-01"
+          },
+          "twoFactorEnabled": {
+            "type": "boolean",
+            "description": "Indicates if two-factor authentication is enabled",
+            "default": false
+          },
+          "physiotherapist": {
+            "nullable": true,
+            "description": "Physiotherapist data",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PhysiotherapistDto"
+              }
+            ]
+          },
+          "patient": {
+            "nullable": true,
+            "description": "Patient data",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PatientDto"
+              }
+            ]
+          }
+        }
       }
     }
   },
