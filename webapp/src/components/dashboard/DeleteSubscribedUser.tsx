@@ -37,7 +37,7 @@ export default function DeleteSubscribedUser(props: SubscriberDetailsProps) {
             userMiddleName +
             " " +
             userLastName,
-      confirmText: "Cancella paziente",
+      confirmText: "Disiscrivi paziente",
     });
 
     if (result) {
