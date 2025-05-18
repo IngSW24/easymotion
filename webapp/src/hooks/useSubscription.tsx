@@ -193,6 +193,9 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
       queryClient.invalidateQueries({
         queryKey: ["userPendingSubscriptions"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["course-subscribers"],
+      });
       snack.showSuccess("Disiscrizione avvenuta con successo!");
     },
     onError: (error) => snack.showError(error),
