@@ -42,7 +42,7 @@ export default function DeleteSubscribedUser(props: SubscriberDetailsProps) {
     userId,
   });
 
-  const [open, setOpen] = React.useState(false);
+  const [, setOpen] = React.useState(false);
   //const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
@@ -61,7 +61,7 @@ export default function DeleteSubscribedUser(props: SubscriberDetailsProps) {
             userMiddleName +
             " " +
             userLastName,
-      confirmText: "Cancella paziente",
+      confirmText: "Disiscrivi paziente",
     });
 
     if (result) {
