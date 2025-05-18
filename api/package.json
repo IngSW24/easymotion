@@ -53,6 +53,7 @@
     "cookie-parser": "^1.4.7",
     "dotenv": "^16.5.0",
     "dynamic-html-pdf": "^1.0.4",
+    "hbs": "^4.2.0",
     "luxon": "^3.6.1",
     "nestjs-prisma": "^0.25.0",
     "nodemailer": "^7.0.3",

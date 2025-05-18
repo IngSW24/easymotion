@@ -8,6 +8,7 @@ import {
   Put,
   Query,
   SerializeOptions,
+  Render,
 } from "@nestjs/common";
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 
@@ -84,6 +85,13 @@ export class UsersController {
       type: "patient",
       dto: PatientProfileDto,
     });
+  }
+
+  @Get("patient/medical_history/:id")
+  @Render("medical_history")
+  @UseAuth([Role.ADMIN, Role.PHYSIOTHERAPIST])
+  findMedicalHistory(@Param("id") id: string) {
+    return this.usersService.findMedicalHistory(id);
   }
 
   /**

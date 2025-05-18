@@ -137,16 +137,20 @@ export class UserDto implements Readonly<User> {
   @ApiProperty({
     description: "Physiotherapist data",
     type: PhysiotherapistDto,
+    required: false,
   })
   @Type(() => PhysiotherapistDto)
+  @IsOptional()
   @Expose()
   physiotherapist: PhysiotherapistDto | null;
 
   @ApiProperty({
     description: "Patient data",
     type: PatientDto,
+    required: false,
   })
   @Type(() => PatientDto)
+  @IsOptional()
   @Expose()
   patient: PatientDto | null;
 

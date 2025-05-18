@@ -15,6 +15,7 @@ import {
 import { UserDto } from "./dto/user/user.dto";
 import { PatientProfileDto } from "./dto/patient/patient-profile.dto";
 import { FindProfileArgs, FindProfilesArgsMap } from "./types/types";
+import * as pdf from "dynamic-html-pdf";
 
 /**
  * The UsersService class provides high-level CRUD operations for Users,
@@ -202,6 +203,15 @@ export class UsersService {
         mapFn: (o) => this.mapToProfile(args.dto as new () => unknown, o),
       }
     );
+  }
+
+  async findMedicalHistory(id: string): Promise<PatientProfileDto> {
+    const result = await this.prisma.client.patient.findUniqueOrThrow({
+      where: { userId: id },
+      include: { user: true },
+    });
+
+    const profile = this.mapToProfile(PatientProfileDto, result);
   }
 
   /**
