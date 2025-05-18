@@ -143,14 +143,14 @@ export default function PhysiotherapistSettings(
               Bio
             </Typography>
             <MarkdownTextField
+              value={watch("bio") ?? ""}
+              onChange={(e) => setValue("bio", e)}
               fullWidth
               multiline
               rows={15}
               placeholder="Inserisci la tua bio in formato markdown"
-              previewValue={watch("bio") || ""}
               error={!!errors.bio}
               helperText={errors.bio?.message}
-              {...register("bio")}
             />
           </Grid>
 
