@@ -17,7 +17,6 @@ import { PatientProfileDto } from "./dto/patient/patient-profile.dto";
 import { FindProfileArgs, FindProfilesArgsMap } from "./types/types";
 import { compile } from "handlebars";
 import { promises as fs } from "fs";
-import { html2pdf } from "html2pdf-ts";
 import { join } from "path";
 
 /**
@@ -208,7 +207,7 @@ export class UsersService {
     );
   }
 
-  async findMedicalHistory(id: string): Promise<boolean> {
+  async findMedicalHistory(id: string): Promise<string> {
     const result = await this.prisma.client.patient.findUniqueOrThrow({
       where: { userId: id },
       include: { user: true },
@@ -217,11 +216,12 @@ export class UsersService {
     const profile = this.mapToProfile(PatientProfileDto, result);
 
     const template = await fs.readFile(
-      join(__dirname, "..", "..", "views", "medical_history.hbs")
+      join(__dirname, "..", "..", "public", "medical_history.hbs")
     );
     const html = compile(template.toString())(profile);
+    return html;
 
-    return html2pdf.createPDF(html, {
+    /*await html2pdf.createPDF(html, {
       format: "A4",
       filePath: "output.pdf",
       landscape: false,
@@ -230,6 +230,12 @@ export class UsersService {
         height: 1080,
       },
     });
+
+    return await createPdf(
+      join(process.cwd(), "views", "medical_history.hbs"),
+      {},
+      profile
+    );*/
   }
 
   /**

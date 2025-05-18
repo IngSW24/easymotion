@@ -41,7 +41,7 @@ export class CoursesController {
   ) {}
 
   /**
-   * Find all courses
+   * Find all public courses
    * @returns all courses
    */
   @Get()
@@ -53,6 +53,10 @@ export class CoursesController {
     return this.coursesService.findAll(pagination, filters, true);
   }
 
+  /**
+   * [physiotherapist] Find all courses
+   * @returns all courses
+   */
   @Get("physiotherapist")
   @UseAuth([Role.PHYSIOTHERAPIST])
   @ApiPaginatedResponse(CourseDto)

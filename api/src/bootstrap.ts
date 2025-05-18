@@ -14,11 +14,9 @@ import {
 import { PrismaClientExceptionFilter } from "nestjs-prisma";
 import { ConfigService } from "@nestjs/config";
 import * as cookieParser from "cookie-parser";
-import { NestExpressApplication } from "@nestjs/platform-express";
-import { join } from "path";
 
 export async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+  const app = await NestFactory.create(AppModule, {
     logger: ["error", "warn", "log", "debug", "verbose"],
   });
 
@@ -52,10 +50,6 @@ export async function bootstrap() {
   );
 
   app.use(cookieParser());
-
-  app.useStaticAssets(join(__dirname, "..", "public"));
-  app.useStaticAssets(join(__dirname, "..", "views"));
-  app.setViewEngine("hbs");
 
   return app;
 }

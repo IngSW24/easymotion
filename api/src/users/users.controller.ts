@@ -10,6 +10,8 @@ import {
   SerializeOptions,
   Render,
   StreamableFile,
+  Inject,
+  BadRequestException,
 } from "@nestjs/common";
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 
@@ -24,8 +26,10 @@ import { ProfilesFilter } from "./filters/profiles-filter.dto";
 import { PhysiotherapistProfileDto } from "./dto/physiotherapist/physiotherapist-profile.dto";
 import { UserDto } from "./dto/user/user.dto";
 import { PatientProfileDto } from "./dto/patient/patient-profile.dto";
-import { createReadStream } from "fs";
-import { join } from "path";
+import { HttpService } from "@nestjs/axios";
+import { ConfigType } from "@nestjs/config";
+import aiConfig from "src/config/ai.config";
+import pdfConfig from "src/config/pdf.config";
 
 /**
  * A controller for managing user-related operations, providing
@@ -35,8 +39,18 @@ import { join } from "path";
 @Controller("users")
 @SerializeOptions({ type: UserDto })
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private httpService: HttpService,
+    @Inject(pdfConfig.KEY) private readonly config: ConfigType<typeof pdfConfig>
+  ) {}
 
+  /**
+   * Fetch a paginated list of physiotherapists
+   * @param pagination Pagination
+   * @param filter Filters
+   * @returns Paginated list of physiotherapists
+   */
   @Get("physiotherapists")
   @ApiPaginatedResponse(PhysiotherapistProfileDto)
   @UseAuth()
@@ -53,6 +67,11 @@ export class UsersController {
     });
   }
 
+  /**
+   * Fetch a physiotherapist profile
+   * @param id User ID
+   * @returns The physiotherapist profile
+   */
   @Get("physiotherapists/:id")
   @SerializeOptions({ type: PhysiotherapistProfileDto })
   @ApiOkResponse({ type: PhysiotherapistProfileDto })
@@ -64,6 +83,12 @@ export class UsersController {
     });
   }
 
+  /**
+   * Fetch a paginated list of patients
+   * @param pagination Pagination
+   * @param filter Filters
+   * @returns Paginated list of patients
+   */
   @Get("patients")
   @ApiPaginatedResponse(PatientProfileDto)
   @UseAuth([Role.ADMIN, Role.PHYSIOTHERAPIST])
@@ -79,6 +104,11 @@ export class UsersController {
     });
   }
 
+  /**
+   * Fetch a patient profile
+   * @param id User ID
+   * @returns The patient profile
+   */
   @Get("patient/:id")
   @SerializeOptions({ type: PatientProfileDto })
   @ApiOkResponse({ type: PatientProfileDto })
@@ -90,12 +120,32 @@ export class UsersController {
     });
   }
 
+  /**
+   * Create a PDF for the patient medical history
+   * @param id User ID
+   * @returns
+   */
   @Get("patient/medical_history/:id")
-  @Render("medical_history")
   @UseAuth([Role.ADMIN, Role.PHYSIOTHERAPIST])
   async findMedicalHistory(@Param("id") id: string) {
-    if (await this.usersService.findMedicalHistory(id)) {
-      return new StreamableFile(createReadStream("output.pdf"));
+    const html = await this.usersService.findMedicalHistory(id);
+
+    const formData = new FormData();
+    formData.append("Resource", new Blob([html]));
+    //formData.append("Instructions", html);
+
+    console.log(this.config.pdf_api_key);
+    try {
+      return this.httpService.postForm("https://api.dpdf.io/v1.0/pdf", {
+        // TODO: 401 invalid API key
+        headers: {
+          Authorization: "Bearer " + this.config.pdf_api_key,
+          "Content-Type": "multipart/form-data",
+        },
+        //formData,
+      });
+    } catch (e) {
+      throw new BadRequestException(e);
     }
   }
 
