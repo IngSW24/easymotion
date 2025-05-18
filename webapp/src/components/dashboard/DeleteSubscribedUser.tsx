@@ -1,6 +1,5 @@
 import { IconButton, Tooltip } from "@mui/material";
 import useSubscriptions from "../../hooks/useSubscription";
-import React from "react";
 import { Delete } from "@mui/icons-material";
 import { useDialog } from "../../hooks/useDialog";
 
