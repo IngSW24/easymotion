@@ -1,16 +1,10 @@
-import {
-  Box,
-  Button,
-  IconButton,
-  Modal,
-  Stack,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { IconButton, Tooltip } from "@mui/material";
 import useSubscriptions from "../../hooks/useSubscription";
 import React from "react";
 import { Delete } from "@mui/icons-material";
+import { useDialog } from "../../hooks/useDialog";
 
+/*
 const style = {
   position: "absolute",
   top: "50%",
@@ -27,6 +21,7 @@ const style = {
   maxHeight: "calc(100vh)", // 80% of the viewport height minus padding
   overflowY: "auto", // enables vertical scrolling
 };
+*/
 
 export interface SubscriberDetailsProps {
   userId?: string;
@@ -40,22 +35,55 @@ export default function DeleteSubscribedUser(props: SubscriberDetailsProps) {
   const { userId, courseId, userFirstName, userMiddleName, userLastName } =
     props;
 
+  const deleteDialog = useDialog();
+
   const { unsubscribe } = useSubscriptions({
     courseId,
     userId,
   });
 
   const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
+  //const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   const unsubscribeUser = async () => {
-    unsubscribe.mutateAsync({
-      course_id: courseId || "",
-      patient_id: userId || "",
+    const result = await deleteDialog.showConfirmationDialog({
+      title: "Cancellazione dell'iscrizione",
+      content:
+        userMiddleName === ""
+          ? "Sei sicuro di voler disiscrivere dal corso il paziente " +
+            userFirstName +
+            " " +
+            userLastName
+          : "Sei sicuro di voler disiscrivere dal corso il paziente " +
+            userFirstName +
+            " " +
+            userMiddleName +
+            " " +
+            userLastName,
+      confirmText: "Cancella paziente",
     });
-    handleClose();
+
+    if (result) {
+      unsubscribe.mutateAsync({
+        course_id: courseId || "",
+        patient_id: userId || "",
+      });
+      handleClose();
+    }
   };
+
+  return (
+    <Tooltip title="Cancella iscrizione">
+      <IconButton onClick={unsubscribeUser} color="error">
+        <Delete fontSize="small" />
+      </IconButton>
+    </Tooltip>
+  );
+}
+
+/*
+ALTERNATIVA COL Modal:
 
   return (
     <>
@@ -103,5 +131,5 @@ export default function DeleteSubscribedUser(props: SubscriberDetailsProps) {
         </Box>
       </Modal>
     </>
-  );
-}
+
+*/
