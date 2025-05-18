@@ -9,6 +9,7 @@ import {
   Query,
   SerializeOptions,
   Render,
+  StreamableFile,
 } from "@nestjs/common";
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 
@@ -23,6 +24,8 @@ import { ProfilesFilter } from "./filters/profiles-filter.dto";
 import { PhysiotherapistProfileDto } from "./dto/physiotherapist/physiotherapist-profile.dto";
 import { UserDto } from "./dto/user/user.dto";
 import { PatientProfileDto } from "./dto/patient/patient-profile.dto";
+import { createReadStream } from "fs";
+import { join } from "path";
 
 /**
  * A controller for managing user-related operations, providing
@@ -90,8 +93,10 @@ export class UsersController {
   @Get("patient/medical_history/:id")
   @Render("medical_history")
   @UseAuth([Role.ADMIN, Role.PHYSIOTHERAPIST])
-  findMedicalHistory(@Param("id") id: string) {
-    return this.usersService.findMedicalHistory(id);
+  async findMedicalHistory(@Param("id") id: string) {
+    if (await this.usersService.findMedicalHistory(id)) {
+      return new StreamableFile(createReadStream("output.pdf"));
+    }
   }
 
   /**

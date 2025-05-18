@@ -15,7 +15,10 @@ import {
 import { UserDto } from "./dto/user/user.dto";
 import { PatientProfileDto } from "./dto/patient/patient-profile.dto";
 import { FindProfileArgs, FindProfilesArgsMap } from "./types/types";
-import * as pdf from "dynamic-html-pdf";
+import { compile } from "handlebars";
+import { promises as fs } from "fs";
+import { html2pdf } from "html2pdf-ts";
+import { join } from "path";
 
 /**
  * The UsersService class provides high-level CRUD operations for Users,
@@ -205,13 +208,28 @@ export class UsersService {
     );
   }
 
-  async findMedicalHistory(id: string): Promise<PatientProfileDto> {
+  async findMedicalHistory(id: string): Promise<boolean> {
     const result = await this.prisma.client.patient.findUniqueOrThrow({
       where: { userId: id },
       include: { user: true },
     });
 
     const profile = this.mapToProfile(PatientProfileDto, result);
+
+    const template = await fs.readFile(
+      join(__dirname, "..", "..", "views", "medical_history.hbs")
+    );
+    const html = compile(template.toString())(profile);
+
+    return html2pdf.createPDF(html, {
+      format: "A4",
+      filePath: "output.pdf",
+      landscape: false,
+      resolution: {
+        width: 1920,
+        height: 1080,
+      },
+    });
   }
 
   /**

@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ProfileController } from './profile.controller';
-import { ProfileService } from './profile.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { ProfileController } from "./profile.controller";
+import { ProfileService } from "./profile.service";
 
-describe('ProfileController', () => {
+describe("ProfileController", () => {
   let controller: ProfileController;
 
   beforeEach(async () => {
@@ -14,7 +14,7 @@ describe('ProfileController', () => {
     controller = module.get<ProfileController>(ProfileController);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(controller).toBeDefined();
   });
 });
