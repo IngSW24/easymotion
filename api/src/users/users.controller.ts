@@ -8,8 +8,6 @@ import {
   Put,
   Query,
   SerializeOptions,
-  Render,
-  StreamableFile,
   Inject,
   BadRequestException,
 } from "@nestjs/common";
@@ -28,7 +26,6 @@ import { UserDto } from "./dto/user/user.dto";
 import { PatientProfileDto } from "./dto/patient/patient-profile.dto";
 import { HttpService } from "@nestjs/axios";
 import { ConfigType } from "@nestjs/config";
-import aiConfig from "src/config/ai.config";
 import pdfConfig from "src/config/pdf.config";
 
 /**

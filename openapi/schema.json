@@ -768,6 +768,9 @@
         "operationId": "AuthController_logout",
         "parameters": [],
         "responses": {
+          "200": {
+            "description": ""
+          },
           "201": {
             "description": ""
           }
@@ -4177,6 +4180,208 @@
           "twoFactorEnabled"
         ]
       },
+      "UpdatePhysiotherapistDto": {
+        "type": "object",
+        "properties": {
+          "bio": {
+            "type": "string",
+            "nullable": true,
+            "description": "The bio of the physiotherapist",
+            "example": "I am a physiotherapist with a passion for helping people"
+          },
+          "specialization": {
+            "type": "string",
+            "description": "The specialization of the physiotherapist",
+            "example": "I am a physiotherapist with a passion for helping people"
+          },
+          "publicPhoneNumber": {
+            "type": "string",
+            "description": "The public phone number of the physiotherapist",
+            "example": "1234567890"
+          },
+          "publicEmail": {
+            "type": "string",
+            "description": "The public email of the physiotherapist",
+            "example": "physio@example.com"
+          },
+          "publicAddress": {
+            "type": "string",
+            "description": "The public address of the physiotherapist",
+            "example": "123 Main St, Anytown, USA"
+          },
+          "website": {
+            "type": "string",
+            "description": "The website of the physiotherapist",
+            "example": "https://www.physio.com"
+          },
+          "socialMediaLinks": {
+            "description": "The social media links of the physiotherapist",
+            "example": [
+              "https://www.facebook.com/physio",
+              "https://www.instagram.com/physio"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "bio",
+          "specialization",
+          "publicPhoneNumber",
+          "publicEmail",
+          "publicAddress",
+          "website",
+          "socialMediaLinks"
+        ]
+      },
+      "UpdatePatientDto": {
+        "type": "object",
+        "properties": {
+          "sex": {
+            "type": "string",
+            "nullable": true,
+            "description": "Sex of the user",
+            "enum": [
+              "MALE",
+              "FEMALE",
+              "OTHER"
+            ]
+          },
+          "height": {
+            "type": "number",
+            "nullable": true,
+            "description": "Height in cm"
+          },
+          "weight": {
+            "type": "number",
+            "nullable": true,
+            "description": "Weight in kg"
+          },
+          "smoker": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Smoker"
+          },
+          "alcoholUnits": {
+            "type": "number",
+            "nullable": true,
+            "description": "Alcohol consumption (integer)"
+          },
+          "activityLevel": {
+            "type": "string",
+            "nullable": true,
+            "description": "Activity level",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH"
+            ]
+          },
+          "mobilityLevel": {
+            "type": "string",
+            "nullable": true,
+            "description": "Mobility level",
+            "enum": [
+              "LIMITED",
+              "MODERATE",
+              "FULL"
+            ]
+          },
+          "restingHeartRate": {
+            "type": "number",
+            "nullable": true,
+            "description": "Resting heart rate"
+          },
+          "bloodPressure": {
+            "type": "string",
+            "nullable": true,
+            "description": "Blood pressure"
+          },
+          "profession": {
+            "type": "string",
+            "nullable": true,
+            "description": "Profession"
+          },
+          "sport": {
+            "type": "string",
+            "nullable": true,
+            "description": "Sport"
+          },
+          "sportFrequency": {
+            "type": "number",
+            "nullable": true,
+            "description": "Sport frequency"
+          },
+          "medications": {
+            "type": "string",
+            "nullable": true,
+            "description": "Medications"
+          },
+          "allergies": {
+            "type": "string",
+            "nullable": true,
+            "description": "Allergies"
+          },
+          "otherPathologies": {
+            "type": "string",
+            "nullable": true,
+            "description": "Other concomitant pathologies"
+          },
+          "painZone": {
+            "type": "string",
+            "nullable": true,
+            "description": "Pain zone"
+          },
+          "painIntensity": {
+            "type": "number",
+            "nullable": true,
+            "description": "Pain intensity"
+          },
+          "painFrequency": {
+            "type": "string",
+            "nullable": true,
+            "description": "Pain frequency"
+          },
+          "painCharacteristics": {
+            "type": "string",
+            "nullable": true,
+            "description": "Pain characteristics"
+          },
+          "painModifiers": {
+            "type": "string",
+            "nullable": true,
+            "description": "Aspects that modify the intensity of pain"
+          },
+          "sleepHours": {
+            "type": "number",
+            "nullable": true,
+            "description": "Sleep hours"
+          },
+          "perceivedStress": {
+            "type": "number",
+            "nullable": true,
+            "description": "Perceived stress"
+          },
+          "lastMedicalCheckup": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true,
+            "description": "Last medical checkup"
+          },
+          "personalGoals": {
+            "type": "string",
+            "nullable": true,
+            "description": "Personal goals"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "description": "Notes"
+          }
+        }
+      },
       "UpdateUserDto": {
         "type": "object",
         "properties": {
@@ -4268,7 +4473,7 @@
             "description": "Physiotherapist data",
             "allOf": [
               {
-                "$ref": "#/components/schemas/PhysiotherapistDto"
+                "$ref": "#/components/schemas/UpdatePhysiotherapistDto"
               }
             ]
           },
@@ -4277,7 +4482,7 @@
             "description": "Patient data",
             "allOf": [
               {
-                "$ref": "#/components/schemas/PatientDto"
+                "$ref": "#/components/schemas/UpdatePatientDto"
               }
             ]
           }
@@ -4731,7 +4936,7 @@
             "description": "Physiotherapist data",
             "allOf": [
               {
-                "$ref": "#/components/schemas/PhysiotherapistDto"
+                "$ref": "#/components/schemas/UpdatePhysiotherapistDto"
               }
             ]
           },
@@ -4740,7 +4945,7 @@
             "description": "Patient data",
             "allOf": [
               {
-                "$ref": "#/components/schemas/PatientDto"
+                "$ref": "#/components/schemas/UpdatePatientDto"
               }
             ]
           }

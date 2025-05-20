@@ -212,7 +212,8 @@ describe("CoursesController", () => {
     prismaMock.course.findMany.mockResolvedValue(mockCourses);
     prismaMock.course.count.mockResolvedValue(totalItems);
 
-    const result = await controller.findAll(pagination, {});
+    await controller.findAll(pagination, {});
+    expect(prismaMock.$transaction).toHaveBeenCalledTimes(1);
 
     /*expect(prismaMock.course.findMany).toHaveBeenCalledWith({
       where: { isPublished: true },
@@ -231,10 +232,9 @@ describe("CoursesController", () => {
       skip: pagination.page * pagination.perPage,
       take: pagination.perPage,
     });
-    expect(prismaMock.course.count).toHaveBeenCalled();*/
-    expect(prismaMock.$transaction).toHaveBeenCalledTimes(1);
+    expect(prismaMock.course.count).toHaveBeenCalled();
 
-    /*expect(result).toEqual({
+    expect(result).toEqual({
       data: mockCourses.map((x) =>
         plainToInstance(CourseDto, { ...x, owner: undefined })
       ),
@@ -290,25 +290,8 @@ describe("CoursesController", () => {
 
     prismaMock.course.findUniqueOrThrow.mockResolvedValue(mockCourse);
 
-    const result = await controller.findOne(id);
-    const expected = plainToInstance(CourseDto, {
-      ...mockCourse,
-      owner: mockCourse.owner.user,
-      available_slots: null,
-    });
+    await controller.findOne(id);
 
-    /*expect(prismaMock.course.findUniqueOrThrow).toHaveBeenCalledWith({
-      where: { id },
-      include: {
-        owner: {
-          include: {
-            user: true,
-          },
-        },
-        category: true,
-        sessions: true,
-      },
-    });*/
     expect(prismaMock.$transaction).toHaveBeenCalledTimes(1);
     //expect(result).toEqual(expected);
   });

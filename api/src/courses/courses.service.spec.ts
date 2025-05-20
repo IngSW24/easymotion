@@ -214,7 +214,7 @@ describe("CoursesService", () => {
       prismaMock.course.count.mockResolvedValue(mockCount);
 
       // Execute
-      const result = await service.findAll(pagination, filter);
+      await service.findAll(pagination, filter);
 
       // Verify
       expect(prismaMock.$transaction).toHaveBeenCalled();
@@ -275,7 +275,7 @@ describe("CoursesService", () => {
       prismaMock.course.findUniqueOrThrow.mockResolvedValue(mockCourse);
 
       // Execute
-      const result = await service.findOne(courseId);
+      await service.findOne(courseId);
 
       // Verify
       expect(prismaMock.$transaction).toHaveBeenCalledTimes(1);
@@ -438,11 +438,7 @@ describe("CoursesService", () => {
       prismaMock.subscription.findMany.mockResolvedValue(mockSubscriptions);
       prismaMock.subscription.count.mockResolvedValue(mockCount);
 
-      const result = await service.findSubscribedCourses(
-        userId,
-        pagination,
-        filters
-      );
+      await service.findSubscribedCourses(userId, pagination, filters);
 
       expect(prismaMock.$transaction).toHaveBeenCalledTimes(1);
 

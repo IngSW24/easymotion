@@ -129,7 +129,8 @@ export class AuthController {
    */
   @Post("logout")
   @UseAuth()
-  async logout(@Res() res) {
+  @ApiOkResponse()
+  async logout(@Res({ passthrough: true }) res) {
     this.clearRefreshTokenCookie(res);
   }
 

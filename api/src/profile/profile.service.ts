@@ -33,7 +33,7 @@ export class ProfileService {
   async updateUserProfile(
     userId: string,
     updateAuthUserDto: UpdateAuthUserDto
-  ) {
+  ): Promise<AuthUserDto> {
     const user = await this.userManager.updateUser(userId, updateAuthUserDto);
 
     return plainToInstance(AuthUserDto, user, {
