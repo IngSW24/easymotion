@@ -4,13 +4,14 @@ import { Delete } from "@mui/icons-material";
 import { useDialog } from "../../hooks/useDialog";
 
 export interface SubscriberDetailsProps {
-  userId?: string;
+  userId?: string; // TODO: can be null?
   courseId?: string;
   userFirstName: string;
   userMiddleName: string;
   userLastName: string;
 }
 
+// TODO: DeleteSubscribedUser can be a method name, not a component!
 export default function DeleteSubscribedUser(props: SubscriberDetailsProps) {
   const { userId, courseId, userFirstName, userMiddleName, userLastName } =
     props;
@@ -36,8 +37,8 @@ export default function DeleteSubscribedUser(props: SubscriberDetailsProps) {
 
     if (result) {
       unsubscribe.mutateAsync({
-        course_id: courseId || "",
-        patient_id: userId || "",
+        courseId: courseId || "",
+        patientId: userId || "",
       });
     }
   };

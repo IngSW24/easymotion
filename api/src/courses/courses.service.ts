@@ -155,7 +155,7 @@ export class CoursesService {
    * @returns The course mapped to a DTO.
    * @throws NotFoundException if the course is not found.
    */
-  async findOne(id: string) {
+  async findOne(id: string): Promise<CourseDto> {
     return this.prismaService.$transaction(async (tx) => {
       const course = await tx.course.findUniqueOrThrow({
         where: { id },

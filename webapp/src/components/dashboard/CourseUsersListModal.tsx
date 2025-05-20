@@ -179,7 +179,7 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
                   ml: 1,
                 }}
               >
-                {formatDate(value.created_at)}
+                {formatDate(value.createdAt)}
               </Typography>
             </Box>
           </Box>

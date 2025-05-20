@@ -119,7 +119,7 @@
             }
           }
         },
-        "summary": "Find all courses",
+        "summary": "Find all public courses",
         "tags": [
           "Courses"
         ]
@@ -283,6 +283,7 @@
             "bearer": []
           }
         ],
+        "summary": "[physiotherapist] Find all courses",
         "tags": [
           "Courses"
         ]
@@ -1097,6 +1098,7 @@
             "bearer": []
           }
         ],
+        "summary": "Fetch a paginated list of physiotherapists",
         "tags": [
           "Users"
         ]
@@ -1132,6 +1134,7 @@
             "bearer": []
           }
         ],
+        "summary": "Fetch a physiotherapist profile",
         "tags": [
           "Users"
         ]
@@ -1236,6 +1239,7 @@
             "bearer": []
           }
         ],
+        "summary": "Fetch a paginated list of patients",
         "tags": [
           "Users"
         ]
@@ -1271,6 +1275,36 @@
             "bearer": []
           }
         ],
+        "summary": "Fetch a patient profile",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/patient/medical_history/{id}": {
+      "get": {
+        "operationId": "UsersController_findMedicalHistory",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a PDF for the patient medical history",
         "tags": [
           "Users"
         ]
@@ -2450,6 +2484,45 @@
         ],
         "tags": [
           "Search"
+        ]
+      }
+    },
+    "/ai/summarize": {
+      "post": {
+        "operationId": "AiController_getSummarization",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TextDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextDto"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Ai"
         ]
       }
     },
@@ -4101,9 +4174,7 @@
           "createdAt",
           "updatedAt",
           "picturePath",
-          "twoFactorEnabled",
-          "physiotherapist",
-          "patient"
+          "twoFactorEnabled"
         ]
       },
       "UpdateUserDto": {
@@ -4509,6 +4580,18 @@
           "courses"
         ]
       },
+      "TextDto": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "text exchanged with the model"
+          }
+        },
+        "required": [
+          "text"
+        ]
+      },
       "AuthUserDto": {
         "type": "object",
         "properties": {
@@ -4604,9 +4687,7 @@
           "role",
           "isEmailVerified",
           "picturePath",
-          "twoFactorEnabled",
-          "physiotherapist",
-          "patient"
+          "twoFactorEnabled"
         ]
       },
       "UpdateAuthUserDto": {
