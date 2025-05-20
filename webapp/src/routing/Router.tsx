@@ -12,11 +12,13 @@ import TermsOfServicePage from "../pages/TermsOfServicePage";
 import UnauthenticatedRoute from "./UnauthenticatedRoute";
 import { useAuth } from "@easymotion/auth-context";
 import RestorePasswordPage from "../pages/RestorePasswordPage";
-import Dashboard from "../pages/dashboard/Dashboard";
 import LandingPage from "../pages/LandingPage";
 import UserArea from "../pages/user/UserArea";
 import CourseListPage from "../pages/CourseListPage";
 import PhysiotherapistProfilePage from "../pages/PhysiotherapistProfilePage";
+import DashboardCoursesPage from "../pages/dashboard/DashboardCoursesPage";
+import DashboardOverviewPage from "../pages/dashboard/DashboardOverviewPage";
+import DashboardLayout from "../components/dashboard/DashboardLayout";
 
 const menuEntries: MenuEntry[] = [
   {
@@ -65,11 +67,11 @@ export default function Router() {
           </Route>
 
           {/* Accessible only by physhiotherapists */}
-          <Route
-            path="dashboard"
-            element={<AuthenticatedRoute roles={["PHYSIOTHERAPIST"]} />}
-          >
-            <Route index element={<Dashboard />} />
+          <Route element={<AuthenticatedRoute roles={["PHYSIOTHERAPIST"]} />}>
+            <Route path="dashboard" element={<DashboardLayout />}>
+              <Route index element={<DashboardOverviewPage />} />
+              <Route path="courses" element={<DashboardCoursesPage />} />
+            </Route>
           </Route>
 
           {/* Accessible only by user */}

@@ -2,6 +2,7 @@ import { Container } from "@mui/material";
 import CourseList from "../components/course/CourseList/CourseList";
 import { useAuth } from "@easymotion/auth-context";
 import Hero from "../components/Hero/Hero";
+import Fade from "../components/animations/Fade";
 
 /**
  * Defines the page to list all courses
@@ -11,7 +12,7 @@ export default function CourseListPage() {
   const auth = useAuth();
 
   return (
-    <>
+    <Fade>
       <Hero
         backgroundImage="/hero.jpg"
         title={
@@ -25,6 +26,6 @@ export default function CourseListPage() {
       <Container maxWidth="xl" sx={{ p: 5 }}>
         <CourseList />
       </Container>
-    </>
+    </Fade>
   );
 }

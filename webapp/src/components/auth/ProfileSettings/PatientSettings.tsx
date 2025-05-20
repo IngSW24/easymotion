@@ -222,8 +222,8 @@ export default function PatientSettings({
       size="small"
       placeholder={placeholder}
       error={!!errors[name]}
-      helperText={(errors as any)[name]?.message}
-      {...register(name as any, { valueAsNumber: true, min, max })}
+      helperText={errors[name]?.message}
+      {...register(name, { valueAsNumber: true, min, max })}
     />
   );
 

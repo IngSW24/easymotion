@@ -6,6 +6,7 @@ import { useSnack } from "../hooks/useSnack";
 import SignupForm, {
   SignupFormProps,
 } from "../components/auth/SignupForm/SignupForm";
+import Fade from "../components/animations/Fade";
 
 const getPhaseMessage = (phase: SignupFormProps["phase"]) => {
   switch (phase) {
@@ -40,13 +41,13 @@ export default function SignupPage() {
   );
 
   return (
-    <>
+    <Fade>
       <FormComponent
         title="Benvenuto in EasyMotion"
         text={getPhaseMessage(phase)}
       >
         <SignupForm phase={phase} setPhase={setPhase} onSubmit={handleSubmit} />
       </FormComponent>
-    </>
+    </Fade>
   );
 }

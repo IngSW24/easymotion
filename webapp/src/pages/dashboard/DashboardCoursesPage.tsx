@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import {
   Box,
   Tab,
@@ -16,28 +16,11 @@ import CourseEditModal from "../../components/course/CourseEditor/CourseEditModa
 import { useDialog } from "../../hooks/useDialog";
 import { usePhysiotherapistCourses } from "../../hooks/usePhysiotherapistCourses";
 import CourseUsersListModal from "../../components/dashboard/CourseUsersListModal";
+import { useSearchParams } from "react-router";
 
-// Enum per identificare i tipi di tab
-enum TabType {
-  ACTIVE = "active",
-  ARCHIVED = "archived",
-}
+export default function DashboardCoursesPage() {
+  const [params, setParams] = useSearchParams();
 
-// Enum per lo stato della pagina
-enum CurrentState {
-  "LOADING",
-  "ERROR",
-  "READY",
-}
-
-export default function CoursesDashboard() {
-  // Stato per il tab correntemente attivo
-  const [activeTab, setActiveTab] = useState<TabType>(TabType.ACTIVE);
-  const [currentPageState, setCurrentPageState] = useState(
-    CurrentState.LOADING
-  );
-
-  // Stato per modali e editing
   const [createOpen, setCreateOpen] = useState(false);
   const [editingCourse, setEditingCourse] = useState<CourseDto | undefined>(
     undefined
@@ -78,18 +61,21 @@ export default function CoursesDashboard() {
     );
   }, [getAll.data?.pages]);
 
+  const currentData = useMemo(
+    () => (params.get("tab") === "archived" ? archivedCourses : activeCourses),
+    [params, activeCourses, archivedCourses]
+  );
+
   const handleEdit = useCallback(
     (courseId: string) => {
-      const courses =
-        activeTab === TabType.ACTIVE ? activeCourses : archivedCourses;
-      const course = courses.find((course) => course.id === courseId);
+      const course = currentData.find((course) => course.id === courseId);
 
       if (course) {
         setEditingCourse(course);
         setCreateOpen(true);
       }
     },
-    [activeTab, activeCourses, archivedCourses]
+    [currentData]
   );
 
   const handleDelete = async (id: string) => {
@@ -113,22 +99,12 @@ export default function CoursesDashboard() {
     setCourseUserId(undefined);
   };
 
-  const handleTabChange = (_event: React.SyntheticEvent, newValue: TabType) => {
-    setActiveTab(newValue);
+  const handleTabChange = (
+    _event: React.SyntheticEvent,
+    newValue: "active" | "archived"
+  ) => {
+    setParams((p) => ({ ...p, tab: newValue }));
   };
-
-  useEffect(() => {
-    if (getAll.isError) {
-      setCurrentPageState(CurrentState.ERROR);
-    } else if (getAll.isSuccess) {
-      setCurrentPageState(CurrentState.READY);
-    } else {
-      setCurrentPageState(CurrentState.LOADING);
-    }
-  }, [getAll.isError, getAll.isSuccess]);
-
-  const currentData =
-    activeTab === TabType.ACTIVE ? activeCourses : archivedCourses;
 
   const activeCoursesTotal = activeCourses.length;
   const archivedCoursesTotal = archivedCourses.length;
@@ -178,14 +154,15 @@ export default function CoursesDashboard() {
       {/* Tabs con contatori */}
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs
-          value={activeTab}
+          value={params.get("tab") || "active"}
           onChange={handleTabChange}
           aria-label="corsi tabs"
           textColor="primary"
           indicatorColor="primary"
         >
           <Tab
-            value={TabType.ACTIVE}
+            value={"active"}
+            defaultChecked
             label={
               <Badge badgeContent={activeCoursesTotal} color="primary">
                 <Typography sx={{ mr: 2 }}>Corsi Attivi</Typography>
@@ -195,7 +172,7 @@ export default function CoursesDashboard() {
             aria-controls="tabpanel-active"
           />
           <Tab
-            value={TabType.ARCHIVED}
+            value={"archived"}
             label={
               <Badge badgeContent={archivedCoursesTotal} color="primary">
                 <Typography sx={{ mr: 2 }}>Corsi Archiviati</Typography>
@@ -209,14 +186,13 @@ export default function CoursesDashboard() {
 
       {/* Contenuto del tab corrente */}
       <Box sx={{ mt: 2 }}>
-        {currentPageState === CurrentState.ERROR && (
+        {getAll.isError && (
           <Typography color="error">
             Si è verificato un errore nel caricamento dei corsi.
           </Typography>
         )}
 
-        {currentPageState === CurrentState.LOADING &&
-        currentData.length === 0 ? (
+        {getAll.isLoading && currentData.length === 0 ? (
           <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
             <CircularProgress />
           </Box>

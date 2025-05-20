@@ -56,7 +56,9 @@ export default function BasicInfoSection() {
                       variant="outlined"
                       onClick={() => summarize.mutate(getValues("description"))}
                       startIcon={<SupportAgent />}
-                      disabled={!getValues("description") || summarize.isPending}
+                      disabled={
+                        !getValues("description") || summarize.isPending
+                      }
                       sx={{ ml: 1 }}
                     >
                       {summarize.isPending ? (

@@ -15,7 +15,7 @@ enum PageState {
   "READY",
 }
 
-export default function DashboardHome() {
+export default function DashboardOverviewPage() {
   const [pageState, setPageState] = useState(PageState.LOADING);
 
   const confirm = useDialog();
