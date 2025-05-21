@@ -14,10 +14,10 @@ export default function PublicationStatusSection() {
     register,
     formState: { errors },
   } = useFormContext<CourseFormData>();
-  const isPublished = watch("is_published");
-  const subscriptionsOpen = watch("subscriptions_open");
-  const subscriptionStartDate = watch("subscription_start_date");
-  const subscriptionEndDate = watch("subscription_end_date");
+  const isPublished = watch("isPublished");
+  const subscriptionsOpen = watch("subscriptionsOpen");
+  const subscriptionStartDate = watch("subscriptionStartDate");
+  const subscriptionEndDate = watch("subscriptionEndDate");
 
   return (
     <Box>
@@ -30,7 +30,7 @@ export default function PublicationStatusSection() {
                 control={
                   <Switch
                     checked={isPublished}
-                    onChange={(e) => setValue("is_published", e.target.checked)}
+                    onChange={(e) => setValue("isPublished", e.target.checked)}
                     color="primary"
                   />
                 }
@@ -49,7 +49,7 @@ export default function PublicationStatusSection() {
                   <Switch
                     checked={subscriptionsOpen}
                     onChange={(e) =>
-                      setValue("subscriptions_open", e.target.checked)
+                      setValue("subscriptionsOpen", e.target.checked)
                     }
                     color="primary"
                   />
@@ -64,17 +64,16 @@ export default function PublicationStatusSection() {
           <Stack direction="row" spacing={2} alignItems="center">
             <DateRange color="primary" />
             <DateTimePicker
-              {...register("subscription_start_date")}
+              {...register("subscriptionStartDate")}
               label="Data inizio iscrizioni"
               value={DateTime.fromISO(subscriptionStartDate)}
               onChange={(date) => {
-                if (date)
-                  setValue("subscription_start_date", date.toISO() ?? "");
+                if (date) setValue("subscriptionStartDate", date.toISO() ?? "");
               }}
               slotProps={{
                 textField: {
-                  error: !!errors.subscription_start_date,
-                  helperText: errors.subscription_start_date?.message,
+                  error: !!errors.subscriptionStartDate,
+                  helperText: errors.subscriptionStartDate?.message,
                 },
               }}
               format="dd/MM/yyyy HH:mm"
@@ -86,16 +85,16 @@ export default function PublicationStatusSection() {
           <Stack direction="row" spacing={2} alignItems="center">
             <DateRange color="primary" />
             <DateTimePicker
-              {...register("subscription_end_date")}
+              {...register("subscriptionEndDate")}
               label="Data fine iscrizioni"
               value={DateTime.fromISO(subscriptionEndDate)}
               onChange={(date) => {
-                if (date) setValue("subscription_end_date", date.toISO() ?? "");
+                if (date) setValue("subscriptionEndDate", date.toISO() ?? "");
               }}
               slotProps={{
                 textField: {
-                  error: !!errors.subscription_end_date,
-                  helperText: errors.subscription_end_date?.message,
+                  error: !!errors.subscriptionEndDate,
+                  helperText: errors.subscriptionEndDate?.message,
                 },
               }}
               format="dd/MM/yyyy HH:mm"

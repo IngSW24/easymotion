@@ -33,7 +33,7 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
             "x-auth-flow": "web",
           },
         }),
-      }).auth,
+      }),
 
     [props.apiBaseUrl]
   );
@@ -43,7 +43,7 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
 
   // Automatically attempt to get an access token when the app loads
   const initialized = useInitialRefresh({
-    apiInstance: apiInstance,
+    apiInstance: apiInstance.auth,
     updateAccessToken,
     setUser,
   });
@@ -56,7 +56,7 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
    * @param password - User's password
    */
   const login = async (email: string, password: string) => {
-    const response = await apiInstance.authControllerUserLogin({
+    const response = await apiInstance.auth.authControllerUserLogin({
       email,
       password,
     });
@@ -82,7 +82,7 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
       throw new Error("No OTP required");
     }
 
-    const response = await apiInstance.authControllerLoginOtp({
+    const response = await apiInstance.auth.authControllerLoginOtp({
       email: otpStatus.email,
       otp,
     });
@@ -99,14 +99,15 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
    */
   const updateOtpStatus = async (status: boolean) => {
     console.log("Updating otp to status", status);
-    const response = await apiInstance.authControllerUpdateUserProfile(
-      { twoFactorEnabled: status },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`, // Include the access token for authenticated logout
-        },
-      }
-    );
+    const response =
+      await apiInstance.profile.profileControllerUpdateUserProfile(
+        { twoFactorEnabled: status },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Include the access token for authenticated logout
+          },
+        }
+      );
 
     setUser(response.data);
   };
@@ -116,7 +117,7 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
    * Clears the access token and user state locally.
    */
   const logout = async () => {
-    await apiInstance.authControllerLogout({
+    await apiInstance.auth.authControllerLogout({
       headers: {
         Authorization: `Bearer ${accessToken}`, // Include the access token for authenticated logout
       },
@@ -136,7 +137,7 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
   const updateEmail = async (email: string, userId: string, token: string) => {
     const payload = { email, userId, token };
 
-    const response = await apiInstance.authControllerConfirmEmail(payload);
+    const response = await apiInstance.auth.authControllerConfirmEmail(payload);
 
     if (response.ok) {
       updateAccessToken(response.data?.tokens?.accessToken ?? "");
@@ -145,16 +146,17 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
   };
 
   const updateProfilePicture = async (file: File) => {
-    const response = await apiInstance.authControllerUpdateProfilePicture(
-      {
-        file,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`, // Include the access token for authenticated logout
+    const response =
+      await apiInstance.profile.profileControllerUpdateProfilePicture(
+        {
+          file,
         },
-      }
-    );
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Include the access token for authenticated logout
+          },
+        }
+      );
 
     if (response.ok && response.data) {
       setUser(response.data);
@@ -169,7 +171,7 @@ export default function AuthContextProvider(props: AuthContextProviderProps) {
    * @param signupInfo - User's signup information
    */
   const signup = async (signupInfo: SignUpDto): Promise<boolean> => {
-    const response = await apiInstance.authControllerSignUp(signupInfo);
+    const response = await apiInstance.auth.authControllerSignUp(signupInfo);
     return response.ok;
   };
 

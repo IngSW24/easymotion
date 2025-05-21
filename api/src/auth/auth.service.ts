@@ -15,15 +15,12 @@ import { AuthUserDto, BaseAuthUserDto } from "./dto/auth-user/auth-user.dto";
 import { ConfigType } from "@nestjs/config";
 import jwtConfig from "src/config/jwt.config";
 import { JwtPayloadDto } from "./dto/auth-user/jwt-payload.dto";
-import { UpdateAuthUserDto } from "./dto/auth-user/update-auth-user.dto";
 import {
   generateEmailConfirmMessage,
   generatePasswordResetMessage,
 } from "./email-messages/email-confirm.message";
 import frontendConfig from "src/config/frontend.config";
 import { AuthResponseDto } from "./dto/auth-user/auth-response.dto";
-import IAssetsService, { ASSETS_SERVICE } from "src/assets/assets.interface";
-import { DateTime } from "luxon";
 
 @Injectable()
 export class AuthService {
@@ -34,9 +31,7 @@ export class AuthService {
     @Inject(jwtConfig.KEY)
     private readonly configService: ConfigType<typeof jwtConfig>,
     @Inject(frontendConfig.KEY)
-    private readonly frontendConfigService: ConfigType<typeof frontendConfig>,
-    @Inject(ASSETS_SERVICE)
-    private readonly assetsService: IAssetsService
+    private readonly frontendConfigService: ConfigType<typeof frontendConfig>
   ) {}
 
   /**
@@ -86,46 +81,6 @@ export class AuthService {
   }
 
   /**
-   * Updates the user's profile picture path.
-   * @param userId the ID of the user to update the profile picture for
-   * @param filePath the path of the new profile picture
-   * @returns the updated user profile as an AuthUserDto
-   */
-  async updateUserPicture(
-    userId: string,
-    buffer: Buffer,
-    mimetype: string,
-    uniqueTimestamp: string | number | null = null
-  ) {
-    const user = await this.userManager.getUserById(userId);
-
-    if (user.picturePath) {
-      await this.assetsService.deleteFile(user.picturePath);
-    }
-
-    const fileName = `${userId}-${!uniqueTimestamp ? DateTime.now().toMillis() : uniqueTimestamp}`;
-
-    const imagePath = await this.assetsService.uploadBuffer(
-      buffer,
-      "profile",
-      fileName,
-      mimetype
-    );
-
-    if (!imagePath) {
-      throw new BadRequestException("Failed to upload image!");
-    }
-
-    const updatedUser = await this.userManager.updateUser(userId, {
-      picturePath: imagePath,
-    });
-
-    return plainToInstance(AuthUserDto, updatedUser, {
-      excludeExtraneousValues: true,
-    });
-  }
-
-  /**
    * Creates a login response for the user containing an access token and a refresh token
    * together with user information.
    * @param user the user to create the response for
@@ -148,9 +103,9 @@ export class AuthService {
   ): Promise<AuthResponseDto> {
     await this.userManager.setLastLogin(user.id);
     await this.userManager.clearFailedLoginAttempts(user.id);
-    const payload = JwtPayloadDto.fromUser(user).toObject();
+    const payload = JwtPayloadDto.fromUser(user);
 
-    return new AuthResponseDto({
+    return {
       user,
       tokens: {
         accessToken: this.jwtService.sign(payload),
@@ -160,45 +115,7 @@ export class AuthService {
         ),
       },
       requiresOtp: false,
-    });
-  }
-
-  /**
-   * Fetches the user profile for the given user ID.
-   * @param userId the ID of the user to fetch the profile for
-   * @returns the user profile as an AuthUserDto
-   */
-  async getUserProfile(userId: string) {
-    const result = await this.userManager.getUserById(userId);
-
-    return plainToInstance(AuthUserDto, result, {
-      excludeExtraneousValues: true,
-    });
-  }
-
-  /**
-   * Updates the user profile for the given user ID.
-   * @param userId the ID of the user to update the profile for
-   * @param updateAuthUserDto the updated user profile
-   * @returns the updated user profile as an AuthUserDto
-   */
-  async updateUserProfile(
-    userId: string,
-    updateAuthUserDto: UpdateAuthUserDto
-  ) {
-    const user = await this.userManager.updateUser(userId, updateAuthUserDto);
-
-    return plainToInstance(AuthUserDto, user, {
-      excludeExtraneousValues: true,
-    });
-  }
-
-  /**
-   * Deletes the user profile for the given user ID.
-   * @param userId the ID of the user to delete the profile for
-   */
-  async deleteUserProfile(userId: string) {
-    return this.userManager.deleteUser(userId);
+    };
   }
 
   /**
@@ -220,7 +137,7 @@ export class AuthService {
       birthDate,
     } = signUpDto;
 
-    const newUser: Prisma.ApplicationUserCreateInput = {
+    const newUser: Prisma.UserCreateInput = {
       email,
       firstName,
       middleName: middleName || null,
@@ -399,7 +316,7 @@ export class AuthService {
   }
 
   /**
-   * Retrieves a user by their unique identifier or throws an exception if any error occours.
+   * Retrieves a user by their unique identifier or throws an exception if any error occurs.
    * @param userId The unique identifier of the user to retrieve.
    * @returns A promise that resolves with the user if found.
    */

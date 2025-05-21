@@ -1,7 +1,7 @@
 import { IntersectionType, PickType } from "@nestjs/swagger";
-import { ApplicationUserDto } from "src/users/dto/user/application-user.dto";
+import { UserDto } from "src/users/dto/user/user.dto";
 
-export class BaseAuthUserDto extends PickType(ApplicationUserDto, [
+export class BaseAuthUserDto extends PickType(UserDto, [
   "id",
   "birthDate",
   "email",
@@ -17,5 +17,5 @@ export class BaseAuthUserDto extends PickType(ApplicationUserDto, [
 
 export class AuthUserDto extends IntersectionType(
   BaseAuthUserDto,
-  PickType(ApplicationUserDto, ["physiotherapist", "patient"])
+  PickType(UserDto, ["physiotherapist", "patient"])
 ) {}

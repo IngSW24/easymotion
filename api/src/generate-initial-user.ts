@@ -15,7 +15,7 @@ async function generateInitialUser() {
     configService.get<string>("INITIAL_USER_PASSWORD")
   );
 
-  const user: Prisma.ApplicationUserCreateInput = {
+  const user: Prisma.UserCreateInput = {
     id: configService.get<string>("INITIAL_USER_ID"),
     email: configService.get<string>("INITIAL_USER_EMAIL"),
     passwordHash: hashedPasswod,
@@ -26,7 +26,7 @@ async function generateInitialUser() {
     twoFactorEnabled: false,
   };
 
-  await prisma.applicationUser.upsert({
+  await prisma.user.upsert({
     where: { id: user.id },
     create: { ...user },
     update: {},

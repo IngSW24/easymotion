@@ -1,6 +1,6 @@
 import { Physiotherapist } from "@prisma/client";
-import { Exclude, Expose } from "class-transformer";
-import { IsString, IsArray } from "class-validator";
+import { Expose } from "class-transformer";
+import { IsString, IsArray, IsDefined } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
 /**
@@ -8,6 +8,7 @@ import { ApiProperty } from "@nestjs/swagger";
  */
 export class PhysiotherapistDto implements Physiotherapist {
   @Expose()
+  @IsDefined()
   @IsString()
   @ApiProperty({
     description: "The bio of the physiotherapist",
@@ -16,6 +17,7 @@ export class PhysiotherapistDto implements Physiotherapist {
   bio: string | null;
 
   @Expose()
+  @IsDefined()
   @IsString()
   @ApiProperty({
     description: "The specialization of the physiotherapist",
@@ -24,6 +26,7 @@ export class PhysiotherapistDto implements Physiotherapist {
   specialization: string;
 
   @Expose()
+  @IsDefined()
   @IsString()
   @ApiProperty({
     description: "The public phone number of the physiotherapist",
@@ -32,6 +35,7 @@ export class PhysiotherapistDto implements Physiotherapist {
   publicPhoneNumber: string;
 
   @Expose()
+  @IsDefined()
   @IsString()
   @ApiProperty({
     description: "The public email of the physiotherapist",
@@ -40,6 +44,7 @@ export class PhysiotherapistDto implements Physiotherapist {
   publicEmail: string;
 
   @Expose()
+  @IsDefined()
   @IsString()
   @ApiProperty({
     description: "The public address of the physiotherapist",
@@ -48,6 +53,7 @@ export class PhysiotherapistDto implements Physiotherapist {
   publicAddress: string;
 
   @Expose()
+  @IsDefined()
   @IsString()
   @ApiProperty({
     description: "The website of the physiotherapist",
@@ -56,6 +62,7 @@ export class PhysiotherapistDto implements Physiotherapist {
   website: string;
 
   @Expose()
+  @IsDefined()
   @IsArray()
   @IsString({ each: true })
   @ApiProperty({
@@ -67,6 +74,12 @@ export class PhysiotherapistDto implements Physiotherapist {
   })
   socialMediaLinks: string[];
 
-  @Exclude()
-  applicationUserId: string;
+  @Expose()
+  @IsDefined()
+  @IsString()
+  @ApiProperty({
+    description: "User ID",
+    example: "b3bf4d18-8dd0-43a1-b1da-fd3f7b9553a1",
+  })
+  userId: string;
 }

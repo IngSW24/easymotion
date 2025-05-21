@@ -23,8 +23,4 @@ export class AuthResponseDto {
   @IsBoolean()
   @Expose()
   requiresOtp: boolean;
-
-  constructor(partial: Partial<AuthResponseDto>) {
-    Object.assign(this, partial);
-  }
 }

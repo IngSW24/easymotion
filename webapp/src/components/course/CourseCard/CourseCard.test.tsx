@@ -15,14 +15,14 @@ describe("CourseCard GUI test", () => {
     location: "sample_location",
     price: 235478236,
     name: "sample_name",
-    short_description: "sample_short_description",
+    shortDescription: "sample_shortDescription",
     instructors: [],
     category: { id: "category id", name: "ACQUAGYM" },
     level: "BASIC",
-    image_path: "sample_image_path",
+    imagePath: "sample_imagePath",
     tags: ["sample_tag1", "sample_tag2"],
-    created_at: "",
-    updated_at: "",
+    createdAt: "",
+    updatedAt: "",
     owner: {
       id: "",
       email: "",
@@ -30,13 +30,13 @@ describe("CourseCard GUI test", () => {
       lastName: "",
       middleName: "",
     },
-    is_published: false,
-    subscriptions_open: false,
+    isPublished: false,
+    subscriptionsOpen: false,
     sessions: [],
-    subscription_start_date: "",
-    subscription_end_date: "",
-    payment_recurrence: "SINGLE",
-    current_subscribers: 0,
+    subscriptionStartDate: "",
+    subscriptionEndDate: "",
+    paymentRecurrence: "SINGLE",
+    currentSubscribers: 0,
   };
 
   it("Check if CourseCard shows the correct information", () => {
@@ -51,7 +51,7 @@ describe("CourseCard GUI test", () => {
       screen.getByText(getLabel(testCourse.level, courseLevels))
     ).toBeDefined();
     expect(screen.getByText(testCourse.name)).toBeDefined();
-    expect(screen.getByText(testCourse.short_description)).toBeDefined();
+    expect(screen.getByText(testCourse.shortDescription)).toBeDefined();
     testCourse.tags.map((tag) => {
       expect(screen.getByText(tag)).toBeDefined();
     });

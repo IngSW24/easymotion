@@ -13,7 +13,8 @@ export const useProfile = () => {
   const get = useQuery({
     queryKey: ["profile", user?.id ?? ""],
     queryFn: async () => {
-      const response = await apiClient.auth.authControllerGetUserProfile();
+      const response =
+        await apiClient.profile.profileControllerGetUserProfile();
       return response.data;
     },
   });
@@ -21,7 +22,7 @@ export const useProfile = () => {
   const update = useMutation({
     mutationFn: async (data: UpdateAuthUserDto) => {
       const response =
-        await apiClient.auth.authControllerUpdateUserProfile(data);
+        await apiClient.profile.profileControllerUpdateUserProfile(data);
       return response.data;
     },
     onSuccess: (d: AuthUserDto) => {
@@ -35,25 +36,27 @@ export const useProfile = () => {
 
   const updatePhysiotherapist = useMutation({
     mutationFn: async (data: UpdateAuthUserDto["physiotherapist"]) => {
-      const response = await apiClient.auth.authControllerUpdateUserProfile({
-        physiotherapist: data,
-      });
+      const response =
+        await apiClient.profile.profileControllerUpdateUserProfile({
+          physiotherapist: data,
+        });
       return response.data;
     },
   });
 
   const updatePatient = useMutation({
     mutationFn: async (data: UpdateAuthUserDto["patient"]) => {
-      const response = await apiClient.auth.authControllerUpdateUserProfile({
-        patient: data,
-      });
+      const response =
+        await apiClient.profile.profileControllerUpdateUserProfile({
+          patient: data,
+        });
       return response.data;
     },
   });
 
   const remove = useMutation({
     mutationFn: async () => {
-      await apiClient.auth.authControllerDeleteUserProfile();
+      await apiClient.profile.profileControllerDeleteUserProfile();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({

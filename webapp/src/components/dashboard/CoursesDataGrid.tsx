@@ -123,7 +123,7 @@ const createColumns = (
     },
   },
   {
-    field: "is_published",
+    field: "isPublished",
     headerName: "STATO",
     headerAlign: "center",
     align: "center",
@@ -133,10 +133,10 @@ const createColumns = (
       const course = courses.find((c) => c.id === params.row.courseId);
       return (
         <Chip
-          label={course?.is_published ? "ATTIVO" : "ARCHIVIATO"}
+          label={course?.isPublished ? "ATTIVO" : "ARCHIVIATO"}
           size="small"
           style={{
-            backgroundColor: course?.is_published ? "#4CAF50" : "#F44336",
+            backgroundColor: course?.isPublished ? "#4CAF50" : "#F44336",
             color: "white",
             fontWeight: "bold",
           }}
@@ -241,7 +241,7 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
       courseId: value.id,
       courseName: value.name,
       category: value.category,
-      capacity: value.max_subscribers,
+      capacity: value.maxSubscribers,
     };
   });
 
@@ -256,7 +256,7 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
 
     if (onAction) {
       filteredColumns = filteredColumns.filter(
-        (col) => col.field !== "is_published"
+        (col) => col.field !== "isPublished"
       );
     } else {
       filteredColumns = filteredColumns.filter(
@@ -270,7 +270,7 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
       );
       const lastCol = onAction
         ? filteredColumns.find((col) => col.field === "actions")
-        : filteredColumns.find((col) => col.field === "is_published");
+        : filteredColumns.find((col) => col.field === "isPublished");
 
       filteredColumns = [firstCol, lastCol].filter(Boolean) as GridColDef[];
     }

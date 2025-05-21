@@ -61,7 +61,7 @@ export default function CourseCard(props: CourseCardProps) {
         <Typography variant="h5" fontWeight="fontWeightBold" gutterBottom>
           {course.name}
         </Typography>
-        <Typography variant="body1">{course.short_description}</Typography>
+        <Typography variant="body1">{course.shortDescription}</Typography>
       </CardContent>
       <Stack
         direction="row"

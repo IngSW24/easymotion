@@ -17,21 +17,25 @@ export class UserLocalStrategy extends PassportStrategy(
   }
 
   async validate(email: string, password: string) {
-    const user = await this.authService.validateUser(email, password, [
-      Role.PHYSIOTHERAPIST,
-      Role.USER,
-    ]);
+    try {
+      const user = await this.authService.validateUser(email, password, [
+        Role.PHYSIOTHERAPIST,
+        Role.USER,
+      ]);
 
-    if (!user) {
-      throw new UnauthorizedException();
+      if (!user) {
+        throw new UnauthorizedException();
+      }
+
+      if (user.twoFactorEnabled) {
+        await this.authService.sendOtpCode(user.id, user.email);
+        return { requiresOtp: true };
+      }
+
+      return user;
+    } catch (e) {
+      throw new UnauthorizedException(e); // TODO: remove error message in production
     }
-
-    if (user.twoFactorEnabled) {
-      await this.authService.sendOtpCode(user.id, user.email);
-      return { requiresOtp: true };
-    }
-
-    return user;
   }
 }
 

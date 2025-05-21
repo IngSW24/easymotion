@@ -21,7 +21,8 @@ import {
   EXTENDED_PRISMA_SERVICE,
 } from "./common/prisma/pagination";
 import { PrismaClient } from "@prisma/client";
-import { AiModule } from './ai/ai.module';
+import { AiModule } from "./ai/ai.module";
+import { ProfileModule } from "./profile/profile.module";
 
 const shouldServeStaticFiles =
   process.env.NODE_ENV === "development" && process.env.USE_S3 !== "true";
@@ -77,6 +78,7 @@ const shouldServeStaticFiles =
     AwsModule,
     SearchModule,
     AiModule,
+    ProfileModule,
   ],
 })
 export class AppModule {
