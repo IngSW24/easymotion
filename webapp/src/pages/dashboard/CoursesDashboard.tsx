@@ -65,7 +65,7 @@ export default function CoursesDashboard() {
   const activeCourses = useMemo(() => {
     return (
       getAll.data?.pages.flatMap((page) =>
-        page.data.filter((course) => course.is_published)
+        page.data.filter((course) => course.isPublished)
       ) || []
     );
   }, [getAll.data?.pages]);
@@ -73,7 +73,7 @@ export default function CoursesDashboard() {
   const archivedCourses = useMemo(() => {
     return (
       getAll.data?.pages.flatMap((page) =>
-        page.data.filter((course) => !course.is_published)
+        page.data.filter((course) => !course.isPublished)
       ) || []
     );
   }, [getAll.data?.pages]);

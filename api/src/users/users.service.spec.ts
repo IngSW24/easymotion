@@ -4,17 +4,17 @@ import { UserManager } from "./user.manager";
 import { CreateUserDto } from "./dto/user/create-user.dto";
 import { plainToInstance } from "class-transformer";
 import { NotFoundException } from "@nestjs/common";
-import { UpdateUserDto } from "./dto/user/update-user.dto";
+import { UpdateUserDto } from "./dto/user/update.user.dto";
 import {
-  applicationUserDtoMock,
+  userDtoMock,
   createUserDtoMock,
-  applicationUsersList,
+  usersList,
   mappedUserPlainToInstanceMock,
   updateUserDtoMock,
 } from "test/mocks/users.mock";
-import { ApplicationUser } from "@prisma/client";
+import { User } from "@prisma/client";
 import { EXTENDED_PRISMA_SERVICE } from "src/common/prisma/pagination";
-import { ApplicationUserDto } from "./dto/user/application-user.dto";
+import { UserDto } from "./dto/user/user.dto";
 
 describe("UsersService", () => {
   let service: UsersService;
@@ -22,7 +22,7 @@ describe("UsersService", () => {
   // Mock PrismaService
   const prismaMock = {
     client: {
-      applicationUser: {
+      user: {
         findFirst: jest.fn(),
         findMany: jest.fn(),
         create: jest.fn(),
@@ -89,7 +89,7 @@ describe("UsersService", () => {
   it("should throw an HttpException if user creation fails", async () => {
     const newUserInputData: CreateUserDto = createUserDtoMock();
 
-    const mappedUser = plainToInstance(ApplicationUserDto, newUserInputData, {
+    const mappedUser = plainToInstance(UserDto, newUserInputData, {
       excludeExtraneousValues: true,
     });
 
@@ -109,7 +109,7 @@ describe("UsersService", () => {
 
   // Successfull data return
   it("should return paginated users with metadata", async () => {
-    const users: ApplicationUser[] = [
+    const users: User[] = [
       {
         id: "id1",
         email: "user1@example.com",
@@ -138,7 +138,7 @@ describe("UsersService", () => {
 
     const pagination = { page: 0, perPage: 5 };
 
-    prismaMock.client.applicationUser.paginate.mockResolvedValue({
+    prismaMock.client.user.paginate.mockResolvedValue({
       data: users,
       meta: {
         currentPage: 0,
@@ -151,7 +151,7 @@ describe("UsersService", () => {
 
     const result = await service.findAll(pagination);
 
-    expect(prismaMock.client.applicationUser.paginate).toHaveBeenCalledWith(
+    expect(prismaMock.client.user.paginate).toHaveBeenCalledWith(
       pagination,
       { include: { physiotherapist: true, patient: true } },
       { mapType: expect.any(Function) }
@@ -170,7 +170,7 @@ describe("UsersService", () => {
   it("should handle an empty list of users", async () => {
     const pagination = { page: 0, perPage: 2 };
 
-    prismaMock.client.applicationUser.paginate.mockResolvedValue({
+    prismaMock.client.user.paginate.mockResolvedValue({
       data: [],
       meta: {
         currentPage: 0,
@@ -197,9 +197,9 @@ describe("UsersService", () => {
 
   // Successful data return
   it("should return user data succesfully", async () => {
-    const user: ApplicationUserDto = applicationUserDtoMock();
+    const user: UserDto = userDtoMock();
 
-    const plainToInstanceUser = plainToInstance(ApplicationUserDto, user, {
+    const plainToInstanceUser = plainToInstance(UserDto, user, {
       excludeExtraneousValues: true,
     });
 
@@ -214,7 +214,7 @@ describe("UsersService", () => {
 
   // User not found
   it("should throw an HttpException if user is not found", async () => {
-    const user = applicationUsersList()[0];
+    const user = usersList()[0];
 
     userManagerMock.getUserById.mockRejectedValue(new NotFoundException());
 
@@ -225,9 +225,9 @@ describe("UsersService", () => {
 
   // Successful data return
   it("should found and return user data succesfully by email", async () => {
-    const user: ApplicationUserDto = applicationUserDtoMock();
+    const user: UserDto = userDtoMock();
 
-    const plainToInstanceUser = plainToInstance(ApplicationUserDto, user, {
+    const plainToInstanceUser = plainToInstance(UserDto, user, {
       excludeExtraneousValues: true,
     });
 
@@ -242,7 +242,7 @@ describe("UsersService", () => {
 
   // User not found
   it("should throw an HttpException if user is not found", async () => {
-    const user = applicationUsersList()[0];
+    const user = usersList()[0];
 
     userManagerMock.getUserByEmail.mockRejectedValue(new NotFoundException());
 
@@ -254,7 +254,7 @@ describe("UsersService", () => {
   });
 
   it("should update an existing user successfully", async () => {
-    const user = applicationUsersList()[0];
+    const user = usersList()[0];
     const dto: UpdateUserDto = updateUserDtoMock();
 
     userManagerMock.updateUser.mockResolvedValue(dto);
@@ -262,11 +262,11 @@ describe("UsersService", () => {
     const updatedUser = await service.update(user.id, dto);
 
     expect(userManagerMock.updateUser).toHaveBeenCalledWith(user.id, dto);
-    expect(updatedUser).toEqual(plainToInstance(ApplicationUserDto, dto));
+    expect(updatedUser).toEqual(plainToInstance(UserDto, dto));
   });
 
   it("should remove a user successfully", async () => {
-    const user = applicationUsersList()[0];
+    const user = usersList()[0];
 
     const result = { success: true };
 
@@ -278,7 +278,7 @@ describe("UsersService", () => {
   });
 
   it("should throw an error if user removal fails", async () => {
-    const user = applicationUsersList()[0];
+    const user = usersList()[0];
 
     userManagerMock.deleteUser.mockRejectedValue(
       new Error("User removal failed")

@@ -6,7 +6,7 @@ export class SubscriptionRequestDto {
   @ApiProperty({ description: "Course ID of the subscription request" })
   @IsString()
   @Expose()
-  course_id: string;
+  courseId: string;
 
   @ApiProperty({ description: "Subscription request message" })
   @IsString()
@@ -19,10 +19,10 @@ export class SubscriptionCreateDto {
   @ApiProperty({ description: "Subscribed course ID" })
   @IsString()
   @Expose()
-  course_id: string;
+  courseId: string;
 
   @ApiProperty({ description: "Subscribed user ID" })
   @IsString()
   @Expose()
-  patient_id: string;
+  patientId: string;
 }

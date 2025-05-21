@@ -19,7 +19,7 @@ export default function ImageSection(props: ImageSectionProps) {
   const courseId = watch("id");
 
   const courseImageUrl = useMemo(() => {
-    return props.course?.image_path
+    return props.course?.imagePath
       ? getCourseImageUrl({ course: props.course })
       : undefined;
   }, [props.course]);

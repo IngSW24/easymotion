@@ -2,10 +2,10 @@ import { ApiHideProperty, ApiProperty, PickType } from "@nestjs/swagger";
 import { Exclude, Expose, Type } from "class-transformer";
 import { IsDate, IsOptional, IsString } from "class-validator";
 import { CourseDto } from "src/courses/dto/course.dto";
-import { ApplicationUserDto } from "src/users/dto/user/application-user.dto";
+import { UserDto } from "src/users/dto/user/user.dto";
 import { Subscription } from "@prisma/client";
 
-export class SubscriptionUserDto extends PickType(ApplicationUserDto, [
+export class SubscriptionUserDto extends PickType(UserDto, [
   "id",
   "email",
   "firstName",
@@ -23,21 +23,21 @@ export class SubscriptionDtoWithCourse implements Subscription {
   @Type(() => Date)
   @IsDate()
   @Expose()
-  created_at: Date;
+  createdAt: Date;
 
   @ApiProperty({ description: "Update date" })
   @Type(() => Date)
   @IsDate()
   @Expose()
-  updated_at: Date;
+  updatedAt: Date;
 
   @ApiHideProperty()
   @Exclude()
-  course_id: string;
+  courseId: string;
 
   @ApiHideProperty()
   @Exclude()
-  patient_id: string;
+  patientId: string;
 
   @ApiHideProperty()
   @Exclude() // should be filtered by 2 endpoints

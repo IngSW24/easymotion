@@ -76,11 +76,11 @@ export const getCourseImageUrl = ({
   fallbackImage = "/hero.jpg",
   staticUrl = import.meta.env.VITE_STATIC_URL,
 }: GetCourseImageUrlProps) => {
-  if (!course || !course.image_path) {
+  if (!course || !course.imagePath) {
     return fallbackImage;
   }
 
-  return `${staticUrl}/${course.image_path}`;
+  return `${staticUrl}/${course.imagePath}`;
 };
 
 export const getStaticImageUrl = (picturePath: string) => {

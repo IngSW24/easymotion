@@ -1,0 +1,53 @@
+<div class="user-profile">
+  <h2>{{firstName}} {{middleName}} {{lastName}}</h2>
+  <p><strong>Email:</strong> <a href="mailto:{{email}}">{{email}}</a></p>
+  <p><strong>Telefono:</strong> {{phoneNumber}}</p>
+
+  <h3>Informazioni Personali</h3>
+  <p><strong>Sesso:</strong> {{sex}}</p>
+  <p><strong>Data di Nascita:</strong> {{birthDate}}</p>
+
+  <h3>Dati Fisici</h3>
+  <p><strong>Altezza:</strong> {{height}} cm</p>
+  <p><strong>Peso:</strong> {{weight}} kg</p>
+
+  <h3>Abitudini e Stile di Vita</h3>
+  <p><strong>Fumatore:</strong> {{#if smoker}}Sì{{else}}No{{/if}}</p>
+  <p><strong>Unità di Alcol Consumate:</strong> {{alcoholUnits}}</p>
+  <p><strong>Livello di Attività Fisica:</strong> {{activityLevel}}</p>
+  <p><strong>Livello di Mobilità:</strong> {{mobilityLevel}}</p>
+
+  <h3>Salute</h3>
+  <p><strong>Frequenza Cardiaca a Riposo:</strong> {{restingHeartRate}} bpm</p>
+  <p><strong>Pressione Sanguigna:</strong> {{bloodPressure}}</p>
+  <p><strong>Professione:</strong> {{profession}}</p>
+  <p><strong>Sport Praticato:</strong> {{sport}}</p>
+  <p><strong>Frequenza Sportiva:</strong>
+    {{sportFrequency}}
+    volte a settimana</p>
+  <p><strong>Farmaci Assunti:</strong> {{medications}}</p>
+  <p><strong>Allergie:</strong> {{allergies}}</p>
+  <p><strong>Altre Patologie:</strong> {{otherPathologies}}</p>
+
+  <h3>Dolore</h3>
+  <p><strong>Zona di Dolore:</strong> {{painZone}}</p>
+  <p><strong>Intensità del Dolore:</strong> {{painIntensity}}</p>
+  <p><strong>Frequenza del Dolore:</strong> {{painFrequency}}</p>
+  <p><strong>Caratteristiche del Dolore:</strong> {{painCharacteristics}}</p>
+  <p><strong>Fattori Modificanti il Dolore:</strong> {{painModifiers}}</p>
+
+  <h3>Sonno e Stress</h3>
+  <p><strong>Ore di Sonno:</strong> {{sleepHours}}</p>
+  <p><strong>Livello di Stress Percepito:</strong> {{perceivedStress}}</p>
+
+  <h3>Informazioni Aggiuntive</h3>
+  <p><strong>Ultimo Controllo Medico:</strong> {{lastMedicalCheckup}}</p>
+  <p><strong>Obiettivi Personali:</strong> {{personalGoals}}</p>
+  <p><strong>Note:</strong> {{notes}}</p>
+
+  <h3>Informazioni di Sistema</h3>
+  <p><strong>ID Utente:</strong> {{userId}}</p>
+  <p><strong>Ultimo Login:</strong> {{lastLogin}}</p>
+  <p><strong>Data di Creazione:</strong> {{createdAt}}</p>
+  <p><strong>Percorso Immagine Profilo:</strong> {{picturePath}}</p>
+</div>
