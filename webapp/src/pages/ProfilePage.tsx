@@ -5,7 +5,7 @@ import GeneralProfileSettings from "../components/auth/ProfileSettings/GeneralPr
 import EmailUpdate from "../components/auth/ProfileSettings/EmailUpdate";
 import PasswordUpdate from "../components/auth/ProfileSettings/PasswordUpdate";
 import PhysiotherapistSettings from "../components/auth/ProfileSettings/PhysiotherapistSettings";
-import PatientSettings from "../components/auth/ProfileSettings/PatientSettings";
+import PatientSettings from "../components/auth/ProfileSettings/Patient/PatientSettings";
 import Fade from "../components/animations/Fade";
 
 export default function ProfilePage() {
@@ -52,7 +52,7 @@ export default function ProfilePage() {
             {profile.get.data.role === "USER" && (
               <Grid size={{ xs: 12 }}>
                 <PatientSettings
-                  defaultValues={profile.get.data.patient ?? null}
+                  patient={profile.get.data.patient ?? null}
                   onSave={(updatedPatient) =>
                     profile.updatePatient.mutate(updatedPatient.patient)
                   }
