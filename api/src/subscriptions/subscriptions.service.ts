@@ -104,7 +104,11 @@ export class SubscriptionsService {
    * @param courseId Unique identifier of the course.
    * @throws BadRequestException if course is full or subscriptions are closed.
    */
-  async createSubscriptionRequest(patientId: string, courseId: string) {
+  async createSubscriptionRequest(
+    patientId: string,
+    courseId: string,
+    subscriptionRequestMessage?: string
+  ) {
     const user = await this.prismaService.patient.findUniqueOrThrow({
       where: { userId: patientId },
     });
@@ -139,6 +143,7 @@ export class SubscriptionsService {
       data: {
         courseId: course.id,
         patientId: user.userId,
+        subscriptionRequestMessage: subscriptionRequestMessage,
         isPending: true,
       },
     });

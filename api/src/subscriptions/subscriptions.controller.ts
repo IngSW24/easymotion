@@ -84,7 +84,8 @@ export class SubscriptionsController {
   ) {
     await this.subscriptionsService.createSubscriptionRequest(
       req.user.sub,
-      subscriptionRequestDto.courseId
+      subscriptionRequestDto.courseId,
+      subscriptionRequestDto.subscriptionRequestMessage
     );
   }
 
