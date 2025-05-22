@@ -14,9 +14,10 @@ import {
 import useSubscriptions from "../../hooks/useSubscription";
 import { useEffect, useState } from "react";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
-import { ArrowBack, Check, Close, Search } from "@mui/icons-material";
+import { ArrowBack, Check, Search } from "@mui/icons-material";
 import { SubscriptionDtoWithUser } from "@easymotion/openapi";
 import DeleteSubscribedUser from "./DeleteSubscribedUser";
+import SubscriptionDetailsModal from "./SubscriptionDetailModal";
 import ViewPatientMedicalHistory from "./ViewPatientMedicalHistory";
 import DownloadPatientPDF from "./DownloadPatientPDF";
 
@@ -35,6 +36,11 @@ export interface CourseUsersListModalProps {
 export default function CourseUsersListModal(props: CourseUsersListModalProps) {
   const { open, onClose, courseId } = props;
   const [searchTerm, setSearchTerm] = useState("");
+
+  const [openSubDetailsModal, setOpenSubDetailsModal] = useState(false);
+  const [selectedSubscription, setSelectedSubscription] = useState<
+    SubscriptionDtoWithUser | undefined
+  >(undefined);
 
   const {
     getCourseSubscribers,
@@ -91,6 +97,13 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
     getPendingCourseSubscriptions.data,
     courseId,
   ]);
+
+  const handleOpenSubscriptionDetails = (
+    subscription: SubscriptionDtoWithUser
+  ) => {
+    setSelectedSubscription(subscription);
+    setOpenSubDetailsModal(true);
+  };
 
   // Render already subscribed user (simplified)
   const renderSubscribedUserItem = (
@@ -231,20 +244,10 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
           variant="contained"
           color="primary"
           startIcon={<Check />}
-          sx={{ flex: 1, mr: 1 }}
-          onClick={() => confirmSubscription(value.user.id)}
-        >
-          Accetta
-        </Button>
-        <Button
-          size="small"
-          variant="outlined"
-          color="error"
-          startIcon={<Close />}
           sx={{ flex: 1 }}
-          onClick={() => denySubscription(value.user.id)}
+          onClick={() => handleOpenSubscriptionDetails(value)}
         >
-          Rifiuta
+          Visualizza
         </Button>
       </Box>
     </Box>
@@ -299,6 +302,14 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
           </Typography>
         </Toolbar>
       </AppBar>
+
+      <SubscriptionDetailsModal
+        open={openSubDetailsModal}
+        setOpen={setOpenSubDetailsModal}
+        subscription={selectedSubscription}
+        onAccept={confirmSubscription}
+        onDecline={denySubscription}
+      />
 
       {currentPageState === CurrentState.ERROR && (
         <Box sx={{ p: 3 }}>
