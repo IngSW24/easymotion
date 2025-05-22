@@ -24,8 +24,8 @@ const style = {
   borderRadius: 1,
   justifyContent: "center",
   alignItems: "center",
-  maxHeight: "calc(100vh)", // 80% of the viewport height minus padding
-  overflowY: "auto", // enables vertical scrolling
+  maxHeight: "calc(100vh)",
+  overflowY: "auto",
 };
 
 export interface CourseDetailProps {
@@ -76,6 +76,7 @@ export default function SubscriptionRequest(props: CourseDetailProps) {
       courseId: courseId || "",
       subscriptionRequestMessage: textLetter,
     });
+    console.log(textLetter);
     setIsReqSended(true);
   };
 
