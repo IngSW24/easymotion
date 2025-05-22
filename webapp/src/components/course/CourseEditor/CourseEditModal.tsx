@@ -62,7 +62,7 @@ export default function CourseEditModal(props: CourseEditModalProps) {
     }
 
     // apply course to data form if editing
-    methods.reset({ ...course, category_id: course.category.id });
+    methods.reset({ ...course, categoryId: course.category.id });
   }, [course, methods, user]);
 
   const onSubmit: SubmitHandler<CourseFormData> = useCallback(

@@ -239,7 +239,7 @@ export default function PhysiotherapistSettings(
             variant="contained"
             color="primary"
             disabled={!isDirty}
-            onClick={handleSubmit(onSubmit)}
+            onClick={handleSubmit(onSubmit)} // TODO: use form component
             sx={{ paddingX: 3, marginTop: { xs: 2, sm: 0 } }}
           >
             Salva

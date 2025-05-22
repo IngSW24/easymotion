@@ -9,20 +9,20 @@ export class CreateCourseSessionDto extends OmitType(CourseSessionDto, [
 
 export class CreateCourseDto extends OmitType(CourseDto, [
   "id",
-  "created_at",
-  "updated_at",
-  "current_subscribers",
+  "createdAt",
+  "updatedAt",
+  "currentSubscribers",
   "owner",
-  "owner_id",
+  "ownerId",
   "category",
   "sessions",
-  "category_id",
-  "image_path",
+  "categoryId",
+  "imagePath",
 ]) {
   @ApiProperty({ description: "id of the existent category" })
   @IsString()
   @Expose()
-  category_id: string;
+  categoryId: string;
 
   @ApiProperty({ required: true, type: [CreateCourseSessionDto] })
   @IsArray()

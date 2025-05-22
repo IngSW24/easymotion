@@ -14,13 +14,13 @@ describe("CourseDetail GUI test", () => {
     location: "sample_location",
     price: 235478236,
     name: "sample_name",
-    image_path: "sample_image_path",
-    short_description: "sample_short_description",
+    imagePath: "sample_imagePath",
+    shortDescription: "sample_shortDescription",
     sessions: [
       {
         id: "session1",
-        start_time: DateTime.now().toISO(),
-        end_time: DateTime.now().toISO(),
+        startTime: DateTime.now().toISO(),
+        endTime: DateTime.now().toISO(),
       },
     ],
     instructors: [],
@@ -30,8 +30,8 @@ describe("CourseDetail GUI test", () => {
     },
     level: "BASIC",
     tags: ["sample_tag1", "sample_tag2"],
-    created_at: "",
-    updated_at: "",
+    createdAt: "",
+    updatedAt: "",
     owner: {
       id: "",
       email: "",
@@ -39,12 +39,12 @@ describe("CourseDetail GUI test", () => {
       lastName: "",
       middleName: "",
     },
-    is_published: false,
-    subscriptions_open: false,
-    subscription_start_date: "",
-    subscription_end_date: "",
-    payment_recurrence: "SINGLE",
-    current_subscribers: 0,
+    isPublished: false,
+    subscriptionsOpen: false,
+    subscriptionStartDate: "",
+    subscriptionEndDate: "",
+    paymentRecurrence: "SINGLE",
+    currentSubscribers: 0,
   };
 
   it("Check if CourseDetail shows the correct information", () => {
@@ -62,7 +62,7 @@ describe("CourseDetail GUI test", () => {
     expect(
       screen.getByText(getCourseLevelName(testCourse.level))
     ).toBeDefined();
-    expect(screen.getByText(testCourse.short_description)).toBeDefined();
+    expect(screen.getByText(testCourse.shortDescription)).toBeDefined();
     expect(screen.getByText(testCourse.description)).toBeDefined();
     /*     expect(
       screen.getByText(getLabel(testCourse.category.name, courseCategories))

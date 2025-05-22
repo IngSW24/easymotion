@@ -23,7 +23,7 @@ type UseCoursesProps = {
  * @returns an object with the CRUD operations
  */
 export const useCourses = (props: UseCoursesProps = {}) => {
-  const { fetchId = "", page = 0, perPage = 100, fetchAll, filters } = props;
+  const { fetchId = "", page = 0, perPage = 10, fetchAll, filters } = props;
   const { apiClient: api } = useApiClient();
 
   const get = useQuery({

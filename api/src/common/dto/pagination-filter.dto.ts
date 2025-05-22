@@ -1,18 +1,17 @@
-import { Transform } from "class-transformer";
-import { IsNumber, IsOptional } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
+import { Type } from "class-transformer";
+import { IsDefined, IsInt } from "class-validator";
 
 export class PaginationFilter {
-  @IsNumber()
-  @IsOptional()
-  @Transform(({ value }) =>
-    typeof value === "string" ? parseInt(value) : value
-  )
-  page?: number = 0;
+  @ApiProperty({ description: "Page", default: 0 })
+  @IsInt()
+  @IsDefined()
+  @Type(() => Number)
+  page: number;
 
-  @IsNumber()
-  @IsOptional()
-  @Transform(({ value }) =>
-    typeof value === "string" ? parseInt(value) : value
-  )
-  perPage?: number = 10;
+  @ApiProperty({ description: "Page size", default: 10 })
+  @IsInt()
+  @IsDefined()
+  @Type(() => Number)
+  perPage: number;
 }

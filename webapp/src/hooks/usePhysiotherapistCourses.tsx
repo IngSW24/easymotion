@@ -21,7 +21,7 @@ export const usePhysiotherapistCourses = (
   props: UsePhysiotherapistCoursesProps
 ) => {
   const queryClient = useQueryClient();
-  const { perPage } = props;
+  const { perPage = 10 } = props;
   const { user } = useAuth();
   const snack = useSnack();
   const { apiClient } = useApiClient();

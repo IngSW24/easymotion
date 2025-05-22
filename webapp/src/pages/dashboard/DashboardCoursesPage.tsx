@@ -48,7 +48,7 @@ export default function DashboardCoursesPage() {
   const activeCourses = useMemo(() => {
     return (
       getAll.data?.pages.flatMap((page) =>
-        page.data.filter((course) => course.is_published)
+        page.data.filter((course) => course.isPublished)
       ) || []
     );
   }, [getAll.data?.pages]);
@@ -56,7 +56,7 @@ export default function DashboardCoursesPage() {
   const archivedCourses = useMemo(() => {
     return (
       getAll.data?.pages.flatMap((page) =>
-        page.data.filter((course) => !course.is_published)
+        page.data.filter((course) => !course.isPublished)
       ) || []
     );
   }, [getAll.data?.pages]);

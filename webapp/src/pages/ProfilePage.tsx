@@ -39,7 +39,7 @@ export default function ProfilePage() {
             {profile.get.data.role === "PHYSIOTHERAPIST" && (
               <Grid size={{ xs: 12 }}>
                 <PhysiotherapistSettings
-                  physiotherapist={profile.get.data.physiotherapist}
+                  physiotherapist={profile.get.data.physiotherapist ?? null}
                   onProfileSave={(updatedProfile) =>
                     profile.updatePhysiotherapist.mutate(
                       updatedProfile.physiotherapist
@@ -52,7 +52,7 @@ export default function ProfilePage() {
             {profile.get.data.role === "USER" && (
               <Grid size={{ xs: 12 }}>
                 <PatientSettings
-                  defaultValues={profile.get.data.patient}
+                  defaultValues={profile.get.data.patient ?? null}
                   onSave={(updatedPatient) =>
                     profile.updatePatient.mutate(updatedPatient.patient)
                   }

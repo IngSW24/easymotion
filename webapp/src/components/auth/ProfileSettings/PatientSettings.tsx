@@ -25,6 +25,7 @@ export interface PatientSettingsProps {
   onSave: (data: UpdateAuthUserDto) => void;
 }
 
+// TODO: export schema and construct type based on the schema (z.infer<>)
 export interface PatientMedicalData {
   sex: "MALE" | "FEMALE" | "OTHER" | null;
   height: number | null;
@@ -194,7 +195,7 @@ export default function PatientSettings({
   const smoker = useWatch({ control, name: "smoker" });
 
   const onSubmit = (data: FormData) => {
-    onSave({ patient: data as PatientDto });
+    onSave({ patient: data });
     // Reset the form state after successful submission
     reset(data, {
       keepValues: true, // Keep the current values

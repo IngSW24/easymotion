@@ -47,22 +47,20 @@ const CourseDetail: React.FC<CourseDetailProps> = (
   const [openSubReqModal, setOpenSubReqModal] = useState(false);
 
   const startSubscriptionDate = new Date(
-    Date.parse(course.subscription_start_date)
+    Date.parse(course.subscriptionStartDate)
   );
 
-  const endSubscriptionDate = new Date(
-    Date.parse(course.subscription_end_date)
-  );
+  const endSubscriptionDate = new Date(Date.parse(course.subscriptionEndDate));
 
   const getPaymentDetails = () => {
     if (course.price === 0) return "Gratuito";
-    return `Pagamento ${getPaymentRecurrenceName(course.payment_recurrence)}: €${course.price?.toFixed(2)}`;
+    return `Pagamento ${getPaymentRecurrenceName(course.paymentRecurrence)}: €${course.price?.toFixed(2)}`;
   };
 
   const getAvailableSubscriptions = () => {
-    return (course.max_subscribers ?? 0) == 0
+    return (course.maxSubscribers ?? 0) == 0
       ? 0
-      : (course.max_subscribers ?? 0) - course.current_subscribers;
+      : (course.maxSubscribers ?? 0) - course.currentSubscribers;
   };
 
   return (
@@ -96,7 +94,7 @@ const CourseDetail: React.FC<CourseDetailProps> = (
               },
             }}
           >
-            {course.short_description}
+            {course.shortDescription}
           </Typography>
         </Box>
       )}
@@ -132,8 +130,8 @@ const CourseDetail: React.FC<CourseDetailProps> = (
                 </Typography>
                 <List>
                   {course.sessions.map((session, idx) => {
-                    const start = DateTime.fromISO(session.start_time);
-                    const end = DateTime.fromISO(session.end_time);
+                    const start = DateTime.fromISO(session.startTime);
+                    const end = DateTime.fromISO(session.endTime);
                     return (
                       <ListItem key={idx}>
                         <ListItemIcon>
@@ -183,7 +181,7 @@ const CourseDetail: React.FC<CourseDetailProps> = (
                   {endSubscriptionDate.toLocaleTimeString()}
                 </Typography>
 
-                {(course.max_subscribers ?? 0) > 0 && (
+                {(course.maxSubscribers ?? 0) > 0 && (
                   <Box
                     sx={{
                       gap: 2,
@@ -211,10 +209,10 @@ const CourseDetail: React.FC<CourseDetailProps> = (
                 <SubscriptionRequestForm
                   open={openSubReqModal}
                   setOpen={setOpenSubReqModal}
-                  numberSubscribers={course.current_subscribers}
+                  numberSubscribers={course.currentSubscribers}
                   startSubscriptionDate={startSubscriptionDate.getTime()}
                   endSubscriptionDate={endSubscriptionDate}
-                  maxSubscribers={course.max_subscribers ?? 0}
+                  maxSubscribers={course.maxSubscribers ?? 0}
                   price={getPaymentDetails()}
                   courseId={course.id}
                   userId={user?.id}
@@ -303,12 +301,12 @@ const CourseDetail: React.FC<CourseDetailProps> = (
               {
                 icon: <GroupOutlined />,
                 label: "Numero massimo di partecipanti",
-                value: course.max_subscribers ?? "Illimitato",
+                value: course.maxSubscribers ?? "Illimitato",
               },
               {
                 icon: <GroupOutlined />,
                 label: "Numero di partecipanti",
-                value: course.current_subscribers,
+                value: course.currentSubscribers,
               },
             ].map((detail, idx) => (
               <Paper

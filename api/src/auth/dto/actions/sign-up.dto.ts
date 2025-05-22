@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { Expose } from "class-transformer";
-import { IsDateString, IsEmail, IsOptional, IsString } from "class-validator";
+import { Expose, Type } from "class-transformer";
+import { IsDate, IsEmail, IsOptional, IsString } from "class-validator";
 import CheckPasswordConstraints from "src/auth/decorators/strong-password.decorator";
 
 export class SignUpDto {
@@ -67,7 +67,8 @@ export class SignUpDto {
     example: "1990-01-01",
   })
   @IsOptional()
-  @IsDateString()
+  @IsDate()
+  @Type(() => Date)
   @Expose()
   birthDate?: string;
 }

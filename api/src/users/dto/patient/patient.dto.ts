@@ -1,9 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { $Enums, Patient } from "@prisma/client";
-import { Exclude, Expose } from "class-transformer";
+import { Expose } from "class-transformer";
 import {
   IsBoolean,
   IsDate,
+  IsDefined,
   IsNumber,
   IsOptional,
   IsString,
@@ -87,6 +88,7 @@ export class PatientDto implements Patient {
 
   @ApiProperty({ description: "Sport", required: false })
   @IsString()
+  @IsOptional()
   @Expose()
   sport: string | null;
 
@@ -170,6 +172,7 @@ export class PatientDto implements Patient {
 
   @ApiProperty({ description: "Personal goals", required: false })
   @IsString()
+  @IsOptional()
   @Expose()
   personalGoals: string | null;
 
@@ -179,6 +182,12 @@ export class PatientDto implements Patient {
   @Expose()
   notes: string | null;
 
-  @Exclude()
-  applicationUserId: string;
+  @ApiProperty({
+    description: "User ID",
+    example: "b3bf4d18-8dd0-43a1-b1da-fd3f7b9553a1",
+  })
+  @IsString()
+  @IsDefined()
+  @Expose()
+  userId: string;
 }

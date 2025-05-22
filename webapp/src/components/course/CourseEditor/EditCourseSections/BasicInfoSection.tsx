@@ -25,7 +25,7 @@ export default function BasicInfoSection() {
   const summarize = useMutation({
     mutationFn: (text: string) =>
       apiClient.ai.aiControllerGetSummarization({ text }),
-    onSuccess: (response) => setValue("short_description", response.data.text),
+    onSuccess: (response) => setValue("shortDescription", response.data.text),
   });
 
   return (

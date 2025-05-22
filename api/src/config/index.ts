@@ -5,6 +5,7 @@ import smtpConfig from "./smtp.config";
 import s3Config from "./s3.config";
 import assetsConfig from "./assets.config";
 import aiConfig from "./ai.config";
+import pdfConfig from "./pdf.config";
 
 export * from "./db.config";
 export * from "./jwt.config";
@@ -21,4 +22,5 @@ export default [
   s3Config,
   assetsConfig,
   aiConfig,
+  pdfConfig,
 ];

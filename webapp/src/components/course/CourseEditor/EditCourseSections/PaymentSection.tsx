@@ -132,8 +132,8 @@ export default function PaymentSection() {
 
   // Form values
   const price = watch("price");
-  const paymentRecurrenceValue = watch("payment_recurrence");
-  const maxSubscribers = watch("max_subscribers");
+  const paymentRecurrenceValue = watch("paymentRecurrence");
+  const maxSubscribers = watch("maxSubscribers");
 
   // Local state for price formatting
   const [priceFormatted, setPriceFormatted] = React.useState<string>(
@@ -163,8 +163,8 @@ export default function PaymentSection() {
   // Handle payment recurrence change
   const handleRecurrenceChange = (value: string) => {
     setValue(
-      "payment_recurrence",
-      value as CourseFormData["payment_recurrence"],
+      "paymentRecurrence",
+      value as CourseFormData["paymentRecurrence"],
       {
         shouldValidate: true,
       }
@@ -173,7 +173,7 @@ export default function PaymentSection() {
 
   // Handle max subscribers change
   const handleMaxSubscribersChange = (value: number | null) => {
-    setValue("max_subscribers", value, { shouldValidate: true });
+    setValue("maxSubscribers", value, { shouldValidate: true });
   };
 
   return (
@@ -230,8 +230,8 @@ export default function PaymentSection() {
       <MaxSubscribersInput
         value={maxSubscribers ?? null}
         onChange={handleMaxSubscribersChange}
-        error={!!errors.max_subscribers}
-        helperText={errors.max_subscribers?.message}
+        error={!!errors.maxSubscribers}
+        helperText={errors.maxSubscribers?.message}
       />
     </Box>
   );

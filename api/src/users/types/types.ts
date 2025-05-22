@@ -1,5 +1,5 @@
-import { PatientProfileDto } from "./dto/patient/patient-profile.dto";
-import { PhysiotherapistProfileDto } from "./dto/physiotherapist/physiotherapist-profile.dto";
+import { PatientProfileDto } from "../dto/patient/patient-profile.dto";
+import { PhysiotherapistProfileDto } from "../dto/physiotherapist/physiotherapist-profile.dto";
 
 export type FindProfilesArgsMap<T extends "physiotherapist" | "patient"> =
   T extends "physiotherapist"

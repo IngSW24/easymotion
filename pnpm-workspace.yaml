@@ -3,3 +3,5 @@ packages:
   - api/
   - openapi/
   - packages/*
+onlyBuiltDependencies:
+  - puppeteer

@@ -142,8 +142,8 @@ export default function ScheduleSection() {
       setEditingIndex(index);
 
       const session = fields[index];
-      const startTime = DateTime.fromISO(session.start_time);
-      const endTime = DateTime.fromISO(session.end_time);
+      const startTime = DateTime.fromISO(session.startTime);
+      const endTime = DateTime.fromISO(session.endTime);
 
       setSessionForm({
         date: startTime,
@@ -245,14 +245,14 @@ export default function ScheduleSection() {
       if (isEditing && editingIndex !== null) {
         // Update existing session
         update(editingIndex, {
-          start_time: startDateTime.toISO() ?? "",
-          end_time: endDateTime.toISO() ?? "",
+          startTime: startDateTime.toISO() ?? "",
+          endTime: endDateTime.toISO() ?? "",
         });
       } else {
         // Add new session
         append({
-          start_time: startDateTime.toISO() ?? "",
-          end_time: endDateTime.toISO() ?? "",
+          startTime: startDateTime.toISO() ?? "",
+          endTime: endDateTime.toISO() ?? "",
         });
       }
 
@@ -269,7 +269,7 @@ export default function ScheduleSection() {
       recurringForm.endTime
     ) {
       const { startDate, startTime, endTime, frequency, count } = recurringForm;
-      const newSessions: { start_time: string; end_time: string }[] = [];
+      const newSessions: { startTime: string; endTime: string }[] = [];
 
       // Get the duration between start and end time
       const duration = endTime.diff(startTime, ["hours", "minutes"]);
@@ -301,8 +301,8 @@ export default function ScheduleSection() {
         });
 
         newSessions.push({
-          start_time: sessionStartTime.toISO() ?? "",
-          end_time: sessionEndTime.toISO() ?? "",
+          startTime: sessionStartTime.toISO() ?? "",
+          endTime: sessionEndTime.toISO() ?? "",
         });
       }
 
@@ -329,8 +329,8 @@ export default function ScheduleSection() {
         <Stack spacing={2}>
           {fields.length > 0 ? (
             fields.map((field, index) => {
-              const startTime = DateTime.fromISO(field.start_time);
-              const endTime = DateTime.fromISO(field.end_time);
+              const startTime = DateTime.fromISO(field.startTime);
+              const endTime = DateTime.fromISO(field.endTime);
 
               return (
                 <Paper key={field.id} elevation={1} sx={{ p: 2 }}>

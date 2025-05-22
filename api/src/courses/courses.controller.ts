@@ -11,6 +11,7 @@ import {
   UploadedFile,
   ParseFilePipeBuilder,
   Inject,
+  SerializeOptions,
 } from "@nestjs/common";
 import { CoursesService } from "./courses.service";
 import { CreateCourseDto } from "./dto/create-course.dto";
@@ -29,6 +30,7 @@ import { ConfigType } from "@nestjs/config";
 import frontendConfig from "src/config/frontend.config";
 
 @Controller("courses")
+@SerializeOptions({ type: CourseDto })
 export class CoursesController {
   constructor(
     private readonly coursesService: CoursesService,
@@ -39,7 +41,7 @@ export class CoursesController {
   ) {}
 
   /**
-   * Find all courses
+   * Find all public courses
    * @returns all courses
    */
   @Get()
@@ -51,6 +53,10 @@ export class CoursesController {
     return this.coursesService.findAll(pagination, filters, true);
   }
 
+  /**
+   * [physiotherapist] Find all courses
+   * @returns all courses
+   */
   @Get("physiotherapist")
   @UseAuth([Role.PHYSIOTHERAPIST])
   @ApiPaginatedResponse(CourseDto)
@@ -131,7 +137,7 @@ export class CoursesController {
     await Promise.allSettled(
       subscribers.map((subscriber) =>
         this.emailService.sendEmail(
-          subscriber.patient.applicationUser.email,
+          subscriber.patient.user.email,
           "Corso aggiornato",
           `Il corso ${updatedCourse.name} al quale sei iscritto è stato aggiornato.<br/>
           <a href="${this.config.url}/details/${id}">Visualizza le modifiche.</a>`
