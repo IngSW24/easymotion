@@ -245,9 +245,7 @@ export default function Layout(props: LayoutProps) {
         </nav>
         <Box component="main" sx={{ width: "100%" }}>
           <Toolbar />
-          <div className="fade" key={location.pathname}>
-            <Outlet />
-          </div>
+          <Outlet />
         </Box>
 
         <SearchDialog open={searchOpen} onClose={handleSearchClose} />

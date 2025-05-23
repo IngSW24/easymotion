@@ -5,6 +5,7 @@ import { usePhysiotherapistProfile } from "../hooks/usePhysiotherapistProfile";
 import Hero from "../components/Hero/Hero";
 import { useCourses } from "../hooks/useCourses";
 import CourseCard from "../components/course/CourseCard/CourseCard";
+import Fade from "../components/animations/Fade";
 
 export default function PhysiotherapistProfilePage() {
   const { id } = useParams();
@@ -17,7 +18,7 @@ export default function PhysiotherapistProfilePage() {
   });
 
   return (
-    <>
+    <Fade>
       <Hero
         title="I nostri fisioterapisti"
         subtitle="Esplora le informazioni e i dettagli del professionista sanitario"
@@ -48,6 +49,6 @@ export default function PhysiotherapistProfilePage() {
             ))}
         </Grid>
       </Container>
-    </>
+    </Fade>
   );
 }

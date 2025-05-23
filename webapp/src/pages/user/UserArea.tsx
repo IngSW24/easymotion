@@ -3,12 +3,13 @@ import FilterBlock from "../../components/course/FilterBlock/FilterBlock";
 import { useState } from "react";
 import { CourseFilters } from "../../hooks/useCourses";
 import SubscriptionsPage from "./MyCourses";
+import Fade from "../../components/animations/Fade";
 
 export default function UserArea() {
   const [filters, setFilters] = useState<CourseFilters | undefined>(undefined);
 
   return (
-    <>
+    <Fade>
       <Container maxWidth="xl">
         <Typography
           variant="h3"
@@ -33,6 +34,6 @@ export default function UserArea() {
         />
         <SubscriptionsPage filters={filters}></SubscriptionsPage>
       </Container>
-    </>
+    </Fade>
   );
 }
