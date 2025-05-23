@@ -18,6 +18,7 @@ import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 import { ArrowBack, Check, Close, Info, Search } from "@mui/icons-material";
 import { SubscriptionDtoWithUser } from "@easymotion/openapi";
 import DeleteSubscribedUser from "./DeleteSubscribedUser";
+import ViewPatientMedicalHistory from "./ViewPatientMedicalHistory";
 
 enum CurrentState {
   "LOADING",
@@ -158,11 +159,13 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
             </Box>
 
             <Box>
-              <Tooltip title="Esamina cartella clinica del paziente">
-                <IconButton color="info">
-                  <Info fontSize="small" />
-                </IconButton>
-              </Tooltip>
+              <ViewPatientMedicalHistory
+                patientId={value.user.id}
+                patientFirstName={value.user.firstName}
+                patientMiddleName={value.user.middleName || ""}
+                patientLastName={value.user.lastName}
+              />
+
               <DeleteSubscribedUser
                 userId={value.user.id}
                 courseId={value.course.id}
