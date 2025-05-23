@@ -10,7 +10,8 @@ import {
   Typography,
 } from "@mui/material";
 import React from "react";
-import { useProfile } from "../../hooks/useProfile";
+
+import { usePatientProfile } from "../../hooks/usePatientProfile";
 
 const style = {
   position: "absolute",
@@ -40,6 +41,8 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
   const { patientId, patientFirstName, patientMiddleName, patientLastName } =
     props;
 
+  const { data } = usePatientProfile(patientId || "");
+
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -68,49 +71,58 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
               </Typography>
             </Box>
 
-            <Grid>
-              <Box mb={3}>
+            <Grid border={1} borderRadius={1} mb={3}>
+              <Grid mb={3}>
                 <Typography variant="body1" align="left">
-                  <b>Primo nome:</b> {patientFirstName}
+                  <b>Primo nome:</b> {patientFirstName} /
                 </Typography>
-              </Box>
-              <Box mb={3} hidden={patientMiddleName == ""}>
+              </Grid>
+              <Grid mb={3} hidden={patientMiddleName == ""}>
                 <Typography variant="body1" align="left">
                   <b>Secondo nome:</b> {patientMiddleName}
                 </Typography>
-              </Box>
-              <Box mb={3}>
+              </Grid>
+              <Grid mb={3}>
                 <Typography variant="body1" align="left">
                   <b>Cognome:</b> {patientLastName}
                 </Typography>
-              </Box>
-              <Box mb={3}>
+              </Grid>
+            </Grid>
+
+            <Grid border={1} borderRadius={1} mb={3}>
+              <Grid mb={3}>
                 <Typography variant="body1" align="left">
                   <b>Email:</b>
                 </Typography>
-              </Box>
-              <Box mb={3}>
+              </Grid>
+              <Grid mb={3}>
                 <Typography variant="body1" align="left">
                   <b>Numero di telefono:</b>
                 </Typography>
-              </Box>
-              <Box mb={3}>
+              </Grid>
+              <Grid mb={3}>
                 <Typography variant="body1" align="left">
                   <b>Data di nascita:</b>
                 </Typography>
-              </Box>
-              <Box mb={3}>
+              </Grid>
+              <Grid mb={3}>
+                <Typography variant="body1" align="left">
+                  <b>Professione:</b>
+                </Typography>
+              </Grid>
+              <Grid mb={3}>
                 <Typography variant="body1" align="left">
                   <b>Data ultimo accesso:</b>
                 </Typography>
-              </Box>
-              <Box mb={3}>
+              </Grid>
+              <Grid mb={3}>
                 <Typography variant="body1" align="left">
                   <b>Data di creazione del profilo:</b>
                 </Typography>
-              </Box>
+              </Grid>
             </Grid>
-            <Grid container spacing={2}>
+
+            <Grid container spacing={5} border={1} borderRadius={1} mb={3}>
               <Grid size={6}>
                 <Typography variant="body1" align="left">
                   <b>Sesso:</b>
@@ -121,56 +133,37 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
                   <b>Altezza (in cm):</b>
                 </Typography>
               </Grid>
-            </Grid>
-            <Grid container spacing={2}>
               <Grid size={6}>
                 <Typography variant="body1" align="left">
                   <b>Peso (in kg):</b>
                 </Typography>
               </Grid>
+            </Grid>
+
+            <Grid container spacing={2} border={1} borderRadius={1} mb={3}>
               <Grid size={6}>
                 <Typography variant="body1" align="left">
                   <b>Fumatore:</b>
                 </Typography>
               </Grid>
-            </Grid>
-            <Grid container spacing={2}>
               <Grid size={6}>
                 <Typography variant="body1" align="left">
                   <b>Consumo di alcol:</b>
                 </Typography>
               </Grid>
+            </Grid>
+
+            <Grid container spacing={2} border={1} borderRadius={1} mb={3}>
               <Grid size={6}>
                 <Typography variant="body1" align="left">
                   <b>Livello di attività:</b>
                 </Typography>
               </Grid>
-            </Grid>
-            <Grid container spacing={2}>
               <Grid size={6}>
                 <Typography variant="body1" align="left">
                   <b>Livello di mobilità:</b>
                 </Typography>
               </Grid>
-              <Grid size={6}>
-                <Typography variant="body1" align="left">
-                  <b>Resting heart rate:</b>
-                </Typography>
-              </Grid>
-            </Grid>
-            <Grid container spacing={2}>
-              <Grid size={6}>
-                <Typography variant="body1" align="left">
-                  <b>Pressione del sangue:</b>
-                </Typography>
-              </Grid>
-              <Grid size={6}>
-                <Typography variant="body1" align="left">
-                  <b>Professione:</b>
-                </Typography>
-              </Grid>
-            </Grid>
-            <Grid container spacing={2}>
               <Grid size={6}>
                 <Typography variant="body1" align="left">
                   <b>Sport:</b>
@@ -182,7 +175,21 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
                 </Typography>
               </Grid>
             </Grid>
-            <Grid container spacing={2}>
+
+            <Grid container spacing={2} border={1} borderRadius={1} mb={3}>
+              <Grid size={6}>
+                <Typography variant="body1" align="left">
+                  <b>Resting heart rate:</b>
+                </Typography>
+              </Grid>
+              <Grid size={6}>
+                <Typography variant="body1" align="left">
+                  <b>Pressione del sangue:</b>
+                </Typography>
+              </Grid>
+            </Grid>
+
+            <Grid container spacing={2} border={1} borderRadius={1} mb={3}>
               <Grid size={6}>
                 <Typography variant="body1" align="left">
                   <b>Medicazioni:</b>
@@ -193,20 +200,19 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
                   <b>Allergie:</b>
                 </Typography>
               </Grid>
-            </Grid>
-            <Grid container spacing={2}>
               <Grid size={6}>
                 <Typography variant="body1" align="left">
                   <b>Altre patologie:</b>
                 </Typography>
               </Grid>
+            </Grid>
+
+            <Grid container spacing={2} border={1} borderRadius={1} mb={3}>
               <Grid size={6}>
                 <Typography variant="body1" align="left">
                   <b>Zona del dolore:</b>
                 </Typography>
               </Grid>
-            </Grid>
-            <Grid container spacing={2}>
               <Grid size={6}>
                 <Typography variant="body1" align="left">
                   <b>Intensità del dolore:</b>
@@ -217,8 +223,6 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
                   <b>Frequenza del dolore:</b>
                 </Typography>
               </Grid>
-            </Grid>
-            <Grid container spacing={2}>
               <Grid size={6}>
                 <Typography variant="body1" align="left">
                   <b>Caratteristiche del dolore:</b>
@@ -229,8 +233,14 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
                   <b>Aspetti che cambiano l'intensità del dolore:</b>
                 </Typography>
               </Grid>
+              <Grid size={6}>
+                <Typography variant="body1" align="left">
+                  <b>Data ultimo checkup:</b>
+                </Typography>
+              </Grid>
             </Grid>
-            <Grid container spacing={2}>
+
+            <Grid container spacing={2} border={1} borderRadius={1} mb={3}>
               <Grid size={6}>
                 <Typography variant="body1" align="left">
                   <b>Ore di riposo:</b>
@@ -242,19 +252,16 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
                 </Typography>
               </Grid>
             </Grid>
-            <Grid container spacing={2}>
-              <Grid size={6}>
-                <Typography variant="body1" align="left">
-                  <b>Data ultimo checkup:</b>
-                </Typography>
-              </Grid>
+
+            <Grid container spacing={2} border={1} borderRadius={1} mb={3}>
               <Grid size={6}>
                 <Typography variant="body1" align="left">
                   <b>Obiettivi personali:</b>
                 </Typography>
               </Grid>
             </Grid>
-            <Grid container spacing={2}>
+
+            <Grid container spacing={2} border={1} borderRadius={1} mb={3}>
               <Grid>
                 <Typography variant="body1" align="left">
                   <b>Note:</b>
