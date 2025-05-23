@@ -159,12 +159,7 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
             </Box>
 
             <Box>
-              <ViewPatientMedicalHistory
-                patientId={value.user.id}
-                patientFirstName={value.user.firstName}
-                patientMiddleName={value.user.middleName || ""}
-                patientLastName={value.user.lastName}
-              />
+              <ViewPatientMedicalHistory patientId={value.user.id} />
 
               <DeleteSubscribedUser
                 userId={value.user.id}
