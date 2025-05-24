@@ -30,7 +30,8 @@ import { ConfigType } from "@nestjs/config";
 import pdfConfig from "src/config/pdf.config";
 import { catchError, firstValueFrom } from "rxjs";
 import * as FormData from "form-data";
-import { readFileSync } from "fs";
+import { promises as fs } from "fs";
+import { join } from "path";
 
 /**
  * A controller for managing user-related operations, providing
@@ -135,8 +136,9 @@ export class UsersController {
 
     const formData = new FormData();
 
-    const instructions = readFileSync("public/pdf_instructions.json"); // TODO: copy assets
-    console.log(instructions.toString());
+    const instructions = await fs.readFile(
+      join("dist", "public", "pdf_instructions.json")
+    );
 
     formData.append("Resource", Buffer.from(html), {
       filename: "input.html",
@@ -164,7 +166,7 @@ export class UsersController {
     );
 
     res.set({
-      "Content-Type": "application/json",
+      "Content-Type": "application/pdf",
       "Content-Disposition": `attachment; filename="MedicalHistory_${id}.pdf"`,
       "Content-Length": outputPdf.data.length,
     });
