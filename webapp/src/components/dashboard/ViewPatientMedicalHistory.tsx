@@ -2,6 +2,7 @@ import { Info } from "@mui/icons-material";
 import {
   Box,
   Button,
+  CardMedia,
   Grid,
   IconButton,
   Modal,
@@ -9,10 +10,11 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 
 import { usePatientProfile } from "../../hooks/usePatientProfile";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
+import { getCourseImageUrl, getStaticImageUrl } from "../../utils/format";
 
 const style = {
   position: "absolute",
@@ -39,6 +41,10 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
   const { patientId } = props;
 
   const { data, isLoading, isError } = usePatientProfile(patientId || "");
+
+  const [imageUrl, setImageUrl] = useState(
+    getStaticImageUrl(data?.data.picturePath || "/hero.jpg")
+  );
 
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
@@ -67,13 +73,13 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
               <Typography
                 variant="h5"
                 component="h2"
-                sx={{ fontWeight: "bold" }}
+                sx={{ fontWeight: "bold", color: "#094D95" }}
               >
                 Anamnesi del paziente
               </Typography>
             </Box>
 
-            <Box mb={2} border={1} borderRadius={4} padding="20px">
+            <Box mb={2} border={2} borderRadius={4} padding="20px">
               <Typography
                 variant="h6"
                 component="h6"
@@ -84,50 +90,63 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
               </Typography>
 
               <Grid container spacing={2} mb={3}>
-                <Grid mb={3} size={12}>
-                  <Typography variant="body1" align="left">
-                    <b>Nome:</b>{" "}
-                    {!data?.data.firstName ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.firstName}</>
-                    )}
-                  </Typography>
+                <Grid mb={3} size={6}>
+                  <CardMedia
+                    sx={{ height: 180, width: 180, alignContent: "center" }}
+                    component="img"
+                    image={imageUrl}
+                    onError={() => setImageUrl("/hero.jpg")}
+                  />
                 </Grid>
-                <Grid
-                  mb={3}
-                  hidden={
-                    data?.data.middleName == null ||
-                    data?.data.middleName == undefined ||
-                    data?.data.middleName == ""
-                  }
-                  size={12}
-                >
-                  <Typography variant="body1" align="left">
-                    <b>Secondo nome:</b>{" "}
-                    {!data?.data.middleName ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.middleName}</>
-                    )}
-                  </Typography>
+
+                <Grid mb={3} size={6}>
+                  <Box mb={3}>
+                    <Typography variant="body1" align="left">
+                      <b>Nome:</b>{" "}
+                      {!data?.data.firstName ? (
+                        <i style={{ fontStyle: "italic", color: "red" }}>
+                          dato mancante
+                        </i>
+                      ) : (
+                        <>{data?.data.firstName}</>
+                      )}
+                    </Typography>
+                  </Box>
+
+                  <Box
+                    mb={3}
+                    hidden={
+                      data?.data.middleName == null ||
+                      data?.data.middleName == undefined ||
+                      data?.data.middleName == ""
+                    }
+                  >
+                    <Typography variant="body1" align="left">
+                      <b>Secondo nome:</b>{" "}
+                      {!data?.data.middleName ? (
+                        <i style={{ fontStyle: "italic", color: "red" }}>
+                          dato mancante
+                        </i>
+                      ) : (
+                        <>{data?.data.middleName}</>
+                      )}
+                    </Typography>
+                  </Box>
+
+                  <Box mb={3}>
+                    <Typography variant="body1" align="left">
+                      <b>Cognome:</b>{" "}
+                      {!data?.data.lastName ? (
+                        <i style={{ fontStyle: "italic", color: "red" }}>
+                          dato mancante
+                        </i>
+                      ) : (
+                        <>{data?.data.lastName}</>
+                      )}
+                    </Typography>
+                  </Box>
                 </Grid>
-                <Grid mb={3} size={12}>
-                  <Typography variant="body1" align="left">
-                    <b>Cognome:</b>{" "}
-                    {!data?.data.lastName ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.lastName}</>
-                    )}
-                  </Typography>
-                </Grid>
+
                 <Grid mb={3} size={6}>
                   <Typography variant="body1" align="left">
                     <b>Email:</b>{" "}
@@ -211,7 +230,7 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
               </Grid>
             </Box>
 
-            <Box mb={2} border={1} borderRadius={4} padding="20px">
+            <Box mb={2} border={2} borderRadius={4} padding="20px">
               <Typography
                 variant="h6"
                 component="h6"
@@ -230,7 +249,13 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
                         dato mancante
                       </i>
                     ) : (
-                      <>{data?.data.sex}</>
+                      <>
+                        {data?.data.sex == "FEMALE"
+                          ? "FEMMINA"
+                          : data?.data.sex == "MALE"
+                            ? "MASCHIO"
+                            : "ALTRO"}
+                      </>
                     )}
                   </Typography>
                 </Grid>
@@ -261,7 +286,7 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
               </Grid>
             </Box>
 
-            <Box mb={2} border={1} borderRadius={4} padding="20px">
+            <Box mb={2} border={2} borderRadius={4} padding="20px">
               <Typography
                 variant="h6"
                 component="h6"
@@ -280,7 +305,7 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
                         dato mancante
                       </i>
                     ) : (
-                      <>{data?.data.smoker}</>
+                      <>{data?.data.smoker ? "Sì" : "No"}</>
                     )}
                   </Typography>
                 </Grid>
@@ -299,7 +324,7 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
               </Grid>
             </Box>
 
-            <Box mb={2} border={1} borderRadius={4} padding="20px">
+            <Box mb={2} border={2} borderRadius={4} padding="20px">
               <Typography
                 variant="h6"
                 component="h6"
@@ -317,7 +342,13 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
                         dato mancante
                       </i>
                     ) : (
-                      <>{data?.data.activityLevel}</>
+                      <>
+                        {data?.data.activityLevel == "LOW"
+                          ? "BASSO"
+                          : data?.data.activityLevel == "MEDIUM"
+                            ? "MEDIO"
+                            : "ALTO"}
+                      </>
                     )}
                   </Typography>
                 </Grid>
@@ -329,7 +360,13 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
                         dato mancante
                       </i>
                     ) : (
-                      <>{data?.data.mobilityLevel}</>
+                      <>
+                        {data?.data.mobilityLevel == "LIMITED"
+                          ? "LIMITATO"
+                          : data?.data.mobilityLevel == "MODERATE"
+                            ? "MODERATO"
+                            : "MASSIMO"}
+                      </>
                     )}
                   </Typography>
                 </Grid>
@@ -360,7 +397,7 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
               </Grid>
             </Box>
 
-            <Box mb={2} border={1} borderRadius={4} padding="20px">
+            <Box mb={2} border={2} borderRadius={4} padding="20px">
               <Typography
                 variant="h6"
                 component="h6"
@@ -397,7 +434,7 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
               </Grid>
             </Box>
 
-            <Box mb={2} border={1} borderRadius={4} padding="20px">
+            <Box mb={2} border={2} borderRadius={4} padding="20px">
               <Typography
                 variant="h6"
                 component="h6"
@@ -434,7 +471,7 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
               </Grid>
             </Box>
 
-            <Box mb={2} border={1} borderRadius={4} padding="20px">
+            <Box mb={2} border={2} borderRadius={4} padding="20px">
               <Typography
                 variant="h6"
                 component="h6"
@@ -531,7 +568,7 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
               </Grid>
             </Box>
 
-            <Box mb={2} border={1} borderRadius={4} padding="20px">
+            <Box mb={2} border={2} borderRadius={4} padding="20px">
               <Typography
                 variant="h6"
                 component="h6"
@@ -568,7 +605,7 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
               </Grid>
             </Box>
 
-            <Box mb={2} border={1} borderRadius={4} padding="20px">
+            <Box mb={2} border={2} borderRadius={4} padding="20px">
               <Typography
                 variant="h6"
                 component="h6"
@@ -592,7 +629,7 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
               </Grid>
             </Box>
 
-            <Box mb={2} border={1} borderRadius={4} padding="20px">
+            <Box mb={2} border={2} borderRadius={4} padding="20px">
               <Typography
                 variant="h6"
                 component="h6"
