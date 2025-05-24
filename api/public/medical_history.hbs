@@ -1,53 +1,414 @@
-<div class="user-profile">
-  <h2>{{firstName}} {{middleName}} {{lastName}}</h2>
-  <p><strong>Email:</strong> <a href="mailto:{{email}}">{{email}}</a></p>
-  <p><strong>Telefono:</strong> {{phoneNumber}}</p>
+<style>
+  .field-label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+  }
+  .field-value {
+    margin-bottom: 15px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+  }
+  .missing-field {
+    color: orange;
+    font-style: italic;
+    background-color: #fff3e0; /* Light orange background */
+    border-color: #ffcc80; /* Darker orange border */
+  }
+</style>
 
-  <h3>Informazioni Personali</h3>
-  <p><strong>Sesso:</strong> {{sex}}</p>
-  <p><strong>Data di Nascita:</strong> {{birthDate}}</p>
+<div>
+  <h2>Dettagli Utente e Anamnesi</h2>
 
-  <h3>Dati Fisici</h3>
-  <p><strong>Altezza:</strong> {{height}} cm</p>
-  <p><strong>Peso:</strong> {{weight}} kg</p>
+  <h3>Dati Anagrafici</h3>
+  <div>
+    <div class="field-label">Nome:</div>
+    <div class="field-value{{#unless firstName}} missing-field{{/unless}}">
+      {{#if firstName}}
+        {{firstName}}
+      {{else}}
+        Nome non presente
+      {{/if}}
+    </div>
+  </div>
 
-  <h3>Abitudini e Stile di Vita</h3>
-  <p><strong>Fumatore:</strong> {{#if smoker}}Sì{{else}}No{{/if}}</p>
-  <p><strong>Unità di Alcol Consumate:</strong> {{alcoholUnits}}</p>
-  <p><strong>Livello di Attività Fisica:</strong> {{activityLevel}}</p>
-  <p><strong>Livello di Mobilità:</strong> {{mobilityLevel}}</p>
+  <div>
+    <div class="field-label">Secondo Nome:</div>
+    <div class="field-value{{#unless middleName}} missing-field{{/unless}}">
+      {{#if middleName}}
+        {{middleName}}
+      {{else}}
+        Secondo nome non presente
+      {{/if}}
+    </div>
+  </div>
 
-  <h3>Salute</h3>
-  <p><strong>Frequenza Cardiaca a Riposo:</strong> {{restingHeartRate}} bpm</p>
-  <p><strong>Pressione Sanguigna:</strong> {{bloodPressure}}</p>
-  <p><strong>Professione:</strong> {{profession}}</p>
-  <p><strong>Sport Praticato:</strong> {{sport}}</p>
-  <p><strong>Frequenza Sportiva:</strong>
-    {{sportFrequency}}
-    volte a settimana</p>
-  <p><strong>Farmaci Assunti:</strong> {{medications}}</p>
-  <p><strong>Allergie:</strong> {{allergies}}</p>
-  <p><strong>Altre Patologie:</strong> {{otherPathologies}}</p>
+  <div>
+    <div class="field-label">Cognome:</div>
+    <div class="field-value{{#unless lastName}} missing-field{{/unless}}">
+      {{#if lastName}}
+        {{lastName}}
+      {{else}}
+        Cognome non presente
+      {{/if}}
+    </div>
+  </div>
 
-  <h3>Dolore</h3>
-  <p><strong>Zona di Dolore:</strong> {{painZone}}</p>
-  <p><strong>Intensità del Dolore:</strong> {{painIntensity}}</p>
-  <p><strong>Frequenza del Dolore:</strong> {{painFrequency}}</p>
-  <p><strong>Caratteristiche del Dolore:</strong> {{painCharacteristics}}</p>
-  <p><strong>Fattori Modificanti il Dolore:</strong> {{painModifiers}}</p>
+  <div>
+    <div class="field-label">Email:</div>
+    <div class="field-value{{#unless email}} missing-field{{/unless}}">
+      {{#if email}}
+        {{email}}
+      {{else}}
+        Email non presente
+      {{/if}}
+    </div>
+  </div>
 
-  <h3>Sonno e Stress</h3>
-  <p><strong>Ore di Sonno:</strong> {{sleepHours}}</p>
-  <p><strong>Livello di Stress Percepito:</strong> {{perceivedStress}}</p>
+  <div>
+    <div class="field-label">Numero di Telefono:</div>
+    <div class="field-value{{#unless phoneNumber}} missing-field{{/unless}}">
+      {{#if phoneNumber}}
+        {{phoneNumber}}
+      {{else}}
+        Numero di telefono non presente
+      {{/if}}
+    </div>
+  </div>
 
-  <h3>Informazioni Aggiuntive</h3>
-  <p><strong>Ultimo Controllo Medico:</strong> {{lastMedicalCheckup}}</p>
-  <p><strong>Obiettivi Personali:</strong> {{personalGoals}}</p>
-  <p><strong>Note:</strong> {{notes}}</p>
+  <div>
+    <div class="field-label">Data di Nascita:</div>
+    <div class="field-value{{#unless birthDate}} missing-field{{/unless}}">
+      {{#if birthDate}}
+        {{birthDate}}
+      {{else}}
+        Data di nascita non presente
+      {{/if}}
+    </div>
+  </div>
 
-  <h3>Informazioni di Sistema</h3>
-  <p><strong>ID Utente:</strong> {{userId}}</p>
-  <p><strong>Ultimo Login:</strong> {{lastLogin}}</p>
-  <p><strong>Data di Creazione:</strong> {{createdAt}}</p>
-  <p><strong>Percorso Immagine Profilo:</strong> {{picturePath}}</p>
+  <div>
+    <div class="field-label">Percorso Immagine:</div>
+    <div class="field-value{{#unless picturePath}} missing-field{{/unless}}">
+      {{#if picturePath}}
+        {{picturePath}}
+      {{else}}
+        Immagine profilo non presente
+      {{/if}}
+    </div>
+  </div>
+
+  <h3>Dati Anamnestici</h3>
+  <div>
+    <div class="field-label">Sesso:</div>
+    <div class="field-value{{#unless sex}} missing-field{{/unless}}">
+      {{#if sex}}
+        {{sex}}
+      {{else}}
+        Sesso non presente
+      {{/if}}
+    </div>
+  </div>
+
+  <div>
+    <div class="field-label">Altezza (cm):</div>
+    <div class="field-value{{#unless height}} missing-field{{/unless}}">
+      {{#if height}}
+        {{height}}
+      {{else}}
+        Altezza non presente
+      {{/if}}
+    </div>
+  </div>
+
+  <div>
+    <div class="field-label">Peso (kg):</div>
+    <div class="field-value{{#unless weight}} missing-field{{/unless}}">
+      {{#if weight}}
+        {{weight}}
+      {{else}}
+        Peso non presente
+      {{/if}}
+    </div>
+  </div>
+
+  <div>
+    <div class="field-label">Fumatore:</div>
+    <div class="field-value{{#unless smoker}} missing-field{{/unless}}">
+      {{#if smoker}}
+        {{#if smoker}}Sì{{else}}No{{/if}}
+      {{else}}
+        Informazione fumatore non presente
+      {{/if}}
+    </div>
+  </div>
+
+  <div>
+    <div class="field-label">Unità di Alcol:</div>
+    <div class="field-value{{#unless alcoholUnits}} missing-field{{/unless}}">
+      {{#if alcoholUnits}}
+        {{alcoholUnits}}
+      {{else}}
+        Unità di alcol non presenti
+      {{/if}}
+    </div>
+  </div>
+
+  <div>
+    <div class="field-label">Livello di Attività:</div>
+    <div class="field-value{{#unless activityLevel}} missing-field{{/unless}}">
+      {{#if activityLevel}}
+        {{activityLevel}}
+      {{else}}
+        Livello di attività non presente
+      {{/if}}
+    </div>
+  </div>
+
+  <div>
+    <div class="field-label">Livello di Mobilità:</div>
+    <div class="field-value{{#unless mobilityLevel}} missing-field{{/unless}}">
+      {{#if mobilityLevel}}
+        {{mobilityLevel}}
+      {{else}}
+        Livello di mobilità non presente
+      {{/if}}
+    </div>
+  </div>
+
+  <div>
+    <div class="field-label">Frequenza Cardiaca a Riposo:</div>
+    <div class="field-value{{#unless restingHeartRate}} missing-field{{/unless}}">
+      {{#if restingHeartRate}}
+        {{restingHeartRate}} bpm
+      {{else}}
+        Frequenza cardiaca a riposo non presente
+      {{/if}}
+    </div>
+  </div>
+
+  <div>
+    <div class="field-label">Pressione Sanguigna:</div>
+    <div class="field-value{{#unless bloodPressure}} missing-field{{/unless}}">
+      {{#if bloodPressure}}
+        {{bloodPressure}}
+      {{else}}
+        Pressione sanguigna non presente
+      {{/if}}
+    </div>
+  </div>
+
+  <div>
+    <div class="field-label">Professione:</div>
+    <div class="field-value{{#unless profession}} missing-field{{/unless}}">
+      {{#if profession}}
+        {{profession}}
+      {{else}}
+        Professione non presente
+      {{/if}}
+    </div>
+  </div>
+
+  <div>
+    <div class="field-label">Sport:</div>
+    <div class="field-value{{#unless sport}} missing-field{{/unless}}">
+      {{#if sport}}
+        {{sport}}
+      {{else}}
+        Sport non presente
+      {{/if}}
+    </div>
+  </div>
+
+  <div>
+    <div class="field-label">Frequenza Sportiva:</div>
+    <div class="field-value{{#unless sportFrequency}} missing-field{{/unless}}">
+      {{#if sportFrequency}}
+        {{sportFrequency}} volte a settimana
+      {{else}}
+        Frequenza sportiva non presente
+      {{/if}}
+    </div>
+  </div>
+
+  <div>
+    <div class="field-label">Farmaci:</div>
+    <div class="field-value{{#unless medications}} missing-field{{/unless}}">
+      {{#if medications}}
+        {{medications}}
+      {{else}}
+        Farmaci non presenti
+      {{/if}}
+    </div>
+  </div>
+
+  <div>
+    <div class="field-label">Allergie:</div>
+    <div class="field-value{{#unless allergies}} missing-field{{/unless}}">
+      {{#if allergies}}
+        {{allergies}}
+      {{else}}
+        Allergie non presenti
+      {{/if}}
+    </div>
+  </div>
+
+  <div>
+    <div class="field-label">Altre Patologie:</div>
+    <div class="field-value{{#unless otherPathologies}} missing-field{{/unless}}">
+      {{#if otherPathologies}}
+        {{otherPathologies}}
+      {{else}}
+        Altre patologie non presenti
+      {{/if}}
+    </div>
+  </div>
+
+  <h3>Dati sul Dolore</h3>
+  <div>
+    <div class="field-label">Zona del Dolore:</div>
+    <div class="field-value{{#unless painZone}} missing-field{{/unless}}">
+      {{#if painZone}}
+        {{painZone}}
+      {{else}}
+        Zona del dolore non presente
+      {{/if}}
+    </div>
+  </div>
+
+  <div>
+    <div class="field-label">Intensità del Dolore:</div>
+    <div class="field-value{{#unless painIntensity}} missing-field{{/unless}}">
+      {{#if painIntensity}}
+        {{painIntensity}} (scala 0-10)
+      {{else}}
+        Intensità del dolore non presente
+      {{/if}}
+    </div>
+  </div>
+
+  <div>
+    <div class="field-label">Frequenza del Dolore:</div>
+    <div class="field-value{{#unless painFrequency}} missing-field{{/unless}}">
+      {{#if painFrequency}}
+        {{painFrequency}}
+      {{else}}
+        Frequenza del dolore non presente
+      {{/if}}
+    </div>
+  </div>
+
+  <div>
+    <div class="field-label">Caratteristiche del Dolore:</div>
+    <div class="field-value{{#unless painCharacteristics}} missing-field{{/unless}}">
+      {{#if painCharacteristics}}
+        {{painCharacteristics}}
+      {{else}}
+        Caratteristiche del dolore non presenti
+      {{/if}}
+    </div>
+  </div>
+
+  <div>
+    <div class="field-label">Modificatori del Dolore:</div>
+    <div class="field-value{{#unless painModifiers}} missing-field{{/unless}}">
+      {{#if painModifiers}}
+        {{painModifiers}}
+      {{else}}
+        Modificatori del dolore non presenti
+      {{/if}}
+    </div>
+  </div>
+
+  <h3>Altri Dati</h3>
+  <div>
+    <div class="field-label">Ore di Sonno:</div>
+    <div class="field-value{{#unless sleepHours}} missing-field{{/unless}}">
+      {{#if sleepHours}}
+        {{sleepHours}} ore
+      {{else}}
+        Ore di sonno non presenti
+      {{/if}}
+    </div>
+  </div>
+
+  <div>
+    <div class="field-label">Stress Percepito:</div>
+    <div class="field-value{{#unless perceivedStress}} missing-field{{/unless}}">
+      {{#if perceivedStress}}
+        {{perceivedStress}} (scala 0-10)
+      {{else}}
+        Stress percepito non presente
+      {{/if}}
+    </div>
+  </div>
+
+  <div>
+    <div class="field-label">Ultimo Check-up Medico:</div>
+    <div class="field-value{{#unless lastMedicalCheckup}} missing-field{{/unless}}">
+      {{#if lastMedicalCheckup}}
+        {{lastMedicalCheckup}}
+      {{else}}
+        Ultimo check-up medico non presente
+      {{/if}}
+    </div>
+  </div>
+
+  <div>
+    <div class="field-label">Obiettivi Personali:</div>
+    <div class="field-value{{#unless personalGoals}} missing-field{{/unless}}">
+      {{#if personalGoals}}
+        {{personalGoals}}
+      {{else}}
+        Obiettivi personali non presenti
+      {{/if}}
+    </div>
+  </div>
+
+  <div>
+    <div class="field-label">Note:</div>
+    <div class="field-value{{#unless notes}} missing-field{{/unless}}">
+      {{#if notes}}
+        {{notes}}
+      {{else}}
+        Note non presenti
+      {{/if}}
+    </div>
+  </div>
+
+  <h3>Dati di Sistema</h3>
+  <div>
+    <div class="field-label">ID Utente:</div>
+    <div class="field-value{{#unless userId}} missing-field{{/unless}}">
+      {{#if userId}}
+        {{userId}}
+      {{else}}
+        ID Utente non presente
+      {{/if}}
+    </div>
+  </div>
+
+  <div>
+    <div class="field-label">Ultimo Accesso:</div>
+    <div class="field-value{{#unless lastLogin}} missing-field{{/unless}}">
+      {{#if lastLogin}}
+        {{lastLogin}}
+      {{else}}
+        Ultimo accesso non presente
+      {{/if}}
+    </div>
+  </div>
+
+  <div>
+    <div class="field-label">Creato il:</div>
+    <div class="field-value{{#unless createdAt}} missing-field{{/unless}}">
+      {{#if createdAt}}
+        {{createdAt}}
+      {{else}}
+        Data di creazione non presente
+      {{/if}}
+    </div>
+  </div>
 </div>
