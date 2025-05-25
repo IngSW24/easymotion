@@ -14,7 +14,7 @@ import React, { useState } from "react";
 
 import { usePatientProfile } from "../../hooks/usePatientProfile";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
-import { getCourseImageUrl, getStaticImageUrl } from "../../utils/format";
+import { getStaticImageUrl } from "../../utils/format";
 
 const style = {
   position: "absolute",

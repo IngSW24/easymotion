@@ -10,12 +10,11 @@ import {
   Typography,
   Grid,
   Button,
-  Tooltip,
 } from "@mui/material";
 import useSubscriptions from "../../hooks/useSubscription";
 import { useEffect, useState } from "react";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
-import { ArrowBack, Check, Close, Info, Search } from "@mui/icons-material";
+import { ArrowBack, Check, Close, Search } from "@mui/icons-material";
 import { SubscriptionDtoWithUser } from "@easymotion/openapi";
 import DeleteSubscribedUser from "./DeleteSubscribedUser";
 import ViewPatientMedicalHistory from "./ViewPatientMedicalHistory";
