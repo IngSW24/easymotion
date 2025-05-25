@@ -90,16 +90,20 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
               </Typography>
 
               <Grid container spacing={2} mb={3}>
-                <Grid mb={3} size={6}>
+                <Grid mb={3} size={5}>
                   <CardMedia
-                    sx={{ height: 180, width: 180, alignContent: "center" }}
+                    sx={{
+                      maxHeight: 360,
+                      maxWidth: 360,
+                      alignContent: "center",
+                    }}
                     component="img"
                     image={imageUrl}
                     onError={() => setImageUrl("/hero.jpg")}
                   />
                 </Grid>
 
-                <Grid mb={3} size={6}>
+                <Grid mb={3} size={7}>
                   <Box mb={3}>
                     <Typography variant="body1" align="left">
                       <b>Nome:</b>{" "}
@@ -145,57 +149,86 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
                       )}
                     </Typography>
                   </Box>
-                </Grid>
 
-                <Grid mb={3} size={6}>
+                  <Box mb={3}>
+                    <Typography variant="body1" align="left">
+                      <b>Email:</b>{" "}
+                      {!data?.data.email ? (
+                        <i style={{ fontStyle: "italic", color: "red" }}>
+                          dato mancante
+                        </i>
+                      ) : (
+                        <>{data?.data.email}</>
+                      )}
+                    </Typography>
+                  </Box>
+
+                  <Box mb={3}>
+                    <Typography variant="body1" align="left">
+                      <b>Numero di telefono:</b>{" "}
+                      {!data?.data.phoneNumber ? (
+                        <i style={{ fontStyle: "italic", color: "red" }}>
+                          dato mancante
+                        </i>
+                      ) : (
+                        <>{data?.data.phoneNumber}</>
+                      )}
+                    </Typography>
+                  </Box>
+
+                  <Box mb={3}>
+                    <Typography variant="body1" align="left">
+                      <b>Data di nascita:</b>{" "}
+                      {!data?.data.birthDate ? (
+                        <i style={{ fontStyle: "italic", color: "red" }}>
+                          dato mancante
+                        </i>
+                      ) : (
+                        <>{data?.data.birthDate}</>
+                      )}
+                    </Typography>
+                  </Box>
+
+                  <Box mb={3}>
+                    <Typography variant="body1" align="left">
+                      <b>Professione:</b>{" "}
+                      {!data?.data.profession ? (
+                        <i style={{ fontStyle: "italic", color: "red" }}>
+                          dato mancante
+                        </i>
+                      ) : (
+                        <>{data?.data.profession}</>
+                      )}
+                    </Typography>
+                  </Box>
+                </Grid>
+              </Grid>
+            </Box>
+
+            <Box mb={2} border={2} borderRadius={4} padding="20px">
+              <Typography
+                variant="h6"
+                component="h6"
+                sx={{ fontWeight: "bold", color: "blue" }}
+                mb={3}
+              >
+                Dati di sistema
+              </Typography>
+
+              <Grid container spacing={2} mb={3}>
+                <Grid size={12}>
                   <Typography variant="body1" align="left">
-                    <b>Email:</b>{" "}
-                    {!data?.data.email ? (
+                    <b>ID Utente:</b>{" "}
+                    {!data?.data.userId ? (
                       <i style={{ fontStyle: "italic", color: "red" }}>
                         dato mancante
                       </i>
                     ) : (
-                      <>{data?.data.email}</>
+                      <>{data?.data.userId}</>
                     )}
                   </Typography>
                 </Grid>
-                <Grid mb={3} size={6}>
-                  <Typography variant="body1" align="left">
-                    <b>Numero di telefono:</b>{" "}
-                    {!data?.data.phoneNumber ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.phoneNumber}</>
-                    )}
-                  </Typography>
-                </Grid>
-                <Grid mb={3} size={6}>
-                  <Typography variant="body1" align="left">
-                    <b>Data di nascita:</b>{" "}
-                    {!data?.data.birthDate ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.birthDate}</>
-                    )}
-                  </Typography>
-                </Grid>
-                <Grid mb={3} size={6}>
-                  <Typography variant="body1" align="left">
-                    <b>Professione:</b>{" "}
-                    {!data?.data.profession ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.profession}</>
-                    )}
-                  </Typography>
-                </Grid>
-                <Grid mb={3} size={12}>
+                <Grid size={12}>
                   <Typography variant="body1" align="left">
                     <b>Data ultimo accesso:</b>{" "}
                     {!data?.data.lastLogin ? (
@@ -211,7 +244,7 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
                     )}
                   </Typography>
                 </Grid>
-                <Grid mb={3} size={12}>
+                <Grid size={12}>
                   <Typography variant="body1" align="left">
                     <b>Data di creazione del profilo:</b>{" "}
                     {!data?.data.createdAt ? (
@@ -240,7 +273,20 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
                 Caratteristiche fisiche
               </Typography>
 
-              <Grid container spacing={5} mb={3}>
+              <Grid container spacing={2} mb={3}>
+                <Grid size={6}>
+                  <Typography variant="body1" align="left">
+                    <b>Altezza (in cm):</b>{" "}
+                    {!data?.data.height ? (
+                      <i style={{ fontStyle: "italic", color: "red" }}>
+                        dato mancante
+                      </i>
+                    ) : (
+                      <>{data?.data.height}</>
+                    )}
+                  </Typography>
+                </Grid>
+
                 <Grid size={6}>
                   <Typography variant="body1" align="left">
                     <b>Sesso:</b>{" "}
@@ -259,18 +305,7 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
                     )}
                   </Typography>
                 </Grid>
-                <Grid size={6}>
-                  <Typography variant="body1" align="left">
-                    <b>Altezza (in cm):</b>{" "}
-                    {!data?.data.height ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.height}</>
-                    )}
-                  </Typography>
-                </Grid>
+
                 <Grid size={6}>
                   <Typography variant="body1" align="left">
                     <b>Peso (in kg):</b>{" "}
@@ -444,7 +479,7 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
                 Patologie
               </Typography>
               <Grid container spacing={2} mb={3}>
-                <Grid size={6}>
+                <Grid size={12}>
                   <Typography variant="body1" align="left">
                     <b>Allergie:</b>{" "}
                     {!data?.data.allergies ? (
@@ -456,7 +491,7 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
                     )}
                   </Typography>
                 </Grid>
-                <Grid size={6}>
+                <Grid size={12}>
                   <Typography variant="body1" align="left">
                     <b>Altre patologie:</b>{" "}
                     {!data?.data.otherPathologies ? (
