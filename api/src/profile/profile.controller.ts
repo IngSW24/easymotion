@@ -17,6 +17,7 @@ import UseAuth from "src/auth/decorators/auth-with-role.decorator";
 import { AuthUserDto } from "src/auth/dto/auth-user/auth-user.dto";
 import { UpdateAuthUserDto } from "src/auth/dto/auth-user/update-auth-user.dto";
 import { ApiFileBody } from "src/common/decorators/api-file-body.decorator";
+import { plainToInstance } from "class-transformer";
 
 @Controller("profile")
 export class ProfileController {
@@ -47,7 +48,9 @@ export class ProfileController {
   updateUserProfile(@Req() req, @Body() updateProfileDto: UpdateAuthUserDto) {
     return this.profileService.updateUserProfile(
       req.user.sub,
-      updateProfileDto
+      plainToInstance(UpdateAuthUserDto, updateProfileDto, {
+        excludeExtraneousValues: true,
+      })
     );
   }
 
