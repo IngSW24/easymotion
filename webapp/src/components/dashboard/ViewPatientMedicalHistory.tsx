@@ -7,6 +7,7 @@ import {
   IconButton,
   Modal,
   Stack,
+  SxProps,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -16,7 +17,7 @@ import { usePatientProfile } from "../../hooks/usePatientProfile";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 import { getStaticImageUrl } from "../../utils/format";
 
-const style = {
+const style: SxProps = {
   position: "absolute",
   top: "50%",
   left: "50%",
@@ -37,10 +38,11 @@ export interface PatientDetailsProps {
   patientId: string;
 }
 
+// FIXME: 700+ lines of code, consider grouping similar data
 export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
   const { patientId } = props;
 
-  const { data, isLoading, isError } = usePatientProfile(patientId || "");
+  const { data, isLoading, isError } = usePatientProfile(patientId || ""); // FIXME: N+1 query issue, consider lazy-loading patient profile inside the modal
 
   const [imageUrl, setImageUrl] = useState(
     getStaticImageUrl(data?.data.picturePath || "/hero.jpg")
