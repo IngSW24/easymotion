@@ -18,6 +18,7 @@ import { ArrowBack, Check, Close, Search } from "@mui/icons-material";
 import { SubscriptionDtoWithUser } from "@easymotion/openapi";
 import DeleteSubscribedUser from "./DeleteSubscribedUser";
 import ViewPatientMedicalHistory from "./ViewPatientMedicalHistory";
+import DownloadPatientPDF from "./DownloadPatientPDF";
 
 enum CurrentState {
   "LOADING",
@@ -159,6 +160,8 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
 
             <Box>
               <ViewPatientMedicalHistory patientId={value.user.id} />
+
+              <DownloadPatientPDF userId={value.user.id} />
 
               <DeleteSubscribedUser
                 userId={value.user.id}
