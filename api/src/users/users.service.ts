@@ -216,26 +216,9 @@ export class UsersService {
     const profile = this.mapToProfile(PatientProfileDto, result);
 
     const template = await fs.readFile(
-      join(__dirname, "..", "..", "public", "medical_history.hbs")
+      join("dist", "public", "medical_history.hbs")
     );
-    const html = compile(template.toString())(profile);
-    return html;
-
-    /*await html2pdf.createPDF(html, {
-      format: "A4",
-      filePath: "output.pdf",
-      landscape: false,
-      resolution: {
-        width: 1920,
-        height: 1080,
-      },
-    });
-
-    return await createPdf(
-      join(process.cwd(), "views", "medical_history.hbs"),
-      {},
-      profile
-    );*/
+    return compile(template.toString())(profile);
   }
 
   /**
