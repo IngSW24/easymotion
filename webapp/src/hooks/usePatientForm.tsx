@@ -40,7 +40,7 @@ export const schema = z.object({
   notes: z.string().nullable().optional(),
 }) satisfies z.ZodType<Omit<PatientDto, "userId">>;
 
-export type FormData = z.infer<typeof schema>;
+export type PatientFormData = z.infer<typeof schema>;
 
 export const defaultData = {
   sex: null,
@@ -70,7 +70,7 @@ export interface UsePatientFormProps {
 }
 
 export const usePatientForm = (props: UsePatientFormProps) => {
-  const useFormProps = useForm<FormData>({
+  const useFormProps = useForm<PatientFormData>({
     resolver: zodResolver(schema),
     values: props.patient ?? defaultData,
   });
@@ -80,7 +80,7 @@ export const usePatientForm = (props: UsePatientFormProps) => {
     [props.patient, useFormProps.reset]
   );
 
-  const onSubmitEvent = (data: FormData) => {
+  const onSubmitEvent = (data: PatientFormData) => {
     props.onSave({ patient: data });
     useFormProps.reset(data);
   };
