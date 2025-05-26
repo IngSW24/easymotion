@@ -10,14 +10,14 @@ import {
   Typography,
   Grid,
   Button,
-  Tooltip,
 } from "@mui/material";
 import useSubscriptions from "../../hooks/useSubscription";
 import { useEffect, useState } from "react";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
-import { ArrowBack, Check, Close, Info, Search } from "@mui/icons-material";
+import { ArrowBack, Check, Close, Search } from "@mui/icons-material";
 import { SubscriptionDtoWithUser } from "@easymotion/openapi";
 import DeleteSubscribedUser from "./DeleteSubscribedUser";
+import ViewPatientMedicalHistory from "./ViewPatientMedicalHistory";
 
 enum CurrentState {
   "LOADING",
@@ -158,11 +158,8 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
             </Box>
 
             <Box>
-              <Tooltip title="Esamina cartella clinica del paziente">
-                <IconButton color="info">
-                  <Info fontSize="small" />
-                </IconButton>
-              </Tooltip>
+              <ViewPatientMedicalHistory patientId={value.user.id} />
+
               <DeleteSubscribedUser
                 userId={value.user.id}
                 courseId={value.course.id}
