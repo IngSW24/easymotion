@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from "uuid";
 import { PrismaService } from "nestjs-prisma";
 import { UpdateUserDto } from "./dto/user/update.user.dto";
 import { UserDto } from "./dto/user/user.dto";
+import { Roles } from "src/auth/decorators/roles.decorator";
 
 @Injectable()
 export class UserManager {
@@ -128,19 +129,41 @@ export class UserManager {
       throw new BadRequestException("Attempting to update wrong user type");
     }
 
-    const updateData: Prisma.UserUpdateInput = {
+    const baseUpdate: Omit<
+      Prisma.UserUpdateInput,
+      "physiotherapist" | "patient"
+    > = {
       ...data,
-      physiotherapist: {
-        update: data.physiotherapist,
-      },
-      patient: {
-        update: data.patient,
-      },
     };
+
+    let updateData: Prisma.UserUpdateInput = { ...baseUpdate };
+
+    if (user.role === Role.PHYSIOTHERAPIST && data.physiotherapist) {
+      updateData = {
+        ...updateData,
+        physiotherapist: {
+          update: data.physiotherapist,
+        },
+      };
+      delete updateData.patient;
+    }
+
+    if (user.role === Role.USER && data.patient) {
+      updateData = {
+        ...updateData,
+        patient: {
+          update: data.patient,
+        },
+      };
+      delete updateData.physiotherapist;
+    }
 
     return this.prisma.user.update({
       where: { id: user.id },
-      include: { patient: true, physiotherapist: true },
+      include: {
+        patient: true,
+        physiotherapist: true,
+      },
       data: updateData,
     });
   }
