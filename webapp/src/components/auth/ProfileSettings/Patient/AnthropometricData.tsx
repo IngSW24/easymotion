@@ -8,8 +8,6 @@ export interface AnthropometricDataProps
   title?: string;
 }
 
-// Dati anagrafici e antropometrici
-
 export default function AnthropometricData(props: AnthropometricDataProps) {
   const {
     register,
@@ -30,9 +28,11 @@ export default function AnthropometricData(props: AnthropometricDataProps) {
             name="sex"
             control={control}
             defaultValue={null}
-            render={({ field }) => (
+            render={({ field: { value, onChange, ...field } }) => (
               <TextField
                 {...field}
+                value={value || ""}
+                onChange={(e) => onChange(e.target.value || null)}
                 label="Sesso"
                 select
                 fullWidth
@@ -40,6 +40,7 @@ export default function AnthropometricData(props: AnthropometricDataProps) {
                 error={!!errors.sex}
                 helperText={errors.sex?.message}
               >
+                <MenuItem value="">Seleziona</MenuItem>
                 <MenuItem value="MALE">Maschio</MenuItem>
                 <MenuItem value="FEMALE">Femmina</MenuItem>
                 <MenuItem value="OTHER">Altro</MenuItem>

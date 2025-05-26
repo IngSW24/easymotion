@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Button,
   Dialog,
@@ -31,6 +31,7 @@ const steps = [
   "Storia Medica",
   "Stile di Vita",
   "Altri Dati",
+  "Completato",
 ];
 
 interface StepSectionProps {
@@ -111,6 +112,12 @@ function InternalPatientSettingsWizard(
   const [activeStep, setActiveStep] = useState(0);
   const patientForm = usePatientForm({ patient, onSave });
 
+  useEffect(() => {
+    if (open) {
+      setActiveStep(0);
+    }
+  }, [open]);
+
   const handleNext = () => {
     if (activeStep === steps.length - 1) {
       patientForm.handleSubmit(patientForm.onSubmitEvent)();
@@ -158,6 +165,8 @@ function InternalPatientSettingsWizard(
             <OtherData {...patientForm} />
           </StepSection>
         );
+      case 6:
+        return <CompletionStep />;
       default:
         return null;
     }
@@ -312,6 +321,34 @@ function WelcomeStep() {
             <strong>Altri Dati:</strong> note aggiuntive e obiettivi personali
           </Typography>
         </Box>
+      </Stack>
+    </StepSection>
+  );
+}
+
+function CompletionStep() {
+  return (
+    <StepSection title="Aggiornamento del profilo completato con successo!">
+      <Stack gap={3}>
+        <Typography variant="body1" color="text.primary">
+          Grazie per aver completato il tuo profilo! I tuoi dati sono stati
+          salvati con successo.
+        </Typography>
+        <Typography variant="body1" color="text.primary">
+          Potrai aggiornare le tue informazioni in qualsiasi momento:
+        </Typography>
+        <Box component="ul" sx={{ textAlign: "left", pl: 4 }}>
+          <Typography component="li" variant="body1" color="text.primary">
+            Dalla pagina del tuo profilo
+          </Typography>
+          <Typography component="li" variant="body1" color="text.primary">
+            Cliccando su "Aggiorna i tuoi dati" nel menu
+          </Typography>
+        </Box>
+        <Typography variant="body1" color="text.primary" sx={{ mt: 2 }}>
+          Mantenere aggiornate le tue informazioni ci aiuterà a fornirti
+          un'assistenza sempre più personalizzata.
+        </Typography>
       </Stack>
     </StepSection>
   );

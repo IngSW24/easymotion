@@ -29,7 +29,6 @@ import PhysiotherapistAppBar from "./headers/PhysiotherapistAppBar";
 import UserHeader from "./headers/UserHeaders";
 import SearchDialog from "../search/SearchDialog";
 import { useHotkeys } from "react-hotkeys-hook";
-import PatientSettingsWizard from "../auth/ProfileSettings/Patient/PatientSettingsWizard";
 
 export type MenuEntry = {
   label: string;
