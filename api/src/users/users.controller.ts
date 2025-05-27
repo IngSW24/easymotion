@@ -11,8 +11,14 @@ import {
   Inject,
   HttpException,
   Res,
+  UnauthorizedException,
 } from "@nestjs/common";
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiProduces,
+  ApiTags,
+} from "@nestjs/swagger";
 
 import { UsersService } from "./users.service";
 import { CreateUserDto } from "./dto/user/create-user.dto";
@@ -128,50 +134,54 @@ export class UsersController {
    * @returns
    */
   @Get("patient/medical_history/:id")
-  @ApiOkResponse({ type: File })
+  @ApiProduces("application/pdf")
   @SerializeOptions({ type: undefined })
   @UseAuth([Role.ADMIN, Role.PHYSIOTHERAPIST])
   async findMedicalHistory(@Param("id") id: string, @Res() res) {
-    const html = await this.usersService.findMedicalHistory(id);
+    try {
+      const html = await this.usersService.findMedicalHistory(id);
 
-    const formData = new FormData();
+      const formData = new FormData();
 
-    const instructions = await fs.readFile(
-      join("dist", "public", "pdf_instructions.json")
-    );
+      const instructions = await fs.readFile(
+        join("dist", "public", "pdf_instructions.json")
+      );
 
-    formData.append("Resource", Buffer.from(html), {
-      filename: "input.html",
-      contentType: "text/html",
-    });
-    formData.append("Instructions", instructions, {
-      filename: "instructions.json",
-      contentType: "application/json",
-    });
+      formData.append("Resource", Buffer.from(html), {
+        filename: "input.html",
+        contentType: "text/html",
+      });
+      formData.append("Instructions", instructions, {
+        filename: "instructions.json",
+        contentType: "application/json",
+      });
 
-    const outputPdf = await firstValueFrom(
-      this.httpService
-        .postForm("https://api.dpdf.io/v1.0/pdf", formData, {
-          headers: {
-            Authorization: "Bearer " + this.config.pdf_api_key,
-            ...formData.getHeaders(),
-          },
-          responseType: "arraybuffer",
-        })
-        .pipe(
-          catchError((e) => {
-            throw new HttpException(e.response.data, e.response.status);
+      const outputPdf = await firstValueFrom(
+        this.httpService
+          .postForm("https://api.dpdf.io/v1.0/pdf", formData, {
+            headers: {
+              Authorization: "Bearer " + this.config.pdf_api_key,
+              ...formData.getHeaders(),
+            },
+            responseType: "arraybuffer",
           })
-        )
-    );
+          .pipe(
+            catchError((e) => {
+              throw new HttpException(e.response.data, e.response.status);
+            })
+          )
+      );
 
-    res.set({
-      "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="MedicalHistory_${id}.pdf"`,
-      "Content-Length": outputPdf.data.length,
-    });
+      res.set({
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename="MedicalHistory_${id}.pdf"`,
+        "Content-Length": outputPdf.data.length,
+      });
 
-    res.end(outputPdf.data);
+      res.end(outputPdf.data);
+    } catch (e) {
+      throw new UnauthorizedException(e);
+    }
   }
 
   /**
