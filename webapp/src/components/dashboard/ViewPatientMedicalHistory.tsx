@@ -1,61 +1,96 @@
 import { Info } from "@mui/icons-material";
 import {
+  Avatar,
   Box,
   Button,
-  CardMedia,
   Grid,
   IconButton,
   Modal,
+  Paper,
   Stack,
   SxProps,
   Tooltip,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React from "react";
 
 import { usePatientProfile } from "../../hooks/usePatientProfile";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 import { getStaticImageUrl } from "../../utils/format";
 
-const style: SxProps = {
+const modalStyle: SxProps = {
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: "75%",
+  width: { xs: "95%", sm: "90%", md: "80%" },
+  maxHeight: "90vh",
   bgcolor: "background.paper",
   boxShadow: 24,
-  p: 4,
-  borderRadius: 1,
-  border: "4px solid #000",
-  justifyContent: "center",
-  alignItems: "center",
-  maxHeight: "calc(100vh)", // 80% of the viewport height minus padding
-  overflowY: "auto", // enables vertical scrolling
+  borderRadius: 2,
+  overflow: "auto",
+};
+
+const sectionStyle: SxProps = {
+  p: 3,
+  mb: 3,
+  borderRadius: 2,
+  border: "1px solid",
+  borderColor: "divider",
+};
+
+const sectionTitleStyle: SxProps = {
+  color: "primary.main",
+  fontWeight: 600,
+  mb: 3,
+  fontSize: { xs: "1.1rem", sm: "1.25rem" },
+};
+
+const fieldLabelStyle: SxProps = {
+  fontWeight: 600,
+  color: "text.secondary",
+};
+
+const fieldValueStyle: SxProps = {
+  color: "text.primary",
+};
+
+const missingDataStyle: SxProps = {
+  fontStyle: "italic",
+  color: "error.main",
 };
 
 export interface PatientDetailsProps {
   patientId: string;
 }
 
-// FIXME: 700+ lines of code, consider grouping similar data
 export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
   const { patientId } = props;
-
-  const { data, isLoading, isError } = usePatientProfile(patientId || ""); // FIXME: N+1 query issue, consider lazy-loading patient profile inside the modal
-
-  const [imageUrl, setImageUrl] = useState(
-    getStaticImageUrl(data?.data.picturePath || "/hero.jpg")
-  );
-
+  const { data, isLoading, isError } = usePatientProfile(patientId || "");
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   if (isLoading) return <LoadingSpinner />;
-
   if (isError || !data)
     return <Typography>Si è verificato un errore</Typography>;
+
+  const renderField = (label: string, value: any) => (
+    <Typography variant="body1" sx={{ mb: 2 }}>
+      <Box component="span" sx={fieldLabelStyle}>
+        {label}:
+      </Box>{" "}
+      {!value ? (
+        <Box component="span" sx={missingDataStyle}>
+          dato mancante
+        </Box>
+      ) : (
+        <Box component="span" sx={fieldValueStyle}>
+          {value}
+        </Box>
+      )}
+    </Typography>
+  );
 
   return (
     <>
@@ -69,637 +104,263 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
       >
-        <Box sx={style}>
-          <>
-            <Box mb={5}>
-              <Typography
-                variant="h5"
-                component="h2"
-                sx={{ fontWeight: "bold", color: "#094D95" }}
-              >
-                Anamnesi del paziente
-              </Typography>
-            </Box>
+        <Box sx={modalStyle}>
+          <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
+            <Typography
+              variant="h4"
+              component="h2"
+              sx={{ mb: 4, color: "primary.main", fontWeight: 600 }}
+            >
+              Anamnesi del paziente
+            </Typography>
 
-            <Box mb={2} border={2} borderRadius={4} padding="20px">
-              <Typography
-                variant="h6"
-                component="h6"
-                sx={{ fontWeight: "bold", color: "blue" }}
-                mb={3}
-              >
+            <Paper sx={sectionStyle}>
+              <Typography variant="h6" sx={sectionTitleStyle}>
                 Dati anagrafici
               </Typography>
-
-              <Grid container spacing={2} mb={3}>
-                <Grid mb={3} size={5}>
-                  <CardMedia
-                    sx={{
-                      maxHeight: 360,
-                      maxWidth: 360,
-                      alignContent: "center",
-                    }}
-                    component="img"
-                    image={imageUrl}
-                    onError={() => setImageUrl("/hero.jpg")}
-                  />
-                </Grid>
-
-                <Grid mb={3} size={7}>
-                  <Box mb={3}>
-                    <Typography variant="body1" align="left">
-                      <b>Nome:</b>{" "}
-                      {!data?.data.firstName ? (
-                        <i style={{ fontStyle: "italic", color: "red" }}>
-                          dato mancante
-                        </i>
-                      ) : (
-                        <>{data?.data.firstName}</>
-                      )}
-                    </Typography>
-                  </Box>
-
+              <Grid container spacing={3}>
+                <Grid size={{ xs: 12, md: 5 }}>
                   <Box
-                    mb={3}
-                    hidden={
-                      data?.data.middleName == null ||
-                      data?.data.middleName == undefined ||
-                      data?.data.middleName == ""
-                    }
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: 2,
+                      p: 2,
+                    }}
                   >
-                    <Typography variant="body1" align="left">
-                      <b>Secondo nome:</b>{" "}
-                      {!data?.data.middleName ? (
-                        <i style={{ fontStyle: "italic", color: "red" }}>
-                          dato mancante
-                        </i>
-                      ) : (
-                        <>{data?.data.middleName}</>
-                      )}
+                    <Avatar
+                      src={
+                        data.data.picturePath
+                          ? getStaticImageUrl(data.data.picturePath)
+                          : undefined
+                      }
+                      sx={{
+                        width: { xs: 120, sm: 160 },
+                        height: { xs: 120, sm: 160 },
+                        fontSize: { xs: "2.5rem", sm: "3rem" },
+                        bgcolor: "primary.main",
+                        boxShadow: 3,
+                      }}
+                    >
+                      {data.data.firstName.charAt(0).toUpperCase()}
+                      {data.data.lastName.charAt(0).toUpperCase()}
+                    </Avatar>
+                    <Typography
+                      variant="h6"
+                      sx={{ textAlign: "center", fontWeight: 600 }}
+                    >
+                      {data.data.firstName} {data.data.lastName}
                     </Typography>
                   </Box>
-
-                  <Box mb={3}>
-                    <Typography variant="body1" align="left">
-                      <b>Cognome:</b>{" "}
-                      {!data?.data.lastName ? (
-                        <i style={{ fontStyle: "italic", color: "red" }}>
-                          dato mancante
-                        </i>
-                      ) : (
-                        <>{data?.data.lastName}</>
-                      )}
-                    </Typography>
-                  </Box>
-
-                  <Box mb={3}>
-                    <Typography variant="body1" align="left">
-                      <b>Email:</b>{" "}
-                      {!data?.data.email ? (
-                        <i style={{ fontStyle: "italic", color: "red" }}>
-                          dato mancante
-                        </i>
-                      ) : (
-                        <>{data?.data.email}</>
-                      )}
-                    </Typography>
-                  </Box>
-
-                  <Box mb={3}>
-                    <Typography variant="body1" align="left">
-                      <b>Numero di telefono:</b>{" "}
-                      {!data?.data.phoneNumber ? (
-                        <i style={{ fontStyle: "italic", color: "red" }}>
-                          dato mancante
-                        </i>
-                      ) : (
-                        <>{data?.data.phoneNumber}</>
-                      )}
-                    </Typography>
-                  </Box>
-
-                  <Box mb={3}>
-                    <Typography variant="body1" align="left">
-                      <b>Data di nascita:</b>{" "}
-                      {!data?.data.birthDate ? (
-                        <i style={{ fontStyle: "italic", color: "red" }}>
-                          dato mancante
-                        </i>
-                      ) : (
-                        <>{data?.data.birthDate}</>
-                      )}
-                    </Typography>
-                  </Box>
-
-                  <Box mb={3}>
-                    <Typography variant="body1" align="left">
-                      <b>Professione:</b>{" "}
-                      {!data?.data.profession ? (
-                        <i style={{ fontStyle: "italic", color: "red" }}>
-                          dato mancante
-                        </i>
-                      ) : (
-                        <>{data?.data.profession}</>
-                      )}
-                    </Typography>
-                  </Box>
+                </Grid>
+                <Grid size={{ xs: 12, md: 7 }}>
+                  <Stack spacing={2}>
+                    {renderField("Nome", data.data.firstName)}
+                    {data.data.middleName &&
+                      renderField("Secondo nome", data.data.middleName)}
+                    {renderField("Cognome", data.data.lastName)}
+                    {renderField("Email", data.data.email)}
+                    {renderField("Numero di telefono", data.data.phoneNumber)}
+                    {renderField("Data di nascita", data.data.birthDate)}
+                    {renderField("Professione", data.data.profession)}
+                  </Stack>
                 </Grid>
               </Grid>
-            </Box>
+            </Paper>
 
-            <Box mb={2} border={2} borderRadius={4} padding="20px">
-              <Typography
-                variant="h6"
-                component="h6"
-                sx={{ fontWeight: "bold", color: "blue" }}
-                mb={3}
-              >
+            <Paper sx={sectionStyle}>
+              <Typography variant="h6" sx={sectionTitleStyle}>
                 Dati di sistema
               </Typography>
+              <Stack spacing={2}>
+                {renderField("ID Utente", data.data.userId)}
+                {renderField(
+                  "Data ultimo accesso",
+                  data.data.lastLogin
+                    ? `${new Date(data.data.lastLogin).toLocaleDateString()} alle ore ${new Date(
+                        data.data.lastLogin
+                      ).toLocaleTimeString()}`
+                    : null
+                )}
+                {renderField(
+                  "Data di creazione del profilo",
+                  data.data.createdAt
+                    ? `${new Date(data.data.createdAt).toLocaleDateString()} alle ore ${new Date(
+                        data.data.createdAt
+                      ).toLocaleTimeString()}`
+                    : null
+                )}
+              </Stack>
+            </Paper>
 
-              <Grid container spacing={2} mb={3}>
-                <Grid size={12}>
-                  <Typography variant="body1" align="left">
-                    <b>ID Utente:</b>{" "}
-                    {!data?.data.userId ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.userId}</>
-                    )}
-                  </Typography>
-                </Grid>
-                <Grid size={12}>
-                  <Typography variant="body1" align="left">
-                    <b>Data ultimo accesso:</b>{" "}
-                    {!data?.data.lastLogin ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>
-                        {new Date(data?.data.lastLogin).toLocaleDateString()}{" "}
-                        alle ore{" "}
-                        {new Date(data?.data.lastLogin).toLocaleTimeString()}
-                      </>
-                    )}
-                  </Typography>
-                </Grid>
-                <Grid size={12}>
-                  <Typography variant="body1" align="left">
-                    <b>Data di creazione del profilo:</b>{" "}
-                    {!data?.data.createdAt ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>
-                        {new Date(data?.data.createdAt).toLocaleDateString()}{" "}
-                        alle ore{" "}
-                        {new Date(data?.data.createdAt).toLocaleTimeString()}
-                      </>
-                    )}
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Box>
-
-            <Box mb={2} border={2} borderRadius={4} padding="20px">
-              <Typography
-                variant="h6"
-                component="h6"
-                sx={{ fontWeight: "bold", color: "blue" }}
-                mb={3}
-              >
+            <Paper sx={sectionStyle}>
+              <Typography variant="h6" sx={sectionTitleStyle}>
                 Caratteristiche fisiche
               </Typography>
-
-              <Grid container spacing={2} mb={3}>
-                <Grid size={6}>
-                  <Typography variant="body1" align="left">
-                    <b>Altezza (in cm):</b>{" "}
-                    {!data?.data.height ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.height}</>
-                    )}
-                  </Typography>
+              <Grid container spacing={3}>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  {renderField("Altezza (in cm)", data.data.height)}
                 </Grid>
-
-                <Grid size={6}>
-                  <Typography variant="body1" align="left">
-                    <b>Sesso:</b>{" "}
-                    {!data?.data.sex ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>
-                        {data?.data.sex == "FEMALE"
-                          ? "FEMMINA"
-                          : data?.data.sex == "MALE"
-                            ? "MASCHIO"
-                            : "ALTRO"}
-                      </>
-                    )}
-                  </Typography>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  {renderField(
+                    "Sesso",
+                    data.data.sex === "FEMALE"
+                      ? "FEMMINA"
+                      : data.data.sex === "MALE"
+                        ? "MASCHIO"
+                        : "ALTRO"
+                  )}
                 </Grid>
-
-                <Grid size={6}>
-                  <Typography variant="body1" align="left">
-                    <b>Peso (in kg):</b>{" "}
-                    {!data?.data.weight ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.weight}</>
-                    )}
-                  </Typography>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  {renderField("Peso (in kg)", data.data.weight)}
                 </Grid>
               </Grid>
-            </Box>
+            </Paper>
 
-            <Box mb={2} border={2} borderRadius={4} padding="20px">
-              <Typography
-                variant="h6"
-                component="h6"
-                sx={{ fontWeight: "bold", color: "blue" }}
-                mb={3}
-              >
+            <Paper sx={sectionStyle}>
+              <Typography variant="h6" sx={sectionTitleStyle}>
                 Dipendenze
               </Typography>
-
-              <Grid container spacing={2} mb={3}>
-                <Grid size={6}>
-                  <Typography variant="body1" align="left">
-                    <b>Fumatore:</b>{" "}
-                    {!data?.data.smoker ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.smoker ? "Sì" : "No"}</>
-                    )}
-                  </Typography>
+              <Grid container spacing={3}>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  {renderField("Fumatore", data.data.smoker ? "Sì" : "No")}
                 </Grid>
-                <Grid size={6}>
-                  <Typography variant="body1" align="left">
-                    <b>Consumo di alcol:</b>{" "}
-                    {!data?.data.alcoholUnits ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.alcoholUnits}</>
-                    )}
-                  </Typography>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  {renderField("Consumo di alcol", data.data.alcoholUnits)}
                 </Grid>
               </Grid>
-            </Box>
+            </Paper>
 
-            <Box mb={2} border={2} borderRadius={4} padding="20px">
-              <Typography
-                variant="h6"
-                component="h6"
-                sx={{ fontWeight: "bold", color: "blue" }}
-                mb={3}
-              >
+            <Paper sx={sectionStyle}>
+              <Typography variant="h6" sx={sectionTitleStyle}>
                 Attività fisiche
               </Typography>
-              <Grid container spacing={2} mb={3}>
-                <Grid size={6}>
-                  <Typography variant="body1" align="left">
-                    <b>Livello di attività:</b>{" "}
-                    {!data?.data.activityLevel ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>
-                        {data?.data.activityLevel == "LOW"
-                          ? "BASSO"
-                          : data?.data.activityLevel == "MEDIUM"
-                            ? "MEDIO"
-                            : "ALTO"}
-                      </>
-                    )}
-                  </Typography>
+              <Grid container spacing={3}>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  {renderField(
+                    "Livello di attività",
+                    data.data.activityLevel === "LOW"
+                      ? "BASSO"
+                      : data.data.activityLevel === "MEDIUM"
+                        ? "MEDIO"
+                        : "ALTO"
+                  )}
                 </Grid>
-                <Grid size={6}>
-                  <Typography variant="body1" align="left">
-                    <b>Livello di mobilità:</b>{" "}
-                    {!data?.data.mobilityLevel ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>
-                        {data?.data.mobilityLevel == "LIMITED"
-                          ? "LIMITATO"
-                          : data?.data.mobilityLevel == "MODERATE"
-                            ? "MODERATO"
-                            : "MASSIMO"}
-                      </>
-                    )}
-                  </Typography>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  {renderField(
+                    "Livello di mobilità",
+                    data.data.mobilityLevel === "LIMITED"
+                      ? "LIMITATO"
+                      : data.data.mobilityLevel === "MODERATE"
+                        ? "MODERATO"
+                        : "MASSIMO"
+                  )}
                 </Grid>
-                <Grid size={6}>
-                  <Typography variant="body1" align="left">
-                    <b>Sport:</b>{" "}
-                    {!data?.data.sport ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.sport}</>
-                    )}
-                  </Typography>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  {renderField("Sport", data.data.sport)}
                 </Grid>
-                <Grid size={6}>
-                  <Typography variant="body1" align="left">
-                    <b>Frequenza di sport:</b>{" "}
-                    {!data?.data.sportFrequency ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.sportFrequency}</>
-                    )}
-                  </Typography>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  {renderField("Frequenza di sport", data.data.sportFrequency)}
                 </Grid>
               </Grid>
-            </Box>
+            </Paper>
 
-            <Box mb={2} border={2} borderRadius={4} padding="20px">
-              <Typography
-                variant="h6"
-                component="h6"
-                sx={{ fontWeight: "bold", color: "blue" }}
-                mb={3}
-              >
+            <Paper sx={sectionStyle}>
+              <Typography variant="h6" sx={sectionTitleStyle}>
                 Dati cardiaci
               </Typography>
-              <Grid container spacing={2} mb={3}>
-                <Grid size={6}>
-                  <Typography variant="body1" align="left">
-                    <b>Resting heart rate:</b>{" "}
-                    {!data?.data.restingHeartRate ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.restingHeartRate}</>
-                    )}
-                  </Typography>
+              <Grid container spacing={3}>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  {renderField(
+                    "Resting heart rate",
+                    data.data.restingHeartRate
+                  )}
                 </Grid>
-                <Grid size={6}>
-                  <Typography variant="body1" align="left">
-                    <b>Pressione del sangue:</b>{" "}
-                    {!data?.data.bloodPressure ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.bloodPressure}</>
-                    )}
-                  </Typography>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  {renderField("Pressione del sangue", data.data.bloodPressure)}
                 </Grid>
               </Grid>
-            </Box>
+            </Paper>
 
-            <Box mb={2} border={2} borderRadius={4} padding="20px">
-              <Typography
-                variant="h6"
-                component="h6"
-                sx={{ fontWeight: "bold", color: "blue" }}
-                mb={3}
-              >
+            <Paper sx={sectionStyle}>
+              <Typography variant="h6" sx={sectionTitleStyle}>
                 Patologie
               </Typography>
-              <Grid container spacing={2} mb={3}>
-                <Grid size={12}>
-                  <Typography variant="body1" align="left">
-                    <b>Allergie:</b>{" "}
-                    {!data?.data.allergies ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.allergies}</>
-                    )}
-                  </Typography>
-                </Grid>
-                <Grid size={12}>
-                  <Typography variant="body1" align="left">
-                    <b>Altre patologie:</b>{" "}
-                    {!data?.data.otherPathologies ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.otherPathologies}</>
-                    )}
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Box>
+              <Stack spacing={2}>
+                {renderField("Allergie", data.data.allergies)}
+                {renderField("Altre patologie", data.data.otherPathologies)}
+              </Stack>
+            </Paper>
 
-            <Box mb={2} border={2} borderRadius={4} padding="20px">
-              <Typography
-                variant="h6"
-                component="h6"
-                sx={{ fontWeight: "bold", color: "blue" }}
-                mb={3}
-              >
-                Medicazioni
+            <Paper sx={sectionStyle}>
+              <Typography variant="h6" sx={sectionTitleStyle}>
+                Medicinali e checkup medico
               </Typography>
-              <Grid container spacing={2} mb={3}>
-                <Grid size={6}>
-                  <Typography variant="body1" align="left">
-                    <b>Medicazioni:</b>{" "}
-                    {!data?.data.medications ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.medications}</>
-                    )}
-                  </Typography>
+              <Grid container spacing={3}>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  {renderField("Farmaci in uso", data.data.medications)}
                 </Grid>
-                <Grid size={6}>
-                  <Typography variant="body1" align="left">
-                    <b>Zona del dolore:</b>{" "}
-                    {!data?.data.painZone ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.painZone}</>
-                    )}
-                  </Typography>
-                </Grid>
-                <Grid size={6}>
-                  <Typography variant="body1" align="left">
-                    <b>Intensità del dolore:</b>{" "}
-                    {!data?.data.painIntensity ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.painIntensity}</>
-                    )}
-                  </Typography>
-                </Grid>
-                <Grid size={6}>
-                  <Typography variant="body1" align="left">
-                    <b>Frequenza del dolore:</b>{" "}
-                    {!data?.data.painFrequency ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.painFrequency}</>
-                    )}
-                  </Typography>
-                </Grid>
-                <Grid size={6}>
-                  <Typography variant="body1" align="left">
-                    <b>Caratteristiche del dolore:</b>{" "}
-                    {!data?.data.painCharacteristics ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.painCharacteristics}</>
-                    )}
-                  </Typography>
-                </Grid>
-                <Grid size={6}>
-                  <Typography variant="body1" align="left">
-                    <b>Data ultimo checkup:</b>{" "}
-                    {!data?.data.lastMedicalCheckup ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.lastMedicalCheckup}</>
-                    )}
-                  </Typography>
-                </Grid>
-                <Grid size={12}>
-                  <Typography variant="body1" align="left">
-                    <b>Aspetti che cambiano l'intensità del dolore:</b>{" "}
-                    {!data?.data.painModifiers ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.painModifiers}</>
-                    )}
-                  </Typography>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  {renderField(
+                    "Data ultimo checkup",
+                    data.data.lastMedicalCheckup
+                  )}
                 </Grid>
               </Grid>
-            </Box>
+            </Paper>
 
-            <Box mb={2} border={2} borderRadius={4} padding="20px">
-              <Typography
-                variant="h6"
-                component="h6"
-                sx={{ fontWeight: "bold", color: "blue" }}
-                mb={3}
-              >
+            <Paper sx={sectionStyle}>
+              <Typography variant="h6" sx={sectionTitleStyle}>
                 Tempo di riposo e livello di stress
               </Typography>
-              <Grid container spacing={2} mb={3}>
-                <Grid size={6}>
-                  <Typography variant="body1" align="left">
-                    <b>Ore di riposo:</b>{" "}
-                    {!data?.data.sleepHours ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.sleepHours}</>
-                    )}
-                  </Typography>
-                </Grid>
-                <Grid size={6}>
-                  <Typography variant="body1" align="left">
-                    <b>Stress percepito:</b>{" "}
-                    {!data?.data.perceivedStress ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.perceivedStress}</>
-                    )}
-                  </Typography>
+              <Grid container spacing={3}>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  {renderField("Ore di riposo", data.data.sleepHours)}
                 </Grid>
               </Grid>
-            </Box>
+            </Paper>
 
-            <Box mb={2} border={2} borderRadius={4} padding="20px">
-              <Typography
-                variant="h6"
-                component="h6"
-                sx={{ fontWeight: "bold", color: "blue" }}
-                mb={3}
-              >
+            <Paper sx={sectionStyle}>
+              <Typography variant="h6" sx={sectionTitleStyle}>
                 Obiettivi personali del paziente
               </Typography>
-              <Grid container spacing={2} mb={3}>
-                <Grid size={6}>
-                  <Typography variant="body1" align="left">
-                    {!data?.data.personalGoals ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.personalGoals}</>
-                    )}
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Box>
+              <Typography variant="body1" sx={fieldValueStyle}>
+                {data.data.personalGoals || (
+                  <Box component="span" sx={missingDataStyle}>
+                    dato mancante
+                  </Box>
+                )}
+              </Typography>
+            </Paper>
 
-            <Box mb={2} border={2} borderRadius={4} padding="20px">
-              <Typography
-                variant="h6"
-                component="h6"
-                sx={{ fontWeight: "bold", color: "blue" }}
-                mb={3}
-              >
+            <Paper sx={sectionStyle}>
+              <Typography variant="h6" sx={sectionTitleStyle}>
                 Note
               </Typography>
-              <Grid container spacing={2} mb={3}>
-                <Grid>
-                  <Typography variant="body1" align="left">
-                    {!data?.data.notes ? (
-                      <i style={{ fontStyle: "italic", color: "red" }}>
-                        dato mancante
-                      </i>
-                    ) : (
-                      <>{data?.data.notes}</>
-                    )}
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Box>
+              <Typography variant="body1" sx={fieldValueStyle}>
+                {data.data.notes || (
+                  <Box component="span" sx={missingDataStyle}>
+                    dato mancante
+                  </Box>
+                )}
+              </Typography>
+            </Paper>
 
-            <Stack
-              direction={"row"}
-              spacing={2}
-              sx={{ justifyContent: "right", marginTop: 3 }}
-            >
-              <Button variant="contained" onClick={handleClose}>
+            <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
+              <Button
+                variant="contained"
+                onClick={handleClose}
+                sx={{
+                  borderRadius: 2,
+                  textTransform: "none",
+                  px: 3,
+                }}
+              >
                 Chiudi
               </Button>
-            </Stack>
-          </>
+            </Box>
+          </Box>
         </Box>
       </Modal>
     </>

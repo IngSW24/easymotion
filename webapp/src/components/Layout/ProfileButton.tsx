@@ -10,9 +10,16 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "@easymotion/auth-context";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Explore, Logout, Settings, SpaceDashboard } from "@mui/icons-material";
+import {
+  Explore,
+  Logout,
+  Refresh,
+  Settings,
+  SpaceDashboard,
+} from "@mui/icons-material";
 import { AuthUserDto } from "@easymotion/openapi";
 import ProfileAvatar from "./ProfileAvatar";
+import { useMedicalHistoryContext } from "../../hooks/useMedicalHistoryContext";
 
 type ProfileButtonActionProps = {
   label: string;
@@ -25,6 +32,7 @@ export default function ProfileButton() {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const navigate = useNavigate();
   const auth = useAuth();
+  const medicalHistoryContext = useMedicalHistoryContext();
 
   const isProfileButtonActionShowed = (
     role: string | undefined,
@@ -51,6 +59,12 @@ export default function ProfileButton() {
       label: "Scopri i corsi",
       icon: <Explore />,
       action: () => navigate("/discover"),
+    },
+    {
+      label: "Aggiorna i tuoi dati",
+      icon: <Refresh />,
+      action: () => medicalHistoryContext.openDialog(),
+      targetRoles: ["USER"],
     },
     {
       label: "Impostazioni",

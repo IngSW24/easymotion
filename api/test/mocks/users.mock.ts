@@ -89,13 +89,7 @@ export const userDtoMock = (): UserDto => ({
     medications: "",
     allergies: "",
     otherPathologies: "",
-    painZone: "",
-    painIntensity: 0,
-    painFrequency: "CONSTANT",
-    painCharacteristics: "",
-    painModifiers: "",
     sleepHours: 8,
-    perceivedStress: 0,
     personalGoals: "",
   },
 });
