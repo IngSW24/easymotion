@@ -1299,14 +1299,7 @@
         ],
         "responses": {
           "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/File"
-                }
-              }
-            }
+            "description": ""
           }
         },
         "security": [
@@ -3747,10 +3740,6 @@
           "createdAt",
           "picturePath"
         ]
-      },
-      "File": {
-        "type": "object",
-        "properties": {}
       },
       "CreateUserDto": {
         "type": "object",
