@@ -1,6 +1,7 @@
-import { IconButton, Tooltip } from "@mui/material";
+import { CircularProgress, IconButton, Tooltip } from "@mui/material";
 import { Download } from "@mui/icons-material";
 import { useApiClient } from "@easymotion/auth-context";
+import { useState } from "react";
 
 export interface DownloadPatientPDFProps {
   userId: string;
@@ -8,8 +9,11 @@ export interface DownloadPatientPDFProps {
 
 export default function DownloadPatientPDF(props: DownloadPatientPDFProps) {
   const { apiClient } = useApiClient();
+  const [isDownloading, setIsDownloading] = useState<boolean>(false);
 
   const downloadPDF = async () => {
+    setIsDownloading(true);
+
     const response = await apiClient.users.usersControllerFindMedicalHistory(
       props.userId
     );
@@ -41,13 +45,19 @@ export default function DownloadPatientPDF(props: DownloadPatientPDFProps) {
     // Rimuovi l'elemento <a> e revoca l'URL del Blob per liberare memoria
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
+
+    setIsDownloading(false);
   };
 
   return (
     <Tooltip title="Scarica cartella clinica">
-      <IconButton onClick={downloadPDF}>
-        <Download fontSize="small" />
-      </IconButton>
+      {isDownloading ? (
+        <CircularProgress />
+      ) : (
+        <IconButton onClick={downloadPDF}>
+          <Download fontSize="small" />
+        </IconButton>
+      )}
     </Tooltip>
   );
 }

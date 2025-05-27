@@ -225,13 +225,7 @@ describe("AuthService - validateUser", () => {
         medications: "",
         allergies: "",
         otherPathologies: "",
-        painZone: "",
-        painIntensity: 0,
-        painFrequency: "",
-        painCharacteristics: "",
-        painModifiers: "",
         sleepHours: 8,
-        perceivedStress: 0,
         personalGoals: "",
       },
     };

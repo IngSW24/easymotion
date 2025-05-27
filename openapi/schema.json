@@ -3653,40 +3653,10 @@
             "nullable": true,
             "description": "Other concomitant pathologies"
           },
-          "painZone": {
-            "type": "string",
-            "nullable": true,
-            "description": "Pain zone"
-          },
-          "painIntensity": {
-            "type": "number",
-            "nullable": true,
-            "description": "Pain intensity"
-          },
-          "painFrequency": {
-            "type": "string",
-            "nullable": true,
-            "description": "Pain frequency"
-          },
-          "painCharacteristics": {
-            "type": "string",
-            "nullable": true,
-            "description": "Pain characteristics"
-          },
-          "painModifiers": {
-            "type": "string",
-            "nullable": true,
-            "description": "Aspects that modify the intensity of pain"
-          },
           "sleepHours": {
             "type": "number",
             "nullable": true,
             "description": "Sleep hours"
-          },
-          "perceivedStress": {
-            "type": "number",
-            "nullable": true,
-            "description": "Perceived stress"
           },
           "lastMedicalCheckup": {
             "format": "date-time",
@@ -4000,40 +3970,10 @@
             "nullable": true,
             "description": "Other concomitant pathologies"
           },
-          "painZone": {
-            "type": "string",
-            "nullable": true,
-            "description": "Pain zone"
-          },
-          "painIntensity": {
-            "type": "number",
-            "nullable": true,
-            "description": "Pain intensity"
-          },
-          "painFrequency": {
-            "type": "string",
-            "nullable": true,
-            "description": "Pain frequency"
-          },
-          "painCharacteristics": {
-            "type": "string",
-            "nullable": true,
-            "description": "Pain characteristics"
-          },
-          "painModifiers": {
-            "type": "string",
-            "nullable": true,
-            "description": "Aspects that modify the intensity of pain"
-          },
           "sleepHours": {
             "type": "number",
             "nullable": true,
             "description": "Sleep hours"
-          },
-          "perceivedStress": {
-            "type": "number",
-            "nullable": true,
-            "description": "Perceived stress"
           },
           "lastMedicalCheckup": {
             "format": "date-time",
@@ -4329,40 +4269,10 @@
             "nullable": true,
             "description": "Other concomitant pathologies"
           },
-          "painZone": {
-            "type": "string",
-            "nullable": true,
-            "description": "Pain zone"
-          },
-          "painIntensity": {
-            "type": "number",
-            "nullable": true,
-            "description": "Pain intensity"
-          },
-          "painFrequency": {
-            "type": "string",
-            "nullable": true,
-            "description": "Pain frequency"
-          },
-          "painCharacteristics": {
-            "type": "string",
-            "nullable": true,
-            "description": "Pain characteristics"
-          },
-          "painModifiers": {
-            "type": "string",
-            "nullable": true,
-            "description": "Aspects that modify the intensity of pain"
-          },
           "sleepHours": {
             "type": "number",
             "nullable": true,
             "description": "Sleep hours"
-          },
-          "perceivedStress": {
-            "type": "number",
-            "nullable": true,
-            "description": "Perceived stress"
           },
           "lastMedicalCheckup": {
             "format": "date-time",

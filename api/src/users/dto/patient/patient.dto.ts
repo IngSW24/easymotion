@@ -119,50 +119,11 @@ export class PatientDto implements Patient {
   @Expose()
   otherPathologies: string | null;
 
-  @ApiProperty({ description: "Pain zone", required: false })
-  @IsString()
-  @IsOptional()
-  @Expose()
-  painZone: string | null;
-
-  @ApiProperty({ description: "Pain intensity", required: false })
-  @IsNumber()
-  @IsOptional()
-  @Expose()
-  painIntensity: number | null;
-
-  @ApiProperty({ description: "Pain frequency", required: false })
-  @IsString()
-  @IsOptional()
-  @Expose()
-  painFrequency: string | null;
-
-  @ApiProperty({ description: "Pain characteristics", required: false })
-  @IsString()
-  @IsOptional()
-  @Expose()
-  painCharacteristics: string | null;
-
-  @ApiProperty({
-    description: "Aspects that modify the intensity of pain",
-    required: false,
-  })
-  @IsString()
-  @IsOptional()
-  @Expose()
-  painModifiers: string | null;
-
   @ApiProperty({ description: "Sleep hours", required: false })
   @IsNumber()
   @IsOptional()
   @Expose()
   sleepHours: number | null;
-
-  @ApiProperty({ description: "Perceived stress", required: false })
-  @IsNumber()
-  @IsOptional()
-  @Expose()
-  perceivedStress: number | null;
 
   @ApiProperty({ description: "Last medical checkup", required: false })
   @IsDate()

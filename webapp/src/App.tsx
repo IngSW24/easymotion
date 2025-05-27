@@ -11,6 +11,7 @@ import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
 import { ErrorBoundary } from "react-error-boundary";
 import { GlobalErrorFallback } from "./components/fallbacks/GlobalErrorFallback";
 import { Settings } from "luxon";
+import MedicalHistoryContextProvider from "./context/MedicalHistoryContext/MedicalHistoryContextProvider";
 
 // Set the default luxon locale to Italian
 Settings.defaultLocale = "it";
@@ -36,15 +37,17 @@ export default function App() {
         <AuthContextProvider apiBaseUrl={import.meta.env.VITE_API_URL}>
           <QueryClientProvider client={queryClient}>
             <DialogContextProvider>
-              <SnackbarProvider
-                action={(snackbarKey) => (
-                  <SnackbarCloseButton snackbarKey={snackbarKey} />
-                )}
-              >
-                <ErrorBoundary FallbackComponent={GlobalErrorFallback}>
-                  <Router />
-                </ErrorBoundary>
-              </SnackbarProvider>
+              <MedicalHistoryContextProvider>
+                <SnackbarProvider
+                  action={(snackbarKey) => (
+                    <SnackbarCloseButton snackbarKey={snackbarKey} />
+                  )}
+                >
+                  <ErrorBoundary FallbackComponent={GlobalErrorFallback}>
+                    <Router />
+                  </ErrorBoundary>
+                </SnackbarProvider>
+              </MedicalHistoryContextProvider>
             </DialogContextProvider>
             <ReactQueryDevtools buttonPosition="bottom-left" />
           </QueryClientProvider>
