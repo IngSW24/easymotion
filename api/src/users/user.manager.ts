@@ -6,12 +6,10 @@ import {
 import { Prisma, Role } from "@prisma/client";
 import * as argon2 from "argon2";
 import { DateTime } from "luxon";
-import { randomBytes, randomInt } from "node:crypto";
-import { v4 as uuidv4 } from "uuid";
+import { randomBytes, randomInt, randomUUID } from "node:crypto";
 import { PrismaService } from "nestjs-prisma";
 import { UpdateUserDto } from "./dto/user/update.user.dto";
 import { UserDto } from "./dto/user/user.dto";
-import { Roles } from "src/auth/decorators/roles.decorator";
 
 @Injectable()
 export class UserManager {
@@ -303,7 +301,7 @@ export class UserManager {
    * @returns A promise that resolves to the generated confirmation token.
    */
   async generateEmailConfirmationToken(userId: string): Promise<string> {
-    const confirmationToken = uuidv4();
+    const confirmationToken = randomUUID();
     const expiryDate = DateTime.now().plus({ days: 1 }).toJSDate();
 
     const updatedUser = await this.prisma.user.update({
