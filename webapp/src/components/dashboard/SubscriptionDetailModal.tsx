@@ -1,4 +1,11 @@
-import { Box, Button, IconButton, Modal, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  IconButton,
+  Modal,
+  SxProps,
+  Typography,
+} from "@mui/material";
 import { Check, Close } from "@mui/icons-material";
 import { SubscriptionDtoWithUser } from "@easymotion/openapi";
 
@@ -12,7 +19,7 @@ export interface SubscriptionDetailsProps {
   onDecline?: (userId: string) => void;
 }
 
-const style = {
+const style: SxProps = {
   position: "absolute",
   top: "50%",
   left: "50%",
@@ -27,7 +34,7 @@ const style = {
   overflowY: "auto",
 };
 
-const headerStyle = {
+const headerStyle: SxProps = {
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
