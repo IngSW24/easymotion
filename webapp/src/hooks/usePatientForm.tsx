@@ -75,10 +75,10 @@ export const usePatientForm = (props: UsePatientFormProps) => {
     values: props.patient ?? defaultData,
   });
 
-  useEffect(
-    () => useFormProps.reset({ ...props.patient }, { keepDirty: false }),
-    [props.patient, useFormProps.reset]
-  );
+  useEffect(() => {
+    console.log("RESET");
+    useFormProps.reset({ ...props.patient }, { keepDirty: false });
+  }, [props.patient, useFormProps]);
 
   const onSubmitEvent = (data: PatientFormData) => {
     props.onSave({ patient: data });
