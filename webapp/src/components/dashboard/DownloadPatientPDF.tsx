@@ -24,7 +24,7 @@ export default function DownloadPatientPDF(props: DownloadPatientPDFProps) {
     // Estrai il nome del file dall'header Content-Disposition se presente
     // Altrimenti usa un nome predefinito
     const contentDisposition = response.headers.get("Content-Disposition");
-    let filename = "downloaded_file"; // Nome di default
+    let filename = "MedicalHistory.pdf"; // Nome di default
     if (contentDisposition) {
       const filenameMatch = contentDisposition.match(/filename="([^"]+)"/);
       if (filenameMatch && filenameMatch[1]) {
