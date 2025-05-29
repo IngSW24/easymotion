@@ -1,20 +1,20 @@
-import {
-  AppBar,
-  Avatar,
-  Box,
-  Drawer,
-  IconButton,
-  Paper,
-  TextField,
-  Toolbar,
-  Typography,
-  Grid,
-  Button,
-} from "@mui/material";
+import AppBar from "@mui/material/AppBar";
+import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import Drawer from "@mui/material/Drawer";
+import IconButton from "@mui/material/IconButton";
+import Paper from "@mui/material/Paper";
+import TextField from "@mui/material/TextField";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import Button from "@mui/material/Button";
 import useSubscriptions from "../../hooks/useSubscription";
 import { useEffect, useState } from "react";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
-import { ArrowBack, Check, Search } from "@mui/icons-material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import InfoIcon from "@mui/icons-material/Info";
+import SearchIcon from "@mui/icons-material/Search";
 import { SubscriptionDtoWithUser } from "@easymotion/openapi";
 import DeleteSubscribedUser from "./DeleteSubscribedUser";
 import SubscriptionDetailsModal from "./SubscriptionDetailModal";
@@ -243,7 +243,7 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
           size="small"
           variant="contained"
           color="primary"
-          startIcon={<Check />}
+          startIcon={<InfoIcon />}
           sx={{ flex: 1 }}
           onClick={() => handleOpenSubscriptionDetails(value)}
         >
@@ -291,7 +291,7 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
             onClick={() => onClose()}
             aria-label="close"
           >
-            <ArrowBack />
+            <ArrowBackIcon />
           </IconButton>
           <Typography
             variant="h6"
@@ -338,7 +338,7 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
               </Typography>
               <Paper sx={{ p: 1, mb: 3 }}>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
-                  <Search sx={{ color: "action.active", mr: 1 }} />
+                  <SearchIcon sx={{ color: "action.active", mr: 1 }} />
                   <TextField
                     variant="standard"
                     placeholder="Cerca utente..."
