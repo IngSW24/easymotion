@@ -145,14 +145,18 @@ describe("SubscriptionsController", () => {
       const req = { user: { sub: "1" } };
       const subscriptionRequestDto: SubscriptionRequestDto = {
         courseId: "course-1",
-        subscriptionRequestMessage: "",
+        subscriptionRequestMessage: "MSG1",
       };
 
       await controller.sendSubscriptionRequest(subscriptionRequestDto, req);
 
       expect(
         subscriptionServiceMockup.createSubscriptionRequest
-      ).toHaveBeenCalledWith(req.user.sub, subscriptionRequestDto.courseId);
+      ).toHaveBeenCalledWith(
+        req.user.sub,
+        subscriptionRequestDto.courseId,
+        subscriptionRequestDto.subscriptionRequestMessage
+      );
     });
   });
 

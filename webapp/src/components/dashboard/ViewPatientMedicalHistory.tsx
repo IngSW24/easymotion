@@ -75,7 +75,10 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
   if (isError || !data)
     return <Typography>Si è verificato un errore</Typography>;
 
-  const renderField = (label: string, value: any) => (
+  const renderField = (
+    label: string,
+    value: string | number | null | undefined
+  ) => (
     <Typography variant="body1" sx={{ mb: 2 }}>
       <Box component="span" sx={fieldLabelStyle}>
         {label}:

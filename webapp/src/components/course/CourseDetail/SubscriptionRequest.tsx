@@ -24,12 +24,12 @@ const style = {
   borderRadius: 1,
   justifyContent: "center",
   alignItems: "center",
-  maxHeight: "calc(100vh)", // 80% of the viewport height minus padding
-  overflowY: "auto", // enables vertical scrolling
+  maxHeight: "calc(100vh)",
+  overflowY: "auto",
 };
 
 export interface CourseDetailProps {
-  courseId?: string;
+  courseId: string;
   userId?: string;
   numberSubscribers: number;
   startSubscriptionDate: number;
@@ -73,7 +73,7 @@ export default function SubscriptionRequest(props: CourseDetailProps) {
 
   const handleSubscriptionRequest = async () => {
     request2Subscribe.mutateAsync({
-      courseId: courseId || "",
+      courseId: courseId,
       subscriptionRequestMessage: textLetter,
     });
     setIsReqSended(true);
@@ -294,7 +294,7 @@ export default function SubscriptionRequest(props: CourseDetailProps) {
                   </Typography>
                 </Box>
                 <Typography color="text.secondary" fontSize={13}>
-                  * I campi contrassegnati da asterisco sono abbligatori
+                  * I campi contrassegnati da asterisco sono obbligatori
                 </Typography>
               </>
             ) : differenceInMinutes() <= 0 ? (

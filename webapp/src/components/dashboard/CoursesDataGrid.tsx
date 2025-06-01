@@ -1,15 +1,16 @@
 import { CourseDto } from "@easymotion/openapi";
-import { Article, Delete, Edit, Group } from "@mui/icons-material";
-import {
-  IconButton,
-  Stack,
-  Tooltip,
-  Box,
-  Typography,
-  Chip,
-  useTheme,
-  useMediaQuery,
-} from "@mui/material";
+import Article from "@mui/icons-material/Article";
+import Delete from "@mui/icons-material/Delete";
+import Edit from "@mui/icons-material/Edit";
+import Group from "@mui/icons-material/Group";
+import IconButton from "@mui/material/IconButton";
+import Stack from "@mui/material/Stack";
+import Tooltip from "@mui/material/Tooltip";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Chip from "@mui/material/Chip";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { useState, useMemo } from "react";
 
@@ -181,6 +182,7 @@ const createColumns = (
           <Tooltip title="Elimina">
             <IconButton
               size="small"
+              color="error"
               onClick={(event) => {
                 event.stopPropagation();
                 onDelete(params.row.courseId);
