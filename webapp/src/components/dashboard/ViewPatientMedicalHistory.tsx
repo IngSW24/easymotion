@@ -83,7 +83,7 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
       <Box component="span" sx={fieldLabelStyle}>
         {label}:
       </Box>{" "}
-      {!value ? (
+      {value === null || value === undefined || value === "" ? (
         <Box component="span" sx={missingDataStyle}>
           dato mancante
         </Box>
@@ -242,7 +242,7 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
               <Grid container spacing={3}>
                 <Grid size={{ xs: 12, sm: 6 }}>
                   {renderField(
-                    "Livello di attività",
+                    "Livello di difficoltà a svolgere attività",
                     data.data.activityLevel === "LOW"
                       ? "BASSO"
                       : data.data.activityLevel === "MEDIUM"
