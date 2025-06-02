@@ -83,7 +83,7 @@ export default function ViewPatientMedicalHistory(props: PatientDetailsProps) {
       <Box component="span" sx={fieldLabelStyle}>
         {label}:
       </Box>{" "}
-      {!value ? (
+      {value === null || value === undefined ? (
         <Box component="span" sx={missingDataStyle}>
           dato mancante
         </Box>
