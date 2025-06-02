@@ -194,11 +194,11 @@
       <div class="column-item">
         <div class="field-group">
           <div class="field-label">Fumatore:</div>
-          <div class="field-value{{#unless smoker}} missing-field{{/unless}}">
+          <div class="field-value">
             {{#if smoker}}
               Sì
             {{else}}
-              Informazione fumatore non presente
+              No
             {{/if}}
           </div>
         </div>
@@ -217,12 +217,12 @@
       </div>
       <div class="column-item">
         <div class="field-group">
-          <div class="field-label">Livello di Attività:</div>
+          <div class="field-label">Livello di difficoltà a svolgere attività:</div>
           <div class="field-value{{#unless activityLevel}} missing-field{{/unless}}">
             {{#if activityLevel}}
               {{activityLevel}}
             {{else}}
-              Livello di attività non presente
+              Livello di difficoltà a svolgere attività non presente
             {{/if}}
           </div>
         </div>
@@ -294,7 +294,7 @@
             {{#if sportFrequency}}
               {{sportFrequency}} volte a settimana
             {{else}}
-              Frequenza sportiva non presente
+              0
             {{/if}}
           </div>
         </div>
