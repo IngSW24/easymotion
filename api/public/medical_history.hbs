@@ -194,11 +194,11 @@
       <div class="column-item">
         <div class="field-group">
           <div class="field-label">Fumatore:</div>
-          <div class="field-value{{#unless smoker}} missing-field{{/unless}}">
+          <div class="field-value">
             {{#if smoker}}
               Sì
             {{else}}
-              Informazione fumatore non presente
+              No
             {{/if}}
           </div>
         </div>
@@ -206,23 +206,23 @@
       <div class="column-item">
         <div class="field-group">
           <div class="field-label">Unità di Alcol:</div>
-          <div class="field-value{{#unless alcoholUnits}} missing-field{{/unless}}">
+          <div class="field-value">
             {{#if alcoholUnits}}
               {{alcoholUnits}}
             {{else}}
-              Unità di alcol non presenti
+              0
             {{/if}}
           </div>
         </div>
       </div>
       <div class="column-item">
         <div class="field-group">
-          <div class="field-label">Livello di Attività:</div>
+          <div class="field-label">Livello di difficoltà a svolgere attività:</div>
           <div class="field-value{{#unless activityLevel}} missing-field{{/unless}}">
             {{#if activityLevel}}
               {{activityLevel}}
             {{else}}
-              Livello di attività non presente
+              Livello di difficoltà a svolgere attività non presente
             {{/if}}
           </div>
         </div>
@@ -290,11 +290,11 @@
       <div class="column-item">
         <div class="field-group">
           <div class="field-label">Frequenza Sportiva:</div>
-          <div class="field-value{{#unless sportFrequency}} missing-field{{/unless}}">
+          <div class="field-value">
             {{#if sportFrequency}}
               {{sportFrequency}} volte a settimana
             {{else}}
-              Frequenza sportiva non presente
+              Mai
             {{/if}}
           </div>
         </div>
@@ -339,72 +339,6 @@
   </div>
 
   <div class="section-block">
-    <h3>Dati sul Dolore</h3>
-    <div class="columns-container">
-      <div class="column-item">
-        <div class="field-group">
-          <div class="field-label">Zona del Dolore:</div>
-          <div class="field-value{{#unless painZone}} missing-field{{/unless}}">
-            {{#if painZone}}
-              {{painZone}}
-            {{else}}
-              Zona del dolore non presente
-            {{/if}}
-          </div>
-        </div>
-      </div>
-      <div class="column-item">
-        <div class="field-group">
-          <div class="field-label">Intensità del Dolore:</div>
-          <div class="field-value{{#unless painIntensity}} missing-field{{/unless}}">
-            {{#if painIntensity}}
-              {{painIntensity}} (scala 0-10)
-            {{else}}
-              Intensità del dolore non presente
-            {{/if}}
-          </div>
-        </div>
-      </div>
-      <div class="column-item">
-        <div class="field-group">
-          <div class="field-label">Frequenza del Dolore:</div>
-          <div class="field-value{{#unless painFrequency}} missing-field{{/unless}}">
-            {{#if painFrequency}}
-              {{painFrequency}}
-            {{else}}
-              Frequenza del dolore non presente
-            {{/if}}
-          </div>
-        </div>
-      </div>
-      <div class="column-item">
-        <div class="field-group">
-          <div class="field-label">Caratteristiche del Dolore:</div>
-          <div class="field-value{{#unless painCharacteristics}} missing-field{{/unless}}">
-            {{#if painCharacteristics}}
-              {{painCharacteristics}}
-            {{else}}
-              Caratteristiche del dolore non presenti
-            {{/if}}
-          </div>
-        </div>
-      </div>
-      <div class="column-item">
-        <div class="field-group">
-          <div class="field-label">Modificatori del Dolore:</div>
-          <div class="field-value{{#unless painModifiers}} missing-field{{/unless}}">
-            {{#if painModifiers}}
-              {{painModifiers}}
-            {{else}}
-              Modificatori del dolore non presenti
-            {{/if}}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="section-block">
     <h3>Altri Dati</h3>
     <div class="columns-container">
       <div class="column-item">
@@ -415,18 +349,6 @@
               {{sleepHours}} ore
             {{else}}
               Ore di sonno non presenti
-            {{/if}}
-          </div>
-        </div>
-      </div>
-      <div class="column-item">
-        <div class="field-group">
-          <div class="field-label">Stress Percepito:</div>
-          <div class="field-value{{#unless perceivedStress}} missing-field{{/unless}}">
-            {{#if perceivedStress}}
-              {{perceivedStress}} (scala 0-10)
-            {{else}}
-              Stress percepito non presente
             {{/if}}
           </div>
         </div>
