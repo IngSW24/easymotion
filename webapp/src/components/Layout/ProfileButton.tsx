@@ -11,6 +11,7 @@ import { useNavigate } from "react-router";
 import { useAuth } from "@easymotion/auth-context";
 import MenuIcon from "@mui/icons-material/Menu";
 import {
+  Download,
   Explore,
   Logout,
   Refresh,
@@ -43,6 +44,14 @@ export default function ProfileButton() {
   };
 
   const profileButtonActions: ProfileButtonActionProps[] = [
+    {
+      label: "Scarica l'app",
+      icon: <Download />,
+      action: () => {
+        window.location.href = "/APK/easymotion-v1.0.0-1.apk";
+      },
+      targetRoles: ["USER"],
+    },
     {
       label: "Dashboard",
       icon: <SpaceDashboard />,
