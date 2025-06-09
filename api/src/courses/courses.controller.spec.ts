@@ -92,20 +92,20 @@ describe("CoursesController", () => {
     const dto: CreateCourseDto = {
       name: "Test Course",
       description: "Test Description",
-      short_description: "Short Description",
+      shortDescription: "Short Description",
       instructors: [],
-      category_id: categoryId,
+      categoryId: categoryId,
       level: CourseLevel.BASIC,
       tags: ["aa", "bb"],
       location: "",
       price: new Decimal(100),
-      payment_recurrence: PaymentRecurrence.SINGLE,
-      is_published: false,
-      subscriptions_open: false,
-      max_subscribers: 0,
+      paymentRecurrence: PaymentRecurrence.SINGLE,
+      isPublished: false,
+      subscriptionsOpen: false,
+      maxSubscribers: 0,
       sessions: [],
-      subscription_start_date: new Date(),
-      subscription_end_date: new Date(),
+      subscriptionStartDate: new Date(),
+      subscriptionEndDate: new Date(),
     };
 
     const createdCourse = {
@@ -122,7 +122,7 @@ describe("CoursesController", () => {
       data: {
         name: dto.name,
         description: dto.description,
-        short_description: dto.short_description,
+        shortDescription: dto.shortDescription,
         instructors: [],
         category: {
           connect: {
@@ -133,26 +133,26 @@ describe("CoursesController", () => {
         tags: dto.tags,
         location: "",
         price: new Decimal(100),
-        payment_recurrence: PaymentRecurrence.SINGLE,
-        is_published: false,
-        subscriptions_open: false,
-        max_subscribers: 0,
+        paymentRecurrence: PaymentRecurrence.SINGLE,
+        isPublished: false,
+        subscriptionsOpen: false,
+        maxSubscribers: 0,
         owner: {
           connect: {
-            applicationUserId: "1",
+            userId: "1",
           },
         },
         sessions: {
           create: [],
         },
-        subscription_start_date: dto.subscription_start_date,
-        subscription_end_date: dto.subscription_end_date,
+        subscriptionStartDate: dto.subscriptionStartDate,
+        subscriptionEndDate: dto.subscriptionEndDate,
       },
       include: {
         category: true,
         owner: {
           include: {
-            applicationUser: true,
+            user: true,
           },
         },
         sessions: true,
@@ -174,9 +174,9 @@ describe("CoursesController", () => {
       {
         id: "",
         name: "",
-        image_path: "",
+        imagePath: "",
         description: "",
-        short_description: "",
+        shortDescription: "",
         instructors: [],
         category: {
           id: randomUUID(),
@@ -184,14 +184,14 @@ describe("CoursesController", () => {
         },
         level: CourseLevel.BASIC,
         tags: [],
-        created_at: new Date(),
-        updated_at: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
         location: "",
         price: new Decimal(0),
-        payment_recurrence: PaymentRecurrence.SINGLE,
-        is_published: false,
-        subscriptions_open: false,
-        max_subscribers: 0,
+        paymentRecurrence: PaymentRecurrence.SINGLE,
+        isPublished: false,
+        subscriptionsOpen: false,
+        maxSubscribers: 0,
         owner: {
           id: randomUUID(),
           email: "",
@@ -200,11 +200,11 @@ describe("CoursesController", () => {
           middleName: "",
         },
         sessions: [],
-        owner_id: randomUUID(),
-        category_id: randomUUID(),
-        subscription_start_date: new Date(),
-        subscription_end_date: new Date(),
-        current_subscribers: 0,
+        ownerId: randomUUID(),
+        categoryId: randomUUID(),
+        subscriptionStartDate: new Date(),
+        subscriptionEndDate: new Date(),
+        currentSubscribers: 0,
       },
     ];
     const totalItems = 1;
@@ -212,29 +212,29 @@ describe("CoursesController", () => {
     prismaMock.course.findMany.mockResolvedValue(mockCourses);
     prismaMock.course.count.mockResolvedValue(totalItems);
 
-    const result = await controller.findAll(pagination, {});
+    await controller.findAll(pagination, {});
+    expect(prismaMock.$transaction).toHaveBeenCalledTimes(1);
 
     /*expect(prismaMock.course.findMany).toHaveBeenCalledWith({
-      where: { is_published: true },
+      where: { isPublished: true },
       include: {
         owner: {
           include: {
-            applicationUser: true,
+            user: true,
           },
         },
         category: true,
         sessions: true,
       },
       orderBy: {
-        created_at: "desc",
+        createdAt: "desc",
       },
       skip: pagination.page * pagination.perPage,
       take: pagination.perPage,
     });
-    expect(prismaMock.course.count).toHaveBeenCalled();*/
-    expect(prismaMock.$transaction).toHaveBeenCalledTimes(1);
+    expect(prismaMock.course.count).toHaveBeenCalled();
 
-    /*expect(result).toEqual({
+    expect(result).toEqual({
       data: mockCourses.map((x) =>
         plainToInstance(CourseDto, { ...x, owner: undefined })
       ),
@@ -255,27 +255,27 @@ describe("CoursesController", () => {
       id,
       name: "Test Course",
       description: "Test Description",
-      short_description: "Short Description",
+      shortDescription: "Short Description",
       instructors: [],
-      image_path: "",
+      imagePath: "",
       category: {
         id: randomUUID(),
         name: "Category",
       },
       level: CourseLevel.BASIC,
       tags: [],
-      created_at: new Date(),
-      updated_at: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
       location: "",
       price: new Decimal(10),
-      payment_recurrence: PaymentRecurrence.SINGLE,
-      is_published: false,
-      subscriptions_open: false,
-      max_subscribers: 0,
-      owner_id: randomUUID(),
-      category_id: randomUUID(),
+      paymentRecurrence: PaymentRecurrence.SINGLE,
+      isPublished: false,
+      subscriptionsOpen: false,
+      maxSubscribers: 0,
+      ownerId: randomUUID(),
+      categoryId: randomUUID(),
       owner: {
-        applicationUser: {
+        user: {
           id: randomUUID(),
           email: "test@email.com",
           firstName: "fname",
@@ -284,31 +284,14 @@ describe("CoursesController", () => {
         },
       },
       sessions: [],
-      subscription_start_date: new Date(),
-      subscription_end_date: new Date(),
+      subscriptionStartDate: new Date(),
+      subscriptionEndDate: new Date(),
     };
 
     prismaMock.course.findUniqueOrThrow.mockResolvedValue(mockCourse);
 
-    const result = await controller.findOne(id);
-    const expected = plainToInstance(CourseDto, {
-      ...mockCourse,
-      owner: mockCourse.owner.applicationUser,
-      available_slots: null,
-    });
+    await controller.findOne(id);
 
-    /*expect(prismaMock.course.findUniqueOrThrow).toHaveBeenCalledWith({
-      where: { id },
-      include: {
-        owner: {
-          include: {
-            applicationUser: true,
-          },
-        },
-        category: true,
-        sessions: true,
-      },
-    });*/
     expect(prismaMock.$transaction).toHaveBeenCalledTimes(1);
     //expect(result).toEqual(expected);
   });
@@ -321,13 +304,13 @@ describe("CoursesController", () => {
       price: new Decimal(250),
       name: "Updated Course",
       description: "Updated Description",
-      short_description: "Updated Short Description",
+      shortDescription: "Updated Short Description",
       location: "Updated Location",
       level: CourseLevel.MEDIUM,
-      payment_recurrence: PaymentRecurrence.SINGLE,
-      is_published: true,
-      subscriptions_open: true,
-      max_subscribers: 20,
+      paymentRecurrence: PaymentRecurrence.SINGLE,
+      isPublished: true,
+      subscriptionsOpen: true,
+      maxSubscribers: 20,
       tags: ["tag1", "tag2"],
       sessions: [],
     };
@@ -336,26 +319,26 @@ describe("CoursesController", () => {
       id,
       name: dto.name,
       description: dto.description,
-      short_description: dto.short_description,
+      shortDescription: dto.shortDescription,
       instructors: dto.instructors,
       location: dto.location,
       level: dto.level,
       price: dto.price,
-      payment_recurrence: dto.payment_recurrence,
-      is_published: dto.is_published,
-      subscriptions_open: dto.subscriptions_open,
-      max_subscribers: dto.max_subscribers,
+      paymentRecurrence: dto.paymentRecurrence,
+      isPublished: dto.isPublished,
+      subscriptionsOpen: dto.subscriptionsOpen,
+      maxSubscribers: dto.maxSubscribers,
       tags: dto.tags,
-      created_at: new Date(),
-      updated_at: new Date(),
-      owner_id: randomUUID(),
-      category_id: randomUUID(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      ownerId: randomUUID(),
+      categoryId: randomUUID(),
       category: {
         id: randomUUID(),
         name: "Category",
       },
       owner: {
-        applicationUser: {
+        user: {
           id: randomUUID(),
           email: "test@email.com",
           firstName: "fname",
@@ -380,21 +363,21 @@ describe("CoursesController", () => {
     const updateData = prismaMock.course.update.mock.calls[0][0].data;
     expect(updateData.name).toBe(dto.name);
     expect(updateData.description).toBe(dto.description);
-    expect(updateData.short_description).toBe(dto.short_description);
+    expect(updateData.shortDescription).toBe(dto.shortDescription);
     expect(updateData.instructors).toEqual(dto.instructors);
     expect(updateData.location).toBe(dto.location);
     expect(updateData.level).toBe(dto.level);
-    expect(updateData.payment_recurrence).toBe(dto.payment_recurrence);
-    expect(updateData.is_published).toBe(dto.is_published);
-    expect(updateData.subscriptions_open).toBe(dto.subscriptions_open);
-    expect(updateData.max_subscribers).toBe(dto.max_subscribers);
+    expect(updateData.paymentRecurrence).toBe(dto.paymentRecurrence);
+    expect(updateData.isPublished).toBe(dto.isPublished);
+    expect(updateData.subscriptionsOpen).toBe(dto.subscriptionsOpen);
+    expect(updateData.maxSubscribers).toBe(dto.maxSubscribers);
     expect(updateData.tags).toEqual(dto.tags);
 
     // Check that correct include options were used
     expect(prismaMock.course.update.mock.calls[0][0].include).toEqual({
       owner: {
         include: {
-          applicationUser: true,
+          user: true,
         },
       },
       category: true,
@@ -405,7 +388,7 @@ describe("CoursesController", () => {
     expect(result).toEqual(
       plainToInstance(CourseDto, {
         ...updatedCourse,
-        owner: updatedCourse.owner.applicationUser,
+        owner: updatedCourse.owner.user,
       })
     );
   });

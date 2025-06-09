@@ -96,7 +96,7 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
    * Retrieves active subscribers for a specific course
    */
   const getCourseSubscribers = useQuery({
-    queryKey: ["course-subscribers", courseId, page, perPage],
+    queryKey: ["courseSubscribers", courseId, page, perPage],
     queryFn: async () => {
       if (!courseId) return null;
       const resp =
@@ -121,7 +121,10 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
     onSuccess: () => {
       // Invalidate queries so that data is refreshed
       queryClient.invalidateQueries({
-        queryKey: ["userPendingSubscriptions", "pendingSubscriptions"],
+        queryKey: ["userPendingSubscriptions"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["pendingSubscriptions"],
       });
       snack.showSuccess("Richiesta di iscrizione inviata!");
     },
@@ -143,7 +146,7 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
         queryKey: ["userSubscriptions"],
       });
       queryClient.invalidateQueries({
-        queryKey: ["course-subscribers"],
+        queryKey: ["courseSubscribers"],
       });
       snack.showSuccess("Iscrizione avvenuta con successo!");
     },
@@ -170,7 +173,7 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
         queryKey: ["userSubscriptions"],
       });
       queryClient.invalidateQueries({
-        queryKey: ["course-subscribers"],
+        queryKey: ["courseSubscribers"],
       });
       snack.showSuccess("Richiesta di iscrizione accettata!");
     },
@@ -192,6 +195,12 @@ export default function useSubscriptions(props: UseSubscriptionsProps) {
       });
       queryClient.invalidateQueries({
         queryKey: ["userPendingSubscriptions"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["userSubscriptions"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["courseSubscribers"],
       });
       snack.showSuccess("Disiscrizione avvenuta con successo!");
     },

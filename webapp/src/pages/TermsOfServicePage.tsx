@@ -1,6 +1,7 @@
 import { marked } from "marked";
 import termsAndConditions from "../legal/terms-of-service.md";
 import { Container, Typography } from "@mui/material";
+import Fade from "../components/animations/Fade";
 
 const parsedPageContent = marked.parse(termsAndConditions);
 
@@ -50,12 +51,14 @@ const typographyStyles = {
 
 export default function TermsOfServicePage() {
   return (
-    <Container sx={{ p: 5 }}>
-      <Typography
-        component="div"
-        sx={typographyStyles}
-        dangerouslySetInnerHTML={{ __html: parsedPageContent }}
-      />
-    </Container>
+    <Fade>
+      <Container sx={{ p: 5 }}>
+        <Typography
+          component="div"
+          sx={typographyStyles}
+          dangerouslySetInnerHTML={{ __html: parsedPageContent }}
+        />
+      </Container>
+    </Fade>
   );
 }

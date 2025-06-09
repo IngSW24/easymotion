@@ -143,14 +143,14 @@ export default function PhysiotherapistSettings(
               Bio
             </Typography>
             <MarkdownTextField
+              value={watch("bio") ?? ""}
+              onChange={(e) => setValue("bio", e)}
               fullWidth
               multiline
               rows={15}
               placeholder="Inserisci la tua bio in formato markdown"
-              previewValue={watch("bio") || ""}
               error={!!errors.bio}
               helperText={errors.bio?.message}
-              {...register("bio")}
             />
           </Grid>
 
@@ -239,7 +239,7 @@ export default function PhysiotherapistSettings(
             variant="contained"
             color="primary"
             disabled={!isDirty}
-            onClick={handleSubmit(onSubmit)}
+            onClick={handleSubmit(onSubmit)} // TODO: use form component
             sx={{ paddingX: 3, marginTop: { xs: 2, sm: 0 } }}
           >
             Salva

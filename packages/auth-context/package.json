@@ -15,9 +15,9 @@
   "devDependencies": {
     "@easymotion/eslint-config": "workspace:^",
     "@easymotion/openapi": "workspace:^",
-    "@types/react": "^19.1.0",
-    "@types/react-dom": "^19.1.2",
-    "eslint": "^9.24.0",
+    "@types/react": "^19.1.4",
+    "@types/react-dom": "^19.1.5",
+    "eslint": "^9.27.0",
     "typescript": "~5.8.3"
   }
 }

@@ -12,21 +12,19 @@ import {
 import { JwtStrategy } from "./strategies/jwt.strategy";
 import { RefreshStrategy } from "./strategies/refresh.strategy";
 import { OtpStrategy } from "./strategies/otp.strategy";
-import { AssetsModule } from "src/assets/assets.module";
 
 @Module({
   imports: [
     UsersModule,
-    AssetsModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         global: true,
-        secret: configService.get("jwt.secret"),
+        secret: configService.getOrThrow("jwt.secret"),
         signOptions: {
-          expiresIn: configService.get("jwt.expiresIn"),
-          audience: configService.get("jwt.audience"),
-          issuer: configService.get("jwt.issuer"),
+          expiresIn: configService.getOrThrow("jwt.expiresIn"),
+          audience: configService.getOrThrow("jwt.audience"),
+          issuer: configService.getOrThrow("jwt.issuer"),
         },
       }),
     }),

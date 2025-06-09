@@ -33,6 +33,7 @@ export async function bootstrap() {
       "https://easymotion.devlocal",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true, // Allows cookies or auth headers
+    exposedHeaders: "Content-Disposition",
   });
 
   app.useGlobalPipes(

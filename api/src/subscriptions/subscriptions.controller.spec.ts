@@ -44,7 +44,7 @@ describe("SubscriptionsController", () => {
       firstName: "Test",
       lastName: "User",
       patient: {
-        applicationUserId: "user-id",
+        userId: "user-id",
       },
       physiotherapist: null,
     }),
@@ -144,15 +144,19 @@ describe("SubscriptionsController", () => {
     it("should send subscription request", async () => {
       const req = { user: { sub: "1" } };
       const subscriptionRequestDto: SubscriptionRequestDto = {
-        course_id: "course-1",
-        subscriptionRequestMessage: "",
+        courseId: "course-1",
+        subscriptionRequestMessage: "MSG1",
       };
 
       await controller.sendSubscriptionRequest(subscriptionRequestDto, req);
 
       expect(
         subscriptionServiceMockup.createSubscriptionRequest
-      ).toHaveBeenCalledWith(req.user.sub, subscriptionRequestDto.course_id);
+      ).toHaveBeenCalledWith(
+        req.user.sub,
+        subscriptionRequestDto.courseId,
+        subscriptionRequestDto.subscriptionRequestMessage
+      );
     });
   });
 
@@ -285,8 +289,8 @@ describe("SubscriptionsController", () => {
 
     it("should accept subscription request and send email", async () => {
       const subscriptionDto: SubscriptionCreateDto = {
-        patient_id: "patient-1",
-        course_id: "course-1",
+        patientId: "patient-1",
+        courseId: "course-1",
       };
 
       await controller.acceptSubscriptionRequest(subscriptionDto);
@@ -294,14 +298,14 @@ describe("SubscriptionsController", () => {
       expect(
         subscriptionServiceMockup.acceptSubscriptionRequest
       ).toHaveBeenCalledWith(
-        subscriptionDto.patient_id,
-        subscriptionDto.course_id
+        subscriptionDto.patientId,
+        subscriptionDto.courseId
       );
       expect(coursesServiceMockup.findOne).toHaveBeenCalledWith(
-        subscriptionDto.course_id
+        subscriptionDto.courseId
       );
       expect(userManagerMockup.getUserById).toHaveBeenCalledWith(
-        subscriptionDto.patient_id
+        subscriptionDto.patientId
       );
       expect(emailServiceMockup.sendEmail).toHaveBeenCalledWith(
         "user@example.com",
@@ -312,8 +316,8 @@ describe("SubscriptionsController", () => {
 
     it("should create direct subscription and send emails", async () => {
       const subscriptionDto: SubscriptionCreateDto = {
-        patient_id: "patient-1",
-        course_id: "course-1",
+        patientId: "patient-1",
+        courseId: "course-1",
       };
 
       await controller.createSubscription(subscriptionDto);
@@ -321,14 +325,14 @@ describe("SubscriptionsController", () => {
       expect(
         subscriptionServiceMockup.createDirectSubscription
       ).toHaveBeenCalledWith(
-        subscriptionDto.patient_id,
-        subscriptionDto.course_id
+        subscriptionDto.patientId,
+        subscriptionDto.courseId
       );
       expect(coursesServiceMockup.findOne).toHaveBeenCalledWith(
-        subscriptionDto.course_id
+        subscriptionDto.courseId
       );
       expect(userManagerMockup.getUserById).toHaveBeenCalledWith(
-        subscriptionDto.patient_id
+        subscriptionDto.patientId
       );
       expect(emailServiceMockup.sendEmail).toHaveBeenCalledTimes(2);
       expect(emailServiceMockup.sendEmail).toHaveBeenNthCalledWith(
@@ -347,20 +351,20 @@ describe("SubscriptionsController", () => {
 
     it("should delete subscription and send email", async () => {
       const deleteDto: SubscriptionDeleteDto = {
-        patient_id: "patient-1",
-        course_id: "course-1",
+        patientId: "patient-1",
+        courseId: "course-1",
       };
 
       await controller.deleteSubscription(deleteDto);
 
       expect(
         subscriptionServiceMockup.unsubscribeFinalUser
-      ).toHaveBeenCalledWith(deleteDto.patient_id, deleteDto.course_id);
+      ).toHaveBeenCalledWith(deleteDto.patientId, deleteDto.courseId);
       expect(coursesServiceMockup.findOne).toHaveBeenCalledWith(
-        deleteDto.course_id
+        deleteDto.courseId
       );
       expect(userManagerMockup.getUserById).toHaveBeenCalledWith(
-        deleteDto.patient_id
+        deleteDto.patientId
       );
       expect(emailServiceMockup.sendEmail).toHaveBeenCalledWith(
         "user@example.com",
@@ -374,7 +378,7 @@ describe("SubscriptionsController", () => {
     it("should handle errors when service throws exceptions", async () => {
       const req = { user: { sub: "1" } };
       const subscriptionRequestDto: SubscriptionRequestDto = {
-        course_id: "course-1",
+        courseId: "course-1",
         subscriptionRequestMessage: "",
       };
 
@@ -389,8 +393,8 @@ describe("SubscriptionsController", () => {
 
     it("should not send email if user is not found", async () => {
       const deleteDto: SubscriptionDeleteDto = {
-        patient_id: "patient-1",
-        course_id: "course-1",
+        patientId: "patient-1",
+        courseId: "course-1",
       };
 
       userManagerMockup.getUserById.mockRejectedValueOnce(
@@ -403,12 +407,12 @@ describe("SubscriptionsController", () => {
 
       expect(
         subscriptionServiceMockup.unsubscribeFinalUser
-      ).toHaveBeenCalledWith(deleteDto.patient_id, deleteDto.course_id);
+      ).toHaveBeenCalledWith(deleteDto.patientId, deleteDto.courseId);
       expect(coursesServiceMockup.findOne).toHaveBeenCalledWith(
-        deleteDto.course_id
+        deleteDto.courseId
       );
       expect(userManagerMockup.getUserById).toHaveBeenCalledWith(
-        deleteDto.patient_id
+        deleteDto.patientId
       );
       expect(emailServiceMockup.sendEmail).not.toHaveBeenCalled();
     });

@@ -1,21 +1,25 @@
-import {
-  AppBar,
-  Avatar,
-  Box,
-  Drawer,
-  IconButton,
-  Paper,
-  TextField,
-  Toolbar,
-  Typography,
-  Grid,
-  Button,
-} from "@mui/material";
+import AppBar from "@mui/material/AppBar";
+import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import Drawer from "@mui/material/Drawer";
+import IconButton from "@mui/material/IconButton";
+import Paper from "@mui/material/Paper";
+import TextField from "@mui/material/TextField";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import Button from "@mui/material/Button";
 import useSubscriptions from "../../hooks/useSubscription";
 import { useEffect, useState } from "react";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
-import { ArrowBack, Check, Close, Search } from "@mui/icons-material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import InfoIcon from "@mui/icons-material/Info";
+import SearchIcon from "@mui/icons-material/Search";
 import { SubscriptionDtoWithUser } from "@easymotion/openapi";
+import DeleteSubscribedUser from "./DeleteSubscribedUser";
+import SubscriptionDetailsModal from "./SubscriptionDetailModal";
+import ViewPatientMedicalHistory from "./ViewPatientMedicalHistory";
+import DownloadPatientPDF from "./DownloadPatientPDF";
 
 enum CurrentState {
   "LOADING",
@@ -33,6 +37,11 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
   const { open, onClose, courseId } = props;
   const [searchTerm, setSearchTerm] = useState("");
 
+  const [openSubDetailsModal, setOpenSubDetailsModal] = useState(false);
+  const [selectedSubscription, setSelectedSubscription] = useState<
+    SubscriptionDtoWithUser | undefined
+  >(undefined);
+
   const {
     getCourseSubscribers,
     getPendingCourseSubscriptions,
@@ -43,16 +52,16 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
   const confirmSubscription = async (patientId: string) => {
     if (!courseId) return;
     await acceptSubscriptionRequest.mutateAsync({
-      course_id: courseId,
-      patient_id: patientId,
+      courseId: courseId,
+      patientId: patientId,
     });
   };
 
   const denySubscription = async (patientId: string) => {
     if (!courseId) return;
     await unsubscribe.mutateAsync({
-      course_id: courseId,
-      patient_id: patientId,
+      courseId: courseId,
+      patientId: patientId,
     });
   };
 
@@ -88,6 +97,13 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
     getPendingCourseSubscriptions.data,
     courseId,
   ]);
+
+  const handleOpenSubscriptionDetails = (
+    subscription: SubscriptionDtoWithUser
+  ) => {
+    setSelectedSubscription(subscription);
+    setOpenSubDetailsModal(true);
+  };
 
   // Render already subscribed user (simplified)
   const renderSubscribedUserItem = (
@@ -154,17 +170,31 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
                 {value.user.email}
               </Typography>
             </Box>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={{
-                flexShrink: 0,
-                textAlign: "right",
-                ml: 1,
-              }}
-            >
-              {formatDate(value.created_at)}
-            </Typography>
+
+            <Box>
+              <ViewPatientMedicalHistory patientId={value.user.id} />
+
+              <DownloadPatientPDF userId={value.user.id} />
+
+              <DeleteSubscribedUser
+                userId={value.user.id}
+                courseId={value.course.id}
+                userFirstName={value.user.firstName}
+                userMiddleName={value.user.middleName || ""}
+                userLastName={value.user.lastName}
+              />
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{
+                  flexShrink: 0,
+                  textAlign: "right",
+                  ml: 1,
+                }}
+              >
+                {formatDate(value.createdAt)}
+              </Typography>
+            </Box>
           </Box>
         </Box>
       </Box>
@@ -213,21 +243,11 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
           size="small"
           variant="contained"
           color="primary"
-          startIcon={<Check />}
-          sx={{ flex: 1, mr: 1 }}
-          onClick={() => confirmSubscription(value.user.id)}
-        >
-          Accetta
-        </Button>
-        <Button
-          size="small"
-          variant="outlined"
-          color="error"
-          startIcon={<Close />}
+          startIcon={<InfoIcon />}
           sx={{ flex: 1 }}
-          onClick={() => denySubscription(value.user.id)}
+          onClick={() => handleOpenSubscriptionDetails(value)}
         >
-          Rifiuta
+          Visualizza
         </Button>
       </Box>
     </Box>
@@ -271,7 +291,7 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
             onClick={() => onClose()}
             aria-label="close"
           >
-            <ArrowBack />
+            <ArrowBackIcon />
           </IconButton>
           <Typography
             variant="h6"
@@ -282,6 +302,14 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
           </Typography>
         </Toolbar>
       </AppBar>
+
+      <SubscriptionDetailsModal
+        open={openSubDetailsModal}
+        setOpen={setOpenSubDetailsModal}
+        subscription={selectedSubscription}
+        onAccept={confirmSubscription}
+        onDecline={denySubscription}
+      />
 
       {currentPageState === CurrentState.ERROR && (
         <Box sx={{ p: 3 }}>
@@ -310,7 +338,7 @@ export default function CourseUsersListModal(props: CourseUsersListModalProps) {
               </Typography>
               <Paper sx={{ p: 1, mb: 3 }}>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
-                  <Search sx={{ color: "action.active", mr: 1 }} />
+                  <SearchIcon sx={{ color: "action.active", mr: 1 }} />
                   <TextField
                     variant="standard"
                     placeholder="Cerca utente..."

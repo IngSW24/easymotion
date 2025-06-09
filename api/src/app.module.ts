@@ -21,6 +21,9 @@ import {
   EXTENDED_PRISMA_SERVICE,
 } from "./common/prisma/pagination";
 import { PrismaClient } from "@prisma/client";
+import { AiModule } from "./ai/ai.module";
+import { ProfileModule } from "./profile/profile.module";
+import * as Joi from "joi";
 
 const shouldServeStaticFiles =
   process.env.NODE_ENV === "development" && process.env.USE_S3 !== "true";
@@ -31,6 +34,9 @@ const shouldServeStaticFiles =
       load: [...configurations],
       isGlobal: true,
       expandVariables: true,
+      validationSchema: Joi.object({
+        PDF_API_KEY: Joi.string().min(1).required(),
+      }),
     }),
     CourseModule,
     CustomPrismaModule.forRootAsync({
@@ -75,6 +81,8 @@ const shouldServeStaticFiles =
     AssetsModule,
     AwsModule,
     SearchModule,
+    AiModule,
+    ProfileModule,
   ],
 })
 export class AppModule {

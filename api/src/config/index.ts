@@ -4,12 +4,15 @@ import jwtConfig from "./jwt.config";
 import smtpConfig from "./smtp.config";
 import s3Config from "./s3.config";
 import assetsConfig from "./assets.config";
+import aiConfig from "./ai.config";
+import pdfConfig from "./pdf.config";
 
 export * from "./db.config";
 export * from "./jwt.config";
 export * from "./smtp.config";
 export * from "./s3.config";
 export * from "./assets.config";
+export * from "./ai.config";
 
 export default [
   dbConfig,
@@ -18,4 +21,6 @@ export default [
   frontendConfig,
   s3Config,
   assetsConfig,
+  aiConfig,
+  pdfConfig,
 ];

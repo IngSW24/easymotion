@@ -38,8 +38,8 @@ export const useSubscribeButton = ({ course }: UseSubscribeButtonProps) => {
   );
 
   const isDisabled = useMemo(
-    () => !isHidden && !course.subscriptions_open,
-    [course.subscriptions_open, isHidden]
+    () => !isHidden && !course.subscriptionsOpen,
+    [course.subscriptionsOpen, isHidden]
   );
 
   return {

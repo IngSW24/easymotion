@@ -2,18 +2,12 @@ import {
   applyDecorators,
   Body,
   Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Inject,
-  ParseFilePipeBuilder,
   Post,
   Put,
   Query,
   Req,
   Res,
-  UploadedFile,
+  SerializeOptions,
   UseGuards,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
@@ -28,7 +22,6 @@ import { SignInDto } from "./dto/actions/sign-in.dto";
 import { DateTime } from "luxon";
 import { RefreshGuard } from "./guards/refresh.guard";
 import UseAuth from "./decorators/auth-with-role.decorator";
-import { UpdateAuthUserDto } from "./dto/auth-user/update-auth-user.dto";
 import AuthFlowHeader from "./decorators/authflow-header.decorator";
 import { CustomRequest } from "src/common/types/custom-request";
 import { RefreshTokenDto } from "./dto/actions/refresh-token.dto";
@@ -38,10 +31,6 @@ import {
   UserLocalAuthGuard,
 } from "./guards/local-auth.guard";
 import { AuthResponseDto } from "./dto/auth-user/auth-response.dto";
-import { ApiFileBody } from "src/common/decorators/api-file-body.decorator";
-import IAssetsService, { ASSETS_SERVICE } from "src/assets/assets.interface";
-import { CompressionService } from "src/assets/utilities/compression.service";
-import { ApplicationUserDto } from "src/users/dto/user/application-user.dto";
 
 // avoids having to bloat the code with the same multiple decorators
 const ApiLoginResponse = (description: string = "Successful login") =>
@@ -51,26 +40,22 @@ const ApiLoginResponse = (description: string = "Successful login") =>
       description,
       type: AuthResponseDto,
     }),
-    AuthFlowHeader()
+    AuthFlowHeader(),
+    SerializeOptions({ type: AuthResponseDto })
   );
 
 @Controller("auth")
 export class AuthController {
-  constructor(
-    private authService: AuthService,
-    private readonly imageCompressionService: CompressionService,
-    @Inject(ASSETS_SERVICE) private readonly assetsService: IAssetsService
-  ) {}
+  constructor(private authService: AuthService) {}
 
   private async login(req: CustomRequest, res: any) {
     if (req.user.requiresOtp) {
-      res.send(
-        new AuthResponseDto({
-          user: null,
-          tokens: null,
-          requiresOtp: true,
-        })
-      );
+      const response: AuthResponseDto = {
+        user: null,
+        tokens: null,
+        requiresOtp: true,
+      };
+      res.send(response);
       return;
     }
 
@@ -144,82 +129,17 @@ export class AuthController {
    */
   @Post("logout")
   @UseAuth()
-  async logout(@Res() res) {
+  @ApiOkResponse()
+  async logout(@Res({ passthrough: true }) res) {
     this.clearRefreshTokenCookie(res);
-    res.sendStatus(200);
-  }
-
-  /**
-   * Retrieves the profile of the currently authenticated user.
-   * @param req The request object, containing the user's ID.
-   */
-  @UseAuth()
-  @Get("profile")
-  getUserProfile(@Req() req) {
-    return this.authService.getUserProfile(req.user.sub);
-  }
-
-  /**
-   * Updates the profile of the currently authenticated user.
-   * @param req The request object, containing the user's ID.
-   * @param updateProfileDto The data to update the user's profile.
-   */
-  @UseAuth()
-  @Put("profile")
-  updateUserProfile(@Req() req, @Body() updateProfileDto: UpdateAuthUserDto) {
-    return this.authService.updateUserProfile(req.user.sub, updateProfileDto);
-  }
-
-  /**
-   * Deletes the profile of the currently authenticated user.
-   * @param req The request object, containing the user's ID.
-   * @param res The response object.
-   */
-  @UseAuth()
-  @Delete("profile")
-  async deleteUserProfile(@Req() req, @Res() res) {
-    this.clearRefreshTokenCookie(res);
-    await this.authService.deleteUserProfile(req.user.sub);
-  }
-
-  /**
-   * Updates the profile picture of the currently authenticated user.
-   * @param req The request object, containing the user's ID.
-   * @param file The file to update the profile picture with.
-   */
-  @UseAuth()
-  @Post("profile/picture")
-  @ApiOkResponse({ type: ApplicationUserDto })
-  @ApiFileBody()
-  async updateProfilePicture(
-    @Req() req,
-    @UploadedFile(
-      new ParseFilePipeBuilder()
-        .addMaxSizeValidator({ maxSize: 1024 * 1024 * 10 })
-        .addFileTypeValidator({ fileType: "image" })
-        .build()
-    )
-    file: Express.Multer.File
-  ) {
-    const userId = req.user.sub;
-
-    const compressedBuffer = await this.imageCompressionService.compressImage(
-      file.buffer
-    );
-
-    return this.authService.updateUserPicture(
-      userId,
-      compressedBuffer,
-      file.mimetype
-    );
   }
 
   /**
    * Registers a new customer account.
    * @param signUpDto The data for creating the new account.
    */
-  @HttpCode(HttpStatus.OK)
   @Post("signup/customer")
+  @ApiOkResponse()
   signUp(@Body() signUpDto: SignUpDto) {
     return this.authService.customerSignup(signUpDto);
   }
@@ -229,6 +149,7 @@ export class AuthController {
    * @param resetPasswordRequestDto The email of the user requesting a reset.
    */
   @Post("password")
+  @ApiOkResponse()
   requestPasswordReset(@Body() resetPasswordRequestDto: EmailDto) {
     return this.authService.requestResetPassword(resetPasswordRequestDto);
   }
@@ -238,6 +159,7 @@ export class AuthController {
    * @param passwordUpdateDto The data to update the password.
    */
   @Post("password/update")
+  @ApiOkResponse()
   updatePassword(@Body() passwordUpdateDto: PasswordUpdateDto) {
     return this.authService.updatePassword(passwordUpdateDto);
   }
@@ -249,6 +171,7 @@ export class AuthController {
    */
   @UseAuth()
   @Post("password/change")
+  @ApiOkResponse()
   changePassword(@Req() req, @Body() passwordChangeDto: PasswordChangeDto) {
     const userId = req.user.sub;
     return this.authService.changePassword(userId, passwordChangeDto);

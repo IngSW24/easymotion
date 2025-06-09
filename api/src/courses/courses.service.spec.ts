@@ -70,44 +70,44 @@ describe("CoursesService", () => {
       const createDto: CreateCourseDto = {
         name: "Test Course",
         description: "Course description",
-        short_description: "Short description",
+        shortDescription: "Short description",
         location: "Online",
         instructors: ["John Doe"],
         level: CourseLevel.BASIC,
         price: new Decimal(100),
-        payment_recurrence: PaymentRecurrence.SINGLE,
-        is_published: true,
-        subscriptions_open: true,
-        max_subscribers: 20,
+        paymentRecurrence: PaymentRecurrence.SINGLE,
+        isPublished: true,
+        subscriptionsOpen: true,
+        maxSubscribers: 20,
         tags: ["tag1", "tag2"],
-        category_id: categoryId,
+        categoryId: categoryId,
         sessions: [
-          { start_time: new Date(), end_time: new Date(Date.now() + 3600000) },
+          { startTime: new Date(), endTime: new Date(Date.now() + 3600000) },
         ],
-        subscription_start_date: new Date(),
-        subscription_end_date: new Date(),
+        subscriptionStartDate: new Date(),
+        subscriptionEndDate: new Date(),
       };
 
       const mockCreatedCourse = {
         id: randomUUID(),
         name: createDto.name,
         description: createDto.description,
-        short_description: createDto.short_description,
+        shortDescription: createDto.shortDescription,
         location: createDto.location,
         instructors: createDto.instructors,
         level: createDto.level,
         price: createDto.price,
-        payment_recurrence: createDto.payment_recurrence,
-        is_published: createDto.is_published,
-        subscriptions_open: createDto.subscriptions_open,
-        max_subscribers: createDto.max_subscribers,
+        paymentRecurrence: createDto.paymentRecurrence,
+        isPublished: createDto.isPublished,
+        subscriptionsOpen: createDto.subscriptionsOpen,
+        maxSubscribers: createDto.maxSubscribers,
         tags: createDto.tags,
-        owner_id: ownerId,
-        category_id: categoryId,
-        created_at: new Date(),
-        updated_at: new Date(),
+        ownerId: ownerId,
+        categoryId: categoryId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
         owner: {
-          applicationUser: {
+          user: {
             id: ownerId,
             email: "test@example.com",
             firstName: "John",
@@ -121,8 +121,8 @@ describe("CoursesService", () => {
         },
         sessions: [
           {
-            start_time: createDto.sessions[0].start_time,
-            end_time: createDto.sessions[0].end_time,
+            startTime: createDto.sessions[0].startTime,
+            endTime: createDto.sessions[0].endTime,
           },
         ],
       };
@@ -137,21 +137,21 @@ describe("CoursesService", () => {
         data: expect.objectContaining({
           name: createDto.name,
           description: createDto.description,
-          short_description: createDto.short_description,
+          shortDescription: createDto.shortDescription,
           instructors: createDto.instructors,
           level: createDto.level,
           sessions: {
             create: createDto.sessions,
           },
           category: {
-            connect: { id: createDto.category_id },
+            connect: { id: createDto.categoryId },
           },
           owner: {
-            connect: { applicationUserId: ownerId },
+            connect: { userId: ownerId },
           },
         }),
         include: {
-          owner: { include: { applicationUser: true } },
+          owner: { include: { user: true } },
           category: true,
           sessions: true,
         },
@@ -179,10 +179,10 @@ describe("CoursesService", () => {
           id: randomUUID(),
           name: "Test Course",
           description: "Description",
-          short_description: "Short Desc",
+          shortDescription: "Short Desc",
           level: CourseLevel.BASIC,
           owner: {
-            applicationUser: {
+            user: {
               id: randomUUID(),
               email: "test@example.com",
               firstName: "John",
@@ -192,19 +192,19 @@ describe("CoursesService", () => {
           },
           category: { id: "id1", name: "Category 1" },
           sessions: [],
-          created_at: new Date(),
-          updated_at: new Date(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
           price: new Decimal(100),
           is_free: false,
-          is_published: true,
-          subscriptions_open: true,
-          max_subscribers: null,
+          isPublished: true,
+          subscriptionsOpen: true,
+          maxSubscribers: null,
           number_of_payments: null,
           tags: [],
           location: null,
           instructors: [],
-          owner_id: "owner1",
-          category_id: "id1",
+          ownerId: "owner1",
+          categoryId: "id1",
         },
       ];
 
@@ -214,7 +214,7 @@ describe("CoursesService", () => {
       prismaMock.course.count.mockResolvedValue(mockCount);
 
       // Execute
-      const result = await service.findAll(pagination, filter);
+      await service.findAll(pagination, filter);
 
       // Verify
       expect(prismaMock.$transaction).toHaveBeenCalled();
@@ -223,7 +223,7 @@ describe("CoursesService", () => {
           skip: pagination.page * pagination.perPage,
           take: pagination.perPage,
           orderBy: {
-            created_at: "desc",
+            createdAt: "desc",
           },
         })
       );*/
@@ -242,10 +242,10 @@ describe("CoursesService", () => {
         id: courseId,
         name: "Test Course",
         description: "Description",
-        short_description: "Short Desc",
+        shortDescription: "Short Desc",
         level: CourseLevel.BASIC,
         owner: {
-          applicationUser: {
+          user: {
             id: randomUUID(),
             email: "test@example.com",
             firstName: "John",
@@ -255,27 +255,27 @@ describe("CoursesService", () => {
         },
         category: { id: "id1", name: "Category 1" },
         sessions: [],
-        created_at: new Date(),
-        updated_at: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
         price: new Decimal(100),
         is_free: false,
-        is_published: true,
-        subscriptions_open: true,
-        max_subscribers: null,
+        isPublished: true,
+        subscriptionsOpen: true,
+        maxSubscribers: null,
         number_of_payments: null,
         tags: [],
         location: null,
         instructors: [],
-        owner_id: "owner1",
-        category_id: "id1",
-        subscription_start_date: new Date(),
-        subscription_end_date: new Date(),
+        ownerId: "owner1",
+        categoryId: "id1",
+        subscriptionStartDate: new Date(),
+        subscriptionEndDate: new Date(),
       };
 
       prismaMock.course.findUniqueOrThrow.mockResolvedValue(mockCourse);
 
       // Execute
-      const result = await service.findOne(courseId);
+      await service.findOne(courseId);
 
       // Verify
       expect(prismaMock.$transaction).toHaveBeenCalledTimes(1);
@@ -296,15 +296,15 @@ describe("CoursesService", () => {
 
       const updateDto: UpdateCourseDto = {
         name: "Updated Course",
-        is_published: true,
-        subscriptions_open: true,
+        isPublished: true,
+        subscriptionsOpen: true,
         sessions: [
           {
             id: existingSessionId,
-            start_time: newSessionStartTime,
-            end_time: newSessionEndTime,
+            startTime: newSessionStartTime,
+            endTime: newSessionEndTime,
           },
-          { start_time: new Date(), end_time: new Date(Date.now() + 7200000) },
+          { startTime: new Date(), endTime: new Date(Date.now() + 7200000) },
         ],
       };
 
@@ -317,11 +317,11 @@ describe("CoursesService", () => {
         id: courseId,
         name: "Updated Course",
         description: "Original description",
-        short_description: "Original short description",
-        is_published: true,
-        subscriptions_open: true,
+        shortDescription: "Original short description",
+        isPublished: true,
+        subscriptionsOpen: true,
         owner: {
-          applicationUser: {
+          user: {
             id: randomUUID(),
             email: "test@example.com",
             firstName: "John",
@@ -333,29 +333,29 @@ describe("CoursesService", () => {
         sessions: [
           {
             id: existingSessionId,
-            start_time: newSessionStartTime,
-            end_time: newSessionEndTime,
-            course_id: courseId,
+            startTime: newSessionStartTime,
+            endTime: newSessionEndTime,
+            courseId: courseId,
           },
           {
             id: randomUUID(),
-            start_time: updateDto.sessions![1].start_time,
-            end_time: updateDto.sessions![1].end_time,
-            course_id: courseId,
+            startTime: updateDto.sessions![1].startTime,
+            endTime: updateDto.sessions![1].endTime,
+            courseId: courseId,
           },
         ],
         level: CourseLevel.BASIC,
-        created_at: new Date(),
-        updated_at: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
         price: new Decimal(100),
         is_free: false,
-        max_subscribers: null,
+        maxSubscribers: null,
         number_of_payments: null,
         tags: [],
         location: null,
         instructors: [],
-        owner_id: "owner1",
-        category_id: "category1",
+        ownerId: "owner1",
+        categoryId: "category1",
       };
 
       prismaMock.course.update.mockResolvedValue(updatedCourse);
@@ -404,9 +404,9 @@ describe("CoursesService", () => {
             id: randomUUID(),
             name: "Test Course",
             description: "Description",
-            short_description: "Short description",
+            shortDescription: "Short description",
             owner: {
-              applicationUser: {
+              user: {
                 id: randomUUID(),
                 email: "test@example.com",
                 firstName: "John",
@@ -416,19 +416,19 @@ describe("CoursesService", () => {
             },
             category: { id: "category1", name: "Category" },
             level: CourseLevel.BASIC,
-            created_at: new Date(),
-            updated_at: new Date(),
+            createdAt: new Date(),
+            updatedAt: new Date(),
             price: new Decimal(100),
             is_free: false,
-            is_published: true,
-            subscriptions_open: true,
-            max_subscribers: null,
+            isPublished: true,
+            subscriptionsOpen: true,
+            maxSubscribers: null,
             number_of_payments: null,
             tags: [],
             location: null,
             instructors: [],
-            owner_id: "owner1",
-            category_id: "category1",
+            ownerId: "owner1",
+            categoryId: "category1",
           },
         },
       ];
@@ -438,16 +438,12 @@ describe("CoursesService", () => {
       prismaMock.subscription.findMany.mockResolvedValue(mockSubscriptions);
       prismaMock.subscription.count.mockResolvedValue(mockCount);
 
-      const result = await service.findSubscribedCourses(
-        userId,
-        pagination,
-        filters
-      );
+      await service.findSubscribedCourses(userId, pagination, filters);
 
       expect(prismaMock.$transaction).toHaveBeenCalledTimes(1);
 
       /*expect(prismaMock.subscription.count).toHaveBeenCalledWith({
-        where: { patient_id: userId, isPending: false },
+        where: { patientId: userId, isPending: false },
       });
 
       expect(prismaMock.subscription.findMany).toHaveBeenCalledWith(
@@ -459,80 +455,6 @@ describe("CoursesService", () => {
 
       expect(result.data.length).toBe(1);
       expect(result.meta.totalItems).toBe(mockCount);*/
-    });
-  });
-
-  describe("findAllByPhysiotherapist", () => {
-    it("should find all courses by physiotherapist", async () => {
-      const physioId = randomUUID();
-      const pagination = { page: 0, perPage: 10 };
-
-      const mockCourses = [
-        {
-          id: randomUUID(),
-          name: "Test Course",
-          description: "Description",
-          short_description: "Short Desc",
-          level: CourseLevel.BASIC,
-          owner: {
-            applicationUser: {
-              id: physioId,
-              email: "physio@example.com",
-              firstName: "John",
-              lastName: "Doe",
-              middleName: null,
-            },
-          },
-          category: { id: "id1", name: "Category 1" },
-          sessions: [],
-          created_at: new Date(),
-          updated_at: new Date(),
-          price: new Decimal(100),
-          is_free: false,
-          is_published: true,
-          subscriptions_open: true,
-          max_subscribers: null,
-          number_of_payments: null,
-          tags: [],
-          location: null,
-          instructors: [],
-          owner_id: physioId,
-          category_id: "id1",
-        },
-      ];
-
-      const mockCount = 1;
-
-      prismaMock.course.findMany.mockResolvedValue(mockCourses);
-      prismaMock.course.count.mockResolvedValue(mockCount);
-
-      const result = await service.findAllByPhysiotherapist(
-        physioId,
-        pagination
-      );
-
-      expect(prismaMock.$transaction).toHaveBeenCalledTimes(1);
-
-      /*expect(prismaMock.course.count).toHaveBeenCalledWith({
-        where: { owner_id: physioId },
-      });
-
-      expect(prismaMock.course.findMany).toHaveBeenCalledWith({
-        where: { owner_id: physioId },
-        include: {
-          owner: {
-            include: { applicationUser: true },
-          },
-          category: true,
-          sessions: true,
-        },
-        skip: pagination.page * pagination.perPage,
-        take: pagination.perPage,
-      });
-
-      expect(result.data.length).toBe(1);
-      expect(result.meta.totalItems).toBe(mockCount);
-      expect(result.data[0].owner).toBeDefined();*/
     });
   });
 
@@ -556,6 +478,6 @@ describe("CoursesService", () => {
     const result = await service.updateImage(courseId, buffer, mimeType);
 
     expect(result).toBeDefined();
-    expect(result.image_path).toBeDefined();
+    expect(result.imagePath).toBeDefined();
   });
 });

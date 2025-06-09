@@ -22,7 +22,7 @@ export default function CategoryLevelSection() {
     create: createCategory,
   } = useCourseCategory();
 
-  const currentCategoryId = watch("category_id");
+  const currentCategoryId = watch("categoryId");
   const currentLevel = watch("level");
   const snack = useSnack();
 
@@ -36,7 +36,7 @@ export default function CategoryLevelSection() {
       try {
         await removeCategory.mutateAsync(id);
         if (id === currentCategoryId) {
-          setValue("category_id", categories.data?.[0]?.id || "");
+          setValue("categoryId", categories.data?.[0]?.id || "");
         }
       } catch (e) {
         snack.showError(e instanceof Error ? e.message : "An error occurred");
@@ -49,7 +49,7 @@ export default function CategoryLevelSection() {
     async (name: string) => {
       try {
         const newCategory = await createCategory.mutateAsync({ name });
-        setValue("category_id", newCategory.id);
+        setValue("categoryId", newCategory.id);
       } catch (error) {
         snack.showError(error);
       }
@@ -67,10 +67,10 @@ export default function CategoryLevelSection() {
         label="Categoria"
         items={categories.data || []}
         value={categories.data.find((c) => c.id === currentCategoryId) || null}
-        onChange={(newValue) => setValue("category_id", newValue?.id ?? "")}
+        onChange={(newValue) => setValue("categoryId", newValue?.id ?? "")}
         onAdd={handleCategoryCreation}
-        error={!!errors.category_id}
-        helperText={errors.category_id?.message}
+        error={!!errors.categoryId}
+        helperText={errors.categoryId?.message}
         onRemove={handleRemoveCategory}
         disableClear
       />

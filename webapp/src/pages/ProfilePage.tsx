@@ -5,68 +5,71 @@ import GeneralProfileSettings from "../components/auth/ProfileSettings/GeneralPr
 import EmailUpdate from "../components/auth/ProfileSettings/EmailUpdate";
 import PasswordUpdate from "../components/auth/ProfileSettings/PasswordUpdate";
 import PhysiotherapistSettings from "../components/auth/ProfileSettings/PhysiotherapistSettings";
-import PatientSettings from "../components/auth/ProfileSettings/PatientSettings";
+import PatientSettings from "../components/auth/ProfileSettings/Patient/PatientSettings";
+import Fade from "../components/animations/Fade";
 
 export default function ProfilePage() {
   const profile = useProfile();
 
   return (
-    <Container
-      maxWidth="lg"
-      sx={{
-        padding: 4,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        flexDirection: "column",
-      }}
-    >
-      {profile.get.isLoading && <LoadingSpinner />}
-      {profile.get.isError && <div>Errore</div>}
-      {profile.get.isSuccess && (
-        <Grid container spacing={4} justifyContent="center">
-          <Grid size={{ xs: 12 }}>
-            <GeneralProfileSettings
-              user={profile.get.data}
-              onProfileSave={(updatedProfile) =>
-                profile.update.mutate(updatedProfile)
-              }
-            />
-          </Grid>
-
-          {profile.get.data.role === "PHYSIOTHERAPIST" && (
+    <Fade>
+      <Container
+        maxWidth="lg"
+        sx={{
+          padding: 4,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          flexDirection: "column",
+        }}
+      >
+        {profile.get.isLoading && <LoadingSpinner />}
+        {profile.get.isError && <div>Errore</div>}
+        {profile.get.isSuccess && (
+          <Grid container spacing={4} justifyContent="center">
             <Grid size={{ xs: 12 }}>
-              <PhysiotherapistSettings
-                physiotherapist={profile.get.data.physiotherapist}
+              <GeneralProfileSettings
+                user={profile.get.data}
                 onProfileSave={(updatedProfile) =>
-                  profile.updatePhysiotherapist.mutate(
-                    updatedProfile.physiotherapist
-                  )
+                  profile.update.mutate(updatedProfile)
                 }
               />
             </Grid>
-          )}
 
-          {profile.get.data.role === "USER" && (
-            <Grid size={{ xs: 12 }}>
-              <PatientSettings
-                defaultValues={profile.get.data.patient}
-                onSave={(updatedPatient) =>
-                  profile.updatePatient.mutate(updatedPatient.patient)
-                }
-              />
+            {profile.get.data.role === "PHYSIOTHERAPIST" && (
+              <Grid size={{ xs: 12 }}>
+                <PhysiotherapistSettings
+                  physiotherapist={profile.get.data.physiotherapist ?? null}
+                  onProfileSave={(updatedProfile) =>
+                    profile.updatePhysiotherapist.mutate(
+                      updatedProfile.physiotherapist
+                    )
+                  }
+                />
+              </Grid>
+            )}
+
+            {profile.get.data.role === "USER" && (
+              <Grid size={{ xs: 12 }}>
+                <PatientSettings
+                  patient={profile.get.data.patient ?? null}
+                  onSave={(updatedPatient) =>
+                    profile.updatePatient.mutate(updatedPatient.patient)
+                  }
+                />
+              </Grid>
+            )}
+
+            <Grid size={{ xs: 12, md: 6 }}>
+              <EmailUpdate />
             </Grid>
-          )}
 
-          <Grid size={{ xs: 12, md: 6 }}>
-            <EmailUpdate />
+            <Grid size={{ xs: 12, md: 6 }}>
+              <PasswordUpdate />
+            </Grid>
           </Grid>
-
-          <Grid size={{ xs: 12, md: 6 }}>
-            <PasswordUpdate />
-          </Grid>
-        </Grid>
-      )}
-    </Container>
+        )}
+      </Container>
+    </Fade>
   );
 }

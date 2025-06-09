@@ -1,15 +1,16 @@
 import { CourseDto } from "@easymotion/openapi";
-import { Article, Delete, Edit, Group } from "@mui/icons-material";
-import {
-  IconButton,
-  Stack,
-  Tooltip,
-  Box,
-  Typography,
-  Chip,
-  useTheme,
-  useMediaQuery,
-} from "@mui/material";
+import Article from "@mui/icons-material/Article";
+import Delete from "@mui/icons-material/Delete";
+import Edit from "@mui/icons-material/Edit";
+import Group from "@mui/icons-material/Group";
+import IconButton from "@mui/material/IconButton";
+import Stack from "@mui/material/Stack";
+import Tooltip from "@mui/material/Tooltip";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Chip from "@mui/material/Chip";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { useState, useMemo } from "react";
 
@@ -123,7 +124,7 @@ const createColumns = (
     },
   },
   {
-    field: "is_published",
+    field: "isPublished",
     headerName: "STATO",
     headerAlign: "center",
     align: "center",
@@ -133,10 +134,10 @@ const createColumns = (
       const course = courses.find((c) => c.id === params.row.courseId);
       return (
         <Chip
-          label={course?.is_published ? "ATTIVO" : "ARCHIVIATO"}
+          label={course?.isPublished ? "ATTIVO" : "ARCHIVIATO"}
           size="small"
           style={{
-            backgroundColor: course?.is_published ? "#4CAF50" : "#F44336",
+            backgroundColor: course?.isPublished ? "#4CAF50" : "#F44336",
             color: "white",
             fontWeight: "bold",
           }}
@@ -181,6 +182,7 @@ const createColumns = (
           <Tooltip title="Elimina">
             <IconButton
               size="small"
+              color="error"
               onClick={(event) => {
                 event.stopPropagation();
                 onDelete(params.row.courseId);
@@ -241,7 +243,7 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
       courseId: value.id,
       courseName: value.name,
       category: value.category,
-      capacity: value.max_subscribers,
+      capacity: value.maxSubscribers,
     };
   });
 
@@ -256,7 +258,7 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
 
     if (onAction) {
       filteredColumns = filteredColumns.filter(
-        (col) => col.field !== "is_published"
+        (col) => col.field !== "isPublished"
       );
     } else {
       filteredColumns = filteredColumns.filter(
@@ -270,7 +272,7 @@ export default function DashboardDataGrid(props: DashboardDataGridProps) {
       );
       const lastCol = onAction
         ? filteredColumns.find((col) => col.field === "actions")
-        : filteredColumns.find((col) => col.field === "is_published");
+        : filteredColumns.find((col) => col.field === "isPublished");
 
       filteredColumns = [firstCol, lastCol].filter(Boolean) as GridColDef[];
     }

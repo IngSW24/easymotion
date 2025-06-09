@@ -3,13 +3,13 @@ import {
   ConflictException,
   Injectable,
 } from "@nestjs/common";
-import { ApplicationUser, Prisma, Role } from "@prisma/client";
+import { Prisma, Role } from "@prisma/client";
 import * as argon2 from "argon2";
 import { DateTime } from "luxon";
-import { randomBytes, randomInt } from "node:crypto";
-import { v4 as uuidv4 } from "uuid";
+import { randomBytes, randomInt, randomUUID } from "node:crypto";
 import { PrismaService } from "nestjs-prisma";
-import { UpdateUserDto } from "./dto/user/update-user.dto";
+import { UpdateUserDto } from "./dto/user/update.user.dto";
+import { UserDto } from "./dto/user/user.dto";
 
 @Injectable()
 export class UserManager {
@@ -23,10 +23,10 @@ export class UserManager {
    *          or an error Result if a user with the given email already exists.
    */
   async createUser(
-    newUser: Prisma.ApplicationUserCreateInput,
+    newUser: Prisma.UserCreateInput,
     password: string
-  ) {
-    const existingUser = await this.prisma.applicationUser.findFirst({
+  ): Promise<UserDto> {
+    const existingUser = await this.prisma.user.findFirst({
       where: { email: newUser.email },
     });
 
@@ -37,18 +37,19 @@ export class UserManager {
     const hashedPassword = await this.hashPassword(password);
 
     const createdUser = await this.prisma.$transaction(async (tx) => {
-      const createdUser = await this.prisma.applicationUser.create({
+      const createdUser = await this.prisma.user.create({
         data: {
           ...newUser,
           passwordHash: hashedPassword,
         },
+        include: { patient: true, physiotherapist: true },
       });
 
       switch (createdUser.role) {
         case Role.PHYSIOTHERAPIST:
           await tx.physiotherapist.create({
             data: {
-              applicationUser: {
+              user: {
                 connect: { id: createdUser.id },
               },
             },
@@ -57,7 +58,7 @@ export class UserManager {
         case Role.USER:
           await tx.patient.create({
             data: {
-              applicationUser: { connect: { id: createdUser.id } },
+              user: { connect: { id: createdUser.id } },
             },
           });
           break;
@@ -77,8 +78,11 @@ export class UserManager {
    * @returns A promise that resolves with a success Result if the user is found,
    *          or an error Result if not found.
    */
-  async getUserById(userId: string, roles: Role[] = undefined) {
-    return this.prisma.applicationUser.findUniqueOrThrow({
+  async getUserById(
+    userId: string,
+    roles: Role[] = undefined
+  ): Promise<UserDto> {
+    return this.prisma.user.findUniqueOrThrow({
       where: { id: userId, ...(roles && { role: { in: roles } }) },
       include: { physiotherapist: true, patient: true },
     });
@@ -90,8 +94,11 @@ export class UserManager {
    * @returns A promise that resolves with a success Result if the user is found,
    *          or an error Result if not found.
    */
-  async getUserByEmail(email: string, roles: Role[] = undefined) {
-    return this.prisma.applicationUser.findUniqueOrThrow({
+  async getUserByEmail(
+    email: string,
+    roles: Role[] = undefined
+  ): Promise<UserDto> {
+    return this.prisma.user.findUniqueOrThrow({
       where: { email, ...(roles && { role: { in: roles } }) },
       include: { physiotherapist: true, patient: true },
     });
@@ -103,7 +110,7 @@ export class UserManager {
    * @param user - The user to check for login eligibility.
    * @returns A boolean indicating if the user can log in.
    */
-  canUserLogin(user: ApplicationUser): boolean {
+  canUserLogin(user: UserDto): boolean {
     return user.failedLoginAttempts < 5 && user.isEmailVerified;
   }
 
@@ -113,26 +120,48 @@ export class UserManager {
    * @param data - The fields to update on the user.
    * @returns A promise that resolves with a success Result containing the updated user.
    */
-  async updateUser(userId: string, data: UpdateUserDto) {
+  async updateUser(userId: string, data: UpdateUserDto): Promise<UserDto> {
     const user = await this.getUserById(userId); // ensures user exists
 
     if (this.isUpdateDataValid(user, data)) {
       throw new BadRequestException("Attempting to update wrong user type");
     }
 
-    const updateData: Prisma.ApplicationUserUpdateInput = {
+    const baseUpdate: Omit<
+      Prisma.UserUpdateInput,
+      "physiotherapist" | "patient"
+    > = {
       ...data,
-      physiotherapist: {
-        update: data.physiotherapist,
-      },
-      patient: {
-        update: data.patient,
-      },
     };
 
-    return this.prisma.applicationUser.update({
+    let updateData: Prisma.UserUpdateInput = { ...baseUpdate };
+
+    if (user.role === Role.PHYSIOTHERAPIST && data.physiotherapist) {
+      updateData = {
+        ...updateData,
+        physiotherapist: {
+          update: data.physiotherapist,
+        },
+      };
+      delete updateData.patient;
+    }
+
+    if (user.role === Role.USER && data.patient) {
+      updateData = {
+        ...updateData,
+        patient: {
+          update: data.patient,
+        },
+      };
+      delete updateData.physiotherapist;
+    }
+
+    return this.prisma.user.update({
       where: { id: user.id },
-      include: { patient: true, physiotherapist: true },
+      include: {
+        patient: true,
+        physiotherapist: true,
+      },
       data: updateData,
     });
   }
@@ -143,7 +172,7 @@ export class UserManager {
    * @param data - The update data to check.
    * @returns A boolean indicating if the update data is valid for the user.
    */
-  private isUpdateDataValid(user: ApplicationUser, data: UpdateUserDto) {
+  private isUpdateDataValid(user: UserDto, data: UpdateUserDto) {
     return (
       (user.role !== Role.PHYSIOTHERAPIST && !!data.physiotherapist) ||
       (user.role !== Role.USER && !!data.patient)
@@ -157,7 +186,7 @@ export class UserManager {
    *          or an error Result if there's a server error or user not found.
    */
   async deleteUser(userId: string) {
-    await this.prisma.applicationUser.delete({
+    await this.prisma.user.delete({
       where: { id: userId },
     });
   }
@@ -171,7 +200,7 @@ export class UserManager {
     const resetToken = randomBytes(32).toString("hex");
     const expiryDate = DateTime.now().plus({ hours: 1 });
 
-    const updatedUser = await this.prisma.applicationUser.update({
+    const updatedUser = await this.prisma.user.update({
       where: { id: userId },
       data: {
         passwordResetToken: resetToken,
@@ -189,7 +218,7 @@ export class UserManager {
    */
   async setNewPassword(userId: string, password: string) {
     const hashedPassword = await this.hashPassword(password);
-    return this.prisma.applicationUser.update({
+    return this.prisma.user.update({
       where: { id: userId },
       data: {
         passwordHash: hashedPassword,
@@ -223,7 +252,7 @@ export class UserManager {
 
     const hashedPassword = await this.hashPassword(newPassword);
 
-    await this.prisma.applicationUser.update({
+    await this.prisma.user.update({
       where: { id: userId },
       data: {
         passwordHash: hashedPassword,
@@ -241,7 +270,7 @@ export class UserManager {
    * @returns A promise that resolves with a success Result on success or an error Result on failure.
    */
   async resetPassword(userId: string, resetToken: string, newPassword: string) {
-    const user = await this.prisma.applicationUser.findUniqueOrThrow({
+    const user = await this.prisma.user.findUniqueOrThrow({
       where: {
         id: userId,
         passwordResetTokenExpiry: {
@@ -256,7 +285,7 @@ export class UserManager {
 
     const hashedPassword = await this.hashPassword(newPassword);
 
-    await this.prisma.applicationUser.update({
+    await this.prisma.user.update({
       where: { id: user.id },
       data: {
         passwordHash: hashedPassword,
@@ -272,10 +301,10 @@ export class UserManager {
    * @returns A promise that resolves to the generated confirmation token.
    */
   async generateEmailConfirmationToken(userId: string): Promise<string> {
-    const confirmationToken = uuidv4();
+    const confirmationToken = randomUUID();
     const expiryDate = DateTime.now().plus({ days: 1 }).toJSDate();
 
-    const updatedUser = await this.prisma.applicationUser.update({
+    const updatedUser = await this.prisma.user.update({
       where: { id: userId },
       data: {
         emailConfirmationToken: confirmationToken,
@@ -291,10 +320,10 @@ export class UserManager {
    * @param userId - The ID of the user.
    * @param resetToken - The email confirmation token.
    * @param newEmail - The new email address to set.
-   * @returns A promise that resolves to the updated ApplicationUser.
+   * @returns A promise that resolves to the updated User.
    */
   async resetEmail(userId: string, resetToken: string, newEmail: string) {
-    const user = await this.prisma.applicationUser.findUniqueOrThrow({
+    const user = await this.prisma.user.findUniqueOrThrow({
       where: {
         id: userId,
         emailConfirmationToken: resetToken,
@@ -302,7 +331,7 @@ export class UserManager {
       },
     });
 
-    await this.prisma.applicationUser.update({
+    await this.prisma.user.update({
       where: { id: user.id },
       data: {
         email: newEmail,
@@ -320,7 +349,7 @@ export class UserManager {
    * @returns A promise that resolves with a success Result on success or an error Result on failure.
    */
   async confirmEmail(userId: string, token: string) {
-    const result = await this.prisma.applicationUser.update({
+    const result = await this.prisma.user.update({
       where: {
         id: userId,
         emailConfirmationToken: token,
@@ -342,10 +371,10 @@ export class UserManager {
    * Sets a user's email directly (e.g., by an admin or a verified process).
    * @param userId - The ID of the user whose email is being set.
    * @param email - The new email address to set.
-   * @returns A promise that resolves to the updated ApplicationUser.
+   * @returns A promise that resolves to the updated User.
    */
   async setNewEmail(userId: string, email: string) {
-    return this.prisma.applicationUser.update({
+    return this.prisma.user.update({
       where: { id: userId },
       data: {
         email,
@@ -360,10 +389,10 @@ export class UserManager {
    * Enables or disables two-factor authentication for a user.
    * @param userId - The ID of the user.
    * @param enabled - Whether to enable or disable 2FA.
-   * @returns A promise that resolves to the updated ApplicationUser.
+   * @returns A promise that resolves to the updated User.
    */
   async setTwoFactorEnabled(userId: string, enabled: boolean) {
-    const updatedUser = await this.prisma.applicationUser.update({
+    const updatedUser = await this.prisma.user.update({
       where: { id: userId },
       data: {
         twoFactorEnabled: enabled,
@@ -384,7 +413,7 @@ export class UserManager {
       .plus({ minutes: 5 })
       .toJSDate();
 
-    const updatedUser = await this.prisma.applicationUser.update({
+    const updatedUser = await this.prisma.user.update({
       where: { id: userId, twoFactorEnabled: true },
       data: {
         twoFactorCode: otp,
@@ -413,7 +442,7 @@ export class UserManager {
       return false;
     }
 
-    await this.prisma.applicationUser.update({
+    await this.prisma.user.update({
       where: { id: userId },
       data: {
         twoFactorCode: null,
@@ -428,13 +457,13 @@ export class UserManager {
    * Sets the user's last login time (defaults to the current time).
    * @param userId - The user's ID.
    * @param time - The DateTime to set as last login (defaults to now).
-   * @returns A promise that resolves to the updated ApplicationUser.
+   * @returns A promise that resolves to the updated User.
    */
   async setLastLogin(
     userId: string,
     time: DateTime | undefined = DateTime.now()
   ) {
-    return this.prisma.applicationUser.update({
+    return this.prisma.user.update({
       where: { id: userId },
       data: {
         lastLogin: time.toJSDate(),
@@ -448,7 +477,7 @@ export class UserManager {
    * @returns A promise that resolves to the new count of failed login attempts.
    */
   async increaseFailedLoginAttempts(userId: string) {
-    const updatedUser = await this.prisma.applicationUser.update({
+    const updatedUser = await this.prisma.user.update({
       where: { id: userId },
       data: {
         failedLoginAttempts: {
@@ -463,10 +492,10 @@ export class UserManager {
   /**
    * Clears the user's failed login attempt counter (sets it to 0).
    * @param userId - The user's ID.
-   * @returns A promise that resolves to the updated ApplicationUser.
+   * @returns A promise that resolves to the updated User.
    */
   async clearFailedLoginAttempts(userId: string) {
-    return this.prisma.applicationUser.update({
+    return this.prisma.user.update({
       where: { id: userId },
       data: {
         failedLoginAttempts: 0,

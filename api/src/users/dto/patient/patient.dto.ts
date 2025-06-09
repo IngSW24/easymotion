@@ -1,9 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { $Enums, Patient } from "@prisma/client";
-import { Exclude, Expose } from "class-transformer";
+import { Expose } from "class-transformer";
 import {
   IsBoolean,
   IsDate,
+  IsDefined,
   IsNumber,
   IsOptional,
   IsString,
@@ -87,6 +88,7 @@ export class PatientDto implements Patient {
 
   @ApiProperty({ description: "Sport", required: false })
   @IsString()
+  @IsOptional()
   @Expose()
   sport: string | null;
 
@@ -117,50 +119,11 @@ export class PatientDto implements Patient {
   @Expose()
   otherPathologies: string | null;
 
-  @ApiProperty({ description: "Pain zone", required: false })
-  @IsString()
-  @IsOptional()
-  @Expose()
-  painZone: string | null;
-
-  @ApiProperty({ description: "Pain intensity", required: false })
-  @IsNumber()
-  @IsOptional()
-  @Expose()
-  painIntensity: number | null;
-
-  @ApiProperty({ description: "Pain frequency", required: false })
-  @IsString()
-  @IsOptional()
-  @Expose()
-  painFrequency: string | null;
-
-  @ApiProperty({ description: "Pain characteristics", required: false })
-  @IsString()
-  @IsOptional()
-  @Expose()
-  painCharacteristics: string | null;
-
-  @ApiProperty({
-    description: "Aspects that modify the intensity of pain",
-    required: false,
-  })
-  @IsString()
-  @IsOptional()
-  @Expose()
-  painModifiers: string | null;
-
   @ApiProperty({ description: "Sleep hours", required: false })
   @IsNumber()
   @IsOptional()
   @Expose()
   sleepHours: number | null;
-
-  @ApiProperty({ description: "Perceived stress", required: false })
-  @IsNumber()
-  @IsOptional()
-  @Expose()
-  perceivedStress: number | null;
 
   @ApiProperty({ description: "Last medical checkup", required: false })
   @IsDate()
@@ -170,6 +133,7 @@ export class PatientDto implements Patient {
 
   @ApiProperty({ description: "Personal goals", required: false })
   @IsString()
+  @IsOptional()
   @Expose()
   personalGoals: string | null;
 
@@ -179,6 +143,12 @@ export class PatientDto implements Patient {
   @Expose()
   notes: string | null;
 
-  @Exclude()
-  applicationUserId: string;
+  @ApiProperty({
+    description: "User ID",
+    example: "b3bf4d18-8dd0-43a1-b1da-fd3f7b9553a1",
+  })
+  @IsString()
+  @IsDefined()
+  @Expose()
+  userId: string;
 }

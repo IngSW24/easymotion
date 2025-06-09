@@ -3,10 +3,10 @@ import {
   IsString,
   IsEmail,
   IsOptional,
-  IsDateString,
   IsEnum,
   Length,
   IsBoolean,
+  IsDateString,
 } from "class-validator";
 import { Role, Sex } from "@prisma/client";
 import { Expose } from "class-transformer";
