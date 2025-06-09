@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 import { Link } from "react-router";
 import { theme } from "../../theme/theme";
-import { PersonAdd } from "@mui/icons-material";
+import { Download, PersonAdd } from "@mui/icons-material";
 import { useAuth } from "@easymotion/auth-context";
 import { useState } from "react";
 import ProfileButton from "./ProfileButton";
@@ -147,6 +147,17 @@ export default function Layout(props: LayoutProps) {
 
       <List>
         <ListItemButton
+          onClick={() => {
+            window.location.href = "/APK/easymotion-v1.0.0-1.apk";
+          }}
+          sx={{ textAlign: "center" }}
+        >
+          <ListItemIcon>
+            <Download />
+          </ListItemIcon>
+          <ListItemText primary="Scarica l'app" />
+        </ListItemButton>
+        <ListItemButton
           component={Link}
           to="/signup"
           sx={{ textAlign: "center" }}
@@ -189,7 +200,7 @@ export default function Layout(props: LayoutProps) {
                 aria-label="open drawer"
                 edge="start"
                 onClick={handleDrawerToggle}
-                sx={{ mr: 2, display: { sm: "none" } }}
+                sx={{ mr: 2, display: { md: "none" } }}
               >
                 <MenuIcon />
               </IconButton>
@@ -237,7 +248,7 @@ export default function Layout(props: LayoutProps) {
               keepMounted: true, // Better open performance on mobile.
             }}
             sx={{
-              display: { xs: "block", sm: "none" },
+              display: { xs: "block", md: "none" },
             }}
           >
             {drawer}
