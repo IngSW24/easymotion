@@ -20,6 +20,12 @@ Easymotion is an open platform currently in development, dedicated to making hea
 - **Physiotherapists** can create and manage courses, monitor patient progress, and collaborate with other professionals.
 - **Developers** can contribute to a modern, modular codebase built with best practices in mind.
 
+Patients can sign up to the platform, while physiotherapists can be invited to join. Once registered, physiotherapists can create and manage courses through an intuitive and detailed interface. They can review each patient's health data before approving subscription requests.
+
+Patients, on the other hand, can browse available courses and submit subscription requests. At any time, they can update their health information via a dedicated anamnesis form.
+
+Physiotherapists can also create a personal profile, which is used to promote their courses on the platform.
+
 ---
 
 ## 🖼️ Easymotion in Action
