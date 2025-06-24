@@ -160,7 +160,7 @@ export class UsersController {
         this.httpService
           .postForm("https://api.dpdf.io/v1.0/pdf", formData, {
             headers: {
-              Authorization: "Bearer " + this.config.pdf_api_key,
+              Authorization: "Bearer " + this.config.pdfApiKey,
               ...formData.getHeaders(),
             },
             responseType: "arraybuffer",
