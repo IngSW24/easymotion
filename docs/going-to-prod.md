@@ -24,9 +24,20 @@ The API service requires several environment variables to be configured properly
 The application can be deployed to any VPS (AWS EC2, DigitalOcean Droplets, Azure Virtual Machines, Google Compute Engine, Aruba Cloud, OVH, etc). The deployment process involves:
 
 1. Installing docker engine and docker compose on your system
-2. Creating a `docker-compose.yml` file with proper configuration (see sample below)
-3. Providing additional security measures if necessary (i.g. firewall setup, restricted access, etc.)
-4. Starting the services with `docker compose up -d`. For production, you may want to run this command as part of a system service (e.g., using systemd) to ensure the application automatically restarts on reboot or failure.
+2. \* Logging docker to the private registry that hosts the docker images (see below)
+3. Creating a `docker-compose.yml` file with proper configuration (see sample below)
+4. Providing additional security measures if necessary (i.g. firewall setup, restricted access, etc.)
+5. Starting the services with `docker compose up -d`. For production, you may want to run this command as part of a system service (e.g., using systemd) to ensure the application automatically restarts on reboot or failure.
+
+\* In order to fulfill step 2, you need to generate a github token:
+
+- Go to GitHub settings > Developer settings > Personal access tokens > Tokens (classic)
+- Generate a token with at least scope `read:packages`
+- Copy the tocken
+- Inside the VPS, run `docker login ghcr.io`
+  - Username: your github username
+  - Password: your token
+- Docker will store the credentials and you will be able to pull images from the private registry
 
 ### DNS Configuration
 
@@ -47,7 +58,7 @@ Below is a sample `docker-compose.yml` file demonstrating how to deploy the API 
 ```yaml
 services:
   webapp:
-    image: webapp-image-name
+    image: ghcr.io/ingsw24/easymotion-webapp:latest
     restart: unless-stopped
 
   api:
@@ -64,12 +75,12 @@ services:
       # CORS Configuration
       - FRONTEND_URL=url-that-serves-webapp
 
-      # SMTP Configuration
+      # SMTP Configuration (requires an email with SMTP access, can be replaced by mailhog for testing)
       - SMTP_HOST=smtp-host # or mailhog
       - SMTP_PORT=465 # or mailhog port
-      - SMTP_SECURE=true # false if using mailhog
-      - SMTP_USER=your-smtp-user # not used by mailhog
-      - SMTP_PASSWORD=your-smtp-password # not used by mailhog
+      - SMTP_SECURE=true # false if mailhog is used
+      - SMTP_USER=your-smtp-user # ignore when using mailhog
+      - SMTP_PASSWORD=your-smtp-password # ignore when using mailhog
 
       # JWT Configuration
       - JWT_SECRET=secret-to-sign-jwts
