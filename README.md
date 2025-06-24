@@ -1,209 +1,83 @@
-# EasyMotion
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+![Version](https://img.shields.io/github/v/release/ingsw24/easymotion?display_name=tag&label=version&style=for-the-badge)
 
-This repository contains both the **API** and **WebApp** projects for EasyMotion.
+<p align="center">
+    <img src=".github/assets/logo.png" width="100"/>
+</p>
+<h1 align="center">
+    Easymotion
+</h1>
 
-### Define domain in /etc/hosts
-
-You must edit your /etc/hosts file adding an entry that binds the domain `easymotion.devlocal` to `127.0.0.1`.
-
-- On MacOS and Linux, the file will be located at `/etc/hosts`
-- On Windows, the file will be located at `C:\Windows\System32\Drivers\etc\hosts`
-
-You need to add the following lines to the bottom of the file.
-
-```
-127.0.0.1 easymotion.devlocal
-127.0.0.1 api.easymotion.devlocal
-127.0.0.1 mail.easymotion.devlocal
-```
-
-Note that this application requires sudo/administration priviledges.
-
-### Install pnpm
-
-This repository uses **pnpm workspaces** for monorepo management. You can install pnpm via npm by running:
-
-```bash
-npm i -g pnpm
-```
-
-Other installation methods for pnpm are described on its [documentation](https://pnpm.io/installation).
-
-### Clone the repository
-
-```bash
-git clone https://github.com/ingsw24/easymotion  # https
-git clone git@github.com:IngSW24/easymotion.git  # ssh
-```
-
-### Spin up the dev environment
-
-Once you have cloned the repository you need to run a few commands in order to setup the environment
-
-- Run `pnpm env:bootstrap` to generate .env files with default variables
-- Run `pnpm install` to install dependencies
-- Run `pnpm services:up` to startup services (db, nginx, mailhog, ...)
-- Run `pnpm api:migrate` to apply database migrations
-- Run `pnpm api:seed` to seed the database
-- Run `pnpm all` to start all the applications
-- Visit
-  - **API Swagger** at [https://api.easymotion.devlocal/swagger](https://api.easymotion.devlocal/swagger)
-  - **Webapp** at [https://easymotion.devlocal](https://easymotion.devlocal)
-  - **MailHog** at [https://mail.easymotion.devlocal](https://mail.easymotion.devlocal)
-
-#### HTTPS and Certificates
-
-The nginx image will create some unsigned development certificates inside the gitignored `nginx/.ssl` folder. These certificates will allow https development but will required to be manually accepted by clicking `Advanced > Proceed to website` on both `api.easymotion.devlocal` and `easymotion.devlocal`. You will also need to skip validation when using tools such as Postman or CURL.
-
-In case you want to use trusted certificates for development, you can install [mkcert](https://github.com/FiloSottile/mkcert) and run
-
-```bash
-mkcert -install
-mkcert -key-file nginx/.ssl/dev.key -cert-file nginx/.ssl/dev.crt easymotion.devlocal *.easymotion.devlocal
-```
+<p align="center"><em>Empowering accessible healthcare for movement, physiotherapy, and nutrition—together, for everyone.</em></p>
 
 ---
 
-### Useful commands
+## 💡 What is Easymotion?
 
-#### Clean repository
+Easymotion is an open platform currently in development, dedicated to making healthcare for movement, physiotherapy, and nutrition more accessible and collaborative. This repository aims to deliver a robust, scalable, and user-friendly solution that enables patients, physiotherapists, and healthcare professionals to connect, manage courses, and share resources efficiently.
 
-```bash
-pnpm clean
-```
+- 🧑‍🤝‍🧑 **Patients** can find and subscribe to courses, track their progress, and communicate with professionals.
+- 🧑‍⚕️ **Physiotherapists** can create and manage courses, monitor patient progress, and collaborate with other professionals.
+- 👨‍💻 **Developers** can contribute to a modern, modular codebase built with best practices in mind.
 
-#### Run tests
+Patients can sign up to the platform, while physiotherapists can be invited to join. Once registered, physiotherapists can create and manage courses through an intuitive and detailed interface. They can review each patient's health data before approving subscription requests.
 
-```bash
-# All the projects
-pnpm test
+Patients, on the other hand, can browse available courses and submit subscription requests. At any time, they can update their health information via a dedicated anamnesis form.
 
-# Single project
-pnpm --filter webapp test
-pnpm --filter api test
-```
-
-#### Apply DB migrations
-
-```bash
-pnpm api:migrate
-```
-
-#### Seed the DB
-
-```bash
-pnpm api:seed
-```
-
-#### Regenerate prisma client
-
-> Note: this command is always executed automatically when applying migrations
-
-```bash
-pnpm api:client
-```
-
-#### Regenerate webapp client
-
-```bash
-pnpm openapi:generate
-```
-
-#### Update openapi schema
-
-```bash
-pnpm api:schema
-```
-
-#### Access psql shell
-
-```bash
-docker compose exec db psql -U easymotion
-```
-
-#### Restart a service
-
-```bash
-docker compose restart [service-name]
-```
-
-#### Check running services
-
-```bash
-docker compose ps
-```
-
-#### Attach to logs
-
-```bash
-docker compose logs -f [service-name]
-```
-
-#### Restore all autogenerated stuff 
-
-```
-pnpm blast
-```
-
-> Note: this command will wipe out the database, reapply migrations, and regenerate prisma and openapi client. It's useful when checking out branches, but use with caution.
-
-#### Reapply migrations from scratch (erasing DB data)
-
-```bash
-pnpm api:migrate-reset
-```
-
-#### Remove docker volume for postgres
-
-```bash
-docker volume rm easymotion_pgdata
-```
-
-#### Rebuild docker images
-
-```bash
-docker compose build
-```
-
-#### Shutdown the services
-
-```bash
-pnpm services:down
-```
+Physiotherapists can also create a personal profile, which is used to promote their courses on the platform.
 
 ---
 
-## DevContainers support
+## 🖼️ Easymotion in Action
 
-The monorepo provides support for DevContainers. You can attach to the development container directly from VSCode or any other supported IDE and run the application from the container's shell as you would do for local development.
+Get a glimpse of Easymotion's intuitive interface and collaborative features!
 
-If you develop on the container, ensure to reinstall dependencies from inside the devcontainer by running the following commands inside the container's shell:
-
-```bash
-pnpm clean
-pnpm install
-```
+<p align="center">
+  <img src=".github/assets/landing.png" alt="Login Screen" style="margin: 0 12px 16px 12px; border-radius: 8px; box-shadow: 0 2px 8px #0002;">
+  <img src=".github/assets/login.png" alt="Login Screen" style="margin: 0 12px 16px 12px; border-radius: 8px; box-shadow: 0 2px 8px #0002;">
+  <img src=".github/assets/dashboard.png" alt="Dashboard" style="margin: 0 12px 16px 12px; border-radius: 8px; box-shadow: 0 2px 8px #0002;">
+  <img src=".github/assets/course-detail.png" alt="Course Details" style="margin: 0 12px 16px 12px; border-radius: 8px; box-shadow: 0 2px 8px #0002;">
+  <img src=".github/assets/courses.png" alt="Progress Tracking" style="margin: 0 12px 16px 12px; border-radius: 8px; box-shadow: 0 2px 8px #0002;">
+  <img src=".github/assets/course-editor.png" alt="Progress Tracking" style="margin: 0 12px 16px 12px; border-radius: 8px; box-shadow: 0 2px 8px #0002;">
+</p>
+<p align="center">
+  <a href="./.github/assets/"><strong>→ Take a look at all the screenshots here</strong></a>
+</p>
 
 ---
 
-## How to develop
+## 🛠️ Tech Stack
 
-- Create a new branch from the `develop` branch
-- Checkout your own branch ensuring that its name follows the standard JIRA naming conventions for GitHub integrations
-- Develop your feature on your branch, eventually rebasing or merging from other branches if you need to do so
-- Open a Pull Request on the `develop` branch and wait for code review and approval
+Easymotion is built as a modern monorepo using the following technologies:
 
-### Code review
+- 🟦 **TypeScript** — Strongly typed language for both backend and frontend code.
+- 🟩 **Node.js** — Backend runtime environment.
+- 🚦 **NestJS** — Web framework for building the RESTful API.
+- ⚛️ **React** — Frontend library for building interactive user interfaces.
+- ⚡ **Vite** — Fast frontend build tool and development server.
+- 📦 **Prisma** — Type-safe ORM for database access and migrations.
+- 🐘 **PostgreSQL** — Relational database for persistent storage.
+- 🐳 **Docker** — Containerization for consistent development and deployment environments.
+- 📦 **pnpm** — Fast, disk space-efficient package manager with workspace support.
+- 🧪 **Jest** — Testing framework for unit and integration tests.
+- 🧹 **ESLint & Prettier** — Code quality and formatting tools.
+- 🔄 **swagger-typescript-api** - Automatic frontend client generation from OpenAPI JSON Schema
 
-| Programmer         | Reviewer           |
-| ------------------ | ------------------ |
-| @Nicola Revelant   | @pittis.matteo     |
-| @pittis.matteo     | @Andrea Cantarutti |
-| @Andrea Cantarutti | @Arghittu Thomas   |
-| @Arghittu Thomas   | @Barbetti Giovanni |
-| @Barbetti Giovanni | @Nicola Revelant   |
+---
 
-### Notes
+## 📚 Documentation
 
-- Branch `develop` will be aligned with the current sprint progress
-- The production version will be aligned with the status of the `main` branch
+Comprehensive documentation is available in the [`docs/`](./docs/) folder. Here are some quick links to get you started as a developer:
+
+1. 🚀 [Getting started](./docs/getting-started.md) - Learn how to set up your development environment and run the project locally.
+2. 📝 [Development Guidelines](./docs/development-guidelines.md) - Understand the coding standards, architecture, and best practices for contributing to Easymotion.
+3. 🏗️ [Build Instructions](./docs/build.md) - Instructions for building the project, including frontend and backend components.
+4. 🔄 [CI/CD Deployment](./docs/cicd-deployment.md) - Learn how to set up and manage continuous integration and deployment pipelines.
+5. 🏷️ [How to Release](./docs/how-to-release.md) - Guidelines for releasing new versions of Easymotion, including versioning and changelog management.
+6. 🚢 [Going to Production](./docs/going-to-prod.md) - Steps to configure a production environment, including database setup and environment variables.
+7. ✅ [Definition of Done](./docs/definition-of-done.md) - Criteria for considering a feature or bug fix complete, ensuring quality and consistency.
+8. 🗺️ [Roadmap](./docs/roadmap.md) - Overview of the project's future plans and feature development.
+
+---
+
+> 💬 For any questions or contributions, please refer to the documentation above or open an issue in this repository.
