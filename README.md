@@ -26,7 +26,17 @@ Easymotion is an open platform currently in development, dedicated to making hea
 
 Get a glimpse of Easymotion's intuitive interface and collaborative features!
 
-**TBD**
+<p align="center">
+  <img src=".github/assets/landing.png" alt="Login Screen" style="margin: 0 12px 16px 12px; border-radius: 8px; box-shadow: 0 2px 8px #0002;">
+  <img src=".github/assets/login.png" alt="Login Screen" style="margin: 0 12px 16px 12px; border-radius: 8px; box-shadow: 0 2px 8px #0002;">
+  <img src=".github/assets/dashboard.png" alt="Dashboard" style="margin: 0 12px 16px 12px; border-radius: 8px; box-shadow: 0 2px 8px #0002;">
+  <img src=".github/assets/course-detail.png" alt="Course Details" style="margin: 0 12px 16px 12px; border-radius: 8px; box-shadow: 0 2px 8px #0002;">
+  <img src=".github/assets/courses.png" alt="Progress Tracking" style="margin: 0 12px 16px 12px; border-radius: 8px; box-shadow: 0 2px 8px #0002;">
+  <img src=".github/assets/course-editor.png" alt="Progress Tracking" style="margin: 0 12px 16px 12px; border-radius: 8px; box-shadow: 0 2px 8px #0002;">
+</p>
+<p align="center">
+  <a href="./.github/assets/"><strong>→ Take a look at all the screenshots here</strong></a>
+</p>
 
 ---
 
@@ -53,14 +63,14 @@ Easymotion is built as a modern monorepo using the following technologies:
 
 Comprehensive documentation is available in the [`docs/`](./docs/) folder. Here are some quick links to get you started as a developer:
 
-1. [Getting started](./docs/getting-started.md) - Learn how to run the project locally, set up your environment, and understand the code structure.
-2. [Development Guidelines](./docs/development-guidelines.md) - Best practices for contributing to the project, including coding standards, commit messages, and pull request guidelines.
-3. [Build Instructions](./docs/build.md) - Instructions for building the project, including how to run the frontend and backend separately or together.
-4. [CI/CD Deployment](./docs/cicd-deployment.md) - Learn how continuous integration works and how to configure it.
-5. [How to Release](./docs/how-to-release.md) - Step-by-step guide on how to prepare and release a new version of Easymotion.
-6. [Going to Production](./docs/going-to-prod.md) - Guidelines for configuring a production environment.
-7. [Definition of Done](./docs/definition-of-done.md) - Criteria for considering a feature or bug fix complete.
-8. [Roadmap](./docs/roadmap.md) - Overview of the project's future plans and features.
+1. [Getting started](./docs/getting-started.md)
+2. [Development Guidelines](./docs/development-guidelines.md)
+3. [Build Instructions](./docs/build.md)
+4. [CI/CD Deployment](./docs/cicd-deployment.md)
+5. [How to Release](./docs/how-to-release.md)
+6. [Going to Production](./docs/going-to-prod.md)
+7. [Definition of Done](./docs/definition-of-done.md)
+8. [Roadmap](./docs/roadmap.md)
 
 ---
 
