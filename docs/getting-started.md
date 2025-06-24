@@ -102,6 +102,23 @@ git clone git@github.com:IngSW24/easymotion.git  # ssh
    - [Webapp](https://easymotion.devlocal)
    - [MailHog](https://mail.easymotion.devlocal)
 
+You can access easymotion as a **user** with the following credentials:
+
+- **Email:**: `user@easymotion.it`
+- **Password:**: `password1234`
+
+You can access easymotion as a **physiotherapist** with the following credentials:
+
+- **Email:**: `user@easymotion.it`
+- **Password:**: `password1234`
+
+You **cannot** access easymotion as an **admin** directly, but you can authenticate to the API using swagger using the admin login endpoint (`/auth/login/admin`) with the following admin credentials:
+
+- **Email:**: `admin@easymotion.it`
+- **Password:**: `password1234`
+
+You will then be able to access admin restricted endpoints.
+
 ### HTTPS and Certificates
 
 The nginx image creates unsigned development certificates in `nginx/.ssl`. These allow HTTPS development but require manual acceptance ("Advanced > Proceed to website") on `api.easymotion.devloca`, `mail.easymotion.devlocal`, and `easymotion.devlocal`. You may also need to skip validation in tools like Postman or CURL.
