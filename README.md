@@ -12,13 +12,13 @@
 
 ---
 
-## What is Easymotion?
+## 💡 What is Easymotion?
 
 Easymotion is an open platform currently in development, dedicated to making healthcare for movement, physiotherapy, and nutrition more accessible and collaborative. This repository aims to deliver a robust, scalable, and user-friendly solution that enables patients, physiotherapists, and healthcare professionals to connect, manage courses, and share resources efficiently.
 
-- **Patients** can find and subscribe to courses, track their progress, and communicate with professionals.
-- **Physiotherapists** can create and manage courses, monitor patient progress, and collaborate with other professionals.
-- **Developers** can contribute to a modern, modular codebase built with best practices in mind.
+- 🧑‍🤝‍🧑 **Patients** can find and subscribe to courses, track their progress, and communicate with professionals.
+- 🧑‍⚕️ **Physiotherapists** can create and manage courses, monitor patient progress, and collaborate with other professionals.
+- 👨‍💻 **Developers** can contribute to a modern, modular codebase built with best practices in mind.
 
 Patients can sign up to the platform, while physiotherapists can be invited to join. Once registered, physiotherapists can create and manage courses through an intuitive and detailed interface. They can review each patient's health data before approving subscription requests.
 
@@ -46,38 +46,38 @@ Get a glimpse of Easymotion's intuitive interface and collaborative features!
 
 ---
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 Easymotion is built as a modern monorepo using the following technologies:
 
-- **TypeScript** — Strongly typed language for both backend and frontend code.
-- **Node.js** — Backend runtime environment.
-- **NestJS** — Web framework for building the RESTful API.
-- **React** — Frontend library for building interactive user interfaces.
-- **Vite** — Fast frontend build tool and development server.
-- **Prisma** — Type-safe ORM for database access and migrations.
-- **PostgreSQL** — Relational database for persistent storage.
-- **Docker** — Containerization for consistent development and deployment environments.
-- **pnpm** — Fast, disk space-efficient package manager with workspace support.
-- **Jest** — Testing framework for unit and integration tests.
-- **ESLint & Prettier** — Code quality and formatting tools.
-- **swagger-typescript-api** - Automatic frontend client generation from OpenAPI JSON Schema
+- 🟦 **TypeScript** — Strongly typed language for both backend and frontend code.
+- 🟩 **Node.js** — Backend runtime environment.
+- 🚦 **NestJS** — Web framework for building the RESTful API.
+- ⚛️ **React** — Frontend library for building interactive user interfaces.
+- ⚡ **Vite** — Fast frontend build tool and development server.
+- 📦 **Prisma** — Type-safe ORM for database access and migrations.
+- 🐘 **PostgreSQL** — Relational database for persistent storage.
+- 🐳 **Docker** — Containerization for consistent development and deployment environments.
+- 📦 **pnpm** — Fast, disk space-efficient package manager with workspace support.
+- 🧪 **Jest** — Testing framework for unit and integration tests.
+- 🧹 **ESLint & Prettier** — Code quality and formatting tools.
+- 🔄 **swagger-typescript-api** - Automatic frontend client generation from OpenAPI JSON Schema
 
 ---
 
-## Documentation
+## 📚 Documentation
 
 Comprehensive documentation is available in the [`docs/`](./docs/) folder. Here are some quick links to get you started as a developer:
 
-1. [Getting started](./docs/getting-started.md) - Learn how to set up your development environment and run the project locally.
-2. [Development Guidelines](./docs/development-guidelines.md) - Understand the coding standards, architecture, and best practices for contributing to Easymotion. 
-3. [Build Instructions](./docs/build.md) - Instructions for building the project, including frontend and backend components.
-4. [CI/CD Deployment](./docs/cicd-deployment.md) - Learn how to set up and manage continuous integration and deployment pipelines.
-5. [How to Release](./docs/how-to-release.md) - Guidelines for releasing new versions of Easymotion, including versioning and changelog management.
-6. [Going to Production](./docs/going-to-prod.md) - Steps to configure a production environment, including database setup and environment variables. 
-7. [Definition of Done](./docs/definition-of-done.md) - Criteria for considering a feature or bug fix complete, ensuring quality and consistency.
-8. [Roadmap](./docs/roadmap.md) - Overview of the project's future plans and feature development.
+1. 🚀 [Getting started](./docs/getting-started.md) - Learn how to set up your development environment and run the project locally.
+2. 📝 [Development Guidelines](./docs/development-guidelines.md) - Understand the coding standards, architecture, and best practices for contributing to Easymotion.
+3. 🏗️ [Build Instructions](./docs/build.md) - Instructions for building the project, including frontend and backend components.
+4. 🔄 [CI/CD Deployment](./docs/cicd-deployment.md) - Learn how to set up and manage continuous integration and deployment pipelines.
+5. 🏷️ [How to Release](./docs/how-to-release.md) - Guidelines for releasing new versions of Easymotion, including versioning and changelog management.
+6. 🚢 [Going to Production](./docs/going-to-prod.md) - Steps to configure a production environment, including database setup and environment variables.
+7. ✅ [Definition of Done](./docs/definition-of-done.md) - Criteria for considering a feature or bug fix complete, ensuring quality and consistency.
+8. 🗺️ [Roadmap](./docs/roadmap.md) - Overview of the project's future plans and feature development.
 
 ---
 
-> For any questions or contributions, please refer to the documentation above or open an issue in this repository.
+> 💬 For any questions or contributions, please refer to the documentation above or open an issue in this repository.
