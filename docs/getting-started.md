@@ -5,7 +5,7 @@ This repository is a monorepo managed with **pnpm**. It contains both the **api*
 ## Table of Contents
 
 - [Getting Started](#getting-started)
-  - [Define Domain in /etc/hosts](#define-domain-in-etchosts)
+  - [Development subdomain](#development-subdomain)
   - [Install pnpm](#install-pnpm)
   - [Install Docker](#install-docker)
   - [Clone the Repository](#clone-the-repository)
@@ -17,20 +17,20 @@ This repository is a monorepo managed with **pnpm**. It contains both the **api*
 
 ## Getting Started
 
-### Define Domain in /etc/hosts
+### Development Subdomain
 
-To use HTTPS during local development, we rely on a fake domain: `easymotion.devlocal`. You must edit your `/etc/hosts` file and add the following entries at the bottom:
+The subdomain `dev.easymotion.it` (with all its subdomains) is reserved for development purposes and resolve to `127.0.0.1`. It is used to access the application during local development and testing. This allows us to use HTTPs without messing with ports and CORS exceptions during development. 
 
-```text
-127.0.0.1 easymotion.devlocal
-127.0.0.1 api.easymotion.devlocal
-127.0.0.1 mail.easymotion.devlocal
+The nginx image creates unsigned development certificates in `nginx/.ssl` when started. These allow for HTTPs development but require manual acceptance ("Advanced > Proceed to website" on your browser) on `api.dev.easymotion.it/swagger`, `mail.dev.easymotion.it`, and `dev.easymotion.it`. You may also need to skip validation in tools like Postman or CURL.
+
+We **highly suggest** to use trusted certificates even for development. To do that you can install [mkcert](https://github.com/FiloSottile/mkcert) and, in the main directory of the repository, run the following commands:
+
+```bash
+mkcert -install
+mkcert -key-file nginx/.ssl/dev.key -cert-file nginx/.ssl/dev.crt dev.easymotion.it *.dev.easymotion.it
 ```
 
-- **MacOS/Linux:** `/etc/hosts`
-- **Windows:** `C:\Windows\System32\Drivers\etc\hosts`
-
-> **Note:** Edit the file as an administrator. On Windows, open Notepad as administrator. On MacOS/Linux, run `sudo nano /etc/hosts`.
+This will replace the self-signed certificates with trusted ones, allowing you to access the application without security warnings.
 
 ### Install pnpm
 
@@ -98,9 +98,9 @@ git clone git@github.com:IngSW24/easymotion.git  # ssh
    ```
 
 7. **Visit:**
-   - [Swagger](https://api.easymotion.devlocal/swagger)
-   - [Webapp](https://easymotion.devlocal)
-   - [MailHog](https://mail.easymotion.devlocal)
+   - [Swagger](https://api.dev.easymotion.it/swagger)
+   - [Webapp](https://dev.easymotion.it)
+   - [MailHog](https://mail.dev.easymotion.it)
 
 You can access easymotion as a **user** with the following credentials:
 
@@ -121,14 +121,6 @@ You will then be able to access admin restricted endpoints.
 
 ### HTTPS and Certificates
 
-The nginx image creates unsigned development certificates in `nginx/.ssl`. These allow HTTPS development but require manual acceptance ("Advanced > Proceed to website") on `api.easymotion.devloca`, `mail.easymotion.devlocal`, and `easymotion.devlocal`. You may also need to skip validation in tools like Postman or CURL.
-
-To use trusted certificates for development, install [mkcert](https://github.com/FiloSottile/mkcert) and run:
-
-```bash
-mkcert -install
-mkcert -key-file nginx/.ssl/dev.key -cert-file nginx/.ssl/dev.crt easymotion.devlocal *.easymotion.devlocal
-```
 
 ---
 

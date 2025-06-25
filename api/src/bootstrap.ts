@@ -30,7 +30,7 @@ export async function bootstrap() {
   app.enableCors({
     origin:
       corsOrigins.replaceAll(" ", "").split(",") ??
-      "https://easymotion.devlocal",
+      "https://dev.easymotion.it",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true, // Allows cookies or auth headers
     exposedHeaders: "Content-Disposition",

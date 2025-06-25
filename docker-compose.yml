@@ -20,7 +20,7 @@ services:
       dockerfile: Dockerfile
     environment:
       CERT_PATH: "/certs"
-      DOMAIN: "*.easymotion.devlocal"
+      DOMAIN: "dev.easymotion.it,api.dev.easymotion.it,mail.dev.easymotion.it"
     volumes:
       - "./nginx/dev.conf:/etc/nginx/conf.d/default.conf"
       - "./nginx/.ssl:/certs" # gitignored folder, contains dev ssl certificates

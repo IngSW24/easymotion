@@ -22,6 +22,6 @@ export default defineConfig({
     environment: "jsdom",
   },
   server: {
-    allowedHosts: ["easymotion.devlocal"],
+    allowedHosts: ["dev.easymotion.it"],
   },
 } as UserConfig);
