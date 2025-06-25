@@ -1,8 +1,7 @@
 #!/bin/sh
 set -e
 
-# Generates self signed SSL certificates for development
-# An entry for DOMAIN should be added to /etc/hosts
+# Generates self signed SSL certificates for *.dev.easymotion.it
 
 mkdir -p $CERT_PATH
 
