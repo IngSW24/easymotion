@@ -65,9 +65,7 @@ Example workflow for model changes:
 3. Update the seeding script under `prisma/seed.ts`.
 4. Test the migration and seeding process.
 
-![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f9d0.png)
-
- You can catch mistakes early by using the [VSCode Prisma Extension](https://marketplace.visualstudio.com/items?itemName=Prisma.prisma)!
+> 🤔 You can catch mistakes early by using the [VSCode Prisma Extension](https://marketplace.visualstudio.com/items?itemName=Prisma.prisma)!
 
 * * *
 

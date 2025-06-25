@@ -2,18 +2,13 @@
 
 This document establishes the **Git usage guidelines** for our team, ensuring clarity, organization, and consistency throughout development. These rules are based on best practices for branching, commit structuring, and workflow management.
 
-* * *
-
 ## Branching Policy 🔄
 
 There are **three primary branches** that are always active:
 
-- ![(tick)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/check.png)
- **main**: Aligned with the production version.
-- ![(tick)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/check.png)
- **staging**: Aligned with the staging version (when introduced).
-- ![(tick)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/check.png)
- **develop**: Aligned with the development version, receiving pull requests from feature branches.
+- **main**: Aligned with the production version.
+- **staging**: Aligned with the staging version (when introduced).
+- **develop**: Aligned with the development version, receiving pull requests from feature branches.
 
 All **other branches** are feature-specific and must be **deleted** after the feature is completed and merged. GitHub allows for branch restoration in case the PR is reopened.
 
@@ -27,37 +22,23 @@ Branches must follow the syntax:
 
 Where:
 
-- ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f534.png)
- **type**: Describes the purpose of the branch.
-- ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f534.png)
- **issue-name**: Matches the **JIRA issue code**.
-- ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f534.png)
- **additional keyword** (optional): Allows further specification (see example below).
+- **type**: Describes the purpose of the branch.
+- **issue-name**: Matches the **JIRA issue code**.
+- **additional keyword** (optional): Allows further specification (see example below).
 
 **Valid branch types:**
 
-- ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f3d7.png)
- **feat**: For new features.
-- ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f6e0.png)
- **fix**: For bug fixes.
-- ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/2699.png)
- **ci**: For pipeline and CI/CD configurations
-- ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f975.png)
- **hotfix**: For urgent production fixes.
-- ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f516.png)
- **docs**: For documentation changes
-- ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f4a0.png)
- **style**: For code formatting or style changes.
-- ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f60c.png)
- **refactor**: Code restructuring without changing functionality.
-- ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f623.png)
- **chore**: For repository maintenance (e.g., dependency upgrades).
-- ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f3db.png)
- **build**: For build process changes.
-- ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f3c3-200d-2642-fe0f.png)
- **perf**: For performance optimizations.
-- ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f9ea.png)
- **test**: For test-specific changes.
+- **feat**: For new features.
+- **fix**: For bug fixes.
+- **ci**: For pipeline and CI/CD configurations
+- **hotfix**: For urgent production fixes.
+- **docs**: For documentation changes
+- **style**: For code formatting or style changes.
+- **refactor**: Code restructuring without changing functionality.
+- **chore**: For repository maintenance (e.g., dependency upgrades).
+- **build**: For build process changes.
+- **perf**: For performance optimizations.
+- **test**: For test-specific changes.
 
 **Examples:**
 
@@ -70,25 +51,16 @@ test/EAS-333/generate-mock
 
 #### Branch Workflow
 
-- ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f449.png)
- Developers can **split work** into multiple branches if needed.
-- ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f449.png)
- Developers **working on the same files** (even if they are developing different features) can easily work on the same branch to minimize conflicts
-- ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f449.png)
- Commits can be added to a **PR after it is opened**, enabling collaborative work.
-- ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f449.png)
- Developers should regularly **rebase** or **merge** `develop` (or other branches) into their current feature branch to avoid merge conflicts.
+- Developers can **split work** into multiple branches if needed.
+- Developers **working on the same files** (even if they are developing different features) can easily work on the same branch to minimize conflicts
+- Commits can be added to a **PR after it is opened**, enabling collaborative work.
+- Developers should regularly **rebase** or **merge** `develop` (or other branches) into their current feature branch to avoid merge conflicts.
 
 **PR Merging:**
 
-- ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f449.png)
- When a feature is complete, developers must **request a review**.
-- ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f449.png)
- After review and approval, the PR should be **squash-merged** into the `develop` branch unless there is a specific need to retain all commits.
-- ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f449.png)
- The **squash commit message** must follow the commit message guidelines below, as it will become the final commit in the `develop` branch.
-
-* * *
+- When a feature is complete, developers must **request a review**.
+- After review and approval, the PR should be **squash-merged** into the `develop` branch unless there is a specific need to retain all commits.
+- The **squash commit message** must follow the commit message guidelines below, as it will become the final commit in the `develop` branch.
 
 ## How to Structure Commit Messages 📏
 
@@ -104,36 +76,21 @@ We follow the **Conventional Commits** format to ensure clarity, consistency, an
 
 #### Rules:
 
-1. ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f534.png)
- **type**: Similarly to the branch types, indicates the purpose of the commit:
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f3d7.png)
- **feat**: For new features.
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f6e0.png)
- **fix**: For bug fixes.
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/2699.png)
- **ci**: For pipeline and CI/CD configurations
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f975.png)
- **hotfix**: For urgent production fixes.
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f516.png)
- **docs**: For documentation changes
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f4a0.png)
- **style**: For code formatting or style changes.
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f60c.png)
- **refactor**: Code restructuring without changing functionality.
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f623.png)
- **chore**: For repository maintenance (e.g., dependency upgrades).
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f3db.png)
- **build**: For build process changes.
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f3c3-200d-2642-fe0f.png)
- **perf**: For performance optimizations.
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f9ea.png)
- **test**: For test-specific changes.
-2. ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f534.png)
- **scope**: Optional. Specifies the affected area (e.g., `webapp`, `api`).
-3. ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f534.png)
- **description**: Must start with **one or more JIRA issue codes** and provide a brief, descriptive message.
-4. ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f534.png)
- **body** (optional): Used for detailed explanations if necessary.
+1. **type**: Similarly to the branch types, indicates the purpose of the commit:
+  - **feat**: For new features.
+  - **fix**: For bug fixes.
+  - **ci**: For pipeline and CI/CD configurations
+  - **hotfix**: For urgent production fixes.
+  - **docs**: For documentation changes
+  - **style**: For code formatting or style changes.
+  - **refactor**: Code restructuring without changing functionality.
+  - **chore**: For repository maintenance (e.g., dependency upgrades).
+  - **build**: For build process changes.
+  - **perf**: For performance optimizations.
+  - **test**: For test-specific changes.
+2. **scope**: Optional. Specifies the affected area (e.g., `webapp`, `api`).
+3. **description**: Must start with **one or more JIRA issue codes** and provide a brief, descriptive message.
+4. **body** (optional): Used for detailed explanations if necessary.
 
 **Examples:**
 
@@ -153,12 +110,8 @@ feat(api): EAS-234 EAS-564 added dark mode feature with layout
 
 **Important Notes:**
 
-- ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f449.png)
- Commits **on feature branches** do not need to strictly follow this convention since they will be squashed.
-- ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f449.png)
- Any commit that lands on the `develop` branch (e.g., Pull request titles) **must follow this format**.
-
-* * *
+- Commits **on feature branches** do not need to strictly follow this convention since they will be squashed.
+- Any commit that lands on the `develop` branch (e.g., Pull request titles) **must follow this format**.
 
 ### ❓ What do I do if my commit introduces tests, fixes, docs, features, etc., all together?
 
@@ -174,55 +127,34 @@ It is also **important to keep commits and PRs focused** on their related work. 
 
 This approach ensures:
 
-1. ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/2705.png)
- A clean and focused commit history.
-2. ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/2705.png)
- Easier code reviews.
-3. ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/2705.png)
- Better separation of concerns.
-
-* * *
+1. A clean and focused commit history.
+2. Easier code reviews.
+3. Better separation of concerns.
 
 ## Workflow Example 📐
 
 **Scenario:**
 
-- ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f9d1.png)
- Nicola is assigned to implement **EAS-123** for the webapp.
-- ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f9d4.png)
- Giovanni is assigned to implement **EAS-456** for the API.
+- Nicola is assigned to implement **EAS-123** for the webapp.
+- Giovanni is assigned to implement **EAS-456** for the API.
 
 #### Workflow Steps:
 
-1. ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f534.png)
- **Branch Creation**:
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f9d1.png)
- Nicola creates a branch: `feat/EAS-123`.
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f9d4.png)
- Giovanni creates a branch: `feat/EAS-456`.
-2. ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f534.png)
- **Development**:
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f9d1.png)
- Nicola works on his branch and produces the following commits (*notice they don't follow the formatting guidelines since they are feature-branch-specific commits*):
-    - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f3ab.png)
- `changing menu layout`
-    - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f3ab.png)
- `adding dark mode`
-    - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f3ab.png)
- `unit testing dark mode switch`
-3. ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f534.png)
- **PR Submission**:
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f9d1.png)
- Nicola opens a **PR to** `develop`
+1. **Branch Creation**:
+  - Nicola creates a branch: `feat/EAS-123`.
+  - Giovanni creates a branch: `feat/EAS-456`.
+2. **Development**:
+  - Nicola works on his branch and produces the following commits (*notice they don't follow the formatting guidelines since they are feature-branch-specific commits*):
+    - `changing menu layout`
+    - `adding dark mode`
+    - `unit testing dark mode switch`
+3. **PR Submission**:
+  - Nicola opens a **PR to** `develop`
     - PR title: `feat(webapp): EAS-123 added dark mode feature`
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f389.png)
- The PR is reviewed, approved, and **squash-merged**.
-4. ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f534.png)
- **Syncing Work**:
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f9d4.png)
- Giovanni requires Nicola's changes.
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f9d4.png)
- Giovanni runs:
+  - The PR is reviewed, approved, and **squash-merged**.
+4. **Syncing Work**:
+  - Giovanni requires Nicola's changes.
+  - Giovanni runs:
 ```
 git merge develop
 ```
@@ -230,43 +162,25 @@ or
 ```
 git rebase develop
 ```
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f44c.png)
- Giovanni's branch is now up to date.
-5. ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f534.png)
- **Second PR**:
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f9d4.png)
- Giovanni completes his work and opens a PR:
+  - Giovanni's branch is now up to date.
+5. **Second PR**:
+  - Giovanni completes his work and opens a PR:
     - PR title: `feat(api): EAS-456 added API endpoint`
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f389.png)
- The PR is reviewed, approved, and **squash-merged**.
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/2705.png)
- The issue **EAS-456** can be marked as DONE on JIRA.
-6. ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f534.png)
- **Testing and Fixes**:
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/23f2.png)
- Nicola's issue on JIRA hasn't been marked as DONE yet because he needs to add some tests
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f9d1.png)
- Nicola creates a new branch for unit tests: test/EAS-123.
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f9d1.png)
- Nicola produces commits:
-    - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f3ab.png)
- `unit test dark mode switch`
-    - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f3ab.png)
- `unit test layout shifter`
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f9d1.png)
- Nicola opens a PR:
+  - The PR is reviewed, approved, and **squash-merged**.
+  - The issue **EAS-456** can be marked as DONE on JIRA.
+6. **Testing and Fixes**:
+  - Nicola's issue on JIRA hasn't been marked as DONE yet because he needs to add some tests
+  - Nicola creates a new branch for unit tests: test/EAS-123.
+  - Nicola produces commits:
+    - `unit test dark mode switch`
+    - `unit test layout shifter`
+  - Nicola opens a PR:
     - PR title: `test(webapp): EAS-123 added unit tests`
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f389.png)
- The PR is reviewed, approved, and **squash-merged**.
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/2705.png)
- The issue **EAS-123** can be marked as DONE on JIRA.
-7. ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f534.png)
- **And so on**:
-  - ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/1f9d3.png)
- Matteo can now start working on another ticket by checking out from develop with the updated code
-  - …
-
-* * *
+  - The PR is reviewed, approved, and **squash-merged**.
+  - The issue **EAS-123** can be marked as DONE on JIRA.
+7. **And so on**:
+  - Matteo can now start working on another ticket by checking out from develop with the updated code
+  - ...
 
 By following this **Git Usage Policy**, the team ensures:
 
@@ -274,3 +188,4 @@ By following this **Git Usage Policy**, the team ensures:
 2. Consistent and clear commit history.
 3. Efficient collaboration and minimal merge conflicts.
 4. The ability to work independently of JIRA automations while still maintaining visibility of related commits and branches directly from JIRA issues
+

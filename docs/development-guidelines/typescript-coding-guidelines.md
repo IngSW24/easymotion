@@ -15,10 +15,8 @@ This section covers general TypeScript coding practices that apply to all projec
 - 🔴 Ensure code is formatted according to the **defined criteria**.
   - Use the **Prettier plugin** in VSCode to automatically apply formatting rules. This way, developers don’t need to manually think about formatting.
 
-- ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/2699.png)
- Download the [Prettier Extension for VSCode](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
-- ![(blue star)](https://ingsw24.atlassian.net/wiki/s/983568617/6452/22b46684228f7dfd67aa2db571d580f5e4a63d45/_/images/icons/emoticons/72/2699.png)
- Download the [ESLint Extension for VSCode](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+- ⚙️ Download the [Prettier Extension for VSCode](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+- ⚙️ Download the [ESLint Extension for VSCode](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
 
 ### Comments 📊
 
